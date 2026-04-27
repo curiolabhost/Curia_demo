@@ -1,0 +1,63 @@
+{
+  "id": "s2-l3",
+  "session": "Session 2",
+  "title": "The Three-Part Loop",
+  "content": {
+    "heading": "The Three-Part Loop",
+    "body": [
+      { "kind": "p", "text": "Every interactive program follows the same pattern: something happens, a variable updates, the page reflects that update. These are three separate steps — the third never happens automatically." },
+      { "kind": "concept", "code": "event fires", "desc": "User clicks, types, or interacts — something happens" },
+      { "kind": "concept", "code": "variable updates", "desc": "JavaScript updates the value stored in a variable" },
+      { "kind": "concept", "code": "page updates", "desc": "JavaScript explicitly writes the new value onto the page" },
+      { "kind": "code", "lines": [
+        "let count = 0;",
+        "let display = document.getElementById('display');",
+        "",
+        "button.addEventListener('click', function() {",
+        "    count = count + 1;                        // step 2: variable updates",
+        "    display.textContent = 'Count: ' + count; // step 3: page updates",
+        "});",
+        "",
+        "// Changing a variable does NOT change the page",
+        "// You must always write the new value back explicitly"
+      ]},
+      { "kind": "callout", "variant": "danger", "label": "Most common beginner mistake", "text": "Students update the variable and assume the page will change automatically. It will not. You must always update the DOM separately." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Find the missing step",
+      "type": "debug",
+      "duration": "6 min",
+      "tasks": [
+        "The code below increments count on every log call — but it never prints the updated value correctly.",
+        "Read it carefully. Identify which of the three steps is broken or missing.",
+        "Fix it so that each console.log prints the correct current value of count.",
+        "Then add a fourth variable called doubled and log count multiplied by 2 each time."
+      ],
+      "hint": "Look at what is being passed to console.log. Is it the variable, or something else?",
+      "starterCode": "// Something is wrong here — find and fix it\n\nlet count = 0;\n\nfunction increment() {\n    count = count + 1;\n    console.log('Count: ' + 0); // bug is here\n}\n\nincrement();\nincrement();\nincrement();\n",
+      "checks": [
+        {
+          "type": "console",
+          "includes": "Count: 3",
+          "label": "console logs 'Count: 3' after three increments"
+        }
+      ]
+    },
+    {
+      "title": "Build the loop from scratch",
+      "type": "practice",
+      "duration": "8 min",
+      "tasks": [
+        "In a blank editor, write all three steps yourself with no reference code.",
+        "Declare a count variable. Add a click listener to the document.",
+        "Inside the listener: update count, then log 'Count: ' + count.",
+        "Run it and click 5 times. Confirm the count increases correctly.",
+        "Challenge: log a different message when count reaches exactly 5."
+      ],
+      "hint": "Step 2 is count = count + 1. Step 3 is console.log(...). Both go inside the listener.",
+      "starterCode": "// Build the full three-part loop from scratch\n// No hints in the code — use the exercise panel\n\n"
+    }
+  ]
+}

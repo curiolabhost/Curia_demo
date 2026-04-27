@@ -1,0 +1,53 @@
+{
+  "id": "s5-l2",
+  "session": "Session 5",
+  "title": "setTimeout",
+  "content": {
+    "heading": "setTimeout — delayed actions",
+    "body": [
+      { "kind": "p", "text": "setTimeout runs a function after a delay in milliseconds. The rest of the program does not pause and wait — it keeps running. The delayed function is called later, on its own." },
+      { "kind": "concept", "code": "setTimeout(fn, 2000)", "desc": "Run fn after 2000 milliseconds — 2 seconds from now" },
+      { "kind": "code", "lines": [
+        "console.log('A');",
+        "",
+        "setTimeout(function() {",
+        "    console.log('B');",
+        "}, 1000);",
+        "",
+        "console.log('C');",
+        "",
+        "// Output order: A, C, then B one second later",
+        "// The program does NOT pause at setTimeout"
+      ]},
+      { "kind": "callout", "variant": "warn", "label": "The program does not pause", "text": "This surprises almost every beginner. Code after setTimeout runs immediately — before the delayed function fires. Think of it as scheduling a callback, not pausing execution." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Predict the order",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Read the starter code without running it.",
+        "Write down the exact order you expect the letters to appear in the console.",
+        "Run it and compare to your prediction.",
+        "Now change the delay to 0ms. Does B appear before or after C? Why?"
+      ],
+      "hint": "setTimeout with 0ms delay still runs after the current code finishes — it is never truly immediate.",
+      "starterCode": "console.log('A');\n\nsetTimeout(function() {\n    console.log('B');\n}, 1000);\n\nconsole.log('C');\n\nsetTimeout(function() {\n    console.log('D');\n}, 500);\n\nconsole.log('E');\n"
+    },
+    {
+      "title": "Comparing arrays",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Create two arrays with the same numbers in different orders.",
+        "Try comparing them with === and log the result. Explain why it returns false.",
+        "Now sort both arrays and compare them as strings using .toString().",
+        "Confirm it returns true when contents match and false when they differ."
+      ],
+      "hint": "Use .slice() before .sort() to avoid sorting the original array in place.",
+      "starterCode": "let a = [3, 7, 1];\nlet b = [7, 1, 3];\n\n// Direct comparison\nconsole.log('Direct ===:', a === b);\n\n// Sort and compare as strings\nlet sortedA = a.slice().sort();\nlet sortedB = b.slice().sort();\nconsole.log('Sorted toString match:', sortedA.toString() === sortedB.toString());\n\n// Now try with different contents\nlet c = [3, 7, 2];\nlet sortedC = c.slice().sort();\nconsole.log('Different contents match:', sortedA.toString() === sortedC.toString());\n"
+    }
+  ]
+}

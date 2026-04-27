@@ -1,0 +1,69 @@
+{
+  "id": "s3-l2",
+  "session": "Session 3",
+  "title": "Conditionals",
+  "content": {
+    "heading": "Conditionals — making decisions",
+    "body": [
+      { "kind": "p", "text": "An if statement runs a block of code only when a condition is true. An else block runs when it is false. This is how programs make decisions based on the current state." },
+      { "kind": "concept", "code": "if (score >= 10) { ... }", "desc": "Run this block only when score is 10 or higher" },
+      { "kind": "concept", "code": "} else { ... }", "desc": "Run this block when the condition is false" },
+      { "kind": "code", "lines": [
+        "let score = 8;",
+        "",
+        "if (score >= 10) {",
+        "    console.log('You win!');",
+        "} else {",
+        "    console.log('Keep going — ' + (10 - score) + ' more needed.');",
+        "}",
+        "",
+        "// === checks value AND type — always use === not ==",
+        "// >= means greater than or equal to",
+        "// !  means NOT — !true is false, !false is true"
+      ]},
+      { "kind": "callout", "variant": "danger", "label": "=== is not =", "text": "A single = puts a value into a variable. Triple === checks whether two values are equal. Using = inside an if condition is one of the most common bugs in JavaScript." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Write a decision",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Declare a variable called temperature set to 22.",
+        "Write an if/else: log 'Wear a jacket' if temperature is below 15, otherwise log 'No jacket needed'.",
+        "Change temperature to 10 and run again — confirm the output changes.",
+        "Add a third condition using else if: if temperature is above 30, log 'It is very hot'.",
+        "Challenge: rewrite the logic as a function called getAdvice(temp) that returns the message instead of logging it."
+      ],
+      "hint": "else if goes between if and else: if (...) { } else if (...) { } else { }",
+      "starterCode": "// Declare temperature\nlet temperature = 22;\n\n// Write your if / else if / else below\n\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "temperature",
+          "expected": null,
+          "label": "a variable called 'temperature' exists"
+        },
+        {
+          "type": "console",
+          "includes": "jacket",
+          "label": "console output mentions 'jacket'"
+        }
+      ]
+    },
+    {
+      "title": "Debug the conditional",
+      "type": "debug",
+      "duration": "4 min",
+      "tasks": [
+        "The function below should log 'You win!' when score reaches 5 — but it never does.",
+        "Find the bug. It is a single character error.",
+        "Fix it and confirm the win message appears.",
+        "Then change the target from 5 to 10 and test again."
+      ],
+      "hint": "Look carefully at the comparison operator inside the if condition. = and === are very different.",
+      "starterCode": "let score = 5;\n\nfunction checkWin() {\n    if (score = 5) {\n        console.log('You win!');\n    } else {\n        console.log('Not yet. Score is:', score);\n    }\n}\n\ncheckWin();\n"
+    }
+  ]
+}

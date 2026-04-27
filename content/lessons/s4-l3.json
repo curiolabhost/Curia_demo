@@ -1,0 +1,75 @@
+{
+  "id": "s4-l3",
+  "session": "Session 4",
+  "title": "Random picks",
+  "content": {
+    "heading": "Math.random() — picking random values",
+    "body": [
+      { "kind": "p", "text": "Math.random() returns a random decimal between 0 and 1 every time it is called. To turn it into a usable whole number index, multiply by the range you want and round down with Math.floor()." },
+      { "kind": "concept", "code": "Math.random()", "desc": "A random decimal between 0 (inclusive) and 1 (exclusive)" },
+      { "kind": "concept", "code": "Math.floor(Math.random() * 9)", "desc": "A random whole number between 0 and 8" },
+      { "kind": "code", "lines": [
+        "// Step by step:",
+        "// Math.random()        → 0.7382...",
+        "// * 9                  → 6.643...",
+        "// Math.floor(...)      → 6",
+        "",
+        "// Pick a random item from an array:",
+        "let animals = ['dog', 'cat', 'frog', 'panda'];",
+        "let i = Math.floor(Math.random() * animals.length);",
+        "console.log(animals[i]); // random animal each time"
+      ]},
+      { "kind": "callout", "variant": "info", "label": "Why Math.floor?", "text": "Math.random() never returns exactly 1.0, so multiplying by 4 gives a number from 0 to 3.999. Math.floor rounds down to 0, 1, 2, or 3 — exactly the valid indexes of a 4-item array." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Explore random picks",
+      "type": "predict",
+      "duration": "6 min",
+      "tasks": [
+        "Run Math.floor(Math.random() * 9) ten times using a loop. Log each result.",
+        "Predict: what is the smallest possible result? The largest? Confirm by running many times.",
+        "Write a function called pickRandom(array) that returns a random item from any array.",
+        "Test it on three different arrays."
+      ],
+      "hint": "Inside pickRandom: let i = Math.floor(Math.random() * array.length); return array[i];",
+      "starterCode": "// Log a random 0-8 ten times\nfor (let i = 0; i < 10; i++) {\n    console.log(Math.floor(Math.random() * 9));\n}\n\n// Write pickRandom below\nfunction pickRandom(array) {\n    // your code here\n}\n\n// Test it\nconsole.log(pickRandom(['dog','cat','frog','panda']));\nconsole.log(pickRandom([10, 20, 30, 40, 50]));\n"
+    },
+    {
+      "title": "Pick without duplicates",
+      "type": "practice",
+      "duration": "8 min",
+      "tasks": [
+        "Write a function called pickCells(n) that returns n unique random numbers from 0 to 8.",
+        "No number should appear twice in the result.",
+        "Test by calling pickCells(3) five times and checking for duplicates.",
+        "Predict: what happens if you call pickCells(10)? Try it."
+      ],
+      "hint": "Start with all 9 indexes in an array. Each time you pick one, remove it with splice so it cannot be picked again.",
+      "starterCode": "function pickCells(n) {\n    let allIndexes = [0, 1, 2, 3, 4, 5, 6, 7, 8];\n    let picked = [];\n\n    for (let i = 0; i < n; i++) {\n        // pick a random index from allIndexes\n        // add it to picked\n        // remove it from allIndexes\n    }\n\n    return picked;\n}\n\nconsole.log(pickCells(3));\nconsole.log(pickCells(3));\nconsole.log(pickCells(3));\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "pickCells",
+          "args": [3],
+          "assert": "Array.isArray(result) && result.length === 3",
+          "label": "pickCells(3) returns an array of length 3"
+        },
+        {
+          "type": "call",
+          "fn": "pickCells",
+          "args": [3],
+          "assert": "new Set(result).size === result.length",
+          "label": "pickCells(3) returns no duplicate values"
+        }
+      ]
+    }
+  ],
+  "customize": [
+    "In style.css, change .lit background-color to any color you want for the highlighted cells.",
+    "Change the cell size by updating width and height in the .cell rule.",
+    "Add border-radius: 50% to .cell to make cells circular instead of square.",
+    "Change the gap between cells in the #grid rule."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "s4-l1",
+  "session": "Session 4",
+  "title": "Arrays",
+  "content": {
+    "heading": "Arrays — lists of values",
+    "body": [
+      { "kind": "p", "text": "An array holds multiple values under a single variable name. Each value has a position number called an index. Arrays always start counting at zero — the first item is at index 0, not index 1." },
+      { "kind": "concept", "code": "let colors = ['red','blue']", "desc": "A list of two text values stored in one variable" },
+      { "kind": "concept", "code": "colors[0]", "desc": "Get the item at index 0 — the first item" },
+      { "kind": "concept", "code": "colors.length", "desc": "How many items are in the array" },
+      { "kind": "code", "lines": [
+        "let animals = ['dog', 'cat', 'frog', 'panda'];",
+        "",
+        "console.log(animals[0]);       // 'dog'",
+        "console.log(animals[3]);       // 'panda'",
+        "console.log(animals.length);   // 4",
+        "console.log(animals[4]);       // undefined — no fifth item",
+        "",
+        "animals.push('bear');          // adds 'bear' to the end",
+        "animals.splice(1, 1);         // removes 1 item at index 1"
+      ]},
+      { "kind": "callout", "variant": "warn", "label": "Zero indexing", "text": "Arrays start at index 0, not 1. A 4-item array has indices 0, 1, 2, 3. Accessing index 4 returns undefined." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Read an array",
+      "type": "predict",
+      "duration": "6 min",
+      "tasks": [
+        "Given: let scores = [4, 9, 2, 7, 1, 6];",
+        "Before running: write down scores[0], scores[5], scores[6], and scores.length.",
+        "Type it in the editor and use console.log to check each answer.",
+        "Now push a new number onto the array. What is scores.length now? What index is the new item at?"
+      ],
+      "hint": "The last valid index is always array.length - 1. Anything beyond that is undefined.",
+      "starterCode": "let scores = [4, 9, 2, 7, 1, 6];\n\n// Log each of these and check your predictions:\nconsole.log('scores[0]:', scores[0]);\nconsole.log('scores[5]:', scores[5]);\nconsole.log('scores[6]:', scores[6]);\nconsole.log('scores.length:', scores.length);\n\n// Now push a new number and check length again\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "scores",
+          "expected": null,
+          "label": "array 'scores' exists"
+        },
+        {
+          "type": "console",
+          "includes": "4",
+          "label": "console logs the value at index 0 (which is 4)"
+        }
+      ]
+    },
+    {
+      "title": "Build and modify an array",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Create an array called favorites with four items — anything you like.",
+        "Log the first and last items using their indexes.",
+        "Push two more items onto the array.",
+        "Remove the item at index 1 using splice.",
+        "Log the full array after each change to watch it update."
+      ],
+      "hint": "To log the whole array: console.log(favorites). To remove at index 1: favorites.splice(1, 1).",
+      "starterCode": "// Create your favorites array\nlet favorites = [];\n\n// Log first and last items\n\n// Push two more\n\n// Remove index 1\n\n// Log after each change\n"
+    }
+  ]
+}

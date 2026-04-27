@@ -1,0 +1,56 @@
+{
+  "id": "s5-l1",
+  "session": "Session 5",
+  "title": "State",
+  "content": {
+    "heading": "State — what a program remembers",
+    "body": [
+      { "kind": "p", "text": "State is the set of variables that describe what is happening right now. Every interactive program has state. A game tracks score, level, and whose turn it is. State changes when something happens, and behavior depends on what state it is in." },
+      { "kind": "table", "headers": ["State variable", "What it stores"], "rows": [
+        ["litCells", "Which cells the game lit up this round"],
+        ["playerClicks", "Which cells the player has clicked so far"],
+        ["isInputAllowed", "Whether the player can click right now"],
+        ["level", "How many cells are shown this round"]
+      ]},
+      { "kind": "callout", "variant": "info", "label": "Key question", "text": "If you forgot to reset playerClicks at the start of each round, what would happen by round 3? Think through it before reading on." },
+      { "kind": "p", "text": "By round 3, playerClicks would still contain clicks from rounds 1 and 2. The comparison would fail immediately because the array is already too long. Resetting state at the start of each round is not optional — it is required." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Trace state through rounds",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Read the starter code. It simulates two rounds of the game without any DOM.",
+        "Before running: trace through it manually and write what litCells and playerClicks contain after each round.",
+        "Run it and compare the logged output to your prediction.",
+        "Change round 2 so the player gets it wrong. What should happen to level?"
+      ],
+      "hint": "Follow the assignments line by line. Each startRound() call resets playerClicks to [].",
+      "starterCode": "let litCells = [];\nlet playerClicks = [];\nlet level = 2;\n\nfunction startRound(cells, clicks) {\n    playerClicks = [];\n    litCells = cells;\n    console.log('Round starts. litCells:', litCells);\n\n    // simulate player clicking\n    clicks.forEach(function(c) { playerClicks.push(c); });\n    console.log('Player clicked:', playerClicks);\n\n    checkResult();\n}\n\nfunction checkResult() {\n    let a = litCells.slice().sort().toString();\n    let b = playerClicks.slice().sort().toString();\n    if (a === b) {\n        level = level + 1;\n        console.log('Correct! Level is now:', level);\n    } else {\n        level = 2;\n        console.log('Wrong. Back to level 2.');\n    }\n}\n\n// Round 1: correct\nstartRound([3, 7], [7, 3]);\n\n// Round 2: correct\nstartRound([1, 5, 8], [5, 1, 8]);\n"
+    },
+    {
+      "title": "Boolean input control",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Declare a variable called isInputAllowed set to false.",
+        "Write a function called handleClick() that logs 'Click registered' only when isInputAllowed is true, and 'Input is blocked' when false.",
+        "Call handleClick() three times. Then set isInputAllowed to true and call it three more times.",
+        "Challenge: write a function called toggleInput() that flips isInputAllowed between true and false each time it is called."
+      ],
+      "hint": "Check the boolean with: if (!isInputAllowed) { ... }. To toggle: isInputAllowed = !isInputAllowed.",
+      "starterCode": "let isInputAllowed = false;\n\nfunction handleClick() {\n    // log based on isInputAllowed\n}\n\n// Call with input blocked\nhandleClick();\nhandleClick();\n\n// Enable input\nisInputAllowed = true;\n\n// Call again\nhandleClick();\nhandleClick();\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "handleClick",
+          "args": [],
+          "assert": "result === undefined",
+          "label": "handleClick() exists and can be called"
+        }
+      ]
+    }
+  ]
+}

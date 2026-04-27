@@ -1,0 +1,72 @@
+{
+  "id": "s2-l1",
+  "session": "Session 2",
+  "title": "Variables",
+  "content": {
+    "heading": "Variables — storing and changing information",
+    "body": [
+      { "kind": "p", "text": "A variable is a named container for a value. The program can read it, change it, and use it later. Without variables, every action starts from zero — the program has no memory." },
+      { "kind": "concept", "code": "let count = 0", "desc": "Create a variable named 'count' and store the value 0 inside it" },
+      { "kind": "concept", "code": "count = count + 1", "desc": "Take what is in 'count', add 1, and store the result back" },
+      { "kind": "code", "lines": [
+        "let count = 0;       // count is now 0",
+        "count = count + 1;   // count is now 1",
+        "count = count + 1;   // count is now 2",
+        "count = count * 3;   // count is now 6",
+        "",
+        "let name = 'Alex';",
+        "let message = 'Hello, ' + name;  // 'Hello, Alex'"
+      ]},
+      { "kind": "callout", "variant": "warn", "label": "Key rule", "text": "Reassigning a variable replaces the old value entirely. It does not add a second value alongside the first." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Predict the value",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "On paper first — no editor yet. Work through this line by line: let score = 10 → score = score + 5 → score = score * 2 → score = score - 4",
+        "Write down the value of score after each line.",
+        "Now open the editor. Type each line and use console.log(score) after each one to check your prediction.",
+        "Where did your prediction go wrong, if anywhere? Discuss."
+      ],
+      "hint": "Work left to right. After line 1 score is 10. After line 2 it is 15. Keep going.",
+      "starterCode": "// Step through each line and log the result\n\nlet score = 10;\nconsole.log('After line 1:', score);\n\nscore = score + 5;\nconsole.log('After line 2:', score);\n\n// Continue the pattern below...\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 26,
+          "label": "score ends up as 26 after all four operations"
+        }
+      ]
+    },
+    {
+      "title": "Write three variables",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Open a fresh editor. Write three variables: your name, your age, and your favorite number.",
+        "Write a fourth variable called message that joins all three into a sentence.",
+        "Use console.log(message) to print it.",
+        "Now change your age variable to a different number and run it again."
+      ],
+      "hint": "Join strings and numbers with +. Example: 'I am ' + age + ' years old.'",
+      "starterCode": "// Declare your three variables\n\n\n// Build the message\nlet message = '';\n\nconsole.log(message);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "message",
+          "expected": null,
+          "label": "a variable called 'message' exists"
+        },
+        {
+          "type": "console",
+          "includes": "",
+          "label": "something is logged to the console"
+        }
+      ]
+    }
+  ]
+}

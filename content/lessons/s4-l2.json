@@ -1,0 +1,63 @@
+{
+  "id": "s4-l2",
+  "session": "Session 4",
+  "title": "Loops",
+  "content": {
+    "heading": "Loops — repeat code for every item",
+    "body": [
+      { "kind": "p", "text": "A for loop runs the same block of code repeatedly, counting from a start to an end. A forEach loop runs a function for each item in an array automatically — no counter variable needed." },
+      { "kind": "concept", "code": "for (let i = 0; i < 5; i++)", "desc": "Start at 0, run while i is less than 5, add 1 each time" },
+      { "kind": "concept", "code": "array.forEach(function(item))", "desc": "Run this function once for each item in the array" },
+      { "kind": "code", "lines": [
+        "// for loop",
+        "for (let i = 0; i < 3; i++) {",
+        "    console.log('Step', i);",
+        "}",
+        "// prints: Step 0, Step 1, Step 2",
+        "",
+        "// forEach",
+        "let fruits = ['apple', 'banana', 'cherry'];",
+        "fruits.forEach(function(fruit) {",
+        "    console.log('I like', fruit);",
+        "});"
+      ]},
+      { "kind": "callout", "variant": "info", "label": "Which one to use", "text": "Use a for loop when you need the index number or want to count in a custom way. Use forEach when you just want to do something with each item." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Count with a loop",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Write a for loop that logs every number from 1 to 10.",
+        "Write a for loop that logs only even numbers from 2 to 20.",
+        "Write a for loop that counts backwards from 10 to 1.",
+        "Challenge: write a loop that logs the square of each number from 1 to 5."
+      ],
+      "hint": "For even numbers: i = i + 2 instead of i++. For backwards: start at 10, condition i > 0, use i--.",
+      "starterCode": "// Log 1 to 10\n\n\n// Log even numbers 2 to 20\n\n\n// Count backwards 10 to 1\n\n"
+    },
+    {
+      "title": "Loop over an array",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Create an array of five numbers.",
+        "Use forEach to log each number multiplied by itself.",
+        "Use a for loop to add all numbers together into a total variable.",
+        "Log the total after the loop finishes."
+      ],
+      "hint": "Declare total = 0 before the loop. Inside the loop: total = total + numbers[i].",
+      "starterCode": "let numbers = [3, 7, 2, 9, 4];\n\n// forEach: log each number squared\n\n\n// for loop: sum all numbers\nlet total = 0;\n\n\nconsole.log('Total:', total);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "total",
+          "expected": 25,
+          "label": "total equals 25 (sum of [3,7,2,9,4])"
+        }
+      ]
+    }
+  ]
+}

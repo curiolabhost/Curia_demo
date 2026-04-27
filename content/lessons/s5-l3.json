@@ -1,0 +1,68 @@
+{
+  "id": "s5-l3",
+  "session": "Session 5",
+  "title": "Game Loop",
+  "content": {
+    "heading": "Putting it together — the game loop",
+    "body": [
+      { "kind": "p", "text": "The light-up grid game has four functions that call each other in a cycle. Understanding this cycle is the difference between reading code and understanding it." },
+      { "kind": "table", "headers": ["Function", "What it does", "Calls next"], "rows": [
+        ["startRound()", "Picks cells, lights them up, sets a timer", "turnOff() via setTimeout"],
+        ["turnOff()", "Hides lights, allows player input", "— (waits for player)"],
+        ["handleClick()", "Records player click, checks if done", "checkResult() when enough clicks"],
+        ["checkResult()", "Compares arrays, updates level", "startRound() after delay"]
+      ]},
+      { "kind": "callout", "variant": "info", "label": "This is the full game", "text": "These four functions plus four state variables are the entire game logic. Everything else is presentation." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Write the game loop in isolation",
+      "type": "practice",
+      "duration": "12 min",
+      "tasks": [
+        "Write all four state variables at the top: litCells, playerClicks, isInputAllowed, level.",
+        "Write startRound(): reset playerClicks, set isInputAllowed false, pick 'level' random numbers from 0-8, store in litCells, log them, then after 1500ms log 'Lights off' and set isInputAllowed true.",
+        "Write checkResult(): compare sorted arrays. If match: level++, log 'Correct! Level: ' + level, call startRound after 1000ms. If not: level=2, log 'Wrong.', call startRound after 1500ms.",
+        "Call startRound() once to test the flow in the console.",
+        "This is the full game logic — no DOM required to verify it works."
+      ],
+      "hint": "For picking random numbers without duplicates, use the pickCells pattern from Session 4: start with all indexes, pick and splice one at a time.",
+      "starterCode": "// State variables\nlet litCells = [];\nlet playerClicks = [];\nlet isInputAllowed = false;\nlet level = 2;\n\n// pickCells helper (from Session 4)\nfunction pickCells(n) {\n    let all = [0,1,2,3,4,5,6,7,8];\n    let picked = [];\n    for (let i = 0; i < n; i++) {\n        let pos = Math.floor(Math.random() * all.length);\n        picked.push(all[pos]);\n        all.splice(pos, 1);\n    }\n    return picked;\n}\n\n// Write startRound() below\n\n\n// Write checkResult() below\n\n\n// Start the game\nstartRound();\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "pickCells",
+          "args": [2],
+          "assert": "Array.isArray(result) && result.length === 2",
+          "label": "pickCells(2) returns an array of length 2"
+        },
+        {
+          "type": "variable",
+          "name": "level",
+          "expected": 2,
+          "label": "level starts at 2"
+        }
+      ]
+    },
+    {
+      "title": "Debug the input guard",
+      "type": "debug",
+      "duration": "5 min",
+      "tasks": [
+        "The code below has a bug: clicks register even during the display phase.",
+        "Trace through it and find the single line that is wrong.",
+        "Fix it so clicks are ignored while isInputAllowed is false.",
+        "Confirm by reading the log output — clicks during display phase should log 'Blocked'."
+      ],
+      "hint": "Look at the condition in handleClick. The logic is inverted.",
+      "starterCode": "let isInputAllowed = false;\nlet playerClicks = [];\n\nfunction handleClick(index) {\n    if (isInputAllowed) {\n        console.log('Blocked — input not allowed yet');\n        return;\n    }\n    playerClicks.push(index);\n    console.log('Registered click:', index);\n}\n\n// Simulate display phase (input should be blocked)\nconsole.log('--- Display phase ---');\nhandleClick(3);\nhandleClick(5);\n\n// Enable input\nisInputAllowed = true;\nconsole.log('--- Input phase ---');\nhandleClick(3);\nhandleClick(5);\n"
+    }
+  ],
+  "customize": [
+    "Change the display duration from 1500ms to 2000ms for an easier game.",
+    "Change it to 800ms for a harder game.",
+    "Change the starting level from 2 to 3 so the first round shows 3 cells.",
+    "Add a console.log at the start of each round showing the current level."
+  ]
+}

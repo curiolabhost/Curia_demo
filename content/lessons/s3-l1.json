@@ -1,0 +1,87 @@
+{
+  "id": "s3-l1",
+  "session": "Session 3",
+  "title": "Functions",
+  "content": {
+    "heading": "Functions — write once, use anywhere",
+    "body": [
+      { "kind": "p", "text": "A function is a named, reusable block of code. You define it once and call it by name whenever you need it. Without functions, you copy and paste the same logic everywhere — and when you need to change it, you change it in every place." },
+      { "kind": "concept", "code": "function greet() { ... }", "desc": "Define a block of code named 'greet' — does not run yet" },
+      { "kind": "concept", "code": "greet()", "desc": "Run that block of code right now" },
+      { "kind": "code", "lines": [
+        "function showMessage() {",
+        "    console.log('Hello!');",
+        "    console.log('This runs every time showMessage is called.');",
+        "}",
+        "",
+        "showMessage();  // runs the function",
+        "showMessage();  // runs it again",
+        "",
+        "// Writing showMessage without () does NOT call it",
+        "// The () is what triggers execution"
+      ]},
+      { "kind": "callout", "variant": "warn", "label": "Defining vs calling", "text": "Writing function showMessage() {} only creates the function — it does not run it. Writing showMessage() runs it. The parentheses are what trigger execution." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Define and call",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Write a function called sayHello that logs 'Hello!' to the console.",
+        "Below the function definition, call it three times.",
+        "Write a second function called sayGoodbye that logs 'Goodbye!'.",
+        "Call both functions in alternating order three times each.",
+        "Predict: if you write sayHello without the (), does it run? Try it and read the console output."
+      ],
+      "hint": "A function definition starts with the word 'function'. Calling it uses the function name followed by ().",
+      "starterCode": "// Define sayHello below\n\n\n// Call it three times\n\n\n// Define sayGoodbye below\n\n\n// Call both in alternating order\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "sayHello",
+          "args": [],
+          "assert": "result === undefined",
+          "label": "sayHello() exists and can be called"
+        },
+        {
+          "type": "call",
+          "fn": "sayGoodbye",
+          "args": [],
+          "assert": "result === undefined",
+          "label": "sayGoodbye() exists and can be called"
+        }
+      ]
+    },
+    {
+      "title": "Functions with parameters",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Write a function called double that takes a number and logs that number multiplied by 2.",
+        "Call it with five different numbers.",
+        "Write a function called describe that takes a name and a color, logs: '[name] likes [color].'",
+        "Challenge: write a function called add that takes two numbers and returns (not logs) their sum. Store the result and log it."
+      ],
+      "hint": "A parameter is declared inside the parentheses: function double(num) { }. Use num inside the function body.",
+      "starterCode": "// Write the double function\n\n\n// Write the describe function\n\n\n// Call both with different inputs\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "double",
+          "args": [5],
+          "assert": "result === 10",
+          "label": "double(5) returns 10"
+        },
+        {
+          "type": "call",
+          "fn": "double",
+          "args": [3],
+          "assert": "result === 6",
+          "label": "double(3) returns 6"
+        }
+      ]
+    }
+  ]
+}

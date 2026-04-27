@@ -1,0 +1,65 @@
+{
+  "id": "s2-l2",
+  "session": "Session 2",
+  "title": "Event Listeners",
+  "content": {
+    "heading": "Event Listeners — responding to user actions",
+    "body": [
+      { "kind": "p", "text": "An event listener watches an element and runs a function when something happens — a click, a keypress, a mouse movement. You tell the browser what to watch and what to do when it happens." },
+      { "kind": "concept", "code": "addEventListener('click', fn)", "desc": "Watch this element — when it is clicked, run this function" },
+      { "kind": "code", "lines": [
+        "let button = document.getElementById('myButton');",
+        "",
+        "button.addEventListener('click', function() {",
+        "    console.log('The button was clicked!');",
+        "});",
+        "",
+        "// The function does NOT run immediately",
+        "// It runs later, each time the button is clicked"
+      ]},
+      { "kind": "callout", "variant": "warn", "label": "Important", "text": "The function inside addEventListener does not run right away. It runs later, when the event fires. This is different from most code, which runs top to bottom immediately." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Event listener in isolation",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Declare a variable called clickCount set to 0.",
+        "Add a click listener to the document: document.addEventListener('click', function() { ... })",
+        "Inside the listener: increment clickCount, then log 'Clicks: ' + clickCount.",
+        "Run the code, then click anywhere in the output area. Watch the console.",
+        "Challenge: also log the current time using new Date().toLocaleTimeString()."
+      ],
+      "hint": "document.addEventListener listens for clicks anywhere on the page — you do not need a specific button element.",
+      "starterCode": "// Add a click listener to the document\n// Log the click count each time\n\nlet clickCount = 0;\n\n// Your listener here...\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "clickCount",
+          "expected": null,
+          "label": "a variable called 'clickCount' exists"
+        },
+        {
+          "type": "console",
+          "includes": "Clicks",
+          "label": "console output includes the word 'Clicks'"
+        }
+      ]
+    },
+    {
+      "title": "Predict the listener",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Read the starter code without running it. How many times will 'clicked!' be logged if you click the document 3 times?",
+        "Write your prediction, then run and click 3 times to check.",
+        "Now add a second addEventListener call to the same document for the same 'click' event.",
+        "Predict: does adding a second listener replace the first, or do both fire? Test it."
+      ],
+      "hint": "Adding a second event listener does not replace the first — both run independently.",
+      "starterCode": "let count = 0;\n\ndocument.addEventListener('click', function() {\n    count = count + 1;\n    console.log('clicked! count is now:', count);\n});\n\n// Add a second listener below and predict what happens\n"
+    }
+  ]
+}

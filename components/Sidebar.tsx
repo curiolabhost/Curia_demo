@@ -1,177 +1,41 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import type { Lesson } from '@/lib/lessons'
 import { LessonContent } from './LessonContent'
 
 type SidebarProps = {
-  lessons: Lesson[]
-  activeLessonId: string
-  completedIds?: string[]
+  lesson?: Lesson
 }
 
-const COLLAPSE_KEY_PREFIX = 'codelab__collapsed__'
 const FADE_MS = 150
 
-function readCollapsed(session: string): boolean {
-  if (typeof window === 'undefined') return false
-  return window.localStorage.getItem(`${COLLAPSE_KEY_PREFIX}${session}`) === '1'
-}
-
-function writeCollapsed(session: string, collapsed: boolean) {
-  if (typeof window === 'undefined') return
-  const key = `${COLLAPSE_KEY_PREFIX}${session}`
-  if (collapsed) {
-    window.localStorage.setItem(key, '1')
-  } else {
-    window.localStorage.removeItem(key)
-  }
-}
-
-export function Sidebar({
-  lessons,
-  activeLessonId,
-  completedIds = [],
-}: SidebarProps) {
-  const router = useRouter()
-  const completed = new Set(completedIds)
-  const activeLesson = lessons.find((l) => l.id === activeLessonId)
-  const activeItemRef = useRef<HTMLDivElement | null>(null)
-
-  const [renderedLessonId, setRenderedLessonId] = useState(activeLessonId)
+export function Sidebar({ lesson }: SidebarProps) {
+  const [renderedLesson, setRenderedLesson] = useState<Lesson | undefined>(lesson)
   const [contentFading, setContentFading] = useState(false)
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const renderedLesson = lessons.find((l) => l.id === renderedLessonId)
-
-  const groups: { session: string; items: Lesson[] }[] = []
-  for (const lesson of lessons) {
-    const last = groups[groups.length - 1]
-    if (last && last.session === lesson.session) {
-      last.items.push(lesson)
-    } else {
-      groups.push({ session: lesson.session, items: [lesson] })
-    }
-  }
-
-  const activeSession = activeLesson?.session ?? ''
-
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
-
   useEffect(() => {
-    const initial: Record<string, boolean> = {}
-    for (const g of groups) {
-      initial[g.session] = readCollapsed(g.session)
-    }
-    setCollapsed(initial)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Always force-expand the session containing the active lesson
-  useEffect(() => {
-    if (!activeSession) return
-    setCollapsed((prev) => {
-      if (!prev[activeSession]) return prev
-      writeCollapsed(activeSession, false)
-      return { ...prev, [activeSession]: false }
-    })
-  }, [activeSession])
-
-  // Cross-fade lesson content
-  useEffect(() => {
-    if (activeLessonId === renderedLessonId) return
+    if (lesson?.id === renderedLesson?.id) return
     setContentFading(true)
     if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current)
     fadeTimerRef.current = setTimeout(() => {
-      setRenderedLessonId(activeLessonId)
+      setRenderedLesson(lesson)
       setContentFading(false)
     }, FADE_MS)
     return () => {
       if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current)
     }
-  }, [activeLessonId, renderedLessonId])
-
-  useEffect(() => {
-    activeItemRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-    })
-  }, [activeLessonId])
-
-  const toggleCollapse = (session: string) => {
-    if (session === activeSession) return
-    setCollapsed((prev) => {
-      const next = !prev[session]
-      writeCollapsed(session, next)
-      return { ...prev, [session]: next }
-    })
-  }
+  }, [lesson, renderedLesson?.id])
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-nav">
-        {groups.map((group, gi) => {
-          const isCollapsed = !!collapsed[group.session]
-          return (
-            <div
-              key={group.session}
-              className="session-group"
-              style={gi === 0 ? undefined : { marginTop: 8 }}
-            >
-              <div
-                className="session-group-label"
-                onClick={() => toggleCollapse(group.session)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    toggleCollapse(group.session)
-                  }
-                }}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-              >
-                <span className="session-group-arrow">
-                  {isCollapsed ? '▸' : '▾'}
-                </span>
-                {group.session.toUpperCase()}
-              </div>
-              {!isCollapsed &&
-                group.items.map((lesson, idx) => {
-                  const step = String(idx + 1).padStart(2, '0')
-                  const isActive = lesson.id === activeLessonId
-                  const isDone = completed.has(lesson.id)
-                  const classes = [
-                    'nav-item',
-                    isActive ? 'active' : '',
-                    isDone ? 'done' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
-                  return (
-                    <div
-                      key={lesson.id}
-                      ref={isActive ? activeItemRef : null}
-                      className={classes}
-                      onClick={() => router.push(`/learn/${lesson.id}`)}
-                    >
-                      <span className="nav-step">{step}</span>
-                      <span className="nav-title">{lesson.title}</span>
-                      <span className="nav-check">✓</span>
-                    </div>
-                  )
-                })}
-            </div>
-          )
-        })}
-      </div>
       <div className={`sidebar-content${contentFading ? ' fading' : ''}`}>
         {renderedLesson ? (
           <LessonContent lesson={renderedLesson} />
         ) : (
           <div className="empty-state-block">
-            Select a lesson from the sidebar to begin.
+            Select a lesson from the nav to begin.
           </div>
         )}
       </div>

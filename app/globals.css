@@ -86,6 +86,8 @@ body {
 /* ---------- Top bar ---------- */
 
 .topbar {
+  position: relative;
+  z-index: 210;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -94,6 +96,28 @@ body {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.topbar-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.topbar-menu:hover {
+  background: var(--surface2);
+}
+.topbar-menu-line {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--text3);
+  margin: 3px 0;
 }
 
 .logo {
@@ -124,19 +148,13 @@ body {
 /* ---------- Sidebar ---------- */
 
 .sidebar {
-  display: grid;
-  grid-template-rows: 200px 1fr;
+  display: flex;
+  flex-direction: column;
   background: var(--surface);
   border-right: 1px solid var(--border);
   overflow: hidden;
   min-height: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.sidebar-nav {
-  overflow-y: auto;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border);
 }
 
 .session-group-label {
@@ -145,7 +163,7 @@ body {
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  padding: 8px 16px;
+  padding: 8px 16px 4px;
 }
 
 .nav-item {
@@ -188,10 +206,81 @@ body {
 }
 
 .sidebar-content {
+  flex: 1;
   overflow-y: auto;
   color: var(--text3);
   font-size: 14px;
   padding: 24px;
+  min-height: 0;
+}
+
+/* ---------- Nav overlay ---------- */
+
+.nav-overlay {
+  position: fixed;
+  left: 0;
+  top: 48px;
+  bottom: 0;
+  width: 280px;
+  z-index: 150;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.10);
+  overflow-y: auto;
+  padding: 12px 0;
+  transform: translateX(-100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-overlay.open {
+  transform: translateX(0);
+}
+
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  background: rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(1px);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.nav-backdrop.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.nav-edge-toggle {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  width: 20px;
+  height: 64px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  padding: 0;
+}
+.nav-edge-toggle:hover {
+  background: var(--surface2);
+}
+.nav-edge-toggle:hover .nav-edge-toggle-icon {
+  color: var(--text);
+}
+.nav-edge-toggle-icon {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 /* ---------- Exercise prompt ---------- */

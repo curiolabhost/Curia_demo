@@ -1,0 +1,77 @@
+{
+  "id": "s2-l0",
+  "session": "Session 2",
+  "title": "Building Foundations",
+  "content": {
+    "heading": "First, before anything...",
+    "body": [
+      { "kind": "p", "text": "These are some important concepts to learn in order to begin learning JavaScript." },
+
+
+      { "kind": "concept", "code": "let count = 1", "desc": "When defining a variable, you use the 'let' keyword followed by the variable name and an initial value" },
+      { "kind": "concept", "code": "console.log(count)", "desc": "Print whatever is inside 'count' so you can see it. This is your proof that the code worked — use it after every line when you're learning." },
+      
+      { "kind": "code", "lines": [
+        "let count = 5;",
+        "",
+        "console.log(count);",
+        "",
+        "// This will print 5 to the console",
+        "// Remember to add ';' at the end of each line!"
+      
+      ]},
+    { "kind": "callout", "variant": "info", "label": "Cove says:", "text": "console.log shows you what's happening inside your code. Professional developers use it every single day. When something breaks, the first thing you do is console.log everything." }    ]
+  },
+  "exercises": [
+    {
+      "title": "Declare 3 variables",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Declare variable 1 called age set to your age.",
+        "Declare variable 2 called pets set to the number of pets you have.",
+        "Declare variable 3 called books set to the number of books you have."
+      ],
+      "hint": "Don't forget to use 'let' and end each line with ';'",
+      "starterCode": "// Variable 1 = age\nlet age = 0;\n\n// Variable 2 = pets\nlet pets = 0;\n\n// Variable 3 = books\nlet books = 0;\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "age",
+          "expected": null,
+          "label": "a variable called 'age' exists"
+        },
+        {
+          "type": "variable",
+          "name": "pets",
+          "expected": null,
+          "label": "a variable called 'pets' exists"
+        },
+        {
+          "type": "variable",
+          "name": "books",
+          "expected": null,
+          "label": "a variable called 'books' exists"
+        }
+      ]
+    },
+    {
+      "title": "Display your saved information",
+      "type": "practice",
+      "carryFrom": 0,
+      "duration": "5 min",
+      "tasks": [
+        "For each variable, use console.log with a label, like this: console.log(\"age:\", age)",
+        "Do the same for pets and books.",
+        "Run the code and check the console — you should see all 3 values printed."
+      ],
+      "hint": "The label goes inside quotes, then a comma, then the variable name — no quotes on the variable.",
+      "starterCode": "// Variable 1\nlet age = 0;\nconsole.log(\"age:\", age);\n\n// Variable 2\nlet pets = 0;\n\n// Variable 3\nlet books = 0;",
+      "checks": [
+        { "type": "console", "includes": "age:", "label": "logged age to the console" },
+        { "type": "console", "includes": "pets:", "label": "logged pets to the console" },
+        { "type": "console", "includes": "books:", "label": "logged books to the console" }
+      ]
+    }
+  ]
+}

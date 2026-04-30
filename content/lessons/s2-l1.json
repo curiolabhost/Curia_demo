@@ -2,25 +2,28 @@
   "id": "s2-l1",
   "session": "Session 2",
   "title": "Variables",
-  "content": {
+  "content": { 
     "heading": "Variables — storing and changing information",
     "body": [
       { "kind": "p", "text": "A variable is a named container for a value. The program can read it, change it, and use it later. Without variables, every action starts from zero — the program has no memory." },
       { "kind": "concept", "code": "let count = 0", "desc": "Create a variable named 'count' and store the value 0 inside it" },
       { "kind": "concept", "code": "count = count + 1", "desc": "Take what is in 'count', add 1, and store the result back" },
+            { "kind": "callout", "variant": "warn", "label": "Key rule", "text": "Reassigning a variable replaces the old value entirely. It does not add a second value alongside the first." },
+      { "kind": "concept", "code": "let name = 'Alex'", "desc": "A string is text. Any time you want a variable to hold words instead of numbers, you wrap the value in quotes." },
+
       { "kind": "code", "lines": [
+        " // Creating variables. The first time you use a name, you need 'let' to declare it.",
         "let count = 0;       // count is now 0",
         "count = count + 1;   // count is now 1",
         "count = count + 1;   // count is now 2",
         "count = count * 3;   // count is now 6",
         "",
+        " // Variables can hold strings too",
         "let name = 'Alex';",
         "let message = 'Hello, ' + name;  // 'Hello, Alex'"
-      ]},
-      { "kind": "callout", "variant": "warn", "label": "Key rule", "text": "Reassigning a variable replaces the old value entirely. It does not add a second value alongside the first." }
-    ]
-  },
-  "exercises": [
+      ]}
+    ] },
+  "exercises": [ 
     {
       "title": "Predict the value",
       "type": "predict",
@@ -67,6 +70,50 @@
           "label": "something is logged to the console"
         }
       ]
+    }
+   ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "Why is the total always 0?",
+      "description": "This code should add price to total, but total always prints 0. Find and fix the bug.",
+      "buggyCode": "let total = 0;\nlet price = 12;\nTotal = Total + price;\nconsole.log(total);",
+      "starterCode": "let total = 0;\nlet price = 12;\nTotal = Total + price;\nconsole.log(total);",
+      "hint": "JavaScript is case-sensitive. Is the variable name spelled exactly the same every time?",
+      "checks": [
+        { "type": "variable", "name": "total", "expected": 12, "label": "total equals 12" }
+      ],
+      "explanation": "JavaScript treats 'total' and 'Total' as two completely different names. Line 3 creates a brand new variable called Total and never touches the original total — so total stays 0. Fix: change Total to total on line 3."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The message prints 'Hello undefined' — why?",
+      "description": "Sam should be greeted by name, but something is undefined. Find and fix it.",
+      "buggyCode": "let firstName = 'Sam';\nlet greeting = 'Hello ' + firstname;\nconsole.log(greeting);",
+      "starterCode": "let firstName = 'Sam';\nlet greeting = 'Hello ' + firstname;\nconsole.log(greeting);",
+      "hint": "Look very carefully at how firstName is spelled on line 1 vs line 2.",
+      "checks": [
+        { "type": "console", "includes": "Hello Sam", "label": "prints 'Hello Sam'" }
+      ],
+      "explanation": "The variable was declared as firstName (capital N) but used as firstname (lowercase). JavaScript can't find 'firstname', so it uses undefined instead. Fix: change firstname to firstName on line 2."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "Score should be 30, but it prints 15",
+      "description": "Something is wrong with how score is being set up. The final answer should be 30.",
+      "buggyCode": "let score = 10;\nlet score = 5;\nscore = score * 3;\nconsole.log(score);",
+      "starterCode": "let score = 10;\nlet score = 5;\nscore = score * 3;\nconsole.log(score);",
+      "hint": "Think about what 'let' does. You only need it once per variable.",
+      "checks": [
+        { "type": "variable", "name": "score", "expected": 15, "label": "score equals 15" }
+      ],
+      "explanation": "Using 'let' twice on the same variable is an error. 'let' means create new — but score already exists. Line 2 should just be: score = 5; (no let). The rule: use let once, the first time. After that, just use the name."
     }
   ]
 }

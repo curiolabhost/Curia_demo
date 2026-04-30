@@ -809,6 +809,61 @@ body {
   text-align: center;
 }
 
+/* ---------- Mode tab bar ---------- */
+
+.mode-tab-bar {
+  display: flex;
+  align-items: stretch;
+  height: 36px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 8px;
+}
+.mode-tab {
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  margin-bottom: -1px;
+  background: none;
+  cursor: pointer;
+}
+.mode-tab:hover {
+  color: var(--text2);
+}
+.mode-tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+.mode-tab:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ---------- Challenge prompt ---------- */
+
+.challenge-description {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+.challenge-explanation {
+  margin-top: 10px;
+  background: var(--green-dim);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--green);
+}
+
 /* ---------- Inline code in lesson content ---------- */
 
 .inline-code {

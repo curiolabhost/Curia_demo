@@ -1,3 +1,4 @@
+import s2l0 from '@/content/lessons/s2-l0.json'
 import s2l1 from '@/content/lessons/s2-l1.json'
 import s2l2 from '@/content/lessons/s2-l2.json'
 import s2l3 from '@/content/lessons/s2-l3.json'
@@ -30,7 +31,21 @@ export type Exercise = {
   tasks: string[]
   hint?: string
   starterCode: string
+  carryFrom?: number
   checks?: Check[]
+}
+
+export type Challenge = {
+  id: string
+  level: number
+  difficulty: 'easy' | 'medium' | 'tricky'
+  title: string
+  description: string
+  buggyCode: string
+  starterCode: string
+  hint?: string
+  checks?: Check[]
+  explanation: string
 }
 
 export type Lesson = {
@@ -42,11 +57,12 @@ export type Lesson = {
     body: ContentBlock[]
   }
   exercises: Exercise[]
+  challenges?: Challenge[]
   customize?: string[]
 }
 
 const lessons: Lesson[] = [
-  s2l1, s2l2, s2l3,
+  s2l0, s2l1, s2l2, s2l3,
   s3l1, s3l2, s3l3,
   s4l1, s4l2, s4l3,
   s5l1, s5l2, s5l3,

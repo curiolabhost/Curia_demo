@@ -182,9 +182,7 @@ function buildSrcDoc(code: string, checks: Check[]): string {
   });
 
   try {
-${code}
-;
-${captureCode}
+    eval(${JSON.stringify(code + '\n;\n' + captureCode)});
   } catch(e) {
     var __msg = (e && e.name && e.message) ? (e.name + ': ' + e.message) : String(e);
     window.parent.postMessage({ type: 'error', args: [__msg] }, '*');

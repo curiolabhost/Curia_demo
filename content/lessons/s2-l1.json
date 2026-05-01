@@ -4,118 +4,335 @@
   "title": "Variables",
   "content": [
     {
-      "heading": "Variables — storing and changing information",
+      "heading": "What is a variable?",
       "blocks": [
-        { "kind": "p", "text": "A variable is a named box that holds a value. You can read what's inside it, change it, and use it later. Without variables, a program forgets everything the moment it runs — it has no memory." },
+        {
+          "kind": "p",
+          "text": "Imagine your brain while playing a video game. You're keeping track of your score, how many lives you have left, and your character's name — all at the same time. A variable is how a program does the same thing. It's a named container that holds a piece of information so the program can remember it and use it later."
+        },
         {
           "kind": "image",
           "src": "/assets/lessons/s2-l1/variable-box.svg",
           "alt": "A box labeled 'score' containing the value 0, showing a variable as a named container",
           "caption": "A variable is just a named container — the name stays the same, the value inside can change."
+        },
+        {
+          "kind": "p",
+          "text": "Without variables, every time your program runs it forgets everything — the score resets, the name disappears, the progress is gone. Variables give your program memory."
         }
       ]
     },
     {
-      "heading": "Declaring and changing values",
+      "heading": "Creating your first variable",
       "blocks": [
-        { "kind": "concept", "code": "let score = 0", "desc": "Create a box called 'score' and put 0 inside it" },
-        { "kind": "concept", "code": "score = score + 1", "desc": "Open the box, take the number out, add 1 to it, put the result back in" },
+        {
+          "kind": "p",
+          "text": "To create a variable in JavaScript you use the word 'let', followed by the name you want to give it, then an equals sign, then the value you want to store. Every part has a job."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l1/variable-anatomy.svg",
+          "alt": "The line 'let score = 0' broken into three labeled parts: the keyword let in purple, the name score in blue, and the value 0 in green. A second example shows let playerName = 'Jordan' with the string highlighted in amber.",
+          "caption": "Every variable declaration has three parts: the keyword, the name, and the value."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "The word 'let'",
+          "text": "You only use 'let' the very first time you create a variable. It tells JavaScript: make a new container with this name. After that, you just use the name by itself."
+        }
+      ]
+    },
+    {
+      "heading": "Syntax — the spelling rules of JavaScript",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "Every language has rules. JavaScript has syntax — specific rules about how code must be written. Break them and JavaScript refuses to run. There are only five rules to know right now."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l1/variable-syntax.svg",
+          "alt": "Five syntax rules shown as annotated code examples: semicolons at line ends, case-sensitive names, quotes around text, no spaces in names, and let used only once per variable. An error tip box lists the three most common mistakes.",
+          "caption": "When you see an error, check these five rules first — one of them is almost always the cause."
+        }
+      ]
+    },
+    {
+      "heading": "Changing a variable's value",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "Once a variable exists you can put a new value into it at any time. You don't use 'let' again — just write the name, equals sign, and the new value. The old value is gone."
+        },
+        {
+          "kind": "concept",
+          "code": "score = 10",
+          "desc": "No 'let' this time — score already exists. This just replaces whatever was inside with 10."
+        },
         {
           "kind": "image",
           "src": "/assets/lessons/s2-l1/variable-reassign.svg",
           "alt": "Two boxes showing score changing from 0 to 10, with an arrow between them",
           "caption": "Reassigning a variable replaces the old value completely — it doesn't keep both."
         },
-        { "kind": "callout", "variant": "warn", "label": "Key rule", "text": "When you reassign a variable, the old value is completely gone. The box only ever holds one thing at a time." }
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "The old value is gone",
+          "text": "The box only ever holds one thing at a time. When you put a new value in, the old one disappears completely — JavaScript does not keep a history."
+        }
       ]
     },
     {
-      "heading": "Strings and good names",
+      "heading": "Updating a variable using itself",
       "blocks": [
-        { "kind": "concept", "code": "let name = 'Jordan'", "desc": "Variables can hold words too — wrap text in quotes to make a string" },
+        {
+          "kind": "p",
+          "text": "One of the most common things you'll do is update a variable based on its own current value — like adding points to a score, or subtracting a life. This looks a little strange at first but makes total sense once you read it the right way."
+        },
+        {
+          "kind": "concept",
+          "code": "score = score + 1",
+          "desc": "Read the right side first: take what's in score, add 1 to it. Then store the result back into score. The right side always runs before the left side stores it."
+        },
+        {
+          "kind": "code",
+          "lines": [
+            "let score = 0;        // score is 0",
+            "score = score + 5;    // take 0, add 5 → score is now 5",
+            "score = score * 2;    // take 5, multiply by 2 → score is now 10",
+            "score = score - 3;    // take 10, subtract 3 → score is now 7",
+            "console.log(score);   // prints: 7"
+          ]
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "Read the right side first",
+          "text": "score = score + 5 means: calculate score + 5 first, then store the answer back into score. The equals sign here means 'store this result', not 'these two things are equal'."
+        }
+      ]
+    },
+    {
+      "heading": "Naming your variables well",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "You can technically name a variable anything — x, z, blah. JavaScript won't stop you. But in a week you'll open your code and have no idea what 'x' means. Good variable names make code readable — to you, and to anyone else who reads it."
+        },
         {
           "kind": "image",
           "src": "/assets/lessons/s2-l1/variable-naming.svg",
           "alt": "Side by side comparison of good variable names like playerScore versus bad names like x",
           "caption": "Good variable names make your code readable. Bad ones make it a mystery — even to you."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "camelCase",
+          "text": "When a variable name has multiple words, JavaScript developers smash them together and capitalize each new word: playerScore, firstName, isGameOver. This is called camelCase — the capital letters look like camel humps."
         }
       ]
     },
     {
+      "heading": "A program with multiple variables",
       "blocks": [
-        { "kind": "code", "lines": [
-          "// Numbers",
-          "let score = 0;        // score is 0",
-          "score = score + 5;    // score is now 5",
-          "score = score * 2;    // score is now 10",
-          "score = score - 3;    // score is now 7",
-          "console.log(score);   // prints 7",
-          "",
-          "// Text (called strings)",
-          "let name = 'Jordan';",
-          "let greeting = 'Hello, ' + name;",
-          "console.log(greeting);  // prints: Hello, Jordan"
-        ]},
+        {
+          "kind": "p",
+          "text": "A real program doesn't just have one variable — it has many, all alive at the same time. Each one is its own container with its own name and value. They don't interfere with each other."
+        },
         {
           "kind": "image",
           "src": "/assets/lessons/s2-l1/variable-memory.svg",
           "alt": "Four variable boxes labeled score, name, lives, and isWinning sitting side by side",
           "caption": "A real program keeps many variables alive at the same time — each in its own container."
+        },
+        {
+          "kind": "code",
+          "lines": [
+            "let playerName = 'Jordan';",
+            "let score = 0;",
+            "let lives = 3;",
+            "",
+            "console.log(playerName);  // Jordan",
+            "console.log(score);       // 0",
+            "console.log(lives);       // 3",
+            "",
+            "score = score + 10;       // only score changes",
+            "console.log(score);       // 10  — playerName and lives unchanged"
+          ]
         }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Predict the value",
-      "type": "predict",
-      "duration": "6 min",
+      "title": "Run your first variable",
+      "type": "practice",
+      "duration": "3 min",
       "tasks": [
-        "Don't open the editor yet. Work through this on paper, one line at a time:",
-        "let score = 10   →   score = score + 5   →   score = score * 2   →   score = score - 4",
-        "Write down what score is after EACH line.",
-        "Now open the editor and type each line. Use console.log(score) after each one to check.",
-        "Where were you wrong, if anywhere?"
+        "The code is already written — just hit Run and look at the console.",
+        "See the number 0 printed? That came from the variable score.",
+        "Now change 0 to your age on line 1. Hit Run again.",
+        "You should see your age printed instead. That's it — you just used a variable!"
       ],
-      "hint": "After line 1: score is 10. After line 2: score is 15. Keep going the same way.",
-      "starterCode": "let score = 10;\nconsole.log('After line 1:', score);\n\nscore = score + 5;\nconsole.log('After line 2:', score);\n\nscore = score * 2;\nconsole.log('After line 3:', score);\n\nscore = score - 4;\nconsole.log('After line 4:', score);\n",
+      "hint": "Just change the number after the = sign on line 1. Don't change anything else.",
+      "starterCode": "let score = 0;\n\nconsole.log(score);\n",
       "checks": [
-        { "type": "variable", "name": "score", "expected": 26, "label": "score ends up as 26 after all four operations" }
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": null,
+          "label": "a variable called 'score' exists"
+        },
+        {
+          "type": "console",
+          "includes": "",
+          "label": "something is printed to the console"
+        }
       ]
     },
     {
-      "title": "Build your profile",
+      "title": "Fill in your info",
       "type": "practice",
-      "duration": "6 min",
+      "duration": "4 min",
       "tasks": [
-        "Declare 3 variables: your first name, your age, and your favorite number.",
-        "Declare a 4th variable called bio that joins them all into one sentence.",
-        "Example: 'My name is Alex. I am 13 years old. My lucky number is 7.'",
-        "console.log your bio.",
-        "Now change your age to a different number and run it again. The sentence should update automatically."
+        "Three variables are already set up. Right now they have placeholder values.",
+        "Replace 'YOUR NAME' with your actual name (keep the quotes).",
+        "Replace 0 for age with your real age.",
+        "Replace 'YOUR CITY' with where you live (keep the quotes).",
+        "Hit Run — you should see your own info printed in the console!"
       ],
-      "hint": "Join strings and numbers with +. Example: 'I am ' + age + ' years old.'",
-      "starterCode": "// Your three variables\nlet firstName = '';\nlet age = 0;\nlet favoriteNumber = 0;\n\n// Build your bio sentence\nlet bio = '';\n\nconsole.log(bio);\n",
+      "hint": "Keep the quotes around text values. Only the number (age) doesn't need quotes.",
+      "starterCode": "let name = 'YOUR NAME';\nlet age = 0;\nlet city = 'YOUR CITY';\n\nconsole.log(name);\nconsole.log(age);\nconsole.log(city);\n",
       "checks": [
-        { "type": "variable", "name": "bio", "expected": null, "label": "a variable called 'bio' exists" },
-        { "type": "console", "includes": "", "label": "something is logged to the console" }
+        {
+          "type": "variable",
+          "name": "name",
+          "expected": null,
+          "label": "a variable called 'name' exists"
+        },
+        {
+          "type": "variable",
+          "name": "age",
+          "expected": null,
+          "label": "a variable called 'age' exists"
+        },
+        {
+          "type": "variable",
+          "name": "city",
+          "expected": null,
+          "label": "a variable called 'city' exists"
+        }
       ]
     },
     {
-      "title": "Score tracker",
+      "title": "Change the value",
+      "type": "practice",
+      "duration": "4 min",
+      "tasks": [
+        "Score starts at 10. You'll see it printed first.",
+        "Your job: write one line between the two console.logs that changes score to 99.",
+        "No 'let' this time — score already exists. Just write: score = 99;",
+        "Hit Run. You should see 10 first, then 99. The variable changed!"
+      ],
+      "hint": "Just write score = 99; on the empty line. No 'let' — that's only for brand new variables.",
+      "starterCode": "let score = 10;\nconsole.log('Before:', score);\n\n// Change score to 99 here\n\n\nconsole.log('After:', score);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 99,
+          "label": "score was changed to 99"
+        },
+        {
+          "type": "console",
+          "includes": "99",
+          "label": "99 is printed to the console"
+        }
+      ]
+    },
+    {
+      "title": "Cookie math",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "You start with 12 cookies. Each step below changes how many you have.",
+        "Step 1 is already done — you ate 4 cookies.",
+        "Write Step 2: you found 6 more cookies. Add 6 to cookies.",
+        "Write Step 3: you shared them equally with a friend. Divide cookies by 2.",
+        "Hit Run and watch the console — you should see the count change after each step."
+      ],
+      "hint": "To add 6: cookies = cookies + 6;   To divide by 2: cookies = cookies / 2;",
+      "starterCode": "let cookies = 12;\nconsole.log('Start:', cookies);\n\n// Step 1 — already done for you\ncookies = cookies - 4;\nconsole.log('After eating 4:', cookies);\n\n// Step 2 — you found 6 more cookies\n\nconsole.log('After finding more:', cookies);\n\n// Step 3 — split with a friend\n\nconsole.log('After sharing:', cookies);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "cookies",
+          "expected": 7,
+          "label": "cookies ends at 7 after all three steps"
+        }
+      ]
+    },
+    {
+      "title": "Write your own variable",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "This time the editor is mostly empty — you'll write it yourself.",
+        "Declare a variable called favoriteNumber and set it to any number you like.",
+        "On the next line, log it: console.log(favoriteNumber);",
+        "Run it. See your number appear in the console.",
+        "Bonus: add a second variable called doubled and set it to favoriteNumber * 2. Log that too."
+      ],
+      "hint": "Start with: let favoriteNumber = 7;   Then: console.log(favoriteNumber);",
+      "starterCode": "// Declare your variable here\n\n\n// Log it here\n\n\n// Bonus: declare doubled and log it\n\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "favoriteNumber",
+          "expected": null,
+          "label": "a variable called 'favoriteNumber' exists"
+        },
+        {
+          "type": "console",
+          "includes": "",
+          "label": "something is printed to the console"
+        }
+      ]
+    },
+    {
+      "title": "Build a profile card",
       "type": "practice",
       "duration": "6 min",
       "tasks": [
-        "Declare a variable called points and set it to 0.",
-        "Add 100 points. Then double the points. Then subtract 50.",
-        "After each change, log: 'Points: ' + points",
-        "At the end, declare a variable called bonus and set it to 25.",
-        "Add bonus to points and log the final result."
+        "Declare 3 variables from scratch: your name, your age, and your favorite thing.",
+        "Then build a sentence that uses all three and log it.",
+        "Example output: 'Hi! I am Alex, I am 13 years old, and I love skateboarding.'",
+        "Use + to join everything together into one sentence.",
+        "Run it and make sure your sentence appears in the console."
       ],
-      "hint": "points = points + 100 adds 100. points = points * 2 doubles it.",
-      "starterCode": "let points = 0;\nconsole.log('Points:', points);\n\n// Add 100 points\n\n// Double the points\n\n// Subtract 50\n\n// Declare bonus = 25 and add it to points\n\nconsole.log('Final score:', points);\n",
+      "hint": "Example: let sentence = 'Hi! I am ' + name + ', I am ' + age + ' years old, and I love ' + favoriteThing + '.'",
+      "starterCode": "// Your three variables\n\n\n\n// Build your sentence and log it\n\n\n",
       "checks": [
-        { "type": "variable", "name": "points", "expected": 175, "label": "points ends at 175 after all operations" }
+        {
+          "type": "variable",
+          "name": "name",
+          "expected": null,
+          "label": "a variable called 'name' exists"
+        },
+        {
+          "type": "variable",
+          "name": "age",
+          "expected": null,
+          "label": "a variable called 'age' exists"
+        },
+        {
+          "type": "console",
+          "includes": "",
+          "label": "a sentence is printed to the console"
+        }
       ]
     }
   ],

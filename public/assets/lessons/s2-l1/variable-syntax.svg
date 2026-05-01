@@ -1,0 +1,48 @@
+<svg width="100%" viewBox="0 0 680 420" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Five JavaScript syntax rules</title>
+<desc>Each rule shown as a code example with a callout pill placed below the code, not overlapping it. Includes an error tip box and a bottom reminder bar.</desc>
+
+<rect x="30" y="24" width="300" height="96" rx="6" fill="#F1F3F8" stroke="#E2E6F0" stroke-width="0.5"/>
+<text x="46" y="48" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">let score = 0<tspan fill="#DC2626" font-weight="700">;</tspan></text>
+<text x="46" y="68" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">score = score + 1<tspan fill="#DC2626" font-weight="700">;</tspan></text>
+<rect x="46" y="78" width="128" height="20" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="0.5"/>
+<text x="110" y="92" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#A32D2D">end each line with ;</text>
+<text x="46" y="113" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#8B91A8">Rule 1 — end every line with a semicolon</text>
+
+<rect x="350" y="24" width="300" height="96" rx="6" fill="#F1F3F8" stroke="#E2E6F0" stroke-width="0.5"/>
+<text x="366" y="48" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">let <tspan fill="#185FA5">score</tspan> = 10;</text>
+<text x="366" y="68" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E"><tspan fill="#DC2626">Score</tspan> = 20;  <tspan fill="#8B91A8" font-size="12">different!</tspan></text>
+<rect x="366" y="78" width="146" height="20" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="0.5"/>
+<text x="439" y="92" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#A32D2D">capital letters matter</text>
+<text x="366" y="113" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#8B91A8">Rule 2 — names are case-sensitive</text>
+
+<rect x="30" y="136" width="300" height="96" rx="6" fill="#F1F3F8" stroke="#E2E6F0" stroke-width="0.5"/>
+<text x="46" y="160" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">let name = <tspan fill="#854F0B">'Alex'</tspan>;  <tspan fill="#059669">ok</tspan></text>
+<text x="46" y="180" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">let name = <tspan fill="#DC2626">Alex</tspan>;    <tspan fill="#DC2626">error</tspan></text>
+<rect x="46" y="190" width="120" height="20" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="0.5"/>
+<text x="106" y="204" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#A32D2D">text needs quotes</text>
+<text x="46" y="225" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#8B91A8">Rule 3 — wrap text values in quotes</text>
+
+<rect x="350" y="136" width="300" height="96" rx="6" fill="#F1F3F8" stroke="#E2E6F0" stroke-width="0.5"/>
+<text x="366" y="160" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">let <tspan fill="#185FA5">playerScore</tspan> = 0;  <tspan fill="#059669">ok</tspan></text>
+<text x="366" y="180" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">let <tspan fill="#DC2626">player score</tspan> = 0; <tspan fill="#DC2626">error</tspan></text>
+<rect x="444" y="183" width="7" height="2" rx="1" fill="#DC2626"/>
+<rect x="366" y="190" width="128" height="20" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="0.5"/>
+<text x="430" y="204" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#A32D2D">no spaces in names</text>
+<text x="366" y="225" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#8B91A8">Rule 4 — use camelCase, not spaces</text>
+
+<rect x="30" y="248" width="300" height="96" rx="6" fill="#F1F3F8" stroke="#E2E6F0" stroke-width="0.5"/>
+<text x="46" y="272" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E"><tspan fill="#7C3AED">let</tspan> score = 0;   <tspan fill="#8B91A8" font-size="12">create it</tspan></text>
+<text x="46" y="292" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E">score = 10;        <tspan fill="#059669">ok</tspan></text>
+<text x="46" y="312" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="500" fill="#1A1E2E"><tspan fill="#DC2626">let</tspan> score = 10;  <tspan fill="#DC2626">error</tspan></text>
+<text x="46" y="337" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#8B91A8">Rule 5 — use let only the first time</text>
+
+<rect x="350" y="248" width="300" height="96" rx="6" fill="#FFF7ED" stroke="#D97706" stroke-width="0.5"/>
+<text x="366" y="272" font-family="'DM Sans', system-ui, sans-serif" font-size="13" font-weight="600" fill="#92400E">When you see an error:</text>
+<text x="366" y="294" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#92400E">1.  Missing semicolon ;</text>
+<text x="366" y="312" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#92400E">2.  Typo in a variable name</text>
+<text x="366" y="330" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#92400E">3.  Missing quotes around text</text>
+
+<rect x="30" y="362" width="620" height="36" rx="6" fill="#F1F3F8" stroke="#E2E6F0" stroke-width="0.5"/>
+<text x="340" y="384" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="13" fill="#4A5068">Read the error — JavaScript tells you exactly what went wrong.</text>
+</svg>

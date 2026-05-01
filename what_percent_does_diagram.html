@@ -1,0 +1,69 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { background: #F0F2F8; border-radius: 16px; padding: 2rem 2.5rem 2.5rem; font-family: var(--font-sans); }
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; color: #888780; text-transform: uppercase; margin-bottom: 1.75rem; }
+.row { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; align-items: center; }
+.pill { border-radius: 99px; padding: 5px 18px; font-family: var(--font-mono); font-size: 14px; font-weight: 500; display: inline-block; }
+.pill-blue { background: #E6F1FB; border: 1.5px solid #378ADD; color: #0C447C; }
+.pill-gray { background: #F1EFE8; border: 1.5px solid #888780; color: #444441; }
+.pill-coral { background: #FAECE7; border: 1.5px solid #D85A30; color: #712B13; }
+.down-arrow { display: flex; justify-content: center; margin: 5px 0; }
+.vbox { border-radius: 10px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 32px; font-weight: 500; }
+.vbox-blue { background: #fff; border: 2px solid #378ADD; color: #0C447C; }
+.vbox-gray { background: #fff; border: 2px solid #888780; color: #444441; }
+.vbox-coral { background: #FAECE7; border: 2px solid #D85A30; color: #712B13; }
+.caption { font-size: 12px; color: #888780; margin-top: 5px; }
+.op { font-family: var(--font-mono); font-size: 22px; font-weight: 500; color: #D85A30; margin: 12px 0; }
+.big-arrow { font-size: 28px; color: #B4B2A9; font-weight: 300; line-height: 1; }
+.explain { min-width: 200px; flex: 1; }
+.code-top { font-family: var(--font-mono); font-size: 18px; font-weight: 500; color: #2C2C2A; margin-bottom: 10px; }
+.code-top .pct { color: #D85A30; }
+.desc { font-size: 13px; color: #5F5E5A; line-height: 1.65; }
+.desc strong { color: #712B13; font-weight: 500; }
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;">Diagram showing what the percent operator does — takes a number and a divisor and gives back the remainder.</h2>
+
+<div class="wrap">
+  <div class="section-label">What % does</div>
+  <div class="row">
+
+    <div class="col" style="gap:0;">
+      <div class="pill pill-blue">number</div>
+      <div class="down-arrow">
+        <svg width="14" height="22" viewBox="0 0 14 22"><line x1="7" y1="0" x2="7" y2="18" stroke="#888780" stroke-width="1.5" stroke-linecap="round"/><polyline points="3,13 7,18 11,13" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="vbox vbox-blue">10</div>
+      <div class="caption">the value</div>
+      <div class="op">%</div>
+      <div class="pill pill-gray">divisor</div>
+      <div class="down-arrow">
+        <svg width="14" height="22" viewBox="0 0 14 22"><line x1="7" y1="0" x2="7" y2="18" stroke="#888780" stroke-width="1.5" stroke-linecap="round"/><polyline points="3,13 7,18 11,13" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="vbox vbox-gray">3</div>
+      <div class="caption">divide by</div>
+    </div>
+
+    <div class="big-arrow">→</div>
+
+    <div class="col" style="gap:0;">
+      <div class="pill pill-coral">remainder</div>
+      <div class="down-arrow">
+        <svg width="14" height="22" viewBox="0 0 14 22"><line x1="7" y1="0" x2="7" y2="18" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round"/><polyline points="3,13 7,18 11,13" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="vbox vbox-coral">1</div>
+      <div class="caption">what's left over</div>
+    </div>
+
+    <div class="explain">
+      <div class="code-top">10 <span class="pct">%</span> 3</div>
+      <div class="desc">
+        10 ÷ 3 = 3 groups, with <strong>1 left over</strong>.<br>
+        The % operator gives you just that leftover. Not the answer — the remainder.
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -4,107 +4,436 @@
   "title": "Numbers & Math",
   "content": [
     {
-      "heading": "Numbers — doing math with JavaScript",
+      "heading": "Numbers \u2014 doing math with JavaScript",
       "blocks": [
-        { "kind": "p", "text": "JavaScript does math the same way your calculator does — plus a few extra tricks." },
-        { "kind": "concept", "code": "10 % 3", "desc": "The remainder operator — divides 10 by 3 and gives back what's left over (1). Useful for checking if something is even or odd." },
-        { "kind": "diagram", "variant": "percent-operator" },
-        { "kind": "concept", "code": "score += 10", "desc": "A shortcut for score = score + 10. You can do this with any operator: +=, -=, *=, /=" },
-        { "kind": "concept", "code": "score++", "desc": "An even shorter shortcut — adds exactly 1. score-- subtracts 1. You'll see these everywhere." }
+        {
+          "kind": "p",
+          "text": "JavaScript can do math the same way a calculator can. You already know most of the symbols \u2014 plus, minus, multiply, divide. There are five operators total, and each one has a job."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l2/math-operators.svg",
+          "alt": "Five cards showing the five math operators: + for add, - for subtract, * for multiply, / for divide, and % for remainder, each with a code example",
+          "caption": "These five operators are the building blocks of all math in JavaScript."
+        },
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "One difference from math class",
+          "text": "Multiplication uses * (not \u00d7) and division uses / (not \u00f7). Your keyboard doesn't have those symbols \u2014 so JavaScript uses these instead."
+        }
       ]
     },
     {
+      "heading": "Variables + numbers = useful programs",
       "blocks": [
-        { "kind": "code", "lines": [
-          "// Basic math",
-          "let a = 10 + 3;   // 13",
-          "let b = 10 - 3;   // 7",
-          "let c = 10 * 3;   // 30",
-          "let d = 10 / 2;   // 5",
-          "let e = 10 % 3;   // 1 (remainder of 10 divided by 3)",
-          "",
-          "// Shortcuts",
-          "let score = 0;",
-          "score += 5;   // same as: score = score + 5   → score is 5",
-          "score *= 2;   // same as: score = score * 2   → score is 10",
-          "score++;      // same as: score = score + 1   → score is 11",
-          "score--;      // same as: score = score - 1   → score is 10",
-          "",
-          "// Order of operations (same as regular math)",
-          "let result = 2 + 3 * 4;     // 14, not 20 — multiply first",
-          "let result2 = (2 + 3) * 4;  // 20 — parentheses go first"
-        ]},
-        { "kind": "callout", "variant": "info", "label": "The % operator", "text": "The remainder (%) is one of the most useful tools in game programming. If score % 2 equals 0, score is even. If it equals 1, score is odd. You'll use this more than you expect." }
+        {
+          "kind": "p",
+          "text": "A number on its own is fine for one calculation. But what if you need to use that number again later? Or change it? That's where variables come in. You store your numbers in variables, then use the variable names in your math. JavaScript swaps in the value automatically."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l2/math-variables.svg",
+          "alt": "Four step flowchart showing: declare variables with let, store numbers in them, use the variable names in a math expression, then log the result to the console",
+          "caption": "You write the variable name \u2014 JavaScript looks up the number stored inside it and uses that."
+        },
+        {
+          "kind": "concept",
+          "code": "let total = price + tax",
+          "desc": "JavaScript reads price (20) and tax (2), adds them, and stores 22 into total. You never have to type the actual numbers again \u2014 just the names."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "Why this matters",
+          "text": "If you change price from 20 to 35, total automatically becomes 37 the next time it's calculated. You changed one variable and everything that depends on it updates. That's the whole point of variables."
+        }
+      ]
+    },
+    {
+      "heading": "The remainder operator %",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "The % operator is the one that looks strangest at first. It doesn't give you the result of dividing \u2014 it gives you the leftover after dividing as evenly as possible. That leftover is called the remainder."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l2/math-remainder.svg",
+          "alt": "Ten numbered dots grouped into three boxes of three, with one dot left over in a dashed box labeled 'left over'. The result is 1.",
+          "caption": "10 % 3 = 1 because 3 fits into 10 three full times, with 1 left over."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "The even/odd trick",
+          "text": "Any number % 2 gives you either 0 or 1. If the answer is 0, the number is even. If it's 1, the number is odd. Game developers use this constantly \u2014 for example, to do something every other turn."
+        }
+      ]
+    },
+    {
+      "heading": "Shortcut operators",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "Updating a variable using itself is so common \u2014 adding to a score, losing a life, collecting coins \u2014 that JavaScript has shortcuts for it. Instead of writing the full thing every time, you can use a shorter version."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l2/math-shortcuts.svg",
+          "alt": "Side by side table: the long way to write score = score + 10 versus the shortcut score += 10, repeated for -=, *=, ++, and --",
+          "caption": "The shortcut does exactly the same thing \u2014 it just saves you from typing the variable name twice."
+        },
+        {
+          "kind": "concept",
+          "code": "score++",
+          "desc": "The most common shortcut of all \u2014 adds exactly 1. You'll see this in almost every program that counts something."
+        }
+      ]
+    },
+    {
+      "heading": "Order of operations",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "JavaScript follows the same math rules you learned in school. Multiplication and division happen before addition and subtraction. If you want a different order, use parentheses \u2014 they always run first."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l2/math-order.svg",
+          "alt": "Two expressions side by side: 2 + 3 * 4 equals 14 because * runs first, versus (2 + 3) * 4 equals 20 because parentheses run first",
+          "caption": "Same numbers, different answer \u2014 all because of where the parentheses go."
+        },
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "When in doubt, use parentheses",
+          "text": "If you're not sure what order JavaScript will evaluate your math, add parentheses to make it explicit. There's no penalty for using them \u2014 and they make your intention obvious to anyone reading your code."
+        }
+      ]
+    },
+    {
+      "heading": "Putting it all together",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "Here's a code block that uses everything from this lesson at once. Read through each line before running it \u2014 try to predict what the final value of score will be."
+        },
+        {
+          "kind": "code",
+          "lines": [
+            "let score = 0;",
+            "",
+            "score += 50;     // score is now 50",
+            "score *= 3;      // score is now 150",
+            "score -= 25;     // score is now 125",
+            "score++;         // score is now 126",
+            "",
+            "console.log('Final score:', score);  // 126",
+            "",
+            "// Is the score even or odd?",
+            "console.log(score % 2);  // 0 = even, 1 = odd",
+            "",
+            "// Order of operations matters:",
+            "let bonus = 2 + 3 * 10;     // 32, not 50",
+            "let bonus2 = (2 + 3) * 10;  // 50",
+            "console.log(bonus, bonus2);"
+          ]
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "Predict before you run",
+          "text": "Before hitting Run, write down what you think score will be at the end. Then run it and compare. If you were wrong, trace through each line again \u2014 this is the most important skill in programming."
+        }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Predict the math",
+      "title": "Run the math",
+      "type": "practice",
+      "duration": "3 min",
+      "tasks": [
+        "The code is already written \u2014 just hit Run.",
+        "Look at each line printed in the console.",
+        "Which result surprised you? Why do you think it came out that way?",
+        "Change one of the numbers and run it again."
+      ],
+      "hint": "Just hit Run first. Read the output. Then start changing numbers.",
+      "starterCode": "console.log(10 + 3);\nconsole.log(10 - 3);\nconsole.log(10 * 3);\nconsole.log(10 / 2);\nconsole.log(10 % 3);\n"
+    },
+    {
+      "title": "Your first variable math",
+      "type": "practice",
+      "duration": "2 min",
+      "tasks": [
+        "The code is already written \u2014 just hit Run.",
+        "You should see 5 printed in the console.",
+        "Read each line and make sure you understand why saving is 5.",
+        "Change money to 20 and run again. What does saving become?"
+      ],
+      "hint": "saving = money - 5. So if money is 10, saving is 10 - 5 = 5.",
+      "starterCode": "let money = 10;\nlet saving = money - 5;\nconsole.log(saving);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "saving",
+          "expected": null,
+          "label": "a variable called 'saving' exists"
+        },
+        {
+          "type": "console",
+          "includes": "",
+          "label": "something is printed to the console"
+        }
+      ]
+    },
+    {
+      "title": "Use one variable inside another",
+      "type": "practice",
+      "duration": "3 min",
+      "tasks": [
+        "brotherAge is already set to 5.",
+        "Create a new variable called sisterAge and set it to 10 + brotherAge.",
+        "On the next line, write: console.log(sisterAge)",
+        "Run it \u2014 you should see 15 printed.",
+        "Change brotherAge to 8 and run again. Does sisterAge update?"
+      ],
+      "hint": "let sisterAge = 10 + brotherAge;  \u2014 use the variable name, not the number.",
+      "starterCode": "let brotherAge = 5;\n\n// Create sisterAge here\n\n\n// Log sisterAge here\n\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "sisterAge",
+          "expected": 15,
+          "label": "sisterAge equals 15 when brotherAge is 5"
+        },
+        {
+          "type": "console",
+          "includes": "15",
+          "label": "15 is printed to the console"
+        }
+      ]
+    },
+    {
+      "title": "Read the recipe",
+      "type": "practice",
+      "duration": "3 min",
+      "tasks": [
+        "Two variables are declared and a third one called total is already calculated.",
+        "Your only job: add console.log(total) at the bottom and hit Run.",
+        "You should see 8 printed.",
+        "Now change apples to 10. What does total become without touching the total line?"
+      ],
+      "hint": "Just add console.log(total); at the very bottom \u2014 one line is all you need.",
+      "starterCode": "let apples = 5;\nlet oranges = 3;\nlet total = apples + oranges;\n\n// Add your console.log here\n\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "total",
+          "expected": 8,
+          "label": "total equals 8"
+        },
+        {
+          "type": "console",
+          "includes": "8",
+          "label": "8 is printed to the console"
+        }
+      ]
+    },
+    {
+      "title": "Fill in the math",
+      "type": "practice",
+      "duration": "4 min",
+      "tasks": [
+        "Two variables are declared: length and width.",
+        "Your job: complete the area line by writing length * width after the = sign.",
+        "Run it \u2014 you should see 40 printed.",
+        "Change length to 8 and run again. Does area update automatically?"
+      ],
+      "hint": "let area = length * width;  \u2014 use the variable names, not the actual numbers.",
+      "starterCode": "let length = 10;\nlet width = 4;\nlet area = // write length * width here\n\nconsole.log(area);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "area",
+          "expected": 40,
+          "label": "area equals 40"
+        },
+        {
+          "type": "console",
+          "includes": "40",
+          "label": "40 is printed to the console"
+        }
+      ]
+    },
+    {
+      "title": "Change one thing, watch everything update",
+      "type": "practice",
+      "duration": "4 min",
+      "tasks": [
+        "A price calculator is already set up. Hit Run and read the output.",
+        "Now change price to 25 and quantity to 2. Don't touch the total line.",
+        "Run it again \u2014 total should update on its own.",
+        "Try a few more combinations. Notice that you never have to rewrite the math."
+      ],
+      "hint": "Only change the numbers on lines 1 and 2. The total line calculates itself.",
+      "starterCode": "let price = 15;\nlet quantity = 3;\nlet total = price * quantity;\n\nconsole.log('Price:', price);\nconsole.log('Quantity:', quantity);\nconsole.log('Total:', total);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "total",
+          "expected": 50,
+          "label": "total equals 50 when price is 25 and quantity is 2"
+        }
+      ]
+    },
+    {
+      "title": "Build it from scratch",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Declare a variable called age and set it to your age.",
+        "Declare a variable called yearsLeft and set it to 100 - age.",
+        "Declare a variable called doubleAge and set it to age * 2.",
+        "Log all three with labels.",
+        "Bonus: log a sentence using all three \u2014 like 'I am 13, double that is 26, and I have 87 years until 100.'"
+      ],
+      "hint": "Use variable names in your math, not raw numbers: let yearsLeft = 100 - age;",
+      "starterCode": "// Your age\n\n\n// Years until you turn 100\n\n\n// Double your age\n\n\n// Log all three\n\n\n// Bonus sentence\n\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "age",
+          "expected": null,
+          "label": "a variable called 'age' exists"
+        },
+        {
+          "type": "variable",
+          "name": "yearsLeft",
+          "expected": null,
+          "label": "a variable called 'yearsLeft' exists"
+        },
+        {
+          "type": "variable",
+          "name": "doubleAge",
+          "expected": null,
+          "label": "a variable called 'doubleAge' exists"
+        }
+      ]
+    },
+    {
+      "title": "Predict the remainder",
+      "type": "predict",
+      "duration": "4 min",
+      "tasks": [
+        "Before running: write down your prediction for each % expression below.",
+        "Then run it and check which ones you got right.",
+        "Can you figure out the pattern for what % 2 always gives you?"
+      ],
+      "hint": "Think about how many times the second number fits into the first \u2014 then what's left over.",
+      "starterCode": "console.log(10 % 3);\nconsole.log(10 % 2);\nconsole.log(7 % 2);\nconsole.log(8 % 4);\nconsole.log(15 % 6);\n",
+      "checks": [
+        {
+          "type": "console",
+          "includes": "1",
+          "label": "at least one remainder of 1 was logged"
+        }
+      ]
+    },
+    {
+      "title": "Use the shortcuts",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "A variable called lives is set to 3.",
+        "Use lives-- to lose one life. Log lives.",
+        "A variable called coins is set to 0.",
+        "Use coins += 10 three times. Log coins after each.",
+        "Then use coins *= 2 to double them. Log the final result."
+      ],
+      "hint": "lives-- subtracts 1. coins += 10 adds 10. Both are shortcuts \u2014 you don't need the full version.",
+      "starterCode": "let lives = 3;\nconsole.log('Lives:', lives);\n\n// Lose a life\n\nconsole.log('After losing one:', lives);\n\nlet coins = 0;\n// Collect 10 coins three times\n\n\n\n// Double your coins\n\nconsole.log('Final coins:', coins);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "lives",
+          "expected": 2,
+          "label": "lives equals 2"
+        },
+        {
+          "type": "variable",
+          "name": "coins",
+          "expected": 60,
+          "label": "coins equals 60"
+        }
+      ]
+    },
+    {
+      "title": "Predict the order",
       "type": "predict",
       "duration": "5 min",
       "tasks": [
-        "Before running anything, calculate each result in your head or on paper:",
-        "5 + 3 * 2   →   (5 + 3) * 2   →   10 % 3   →   10 % 2   →   10 % 5",
-        "Write your predictions down.",
-        "Then type each one in the editor with console.log to check."
+        "Before running: write down the result of each expression on paper.",
+        "5 + 3 * 2   \u2192   (5 + 3) * 2   \u2192   10 + 10 / 2   \u2192   (10 + 10) / 2",
+        "Then run the code and check.",
+        "For any wrong predictions: trace through the order of operations step by step."
       ],
-      "hint": "Remember: multiplication happens before addition unless you use parentheses.",
-      "starterCode": "console.log(5 + 3 * 2);\nconsole.log((5 + 3) * 2);\nconsole.log(10 % 3);\nconsole.log(10 % 2);\nconsole.log(10 % 5);\n"
-    },
-    {
-      "title": "Shortcut operators",
-      "type": "practice",
-      "duration": "5 min",
-      "tasks": [
-        "Declare a variable called lives and set it to 3.",
-        "Use lives-- to lose a life. Log lives after.",
-        "Declare a variable called coins set to 0.",
-        "Use coins += 10 three times to collect 10 coins each time. Log after each.",
-        "Use coins *= 2 to double your coins. Log the final result."
-      ],
-      "hint": "lives-- is the same as lives = lives - 1. coins += 10 is the same as coins = coins + 10.",
-      "starterCode": "let lives = 3;\nconsole.log('Lives:', lives);\n\n// Lose a life\n\nconsole.log('Lives after losing one:', lives);\n\nlet coins = 0;\n// Collect 10 coins three times\n\n\n\n// Double your coins\n\nconsole.log('Final coins:', coins);\n",
-      "checks": [
-        { "type": "variable", "name": "lives", "expected": 2, "label": "lives equals 2 after using lives--" },
-        { "type": "variable", "name": "coins", "expected": 60, "label": "coins equals 60 after collecting 30 and doubling" }
-      ]
-    },
-    {
-      "title": "Even or odd?",
-      "type": "practice",
-      "duration": "5 min",
-      "tasks": [
-        "Declare a variable called num and set it to 7.",
-        "Log the result of num % 2.",
-        "Change num to 8 and log num % 2 again.",
-        "What does % 2 returning 0 mean? What does it returning 1 mean?",
-        "Try a few more numbers and confirm your rule."
-      ],
-      "hint": "Any number % 2 gives you either 0 or 1. Think about what each one means.",
-      "starterCode": "let num = 7;\nconsole.log(num + ' % 2 =', num % 2);\n\nnum = 8;\nconsole.log(num + ' % 2 =', num % 2);\n\n// Try a few more\n",
-      "checks": [
-        { "type": "console", "includes": "0", "label": "logged a result of 0 for an even number" }
-      ]
+      "hint": "* and / always run before + and - unless you use parentheses.",
+      "starterCode": "console.log(5 + 3 * 2);\nconsole.log((5 + 3) * 2);\nconsole.log(10 + 10 / 2);\nconsole.log((10 + 10) / 2);\n"
     },
     {
       "title": "Score calculator",
       "type": "practice",
       "duration": "6 min",
       "tasks": [
-        "Build a small score calculator from scratch.",
         "Start with score = 0.",
-        "Add 50 points using +=.",
-        "Multiply by 3 using *=.",
-        "Subtract 25 using -=.",
-        "Add 1 point using ++.",
-        "Log 'Final score: ' + score at the end.",
-        "Expected final score: 126"
+        "Use += to add 50 points.",
+        "Use *= to triple it.",
+        "Use -= to subtract 25.",
+        "Use ++ to add 1 more.",
+        "Log 'Final score: ' + score. The answer should be 126.",
+        "Then log whether the score is even or odd using %."
       ],
-      "hint": "Do each operation one at a time and log after each step to track the value.",
-      "starterCode": "let score = 0;\n\n// Your operations here\n\nconsole.log('Final score:', score);\n",
+      "hint": "Do each step one at a time and log after each to track your progress.",
+      "starterCode": "let score = 0;\n\n// Add 50\n\n// Triple it\n\n// Subtract 25\n\n// Add 1\n\nconsole.log('Final score:', score);\n\n// Even or odd?\nconsole.log('Remainder when divided by 2:', score % 2);\n",
       "checks": [
-        { "type": "variable", "name": "score", "expected": 126, "label": "score equals 126 after all operations" }
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 126,
+          "label": "score equals 126"
+        }
+      ]
+    },
+    {
+      "title": "Build a math story",
+      "type": "practice",
+      "duration": "7 min",
+      "tasks": [
+        "You start with 100 coins. Write each step as code:",
+        "You spend 30 coins at the shop.",
+        "You find a chest that doubles your coins.",
+        "You collect 15 more coins.",
+        "You split your coins equally with a friend (divide by 2).",
+        "Log 'You have X coins left.' at the end.",
+        "Bonus: log whether your final coin count is even or odd."
+      ],
+      "hint": "Use -=, *=, += and /= for each step. Track the value by logging after each operation.",
+      "starterCode": "let coins = 100;\nconsole.log('Start:', coins);\n\n// Spend 30 coins\n\n// Double your coins (chest)\n\n// Collect 15 more\n\n// Split with a friend\n\nconsole.log('You have', coins, 'coins left.');\n\n// Bonus: even or odd?\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "coins",
+          "expected": 72,
+          "label": "coins equals 72 after all steps"
+        },
+        {
+          "type": "console",
+          "includes": "coins left",
+          "label": "logged the final coin count"
+        }
       ]
     }
   ],
@@ -113,29 +442,57 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "Why is the answer 23 instead of 32?",
-      "description": "The code should calculate (2 + 3) * 4 and get 20, then add 3 to get 23. But the programmer expected 32. Find out why they're confused and explain it.",
-      "buggyCode": "let result = 2 + 3 * 4 + 3;\nconsole.log(result);",
-      "starterCode": "let result = 2 + 3 * 4 + 3;\nconsole.log(result);",
-      "hint": "Think about order of operations. What runs first?",
+      "title": "The answer should be 20 not 14",
+      "description": "This expression should calculate (2 + 3) * 4 = 20, but it's giving 14. One character fix will do it.",
+      "buggyCode": "let result = 2 + 3 * 4;\nconsole.log(result);",
+      "starterCode": "let result = 2 + 3 * 4;\nconsole.log(result);",
+      "hint": "Think about what parentheses do to order of operations.",
       "checks": [
-        { "type": "variable", "name": "result", "expected": 17, "label": "result is 17 (the actual correct answer with order of operations)" }
+        {
+          "type": "variable",
+          "name": "result",
+          "expected": 20,
+          "label": "result equals 20"
+        }
       ],
-      "explanation": "3 * 4 runs first (gives 12), then 2 + 12 + 3 = 17. Not 23, and not 32. To force a different order, use parentheses: (2 + 3) * 4 + 3 = 23."
+      "explanation": "Without parentheses, * runs before +, so 3 * 4 = 12, then 2 + 12 = 14. To get 20, add parentheses: (2 + 3) * 4."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
-      "title": "The damage calculator is off",
-      "description": "This game gives double damage when the hit number is even. But the damage is always being doubled. Fix it so it only doubles when hitNumber % 2 is 0.",
-      "buggyCode": "let hitNumber = 7;\nlet damage = 10;\ndamage *= 2;\nconsole.log('Damage dealt:', damage);",
-      "starterCode": "let hitNumber = 7;\nlet damage = 10;\ndamage *= 2;\nconsole.log('Damage dealt:', damage);",
-      "hint": "You haven't learned conditionals yet — but think: what should determine whether damage doubles? What's the value of hitNumber % 2 when hitNumber is 7?",
+      "title": "The score isn't doubling correctly",
+      "description": "score should be doubled, but something is wrong. After all steps, score should be 200.",
+      "buggyCode": "let score = 50;\nscore + 50;\nscore *= 2;\nconsole.log('Score:', score);",
+      "starterCode": "let score = 50;\nscore + 50;\nscore *= 2;\nconsole.log('Score:', score);",
+      "hint": "Look carefully at line 2. Does it actually change score?",
       "checks": [
-        { "type": "variable", "name": "damage", "expected": 10, "label": "damage stays at 10 when hitNumber is odd" }
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 200,
+          "label": "score equals 200"
+        }
       ],
-      "explanation": "hitNumber is 7 — an odd number. 7 % 2 equals 1, not 0. So the double damage should NOT apply. The fix: remove the damage *= 2 line (for now). When you learn conditionals next, you'll be able to make it check automatically."
+      "explanation": "score + 50 calculates the result but throws it away \u2014 it never stores it back into score. Fix: change it to score += 50 so score actually gets updated to 100 before being doubled to 200."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "Is the player's turn even or odd?",
+      "description": "This code should log 'Even turn' when turnNumber is even and 'Odd turn' when it's odd. But it always says the same thing. Find the bug.",
+      "buggyCode": "let turnNumber = 4;\nlet remainder = turnNumber % 3;\n\nif (remainder === 0) {\n    console.log('Even turn');\n} else {\n    console.log('Odd turn');\n}",
+      "starterCode": "let turnNumber = 4;\nlet remainder = turnNumber % 3;\n\nif (remainder === 0) {\n    console.log('Even turn');\n} else {\n    console.log('Odd turn');\n}",
+      "hint": "To check if a number is even, what should you divide by?",
+      "checks": [
+        {
+          "type": "console",
+          "includes": "Even turn",
+          "label": "correctly identifies turn 4 as even"
+        }
+      ],
+      "explanation": "The bug is using % 3 instead of % 2. To check if a number is even or odd, you always divide by 2. turnNumber % 3 gives the remainder after dividing by 3 \u2014 that's a completely different thing. Fix: change % 3 to % 2."
     }
   ]
 }

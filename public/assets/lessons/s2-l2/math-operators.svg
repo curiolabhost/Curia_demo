@@ -1,0 +1,44 @@
+<svg width="100%" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>The five math operators in JavaScript</title>
+<desc>Five cards showing +, -, *, /, and % with a code example and result for each</desc>
+
+<rect x="20" y="24" width="116" height="152" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="78" y="80" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="32" font-weight="600" fill="#0C447C">+</text>
+<rect x="20" y="106" width="116" height="70" rx="0" fill="#F1F3F8"/>
+<rect x="20" y="106" width="116" height="70" rx="8" fill="none" stroke="#B5D4F4" stroke-width="0.5"/>
+<text x="78" y="128" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#1A1E2E">10 + 3</text>
+<text x="78" y="150" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#8B91A8">= 13</text>
+<text x="78" y="168" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">add</text>
+
+<rect x="151" y="24" width="116" height="152" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="209" y="80" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="32" font-weight="600" fill="#085041">-</text>
+<rect x="151" y="106" width="116" height="70" rx="0" fill="#F1F3F8"/>
+<rect x="151" y="106" width="116" height="70" rx="8" fill="none" stroke="#9FE1CB" stroke-width="0.5"/>
+<text x="209" y="128" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#1A1E2E">10 - 3</text>
+<text x="209" y="150" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#8B91A8">= 7</text>
+<text x="209" y="168" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">subtract</text>
+
+<rect x="282" y="24" width="116" height="152" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="340" y="80" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="32" font-weight="600" fill="#3C3489">*</text>
+<rect x="282" y="106" width="116" height="70" rx="0" fill="#F1F3F8"/>
+<rect x="282" y="106" width="116" height="70" rx="8" fill="none" stroke="#CECBF6" stroke-width="0.5"/>
+<text x="340" y="128" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#1A1E2E">10 * 3</text>
+<text x="340" y="150" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#8B91A8">= 30</text>
+<text x="340" y="168" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">multiply</text>
+
+<rect x="413" y="24" width="116" height="152" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="471" y="80" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="32" font-weight="600" fill="#633806">/</text>
+<rect x="413" y="106" width="116" height="70" rx="0" fill="#F1F3F8"/>
+<rect x="413" y="106" width="116" height="70" rx="8" fill="none" stroke="#FAC775" stroke-width="0.5"/>
+<text x="471" y="128" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#1A1E2E">10 / 2</text>
+<text x="471" y="150" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#8B91A8">= 5</text>
+<text x="471" y="168" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">divide</text>
+
+<rect x="544" y="24" width="116" height="152" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+<text x="602" y="80" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="32" font-weight="600" fill="#712B13">%</text>
+<rect x="544" y="106" width="116" height="70" rx="0" fill="#F1F3F8"/>
+<rect x="544" y="106" width="116" height="70" rx="8" fill="none" stroke="#F5C4B3" stroke-width="0.5"/>
+<text x="602" y="128" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#1A1E2E">10 % 3</text>
+<text x="602" y="150" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#8B91A8">= 1</text>
+<text x="602" y="168" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">remainder</text>
+</svg>

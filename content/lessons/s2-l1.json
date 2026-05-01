@@ -2,32 +2,69 @@
   "id": "s2-l1",
   "session": "Session 2",
   "title": "Variables",
-  "content": {
-    "heading": "Variables — storing and changing information",
-    "body": [
-      { "kind": "p", "text": "A variable is a named box that holds a value. You can read what's inside it, change it, and use it later. Without variables, a program forgets everything the moment it runs — it has no memory." },
-
-      { "kind": "concept", "code": "let score = 0", "desc": "Create a box called 'score' and put 0 inside it" },
-      { "kind": "concept", "code": "score = score + 1", "desc": "Open the box, take the number out, add 1 to it, put the result back in" },
-      { "kind": "concept", "code": "let name = 'Jordan'", "desc": "Variables can hold words too — wrap text in quotes to make a string" },
-
-      { "kind": "callout", "variant": "warn", "label": "Key rule", "text": "When you reassign a variable, the old value is completely gone. The box only ever holds one thing at a time." },
-
-      { "kind": "code", "lines": [
-        "// Numbers",
-        "let score = 0;        // score is 0",
-        "score = score + 5;    // score is now 5",
-        "score = score * 2;    // score is now 10",
-        "score = score - 3;    // score is now 7",
-        "console.log(score);   // prints 7",
-        "",
-        "// Text (called strings)",
-        "let name = 'Jordan';",
-        "let greeting = 'Hello, ' + name;",
-        "console.log(greeting);  // prints: Hello, Jordan"
-      ]}
-    ]
-  },
+  "content": [
+    {
+      "heading": "Variables — storing and changing information",
+      "blocks": [
+        { "kind": "p", "text": "A variable is a named box that holds a value. You can read what's inside it, change it, and use it later. Without variables, a program forgets everything the moment it runs — it has no memory." },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l1/variable-box.svg",
+          "alt": "A box labeled 'score' containing the value 0, showing a variable as a named container",
+          "caption": "A variable is just a named container — the name stays the same, the value inside can change."
+        }
+      ]
+    },
+    {
+      "heading": "Declaring and changing values",
+      "blocks": [
+        { "kind": "concept", "code": "let score = 0", "desc": "Create a box called 'score' and put 0 inside it" },
+        { "kind": "concept", "code": "score = score + 1", "desc": "Open the box, take the number out, add 1 to it, put the result back in" },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l1/variable-reassign.svg",
+          "alt": "Two boxes showing score changing from 0 to 10, with an arrow between them",
+          "caption": "Reassigning a variable replaces the old value completely — it doesn't keep both."
+        },
+        { "kind": "callout", "variant": "warn", "label": "Key rule", "text": "When you reassign a variable, the old value is completely gone. The box only ever holds one thing at a time." }
+      ]
+    },
+    {
+      "heading": "Strings and good names",
+      "blocks": [
+        { "kind": "concept", "code": "let name = 'Jordan'", "desc": "Variables can hold words too — wrap text in quotes to make a string" },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l1/variable-naming.svg",
+          "alt": "Side by side comparison of good variable names like playerScore versus bad names like x",
+          "caption": "Good variable names make your code readable. Bad ones make it a mystery — even to you."
+        }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "// Numbers",
+          "let score = 0;        // score is 0",
+          "score = score + 5;    // score is now 5",
+          "score = score * 2;    // score is now 10",
+          "score = score - 3;    // score is now 7",
+          "console.log(score);   // prints 7",
+          "",
+          "// Text (called strings)",
+          "let name = 'Jordan';",
+          "let greeting = 'Hello, ' + name;",
+          "console.log(greeting);  // prints: Hello, Jordan"
+        ]},
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l1/variable-memory.svg",
+          "alt": "Four variable boxes labeled score, name, lives, and isWinning sitting side by side",
+          "caption": "A real program keeps many variables alive at the same time — each in its own container."
+        }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Predict the value",

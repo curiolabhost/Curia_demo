@@ -2,27 +2,33 @@
   "id": "s4-l1",
   "session": "Session 4",
   "title": "Arrays",
-  "content": {
-    "heading": "Arrays — lists of values",
-    "body": [
-      { "kind": "p", "text": "An array holds multiple values under a single variable name. Each value has a position number called an index. Arrays always start counting at zero — the first item is at index 0, not index 1." },
-      { "kind": "concept", "code": "let colors = ['red','blue']", "desc": "A list of two text values stored in one variable" },
-      { "kind": "concept", "code": "colors[0]", "desc": "Get the item at index 0 — the first item" },
-      { "kind": "concept", "code": "colors.length", "desc": "How many items are in the array" },
-      { "kind": "code", "lines": [
-        "let animals = ['dog', 'cat', 'frog', 'panda'];",
-        "",
-        "console.log(animals[0]);       // 'dog'",
-        "console.log(animals[3]);       // 'panda'",
-        "console.log(animals.length);   // 4",
-        "console.log(animals[4]);       // undefined — no fifth item",
-        "",
-        "animals.push('bear');          // adds 'bear' to the end",
-        "animals.splice(1, 1);         // removes 1 item at index 1"
-      ]},
-      { "kind": "callout", "variant": "warn", "label": "Zero indexing", "text": "Arrays start at index 0, not 1. A 4-item array has indices 0, 1, 2, 3. Accessing index 4 returns undefined." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Arrays — lists of values",
+      "blocks": [
+        { "kind": "p", "text": "An array holds multiple values under a single variable name. Each value has a position number called an index. Arrays always start counting at zero — the first item is at index 0, not index 1." },
+        { "kind": "concept", "code": "let colors = ['red','blue']", "desc": "A list of two text values stored in one variable" },
+        { "kind": "concept", "code": "colors[0]", "desc": "Get the item at index 0 — the first item" },
+        { "kind": "concept", "code": "colors.length", "desc": "How many items are in the array" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "let animals = ['dog', 'cat', 'frog', 'panda'];",
+          "",
+          "console.log(animals[0]);       // 'dog'",
+          "console.log(animals[3]);       // 'panda'",
+          "console.log(animals.length);   // 4",
+          "console.log(animals[4]);       // undefined — no fifth item",
+          "",
+          "animals.push('bear');          // adds 'bear' to the end",
+          "animals.splice(1, 1);         // removes 1 item at index 1"
+        ]},
+        { "kind": "callout", "variant": "warn", "label": "Zero indexing", "text": "Arrays start at index 0, not 1. A 4-item array has indices 0, 1, 2, 3. Accessing index 4 returns undefined." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Read an array",

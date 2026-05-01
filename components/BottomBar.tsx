@@ -9,8 +9,6 @@ type BottomBarProps = {
   isRunning?: boolean
   statusMessage?: string
   statusType?: 'default' | 'ok' | 'err'
-  shortcutHint?: string
-  runTitle?: string
 }
 
 export function BottomBar({
@@ -20,8 +18,6 @@ export function BottomBar({
   isRunning = false,
   statusMessage = 'Ready',
   statusType = 'default',
-  shortcutHint,
-  runTitle,
 }: BottomBarProps = {}) {
   const statusClass =
     statusType === 'ok' ? ' ok' : statusType === 'err' ? ' err' : ''
@@ -44,7 +40,6 @@ export function BottomBar({
         type="button"
         onClick={onRun}
         disabled={isRunning}
-        title={runTitle}
       >
         {isRunning ? (
           <>
@@ -58,7 +53,6 @@ export function BottomBar({
           </>
         )}
       </button>
-      {shortcutHint ? <span className="kbd-hint">{shortcutHint}</span> : null}
       <button
         className="hint-button"
         type="button"
@@ -66,7 +60,6 @@ export function BottomBar({
         disabled={hintDisabled}
       >
         Hint
-        <span className="hint-button-kbd">(H)</span>
       </button>
       <div
         className={`status-message${statusClass}${statusVisible ? '' : ' hidden'}`}

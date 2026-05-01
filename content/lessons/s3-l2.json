@@ -2,28 +2,34 @@
   "id": "s3-l2",
   "session": "Session 3",
   "title": "Conditionals",
-  "content": {
-    "heading": "Conditionals — making decisions",
-    "body": [
-      { "kind": "p", "text": "An if statement runs a block of code only when a condition is true. An else block runs when it is false. This is how programs make decisions based on the current state." },
-      { "kind": "concept", "code": "if (score >= 10) { ... }", "desc": "Run this block only when score is 10 or higher" },
-      { "kind": "concept", "code": "} else { ... }", "desc": "Run this block when the condition is false" },
-      { "kind": "code", "lines": [
-        "let score = 8;",
-        "",
-        "if (score >= 10) {",
-        "    console.log('You win!');",
-        "} else {",
-        "    console.log('Keep going — ' + (10 - score) + ' more needed.');",
-        "}",
-        "",
-        "// === checks value AND type — always use === not ==",
-        "// >= means greater than or equal to",
-        "// !  means NOT — !true is false, !false is true"
-      ]},
-      { "kind": "callout", "variant": "danger", "label": "=== is not =", "text": "A single = puts a value into a variable. Triple === checks whether two values are equal. Using = inside an if condition is one of the most common bugs in JavaScript." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Conditionals — making decisions",
+      "blocks": [
+        { "kind": "p", "text": "An if statement runs a block of code only when a condition is true. An else block runs when it is false. This is how programs make decisions based on the current state." },
+        { "kind": "concept", "code": "if (score >= 10) { ... }", "desc": "Run this block only when score is 10 or higher" },
+        { "kind": "concept", "code": "} else { ... }", "desc": "Run this block when the condition is false" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "let score = 8;",
+          "",
+          "if (score >= 10) {",
+          "    console.log('You win!');",
+          "} else {",
+          "    console.log('Keep going — ' + (10 - score) + ' more needed.');",
+          "}",
+          "",
+          "// === checks value AND type — always use === not ==",
+          "// >= means greater than or equal to",
+          "// !  means NOT — !true is false, !false is true"
+        ]},
+        { "kind": "callout", "variant": "danger", "label": "=== is not =", "text": "A single = puts a value into a variable. Triple === checks whether two values are equal. Using = inside an if condition is one of the most common bugs in JavaScript." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Write a decision",

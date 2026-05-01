@@ -9,8 +9,6 @@ type ExercisePromptProps = {
   onNavigate: (index: number) => void
   hintVisible: boolean
   isFading?: boolean
-  shortcutPrev?: string
-  shortcutNext?: string
 }
 
 const TYPE_TOOLTIPS: Record<Exercise['type'], string> = {
@@ -28,8 +26,6 @@ export function ExercisePrompt({
   onNavigate,
   hintVisible,
   isFading = false,
-  shortcutPrev,
-  shortcutNext,
 }: ExercisePromptProps) {
   const exercise = exercises[activeIndex]
   const scrollRef = useRef<HTMLElement | null>(null)
@@ -88,13 +84,9 @@ export function ExercisePrompt({
               onClick={() => onNavigate(activeIndex - 1)}
               disabled={isFirst}
               aria-label="Previous exercise"
-              title={shortcutPrev ? `Previous (${shortcutPrev})` : 'Previous exercise'}
             >
               {'←'}
             </button>
-            {shortcutPrev ? (
-              <span className="exercise-nav-kbd">{shortcutPrev}</span>
-            ) : null}
           </div>
           <div className="exercise-nav-button-cell">
             <button
@@ -103,13 +95,9 @@ export function ExercisePrompt({
               onClick={() => onNavigate(activeIndex + 1)}
               disabled={isLast}
               aria-label="Next exercise"
-              title={shortcutNext ? `Next (${shortcutNext})` : 'Next exercise'}
             >
               {'→'}
             </button>
-            {shortcutNext ? (
-              <span className="exercise-nav-kbd">{shortcutNext}</span>
-            ) : null}
           </div>
         </div>
       </div>

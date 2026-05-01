@@ -2,26 +2,32 @@
   "id": "s4-l3",
   "session": "Session 4",
   "title": "Random picks",
-  "content": {
-    "heading": "Math.random() — picking random values",
-    "body": [
-      { "kind": "p", "text": "Math.random() returns a random decimal between 0 and 1 every time it is called. To turn it into a usable whole number index, multiply by the range you want and round down with Math.floor()." },
-      { "kind": "concept", "code": "Math.random()", "desc": "A random decimal between 0 (inclusive) and 1 (exclusive)" },
-      { "kind": "concept", "code": "Math.floor(Math.random() * 9)", "desc": "A random whole number between 0 and 8" },
-      { "kind": "code", "lines": [
-        "// Step by step:",
-        "// Math.random()        → 0.7382...",
-        "// * 9                  → 6.643...",
-        "// Math.floor(...)      → 6",
-        "",
-        "// Pick a random item from an array:",
-        "let animals = ['dog', 'cat', 'frog', 'panda'];",
-        "let i = Math.floor(Math.random() * animals.length);",
-        "console.log(animals[i]); // random animal each time"
-      ]},
-      { "kind": "callout", "variant": "info", "label": "Why Math.floor?", "text": "Math.random() never returns exactly 1.0, so multiplying by 4 gives a number from 0 to 3.999. Math.floor rounds down to 0, 1, 2, or 3 — exactly the valid indexes of a 4-item array." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Math.random() — picking random values",
+      "blocks": [
+        { "kind": "p", "text": "Math.random() returns a random decimal between 0 and 1 every time it is called. To turn it into a usable whole number index, multiply by the range you want and round down with Math.floor()." },
+        { "kind": "concept", "code": "Math.random()", "desc": "A random decimal between 0 (inclusive) and 1 (exclusive)" },
+        { "kind": "concept", "code": "Math.floor(Math.random() * 9)", "desc": "A random whole number between 0 and 8" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "// Step by step:",
+          "// Math.random()        → 0.7382...",
+          "// * 9                  → 6.643...",
+          "// Math.floor(...)      → 6",
+          "",
+          "// Pick a random item from an array:",
+          "let animals = ['dog', 'cat', 'frog', 'panda'];",
+          "let i = Math.floor(Math.random() * animals.length);",
+          "console.log(animals[i]); // random animal each time"
+        ]},
+        { "kind": "callout", "variant": "info", "label": "Why Math.floor?", "text": "Math.random() never returns exactly 1.0, so multiplying by 4 gives a number from 0 to 3.999. Math.floor rounds down to 0, 1, 2, or 3 — exactly the valid indexes of a 4-item array." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Explore random picks",

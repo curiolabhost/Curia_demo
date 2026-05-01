@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { ContentBlock, Lesson } from '@/lib/lessons'
+import type { ContentBlock, ContentPage, Lesson } from '@/lib/lessons'
 
 function renderInline(text: string): ReactNode[] {
   const parts: ReactNode[] = []
@@ -166,6 +166,69 @@ function Block({ block }: { block: ContentBlock }) {
     )
   }
 
+  if (block.kind === 'image') {
+    return (
+      <figure
+        className="lesson-image"
+        style={{ margin: '24px 0' }}
+      >
+        <img
+          src={block.src}
+          alt={block.alt}
+          style={{ width: '100%', borderRadius: '6px', display: 'block' }}
+        />
+        {block.caption ? (
+          <figcaption
+            style={{
+              fontSize: 13,
+              color: 'var(--text3)',
+              marginTop: 8,
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            {block.caption}
+          </figcaption>
+        ) : null}
+      </figure>
+    )
+  }
+
+  if (block.kind === 'video') {
+    return (
+      <figure
+        className="lesson-video"
+        style={{ margin: '24px 0' }}
+      >
+        <video
+          src={block.src}
+          controls
+          autoPlay={false}
+          playsInline
+          style={{
+            width: '100%',
+            borderRadius: '6px',
+            display: 'block',
+            backgroundColor: '#000',
+          }}
+        />
+        {block.caption ? (
+          <figcaption
+            style={{
+              fontSize: 13,
+              color: 'var(--text3)',
+              marginTop: 8,
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            {block.caption}
+          </figcaption>
+        ) : null}
+      </figure>
+    )
+  }
+
   if (block.kind === 'table') {
     return (
       <div
@@ -232,24 +295,34 @@ function Block({ block }: { block: ContentBlock }) {
   return null
 }
 
-export function LessonContent({ lesson }: { lesson: Lesson }) {
+export function LessonContent({
+  page,
+  isLastPage,
+  lesson,
+}: {
+  page: ContentPage
+  isLastPage: boolean
+  lesson: Lesson
+}) {
   return (
     <div>
-      <h1
-        style={{
-          fontSize: 18,
-          fontWeight: 600,
-          color: 'var(--text)',
-          margin: '0 0 14px 0',
-          lineHeight: 1.4,
-        }}
-      >
-        {lesson.content.heading}
-      </h1>
-      {lesson.content.body.map((block, i) => (
+      {page.heading ? (
+        <h1
+          style={{
+            fontSize: 18,
+            fontWeight: 600,
+            color: 'var(--text)',
+            margin: '0 0 14px 0',
+            lineHeight: 1.4,
+          }}
+        >
+          {page.heading}
+        </h1>
+      ) : null}
+      {page.blocks.map((block, i) => (
         <Block key={i} block={block} />
       ))}
-      {lesson.customize && lesson.customize.length > 0 ? (
+      {isLastPage && lesson.customize && lesson.customize.length > 0 ? (
         <div
           style={{
             marginTop: 20,

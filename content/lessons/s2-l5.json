@@ -2,31 +2,34 @@
   "id": "s2-l5",
   "session": "Session 2",
   "title": "Getting Input",
-  "content": {
-    "heading": "prompt() — making programs interactive",
-    "body": [
-      { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful — real programs respond to the person using them. prompt() pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
-
-      { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
-      { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "prompt() ALWAYS returns a string. Wrap it in Number() if you need to do math with it." },
-
-      { "kind": "code", "lines": [
-        "// Basic input",
-        "let name = prompt('What is your name?');",
-        "console.log('Hello, ' + name + '!');",
-        "",
-        "// Input for math — must convert to number",
-        "let ageInput = prompt('How old are you?');",
-        "console.log(typeof ageInput);  // 'string' — not a number yet!",
-        "",
-        "let age = Number(ageInput);    // now it's a number",
-        "let nextYear = age + 1;",
-        "console.log(`Next year you will be ${nextYear} years old.`);"
-      ]},
-
-      { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time — even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "prompt() — making programs interactive",
+      "blocks": [
+        { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful — real programs respond to the person using them. prompt() pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
+        { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
+        { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "prompt() ALWAYS returns a string. Wrap it in Number() if you need to do math with it." }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "// Basic input",
+          "let name = prompt('What is your name?');",
+          "console.log('Hello, ' + name + '!');",
+          "",
+          "// Input for math — must convert to number",
+          "let ageInput = prompt('How old are you?');",
+          "console.log(typeof ageInput);  // 'string' — not a number yet!",
+          "",
+          "let age = Number(ageInput);    // now it's a number",
+          "let nextYear = age + 1;",
+          "console.log(`Next year you will be ${nextYear} years old.`);"
+        ]},
+        { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time — even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Your first interactive program",

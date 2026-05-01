@@ -2,26 +2,32 @@
   "id": "s3-l3",
   "session": "Session 3",
   "title": "Scope",
-  "content": {
-    "heading": "Scope — what can each part of your code see?",
-    "body": [
-      { "kind": "p", "text": "Scope determines which variables a piece of code can access. Variables declared outside any function are global — visible everywhere. Variables declared inside a function are local — only visible inside that function." },
-      { "kind": "concept", "code": "let x = 0  (outside)", "desc": "Global scope — any function can read or change this" },
-      { "kind": "concept", "code": "let y = 0  (inside fn)", "desc": "Local scope — only visible inside the function it was declared in" },
-      { "kind": "code", "lines": [
-        "let count = 0;          // global — visible everywhere",
-        "",
-        "function increment() {",
-        "    let secret = 42;    // local — only visible inside increment()",
-        "    count = count + 1;  // works — count is global",
-        "}",
-        "",
-        "console.log(count);     // works",
-        "console.log(secret);    // ReferenceError — secret does not exist here"
-      ]},
-      { "kind": "callout", "variant": "info", "label": "Do not explain this first", "text": "Have students predict whether the last line will work, then run it and read the error. A ReferenceError is more memorable than a definition of scope." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Scope — what can each part of your code see?",
+      "blocks": [
+        { "kind": "p", "text": "Scope determines which variables a piece of code can access. Variables declared outside any function are global — visible everywhere. Variables declared inside a function are local — only visible inside that function." },
+        { "kind": "concept", "code": "let x = 0  (outside)", "desc": "Global scope — any function can read or change this" },
+        { "kind": "concept", "code": "let y = 0  (inside fn)", "desc": "Local scope — only visible inside the function it was declared in" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "let count = 0;          // global — visible everywhere",
+          "",
+          "function increment() {",
+          "    let secret = 42;    // local — only visible inside increment()",
+          "    count = count + 1;  // works — count is global",
+          "}",
+          "",
+          "console.log(count);     // works",
+          "console.log(secret);    // ReferenceError — secret does not exist here"
+        ]},
+        { "kind": "callout", "variant": "info", "label": "Do not explain this first", "text": "Have students predict whether the last line will work, then run it and read the error. A ReferenceError is more memorable than a definition of scope." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Break scope on purpose",

@@ -2,46 +2,53 @@
   "id": "s2-l6",
   "session": "Session 2",
   "title": "Comparisons",
-  "content": {
-    "heading": "Comparisons — asking yes or no questions",
-    "body": [
-      { "kind": "p", "text": "Every decision a program makes comes down to a question with a yes or no answer. Is the score high enough? Is the player alive? Is this the right answer? Comparison operators ask those questions. The answer is always a boolean: true or false." },
-
-      { "kind": "table", "headers": ["Operator", "Meaning", "Example", "Result"], "rows": [
-        ["===", "exactly equal (value AND type)", "5 === 5", "true"],
-        ["!==", "NOT equal", "5 !== 3", "true"],
-        [">", "greater than", "10 > 5", "true"],
-        ["<", "less than", "3 < 1", "false"],
-        [">=", "greater than or equal", "5 >= 5", "true"],
-        ["<=", "less than or equal", "4 <= 3", "false"]
-      ]},
-
-      { "kind": "concept", "code": "age >= 13 && hasTicket === true", "desc": "AND — both conditions must be true for the whole thing to be true" },
-      { "kind": "concept", "code": "isVIP || hasCoupon", "desc": "OR — at least one condition must be true" },
-      { "kind": "concept", "code": "!isGameOver", "desc": "NOT — flips true to false and false to true" },
-
-      { "kind": "code", "lines": [
-        "let score = 85;",
-        "let lives = 3;",
-        "",
-        "console.log(score > 80);          // true",
-        "console.log(score === 100);        // false",
-        "console.log(lives !== 0);          // true",
-        "",
-        "// AND — both must be true",
-        "console.log(score > 80 && lives > 0);  // true",
-        "",
-        "// OR — at least one must be true",
-        "console.log(score > 90 || lives > 0);  // true",
-        "",
-        "// NOT — flips it",
-        "let gameOver = false;",
-        "console.log(!gameOver);  // true"
-      ]},
-
-      { "kind": "callout", "variant": "danger", "label": "=== not ==", "text": "Always use === (three equals signs) to check if things are equal. Using == (two equals signs) lets JavaScript change types before comparing, which causes bugs. Stick to === and you'll avoid a whole class of problems." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Comparisons — asking yes or no questions",
+      "blocks": [
+        { "kind": "p", "text": "Every decision a program makes comes down to a question with a yes or no answer. Is the score high enough? Is the player alive? Is this the right answer? Comparison operators ask those questions. The answer is always a boolean: true or false." },
+        { "kind": "table", "headers": ["Operator", "Meaning", "Example", "Result"], "rows": [
+          ["===", "exactly equal (value AND type)", "5 === 5", "true"],
+          ["!==", "NOT equal", "5 !== 3", "true"],
+          [">", "greater than", "10 > 5", "true"],
+          ["<", "less than", "3 < 1", "false"],
+          [">=", "greater than or equal", "5 >= 5", "true"],
+          ["<=", "less than or equal", "4 <= 3", "false"]
+        ]}
+      ]
+    },
+    {
+      "heading": "Combining conditions",
+      "blocks": [
+        { "kind": "concept", "code": "age >= 13 && hasTicket === true", "desc": "AND — both conditions must be true for the whole thing to be true" },
+        { "kind": "concept", "code": "isVIP || hasCoupon", "desc": "OR — at least one condition must be true" },
+        { "kind": "concept", "code": "!isGameOver", "desc": "NOT — flips true to false and false to true" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "let score = 85;",
+          "let lives = 3;",
+          "",
+          "console.log(score > 80);          // true",
+          "console.log(score === 100);        // false",
+          "console.log(lives !== 0);          // true",
+          "",
+          "// AND — both must be true",
+          "console.log(score > 80 && lives > 0);  // true",
+          "",
+          "// OR — at least one must be true",
+          "console.log(score > 90 || lives > 0);  // true",
+          "",
+          "// NOT — flips it",
+          "let gameOver = false;",
+          "console.log(!gameOver);  // true"
+        ]},
+        { "kind": "callout", "variant": "danger", "label": "=== not ==", "text": "Always use === (three equals signs) to check if things are equal. Using == (two equals signs) lets JavaScript change types before comparing, which causes bugs. Stick to === and you'll avoid a whole class of problems." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Predict true or false",

@@ -2,20 +2,26 @@
   "id": "s5-l1",
   "session": "Session 5",
   "title": "State",
-  "content": {
-    "heading": "State — what a program remembers",
-    "body": [
-      { "kind": "p", "text": "State is the set of variables that describe what is happening right now. Every interactive program has state. A game tracks score, level, and whose turn it is. State changes when something happens, and behavior depends on what state it is in." },
-      { "kind": "table", "headers": ["State variable", "What it stores"], "rows": [
-        ["litCells", "Which cells the game lit up this round"],
-        ["playerClicks", "Which cells the player has clicked so far"],
-        ["isInputAllowed", "Whether the player can click right now"],
-        ["level", "How many cells are shown this round"]
-      ]},
-      { "kind": "callout", "variant": "info", "label": "Key question", "text": "If you forgot to reset playerClicks at the start of each round, what would happen by round 3? Think through it before reading on." },
-      { "kind": "p", "text": "By round 3, playerClicks would still contain clicks from rounds 1 and 2. The comparison would fail immediately because the array is already too long. Resetting state at the start of each round is not optional — it is required." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "State — what a program remembers",
+      "blocks": [
+        { "kind": "p", "text": "State is the set of variables that describe what is happening right now. Every interactive program has state. A game tracks score, level, and whose turn it is. State changes when something happens, and behavior depends on what state it is in." },
+        { "kind": "table", "headers": ["State variable", "What it stores"], "rows": [
+          ["litCells", "Which cells the game lit up this round"],
+          ["playerClicks", "Which cells the player has clicked so far"],
+          ["isInputAllowed", "Whether the player can click right now"],
+          ["level", "How many cells are shown this round"]
+        ]}
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "callout", "variant": "info", "label": "Key question", "text": "If you forgot to reset playerClicks at the start of each round, what would happen by round 3? Think through it before reading on." },
+        { "kind": "p", "text": "By round 3, playerClicks would still contain clicks from rounds 1 and 2. The comparison would fail immediately because the array is already too long. Resetting state at the start of each round is not optional — it is required." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Trace state through rounds",

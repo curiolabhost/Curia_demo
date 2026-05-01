@@ -2,27 +2,33 @@
   "id": "s3-l1",
   "session": "Session 3",
   "title": "Functions",
-  "content": {
-    "heading": "Functions — write once, use anywhere",
-    "body": [
-      { "kind": "p", "text": "A function is a named, reusable block of code. You define it once and call it by name whenever you need it. Without functions, you copy and paste the same logic everywhere — and when you need to change it, you change it in every place." },
-      { "kind": "concept", "code": "function greet() { ... }", "desc": "Define a block of code named 'greet' — does not run yet" },
-      { "kind": "concept", "code": "greet()", "desc": "Run that block of code right now" },
-      { "kind": "code", "lines": [
-        "function showMessage() {",
-        "    console.log('Hello!');",
-        "    console.log('This runs every time showMessage is called.');",
-        "}",
-        "",
-        "showMessage();  // runs the function",
-        "showMessage();  // runs it again",
-        "",
-        "// Writing showMessage without () does NOT call it",
-        "// The () is what triggers execution"
-      ]},
-      { "kind": "callout", "variant": "warn", "label": "Defining vs calling", "text": "Writing function showMessage() {} only creates the function — it does not run it. Writing showMessage() runs it. The parentheses are what trigger execution." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Functions — write once, use anywhere",
+      "blocks": [
+        { "kind": "p", "text": "A function is a named, reusable block of code. You define it once and call it by name whenever you need it. Without functions, you copy and paste the same logic everywhere — and when you need to change it, you change it in every place." },
+        { "kind": "concept", "code": "function greet() { ... }", "desc": "Define a block of code named 'greet' — does not run yet" },
+        { "kind": "concept", "code": "greet()", "desc": "Run that block of code right now" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "function showMessage() {",
+          "    console.log('Hello!');",
+          "    console.log('This runs every time showMessage is called.');",
+          "}",
+          "",
+          "showMessage();  // runs the function",
+          "showMessage();  // runs it again",
+          "",
+          "// Writing showMessage without () does NOT call it",
+          "// The () is what triggers execution"
+        ]},
+        { "kind": "callout", "variant": "warn", "label": "Defining vs calling", "text": "Writing function showMessage() {} only creates the function — it does not run it. Writing showMessage() runs it. The parentheses are what trigger execution." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Define and call",

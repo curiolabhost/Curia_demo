@@ -2,28 +2,31 @@
   "id": "s2-l0",
   "session": "Session 2",
   "title": "Building Foundations",
-  "content": {
-    "heading": "First, before anything...",
-    "body": [
-      { "kind": "p", "text": "Before we write real programs, you need two tools: a way to save information, and a way to see it. That's it. Everything in JavaScript is built on top of those two things." },
-
-      { "kind": "concept", "code": "let count = 1", "desc": "Create a box called 'count' and put the number 1 inside it. The word 'let' means you're making a new box for the first time." },
-      { "kind": "concept", "code": "console.log(count)", "desc": "Look inside the box called 'count' and print whatever is in there. This is how you prove your code is working." },
-
-      { "kind": "code", "lines": [
-        "let count = 5;",
-        "",
-        "console.log(count);",
-        "// This prints:  5",
-        "",
-        "// Two rules to remember:",
-        "// 1. End every line with a semicolon  ;",
-        "// 2. Use 'let' the FIRST time you create a variable — never again after that"
-      ]},
-
-      { "kind": "callout", "variant": "info", "label": "Cove says:", "text": "console.log is your best friend. Professional developers use it every single day. When something breaks, the first thing you do is console.log everything to figure out what's wrong." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "First, before anything...",
+      "blocks": [
+        { "kind": "p", "text": "Before we write real programs, you need two tools: a way to save information, and a way to see it. That's it. Everything in JavaScript is built on top of those two things." },
+        { "kind": "concept", "code": "let count = 1", "desc": "Create a box called 'count' and put the number 1 inside it. The word 'let' means you're making a new box for the first time." },
+        { "kind": "concept", "code": "console.log(count)", "desc": "Look inside the box called 'count' and print whatever is in there. This is how you prove your code is working." }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "let count = 5;",
+          "",
+          "console.log(count);",
+          "// This prints:  5",
+          "",
+          "// Two rules to remember:",
+          "// 1. End every line with a semicolon  ;",
+          "// 2. Use 'let' the FIRST time you create a variable — never again after that"
+        ]},
+        { "kind": "callout", "variant": "info", "label": "Cove says:", "text": "console.log is your best friend. Professional developers use it every single day. When something breaks, the first thing you do is console.log everything to figure out what's wrong." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Make your first variables",

@@ -2,38 +2,41 @@
   "id": "s2-l2",
   "session": "Session 2",
   "title": "Numbers & Math",
-  "content": {
-    "heading": "Numbers — doing math with JavaScript",
-    "body": [
-      { "kind": "p", "text": "JavaScript can do math just like a calculator. You already know +, -, *, and /. But there are a few extra tools that are extremely useful in games and real programs." },
-
-      { "kind": "concept", "code": "10 % 3", "desc": "The remainder operator — divides 10 by 3 and gives back what's left over (1). Useful for checking if something is even or odd." },
-      { "kind": "concept", "code": "score += 10", "desc": "A shortcut for score = score + 10. You can do this with any operator: +=, -=, *=, /=" },
-      { "kind": "concept", "code": "score++", "desc": "An even shorter shortcut — adds exactly 1. score-- subtracts 1. You'll see these everywhere." },
-
-      { "kind": "code", "lines": [
-        "// Basic math",
-        "let a = 10 + 3;   // 13",
-        "let b = 10 - 3;   // 7",
-        "let c = 10 * 3;   // 30",
-        "let d = 10 / 2;   // 5",
-        "let e = 10 % 3;   // 1 (remainder of 10 divided by 3)",
-        "",
-        "// Shortcuts",
-        "let score = 0;",
-        "score += 5;   // same as: score = score + 5   → score is 5",
-        "score *= 2;   // same as: score = score * 2   → score is 10",
-        "score++;      // same as: score = score + 1   → score is 11",
-        "score--;      // same as: score = score - 1   → score is 10",
-        "",
-        "// Order of operations (same as regular math)",
-        "let result = 2 + 3 * 4;     // 14, not 20 — multiply first",
-        "let result2 = (2 + 3) * 4;  // 20 — parentheses go first"
-      ]},
-
-      { "kind": "callout", "variant": "info", "label": "The % operator", "text": "The remainder (%) is one of the most useful tools in game programming. If score % 2 equals 0, score is even. If it equals 1, score is odd. You'll use this more than you expect." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Numbers — doing math with JavaScript",
+      "blocks": [
+        { "kind": "p", "text": "JavaScript can do math just like a calculator. You already know +, -, *, and /. But there are a few extra tools that are extremely useful in games and real programs." },
+        { "kind": "concept", "code": "10 % 3", "desc": "The remainder operator — divides 10 by 3 and gives back what's left over (1). Useful for checking if something is even or odd." },
+        { "kind": "concept", "code": "score += 10", "desc": "A shortcut for score = score + 10. You can do this with any operator: +=, -=, *=, /=" },
+        { "kind": "concept", "code": "score++", "desc": "An even shorter shortcut — adds exactly 1. score-- subtracts 1. You'll see these everywhere." }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "// Basic math",
+          "let a = 10 + 3;   // 13",
+          "let b = 10 - 3;   // 7",
+          "let c = 10 * 3;   // 30",
+          "let d = 10 / 2;   // 5",
+          "let e = 10 % 3;   // 1 (remainder of 10 divided by 3)",
+          "",
+          "// Shortcuts",
+          "let score = 0;",
+          "score += 5;   // same as: score = score + 5   → score is 5",
+          "score *= 2;   // same as: score = score * 2   → score is 10",
+          "score++;      // same as: score = score + 1   → score is 11",
+          "score--;      // same as: score = score - 1   → score is 10",
+          "",
+          "// Order of operations (same as regular math)",
+          "let result = 2 + 3 * 4;     // 14, not 20 — multiply first",
+          "let result2 = (2 + 3) * 4;  // 20 — parentheses go first"
+        ]},
+        { "kind": "callout", "variant": "info", "label": "The % operator", "text": "The remainder (%) is one of the most useful tools in game programming. If score % 2 equals 0, score is even. If it equals 1, score is odd. You'll use this more than you expect." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Predict the math",

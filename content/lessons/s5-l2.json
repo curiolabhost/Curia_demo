@@ -2,26 +2,32 @@
   "id": "s5-l2",
   "session": "Session 5",
   "title": "setTimeout",
-  "content": {
-    "heading": "setTimeout — delayed actions",
-    "body": [
-      { "kind": "p", "text": "setTimeout runs a function after a delay in milliseconds. The rest of the program does not pause and wait — it keeps running. The delayed function is called later, on its own." },
-      { "kind": "concept", "code": "setTimeout(fn, 2000)", "desc": "Run fn after 2000 milliseconds — 2 seconds from now" },
-      { "kind": "code", "lines": [
-        "console.log('A');",
-        "",
-        "setTimeout(function() {",
-        "    console.log('B');",
-        "}, 1000);",
-        "",
-        "console.log('C');",
-        "",
-        "// Output order: A, C, then B one second later",
-        "// The program does NOT pause at setTimeout"
-      ]},
-      { "kind": "callout", "variant": "warn", "label": "The program does not pause", "text": "This surprises almost every beginner. Code after setTimeout runs immediately — before the delayed function fires. Think of it as scheduling a callback, not pausing execution." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "setTimeout — delayed actions",
+      "blocks": [
+        { "kind": "p", "text": "setTimeout runs a function after a delay in milliseconds. The rest of the program does not pause and wait — it keeps running. The delayed function is called later, on its own." },
+        { "kind": "concept", "code": "setTimeout(fn, 2000)", "desc": "Run fn after 2000 milliseconds — 2 seconds from now" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "console.log('A');",
+          "",
+          "setTimeout(function() {",
+          "    console.log('B');",
+          "}, 1000);",
+          "",
+          "console.log('C');",
+          "",
+          "// Output order: A, C, then B one second later",
+          "// The program does NOT pause at setTimeout"
+        ]},
+        { "kind": "callout", "variant": "warn", "label": "The program does not pause", "text": "This surprises almost every beginner. Code after setTimeout runs immediately — before the delayed function fires. Think of it as scheduling a callback, not pausing execution." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Predict the order",

@@ -2,37 +2,41 @@
   "id": "s2-l3",
   "session": "Session 2",
   "title": "Strings",
-  "content": {
-    "heading": "Strings — working with text",
-    "body": [
-      { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there — letters, numbers, symbols, spaces, emojis — if it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
-
-      { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
-      { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property — it tells you how many characters are inside." },
-      { "kind": "concept", "code": "`Hello, ${name}!`", "desc": "Template literals use backticks (`) instead of quotes. You can drop variables right into the text using ${variableName}. Much cleaner than using +." },
-
-      { "kind": "code", "lines": [
-        "// Creating strings",
-        "let firstName = 'Alex';",
-        "let lastName = 'Smith';",
-        "",
-        "// Joining strings with +",
-        "let fullName = firstName + ' ' + lastName;",
-        "console.log(fullName);  // Alex Smith",
-        "",
-        "// .length — how many characters?",
-        "console.log(firstName.length);  // 4",
-        "console.log('hello'.length);    // 5",
-        "",
-        "// Template literals — cleaner way to build strings",
-        "let age = 13;",
-        "let intro = `My name is ${firstName} and I am ${age} years old.`;",
-        "console.log(intro);  // My name is Alex and I am 13 years old."
-      ]},
-
-      { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up — watch for it." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Strings — working with text",
+      "blocks": [
+        { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there — letters, numbers, symbols, spaces, emojis — if it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
+        { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
+        { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property — it tells you how many characters are inside." }
+      ]
+    },
+    {
+      "heading": "Template literals",
+      "blocks": [
+        { "kind": "concept", "code": "`Hello, ${name}!`", "desc": "Template literals use backticks (`) instead of quotes. You can drop variables right into the text using ${variableName}. Much cleaner than using +." },
+        { "kind": "code", "lines": [
+          "// Creating strings",
+          "let firstName = 'Alex';",
+          "let lastName = 'Smith';",
+          "",
+          "// Joining strings with +",
+          "let fullName = firstName + ' ' + lastName;",
+          "console.log(fullName);  // Alex Smith",
+          "",
+          "// .length — how many characters?",
+          "console.log(firstName.length);  // 4",
+          "console.log('hello'.length);    // 5",
+          "",
+          "// Template literals — cleaner way to build strings",
+          "let age = 13;",
+          "let intro = `My name is ${firstName} and I am ${age} years old.`;",
+          "console.log(intro);  // My name is Alex and I am 13 years old."
+        ]},
+        { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up — watch for it." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Build a name tag",

@@ -24,11 +24,9 @@ type RightPanelProps = {
   lesson: Lesson
   prevLessonId?: string
   nextLessonId?: string
-}
-
-function detectMac(): boolean {
-  if (typeof navigator === 'undefined') return false
-  return navigator.platform.toUpperCase().includes('MAC')
+  pageIndex: number
+  setPageIndex: (index: number) => void
+  totalPages: number
 }
 
 function isInsideEditor(target: EventTarget | null): boolean {
@@ -44,7 +42,14 @@ function isInTextField(target: EventTarget | null): boolean {
   return false
 }
 
-export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelProps) {
+export function RightPanel({
+  lesson,
+  prevLessonId,
+  nextLessonId,
+  pageIndex,
+  setPageIndex,
+  totalPages,
+}: RightPanelProps) {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>('exercises')
   const [exerciseIndex, setExerciseIndex] = useState(0)
@@ -55,7 +60,6 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
   const [isRunning, setIsRunning] = useState(false)
   const [statusMsg, setStatusMsg] = useState('Ready')
   const [statusType, setStatusType] = useState<StatusType>('default')
-  const [isMac, setIsMac] = useState(false)
 
   const [renderedLesson, setRenderedLesson] = useState<Lesson>(lesson)
   const [renderedExerciseIndex, setRenderedExerciseIndex] = useState(0)
@@ -85,10 +89,6 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
     (activeChallenge?.checks?.length ?? 0) > 0 &&
     checkResults.length > 0 &&
     checkResults.every((r) => r.passed)
-
-  useEffect(() => {
-    setIsMac(detectMac())
-  }, [])
 
   // Cross-fade on lesson change
   useEffect(() => {
@@ -327,6 +327,14 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
     if (nextLessonId) router.push(`/learn/${nextLessonId}`)
   }, [router, nextLessonId])
 
+  const goPrevPage = useCallback(() => {
+    if (pageIndex > 0) setPageIndex(pageIndex - 1)
+  }, [pageIndex, setPageIndex])
+
+  const goNextPage = useCallback(() => {
+    if (pageIndex < totalPages - 1) setPageIndex(pageIndex + 1)
+  }, [pageIndex, totalPages, setPageIndex])
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const target = e.target
@@ -375,6 +383,16 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
           }
           return
         }
+        if (e.key === ',' || e.code === 'Comma') {
+          e.preventDefault()
+          goPrevPage()
+          return
+        }
+        if (e.key === '.' || e.code === 'Period') {
+          e.preventDefault()
+          goNextPage()
+          return
+        }
       }
 
       if (!e.metaKey && !e.ctrlKey && !e.altKey && (e.key === 'h' || e.key === 'H')) {
@@ -404,6 +422,8 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
     goPrevExercise,
     goNextLesson,
     goPrevLesson,
+    goNextPage,
+    goPrevPage,
     handleChallengeNavigate,
     mode,
     activeExercise,
@@ -419,11 +439,6 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
     runEntriesRef.current = []
     runCheckResultsRef.current = []
   }, [])
-
-  const shortcutHint = isMac ? '⌘↵' : 'Ctrl+↵'
-  const exerciseShortcutPrev = isMac ? '⌘[' : 'Ctrl+['
-  const exerciseShortcutNext = isMac ? '⌘]' : 'Ctrl+]'
-  const runTitle = isMac ? 'Run code (⌘↵)' : 'Run code (Ctrl+↵)'
 
   const isFading = exerciseFading || lessonFading
 
@@ -467,8 +482,6 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
               onNavigate={setExerciseIndex}
               hintVisible={hintVisible}
               isFading={isFading}
-              shortcutPrev={exerciseShortcutPrev}
-              shortcutNext={exerciseShortcutNext}
             />
           ) : (
             <section className="exercise-prompt">
@@ -503,7 +516,6 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
           entries={entries}
           checkResults={checkResults}
           onClear={handleClear}
-          shortcutHint={shortcutHint}
         />
       </div>
       <BottomBar
@@ -513,8 +525,6 @@ export function RightPanel({ lesson, prevLessonId, nextLessonId }: RightPanelPro
         isRunning={isRunning}
         statusMessage={statusMsg}
         statusType={statusType}
-        shortcutHint={shortcutHint}
-        runTitle={runTitle}
       />
     </div>
   )

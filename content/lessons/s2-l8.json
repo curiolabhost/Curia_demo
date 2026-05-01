@@ -2,43 +2,46 @@
   "id": "s2-l8",
   "session": "Session 2",
   "title": "Putting It Together",
-  "content": {
-    "heading": "Putting it all together — your first real program",
-    "body": [
-      { "kind": "p", "text": "You've learned variables, numbers, strings, data types, input, comparisons, and conditionals. These aren't separate topics — they're ingredients. Real programs use all of them at once. This lesson is about mixing them together." },
-
-      { "kind": "p", "text": "Here's a small program that combines everything from Session 2. Read through it carefully before moving to the exercises." },
-
-      { "kind": "code", "lines": [
-        "// Variables to track the game state",
-        "let playerName = prompt('What is your name?');",
-        "let score = 0;",
-        "let lives = 3;",
-        "",
-        "// Greet the player",
-        "console.log(`Welcome, ${playerName}! You have ${lives} lives.`);",
-        "",
-        "// Simulate a correct answer",
-        "score += 10;",
-        "console.log(`Score: ${score}`);",
-        "",
-        "// Simulate a wrong answer",
-        "lives--;",
-        "console.log(`Lives left: ${lives}`);",
-        "",
-        "// Check the current state",
-        "if (lives === 0) {",
-        "    console.log('Game over, ' + playerName + '!');",
-        "} else if (score >= 50) {",
-        "    console.log('You win!');",
-        "} else {",
-        "    console.log(`Keep going! You need ${50 - score} more points.`);",
-        "}"
-      ]},
-
-      { "kind": "callout", "variant": "info", "label": "What you just used", "text": "That program used: variables (let), strings, numbers, template literals, prompt(), +=, --, comparison operators (===, >=), and conditionals (if/else if/else). That's the entire Session 2 toolkit." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Putting it all together — your first real program",
+      "blocks": [
+        { "kind": "p", "text": "You've learned variables, numbers, strings, data types, input, comparisons, and conditionals. These aren't separate topics — they're ingredients. Real programs use all of them at once. This lesson is about mixing them together." },
+        { "kind": "p", "text": "Here's a small program that combines everything from Session 2. Read through it carefully before moving to the exercises." }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "// Variables to track the game state",
+          "let playerName = prompt('What is your name?');",
+          "let score = 0;",
+          "let lives = 3;",
+          "",
+          "// Greet the player",
+          "console.log(`Welcome, ${playerName}! You have ${lives} lives.`);",
+          "",
+          "// Simulate a correct answer",
+          "score += 10;",
+          "console.log(`Score: ${score}`);",
+          "",
+          "// Simulate a wrong answer",
+          "lives--;",
+          "console.log(`Lives left: ${lives}`);",
+          "",
+          "// Check the current state",
+          "if (lives === 0) {",
+          "    console.log('Game over, ' + playerName + '!');",
+          "} else if (score >= 50) {",
+          "    console.log('You win!');",
+          "} else {",
+          "    console.log(`Keep going! You need ${50 - score} more points.`);",
+          "}"
+        ]},
+        { "kind": "callout", "variant": "info", "label": "What you just used", "text": "That program used: variables (let), strings, numbers, template literals, prompt(), +=, --, comparison operators (===, >=), and conditionals (if/else if/else). That's the entire Session 2 toolkit." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Trace the full program",

@@ -7,7 +7,6 @@ type OutputConsoleProps = {
   entries: LogEntry[]
   checkResults: CheckResult[]
   onClear: () => void
-  shortcutHint?: string
 }
 
 const ICONS: Record<LogType, string> = {
@@ -55,7 +54,6 @@ export function OutputConsole({
   entries,
   checkResults,
   onClear,
-  shortcutHint,
 }: OutputConsoleProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [copied, setCopied] = useState(false)
@@ -116,11 +114,6 @@ export function OutputConsole({
             <span className="output-empty-primary">
               Run your code to see output
             </span>
-            {shortcutHint ? (
-              <span className="output-empty-secondary">
-                {shortcutHint} to run
-              </span>
-            ) : null}
           </div>
         ) : (
           <>

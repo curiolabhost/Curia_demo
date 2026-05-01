@@ -2,28 +2,34 @@
   "id": "s4-l2",
   "session": "Session 4",
   "title": "Loops",
-  "content": {
-    "heading": "Loops — repeat code for every item",
-    "body": [
-      { "kind": "p", "text": "A for loop runs the same block of code repeatedly, counting from a start to an end. A forEach loop runs a function for each item in an array automatically — no counter variable needed." },
-      { "kind": "concept", "code": "for (let i = 0; i < 5; i++)", "desc": "Start at 0, run while i is less than 5, add 1 each time" },
-      { "kind": "concept", "code": "array.forEach(function(item))", "desc": "Run this function once for each item in the array" },
-      { "kind": "code", "lines": [
-        "// for loop",
-        "for (let i = 0; i < 3; i++) {",
-        "    console.log('Step', i);",
-        "}",
-        "// prints: Step 0, Step 1, Step 2",
-        "",
-        "// forEach",
-        "let fruits = ['apple', 'banana', 'cherry'];",
-        "fruits.forEach(function(fruit) {",
-        "    console.log('I like', fruit);",
-        "});"
-      ]},
-      { "kind": "callout", "variant": "info", "label": "Which one to use", "text": "Use a for loop when you need the index number or want to count in a custom way. Use forEach when you just want to do something with each item." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Loops — repeat code for every item",
+      "blocks": [
+        { "kind": "p", "text": "A for loop runs the same block of code repeatedly, counting from a start to an end. A forEach loop runs a function for each item in an array automatically — no counter variable needed." },
+        { "kind": "concept", "code": "for (let i = 0; i < 5; i++)", "desc": "Start at 0, run while i is less than 5, add 1 each time" },
+        { "kind": "concept", "code": "array.forEach(function(item))", "desc": "Run this function once for each item in the array" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "// for loop",
+          "for (let i = 0; i < 3; i++) {",
+          "    console.log('Step', i);",
+          "}",
+          "// prints: Step 0, Step 1, Step 2",
+          "",
+          "// forEach",
+          "let fruits = ['apple', 'banana', 'cherry'];",
+          "fruits.forEach(function(fruit) {",
+          "    console.log('I like', fruit);",
+          "});"
+        ]},
+        { "kind": "callout", "variant": "info", "label": "Which one to use", "text": "Use a for loop when you need the index number or want to count in a custom way. Use forEach when you just want to do something with each item." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Count with a loop",

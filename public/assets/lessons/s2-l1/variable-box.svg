@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap');
+      .sans { font-family: 'DM Sans', system-ui, sans-serif; }
+      .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+      .shadow { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08)); }
+    </style>
+  </defs>
+
+  <rect width="600" height="300" fill="#F8F9FC"/>
+
+  <!-- Left side: variable box with label pill -->
+  <!-- Label pill above box -->
+  <g class="shadow">
+    <rect x="55" y="80" width="80" height="28" rx="14" fill="#EEF3FD" stroke="#3B6FE8" stroke-width="1.5"/>
+    <text x="95" y="99" class="sans" font-size="14" font-weight="700" fill="#3B6FE8" text-anchor="middle">score</text>
+  </g>
+
+  <!-- The box -->
+  <g class="shadow">
+    <rect x="35" y="125" width="120" height="80" rx="6" fill="#FFFFFF" stroke="#3B6FE8" stroke-width="2"/>
+    <text x="95" y="180" class="mono" font-size="32" fill="#1A1E2E" text-anchor="middle">0</text>
+  </g>
+
+  <!-- Annotating arrow 1: points to label pill -->
+  <g>
+    <path d="M 200 80 Q 175 80 155 94" stroke="#8B91A8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <polygon points="155,94 162,89 162,99" fill="#8B91A8"/>
+    <text x="207" y="84" class="sans" font-size="13" fill="#4A5068">the name</text>
+  </g>
+
+  <!-- Annotating arrow 2: points inside the box -->
+  <g>
+    <path d="M 200 175 Q 180 175 160 170" stroke="#8B91A8" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <polygon points="160,170 168,166 167,176" fill="#8B91A8"/>
+    <text x="207" y="179" class="sans" font-size="13" fill="#4A5068">the value</text>
+  </g>
+
+  <!-- Right side: explanation column -->
+  <text x="320" y="135" class="mono" font-size="15" font-weight="500" fill="#1A1E2E">let score = 0</text>
+
+  <text x="320" y="170" class="sans" font-size="13" fill="#4A5068">
+    <tspan x="320" dy="0">Creates a container called</tspan>
+    <tspan x="320" dy="18">'score' and puts 0 inside it.</tspan>
+  </text>
+</svg>

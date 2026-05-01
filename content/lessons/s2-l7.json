@@ -2,35 +2,38 @@
   "id": "s2-l7",
   "session": "Session 2",
   "title": "Conditionals",
-  "content": {
-    "heading": "Conditionals — making your program decide",
-    "body": [
-      { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
-
-      { "kind": "concept", "code": "if (score >= 100) { ... }", "desc": "If this condition is true, run the code inside the curly braces" },
-      { "kind": "concept", "code": "} else { ... }", "desc": "If the condition was false, run this instead" },
-      { "kind": "concept", "code": "} else if (score >= 50) { ... }", "desc": "Check a second condition — only runs if the first one was false" },
-
-      { "kind": "code", "lines": [
-        "let score = 75;",
-        "",
-        "if (score >= 90) {",
-        "    console.log('Amazing! You got an A.');",
-        "} else if (score >= 70) {",
-        "    console.log('Good job! You got a B.');",
-        "} else if (score >= 50) {",
-        "    console.log('You passed. Keep practicing.');",
-        "} else {",
-        "    console.log('Not quite. Try again!');",
-        "}",
-        "",
-        "// score is 75, so the second condition is true",
-        "// JavaScript checks top to bottom and stops at the first true one"
-      ]},
-
-      { "kind": "callout", "variant": "warn", "label": "Top to bottom — first match wins", "text": "JavaScript checks each condition in order. The moment it finds a true one, it runs that block and skips the rest. If you put a less specific condition first, a more specific one below it might never run." }
-    ]
-  },
+  "content": [
+    {
+      "heading": "Conditionals — making your program decide",
+      "blocks": [
+        { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
+        { "kind": "concept", "code": "if (score >= 100) { ... }", "desc": "If this condition is true, run the code inside the curly braces" },
+        { "kind": "concept", "code": "} else { ... }", "desc": "If the condition was false, run this instead" },
+        { "kind": "concept", "code": "} else if (score >= 50) { ... }", "desc": "Check a second condition — only runs if the first one was false" }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "let score = 75;",
+          "",
+          "if (score >= 90) {",
+          "    console.log('Amazing! You got an A.');",
+          "} else if (score >= 70) {",
+          "    console.log('Good job! You got a B.');",
+          "} else if (score >= 50) {",
+          "    console.log('You passed. Keep practicing.');",
+          "} else {",
+          "    console.log('Not quite. Try again!');",
+          "}",
+          "",
+          "// score is 75, so the second condition is true",
+          "// JavaScript checks top to bottom and stops at the first true one"
+        ]},
+        { "kind": "callout", "variant": "warn", "label": "Top to bottom — first match wins", "text": "JavaScript checks each condition in order. The moment it finds a true one, it runs that block and skips the rest. If you put a less specific condition first, a more specific one below it might never run." }
+      ]
+    }
+  ],
   "exercises": [
     {
       "title": "Trace the path",

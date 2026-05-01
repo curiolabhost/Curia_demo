@@ -24,6 +24,8 @@ export type ContentBlock =
   | { kind: 'concept'; code: string; desc: string }
   | { kind: 'callout'; variant: 'info' | 'warn' | 'danger'; label: string; text: string }
   | { kind: 'table'; headers: string[]; rows: string[][] }
+  | { kind: 'image'; src: string; alt: string; caption?: string }
+  | { kind: 'video'; src: string; caption?: string }
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }
@@ -54,14 +56,16 @@ export type Challenge = {
   explanation: string
 }
 
+export type ContentPage = {
+  heading?: string
+  blocks: ContentBlock[]
+}
+
 export type Lesson = {
   id: string
   session: string
   title: string
-  content: {
-    heading: string
-    body: ContentBlock[]
-  }
+  content: ContentPage[]
   exercises: Exercise[]
   challenges?: Challenge[]
   customize?: string[]

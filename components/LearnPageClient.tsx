@@ -25,10 +25,17 @@ export function LearnPageClient({
   session,
 }: LearnPageClientProps) {
   const [navOpen, setNavOpen] = useState(false)
+  const [pageIndex, setPageIndex] = useState(0)
 
   useEffect(() => {
     setNavOpen(false)
   }, [activeLessonId])
+
+  useEffect(() => {
+    setPageIndex(0)
+  }, [activeLessonId])
+
+  const totalPages = activeLesson?.content.length ?? 1
 
   useEffect(() => {
     if (navOpen) {
@@ -89,12 +96,20 @@ export function LearnPageClient({
         <span className="nav-edge-toggle-icon">{navOpen ? '‹' : '›'}</span>
       </button>
       <div className="app-main">
-        <Sidebar lesson={activeLesson} />
+        <Sidebar
+          lesson={activeLesson}
+          pageIndex={pageIndex}
+          setPageIndex={setPageIndex}
+          totalPages={totalPages}
+        />
         {activeLesson ? (
           <LessonWorkspace
             lesson={activeLesson}
             prevLessonId={prevLessonId}
             nextLessonId={nextLessonId}
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+            totalPages={totalPages}
           />
         ) : (
           <div className="right-panel">

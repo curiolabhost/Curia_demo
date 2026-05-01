@@ -2,6 +2,12 @@ import s2l0 from '@/content/lessons/s2-l0.json'
 import s2l1 from '@/content/lessons/s2-l1.json'
 import s2l2 from '@/content/lessons/s2-l2.json'
 import s2l3 from '@/content/lessons/s2-l3.json'
+import s2l4 from '@/content/lessons/s2-l4.json'
+import s2l5 from '@/content/lessons/s2-l5.json'
+import s2l6 from '@/content/lessons/s2-l6.json'
+import s2l7 from '@/content/lessons/s2-l7.json'
+import s2l8 from '@/content/lessons/s2-l8.json'
+
 import s3l1 from '@/content/lessons/s3-l1.json'
 import s3l2 from '@/content/lessons/s3-l2.json'
 import s3l3 from '@/content/lessons/s3-l3.json'
@@ -62,7 +68,7 @@ export type Lesson = {
 }
 
 const lessons: Lesson[] = [
-  s2l0, s2l1, s2l2, s2l3,
+  s2l0, s2l1, s2l2, s2l3, s2l4, s2l5, s2l6, s2l7, s2l8,
   s3l1, s3l2, s3l3,
   s4l1, s4l2, s4l3,
   s5l1, s5l2, s5l3,

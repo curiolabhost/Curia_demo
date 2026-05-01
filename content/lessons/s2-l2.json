@@ -1,65 +1,137 @@
 {
   "id": "s2-l2",
   "session": "Session 2",
-  "title": "Event Listeners",
+  "title": "Numbers & Math",
   "content": {
-    "heading": "Event Listeners — responding to user actions",
+    "heading": "Numbers — doing math with JavaScript",
     "body": [
-      { "kind": "p", "text": "An event listener watches an element and runs a function when something happens — a click, a keypress, a mouse movement. You tell the browser what to watch and what to do when it happens." },
-      { "kind": "concept", "code": "addEventListener('click', fn)", "desc": "Watch this element — when it is clicked, run this function" },
+      { "kind": "p", "text": "JavaScript can do math just like a calculator. You already know +, -, *, and /. But there are a few extra tools that are extremely useful in games and real programs." },
+
+      { "kind": "concept", "code": "10 % 3", "desc": "The remainder operator — divides 10 by 3 and gives back what's left over (1). Useful for checking if something is even or odd." },
+      { "kind": "concept", "code": "score += 10", "desc": "A shortcut for score = score + 10. You can do this with any operator: +=, -=, *=, /=" },
+      { "kind": "concept", "code": "score++", "desc": "An even shorter shortcut — adds exactly 1. score-- subtracts 1. You'll see these everywhere." },
+
       { "kind": "code", "lines": [
-        "let button = document.getElementById('myButton');",
+        "// Basic math",
+        "let a = 10 + 3;   // 13",
+        "let b = 10 - 3;   // 7",
+        "let c = 10 * 3;   // 30",
+        "let d = 10 / 2;   // 5",
+        "let e = 10 % 3;   // 1 (remainder of 10 divided by 3)",
         "",
-        "button.addEventListener('click', function() {",
-        "    console.log('The button was clicked!');",
-        "});",
+        "// Shortcuts",
+        "let score = 0;",
+        "score += 5;   // same as: score = score + 5   → score is 5",
+        "score *= 2;   // same as: score = score * 2   → score is 10",
+        "score++;      // same as: score = score + 1   → score is 11",
+        "score--;      // same as: score = score - 1   → score is 10",
         "",
-        "// The function does NOT run immediately",
-        "// It runs later, each time the button is clicked"
+        "// Order of operations (same as regular math)",
+        "let result = 2 + 3 * 4;     // 14, not 20 — multiply first",
+        "let result2 = (2 + 3) * 4;  // 20 — parentheses go first"
       ]},
-      { "kind": "callout", "variant": "warn", "label": "Important", "text": "The function inside addEventListener does not run right away. It runs later, when the event fires. This is different from most code, which runs top to bottom immediately." }
+
+      { "kind": "callout", "variant": "info", "label": "The % operator", "text": "The remainder (%) is one of the most useful tools in game programming. If score % 2 equals 0, score is even. If it equals 1, score is odd. You'll use this more than you expect." }
     ]
   },
   "exercises": [
     {
-      "title": "Event listener in isolation",
-      "type": "practice",
-      "duration": "6 min",
-      "tasks": [
-        "Declare a variable called clickCount set to 0.",
-        "Add a click listener to the document: document.addEventListener('click', function() { ... })",
-        "Inside the listener: increment clickCount, then log 'Clicks: ' + clickCount.",
-        "Run the code, then click anywhere in the output area. Watch the console.",
-        "Challenge: also log the current time using new Date().toLocaleTimeString()."
-      ],
-      "hint": "document.addEventListener listens for clicks anywhere on the page — you do not need a specific button element.",
-      "starterCode": "// Add a click listener to the document\n// Log the click count each time\n\nlet clickCount = 0;\n\n// Your listener here...\n",
-      "checks": [
-        {
-          "type": "variable",
-          "name": "clickCount",
-          "expected": null,
-          "label": "a variable called 'clickCount' exists"
-        },
-        {
-          "type": "console",
-          "includes": "Clicks",
-          "label": "console output includes the word 'Clicks'"
-        }
-      ]
-    },
-    {
-      "title": "Predict the listener",
+      "title": "Predict the math",
       "type": "predict",
       "duration": "5 min",
       "tasks": [
-        "Read the starter code without running it. How many times will 'clicked!' be logged if you click the document 3 times?",
-        "Write your prediction, then run and click 3 times to check.",
-        "Now add a second addEventListener call to the same document for the same 'click' event.",
-        "Predict: does adding a second listener replace the first, or do both fire? Test it."
+        "Before running anything, calculate each result in your head or on paper:",
+        "5 + 3 * 2   →   (5 + 3) * 2   →   10 % 3   →   10 % 2   →   10 % 5",
+        "Write your predictions down.",
+        "Then type each one in the editor with console.log to check."
       ],
-      "hint": "Adding a second event listener does not replace the first — both run independently.",
-      "starterCode": "let count = 0;\n\ndocument.addEventListener('click', function() {\n    count = count + 1;\n    console.log('clicked! count is now:', count);\n});\n\n// Add a second listener below and predict what happens\n"
+      "hint": "Remember: multiplication happens before addition unless you use parentheses.",
+      "starterCode": "console.log(5 + 3 * 2);\nconsole.log((5 + 3) * 2);\nconsole.log(10 % 3);\nconsole.log(10 % 2);\nconsole.log(10 % 5);\n"
+    },
+    {
+      "title": "Shortcut operators",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Declare a variable called lives and set it to 3.",
+        "Use lives-- to lose a life. Log lives after.",
+        "Declare a variable called coins set to 0.",
+        "Use coins += 10 three times to collect 10 coins each time. Log after each.",
+        "Use coins *= 2 to double your coins. Log the final result."
+      ],
+      "hint": "lives-- is the same as lives = lives - 1. coins += 10 is the same as coins = coins + 10.",
+      "starterCode": "let lives = 3;\nconsole.log('Lives:', lives);\n\n// Lose a life\n\nconsole.log('Lives after losing one:', lives);\n\nlet coins = 0;\n// Collect 10 coins three times\n\n\n\n// Double your coins\n\nconsole.log('Final coins:', coins);\n",
+      "checks": [
+        { "type": "variable", "name": "lives", "expected": 2, "label": "lives equals 2 after using lives--" },
+        { "type": "variable", "name": "coins", "expected": 60, "label": "coins equals 60 after collecting 30 and doubling" }
+      ]
+    },
+    {
+      "title": "Even or odd?",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Declare a variable called num and set it to 7.",
+        "Log the result of num % 2.",
+        "Change num to 8 and log num % 2 again.",
+        "What does % 2 returning 0 mean? What does it returning 1 mean?",
+        "Try a few more numbers and confirm your rule."
+      ],
+      "hint": "Any number % 2 gives you either 0 or 1. Think about what each one means.",
+      "starterCode": "let num = 7;\nconsole.log(num + ' % 2 =', num % 2);\n\nnum = 8;\nconsole.log(num + ' % 2 =', num % 2);\n\n// Try a few more\n",
+      "checks": [
+        { "type": "console", "includes": "0", "label": "logged a result of 0 for an even number" }
+      ]
+    },
+    {
+      "title": "Score calculator",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Build a small score calculator from scratch.",
+        "Start with score = 0.",
+        "Add 50 points using +=.",
+        "Multiply by 3 using *=.",
+        "Subtract 25 using -=.",
+        "Add 1 point using ++.",
+        "Log 'Final score: ' + score at the end.",
+        "Expected final score: 126"
+      ],
+      "hint": "Do each operation one at a time and log after each step to track the value.",
+      "starterCode": "let score = 0;\n\n// Your operations here\n\nconsole.log('Final score:', score);\n",
+      "checks": [
+        { "type": "variable", "name": "score", "expected": 126, "label": "score equals 126 after all operations" }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "Why is the answer 23 instead of 32?",
+      "description": "The code should calculate (2 + 3) * 4 and get 20, then add 3 to get 23. But the programmer expected 32. Find out why they're confused and explain it.",
+      "buggyCode": "let result = 2 + 3 * 4 + 3;\nconsole.log(result);",
+      "starterCode": "let result = 2 + 3 * 4 + 3;\nconsole.log(result);",
+      "hint": "Think about order of operations. What runs first?",
+      "checks": [
+        { "type": "variable", "name": "result", "expected": 17, "label": "result is 17 (the actual correct answer with order of operations)" }
+      ],
+      "explanation": "3 * 4 runs first (gives 12), then 2 + 12 + 3 = 17. Not 23, and not 32. To force a different order, use parentheses: (2 + 3) * 4 + 3 = 23."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The damage calculator is off",
+      "description": "This game gives double damage when the hit number is even. But the damage is always being doubled. Fix it so it only doubles when hitNumber % 2 is 0.",
+      "buggyCode": "let hitNumber = 7;\nlet damage = 10;\ndamage *= 2;\nconsole.log('Damage dealt:', damage);",
+      "starterCode": "let hitNumber = 7;\nlet damage = 10;\ndamage *= 2;\nconsole.log('Damage dealt:', damage);",
+      "hint": "You haven't learned conditionals yet — but think: what should determine whether damage doubles? What's the value of hitNumber % 2 when hitNumber is 7?",
+      "checks": [
+        { "type": "variable", "name": "damage", "expected": 10, "label": "damage stays at 10 when hitNumber is odd" }
+      ],
+      "explanation": "hitNumber is 7 — an odd number. 7 % 2 equals 1, not 0. So the double damage should NOT apply. The fix: remove the damage *= 2 line (for now). When you learn conditionals next, you'll be able to make it check automatically."
     }
   ]
 }

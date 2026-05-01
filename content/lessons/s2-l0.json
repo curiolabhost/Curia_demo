@@ -5,72 +5,78 @@
   "content": {
     "heading": "First, before anything...",
     "body": [
-      { "kind": "p", "text": "These are some important concepts to learn in order to begin learning JavaScript." },
+      { "kind": "p", "text": "Before we write real programs, you need two tools: a way to save information, and a way to see it. That's it. Everything in JavaScript is built on top of those two things." },
 
+      { "kind": "concept", "code": "let count = 1", "desc": "Create a box called 'count' and put the number 1 inside it. The word 'let' means you're making a new box for the first time." },
+      { "kind": "concept", "code": "console.log(count)", "desc": "Look inside the box called 'count' and print whatever is in there. This is how you prove your code is working." },
 
-      { "kind": "concept", "code": "let count = 1", "desc": "When defining a variable, you use the 'let' keyword followed by the variable name and an initial value" },
-      { "kind": "concept", "code": "console.log(count)", "desc": "Print whatever is inside 'count' so you can see it. This is your proof that the code worked — use it after every line when you're learning." },
-      
       { "kind": "code", "lines": [
         "let count = 5;",
         "",
         "console.log(count);",
+        "// This prints:  5",
         "",
-        "// This will print 5 to the console",
-        "// Remember to add ';' at the end of each line!"
-      
+        "// Two rules to remember:",
+        "// 1. End every line with a semicolon  ;",
+        "// 2. Use 'let' the FIRST time you create a variable — never again after that"
       ]},
-    { "kind": "callout", "variant": "info", "label": "Cove says:", "text": "console.log shows you what's happening inside your code. Professional developers use it every single day. When something breaks, the first thing you do is console.log everything." }    ]
+
+      { "kind": "callout", "variant": "info", "label": "Cove says:", "text": "console.log is your best friend. Professional developers use it every single day. When something breaks, the first thing you do is console.log everything to figure out what's wrong." }
+    ]
   },
   "exercises": [
     {
-      "title": "Declare 3 variables",
+      "title": "Make your first variables",
       "type": "practice",
       "duration": "5 min",
       "tasks": [
-        "Declare variable 1 called age set to your age.",
-        "Declare variable 2 called pets set to the number of pets you have.",
-        "Declare variable 3 called books set to the number of books you have."
+        "Declare a variable called age and set it to your age.",
+        "Declare a variable called pets and set it to how many pets you have.",
+        "Declare a variable called books and set it to how many books you own.",
+        "Run the code. Nothing will print yet — that comes next."
       ],
-      "hint": "Don't forget to use 'let' and end each line with ';'",
-      "starterCode": "// Variable 1 = age\nlet age = 0;\n\n// Variable 2 = pets\nlet pets = 0;\n\n// Variable 3 = books\nlet books = 0;\n",
+      "hint": "Every variable starts with the word 'let'. Don't forget the semicolon at the end of each line.",
+      "starterCode": "// Variable 1 — your age\nlet age = 0;\n\n// Variable 2 — number of pets\nlet pets = 0;\n\n// Variable 3 — number of books\nlet books = 0;\n",
       "checks": [
-        {
-          "type": "variable",
-          "name": "age",
-          "expected": null,
-          "label": "a variable called 'age' exists"
-        },
-        {
-          "type": "variable",
-          "name": "pets",
-          "expected": null,
-          "label": "a variable called 'pets' exists"
-        },
-        {
-          "type": "variable",
-          "name": "books",
-          "expected": null,
-          "label": "a variable called 'books' exists"
-        }
+        { "type": "variable", "name": "age", "expected": null, "label": "a variable called 'age' exists" },
+        { "type": "variable", "name": "pets", "expected": null, "label": "a variable called 'pets' exists" },
+        { "type": "variable", "name": "books", "expected": null, "label": "a variable called 'books' exists" }
       ]
     },
     {
-      "title": "Display your saved information",
+      "title": "Print your variables",
       "type": "practice",
       "carryFrom": 0,
       "duration": "5 min",
       "tasks": [
-        "For each variable, use console.log with a label, like this: console.log(\"age:\", age)",
+        "Under each variable, add a console.log that prints it with a label.",
+        "For age: console.log('age:', age)",
         "Do the same for pets and books.",
-        "Run the code and check the console — you should see all 3 values printed."
+        "Run the code — you should see all 3 values in the console."
       ],
-      "hint": "The label goes inside quotes, then a comma, then the variable name — no quotes on the variable.",
-      "starterCode": "// Variable 1\nlet age = 0;\nconsole.log(\"age:\", age);\n\n// Variable 2\nlet pets = 0;\n\n// Variable 3\nlet books = 0;",
+      "hint": "The label goes inside quotes. Then a comma. Then the variable name — no quotes on the variable name.",
+      "starterCode": "let age = 14;\nconsole.log('age:', age);\n\nlet pets = 0;\n// add console.log for pets here\n\nlet books = 0;\n// add console.log for books here\n",
       "checks": [
         { "type": "console", "includes": "age:", "label": "logged age to the console" },
         { "type": "console", "includes": "pets:", "label": "logged pets to the console" },
         { "type": "console", "includes": "books:", "label": "logged books to the console" }
+      ]
+    },
+    {
+      "title": "Change a variable's value",
+      "type": "practice",
+      "duration": "4 min",
+      "tasks": [
+        "Declare a variable called score and set it to 10.",
+        "Log score. Then on the next line, change score to 99 — no 'let' this time.",
+        "Log score again. You should see two different numbers printed.",
+        "Why no 'let' the second time? Discuss."
+      ],
+      "hint": "You only use 'let' when creating a variable for the first time. After that, just write the name.",
+      "starterCode": "let score = 10;\nconsole.log('score starts at:', score);\n\n// Change score to 99 here (no 'let'!)\n\nconsole.log('score is now:', score);\n",
+      "checks": [
+        { "type": "variable", "name": "score", "expected": 99, "label": "score was changed to 99" },
+        { "type": "console", "includes": "99", "label": "99 was printed to the console" }
       ]
     }
   ]

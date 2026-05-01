@@ -1,0 +1,145 @@
+{
+  "id": "s2-l7",
+  "session": "Session 2",
+  "title": "Conditionals",
+  "content": {
+    "heading": "Conditionals — making your program decide",
+    "body": [
+      { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
+
+      { "kind": "concept", "code": "if (score >= 100) { ... }", "desc": "If this condition is true, run the code inside the curly braces" },
+      { "kind": "concept", "code": "} else { ... }", "desc": "If the condition was false, run this instead" },
+      { "kind": "concept", "code": "} else if (score >= 50) { ... }", "desc": "Check a second condition — only runs if the first one was false" },
+
+      { "kind": "code", "lines": [
+        "let score = 75;",
+        "",
+        "if (score >= 90) {",
+        "    console.log('Amazing! You got an A.');",
+        "} else if (score >= 70) {",
+        "    console.log('Good job! You got a B.');",
+        "} else if (score >= 50) {",
+        "    console.log('You passed. Keep practicing.');",
+        "} else {",
+        "    console.log('Not quite. Try again!');",
+        "}",
+        "",
+        "// score is 75, so the second condition is true",
+        "// JavaScript checks top to bottom and stops at the first true one"
+      ]},
+
+      { "kind": "callout", "variant": "warn", "label": "Top to bottom — first match wins", "text": "JavaScript checks each condition in order. The moment it finds a true one, it runs that block and skips the rest. If you put a less specific condition first, a more specific one below it might never run." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Trace the path",
+      "type": "predict",
+      "duration": "6 min",
+      "tasks": [
+        "Look at the starter code. There are 4 different values for score.",
+        "For each one, predict which message will print before you run it.",
+        "Run the code and check. Where were you wrong?",
+        "Change the score to exactly 70. Which branch runs? Why?"
+      ],
+      "hint": "Go through the conditions top to bottom. The first one that's true wins.",
+      "starterCode": "// Test each score value — change it to see different outputs\nlet score = 95;\n\nif (score >= 90) {\n    console.log('Grade: A');\n} else if (score >= 80) {\n    console.log('Grade: B');\n} else if (score >= 70) {\n    console.log('Grade: C');\n} else {\n    console.log('Grade: F');\n}\n\n// Try these values: 95, 82, 71, 45\n"
+    },
+    {
+      "title": "Weather advisor",
+      "type": "practice",
+      "duration": "7 min",
+      "tasks": [
+        "Declare a variable called temperature and set it to 22.",
+        "Write an if / else if / else that logs:",
+        "  - 'Bundle up!' if below 5",
+        "  - 'Wear a jacket' if below 15",
+        "  - 'Nice weather!' if below 25",
+        "  - 'It's hot!' otherwise",
+        "Test with temperatures: 2, 10, 22, 35"
+      ],
+      "hint": "Order matters! Put the most specific (lowest) condition first.",
+      "starterCode": "let temperature = 22;\n\n// Your conditions here\n",
+      "checks": [
+        { "type": "variable", "name": "temperature", "expected": null, "label": "a variable called 'temperature' exists" },
+        { "type": "console", "includes": "Nice weather!", "label": "logged the correct message for 22 degrees" }
+      ]
+    },
+    {
+      "title": "Build a quiz",
+      "type": "practice",
+      "duration": "8 min",
+      "tasks": [
+        "Use prompt() to ask: 'What is 8 times 7?'",
+        "Convert the answer to a Number.",
+        "Use an if/else to check if the answer is 56.",
+        "If correct: log 'Correct! 8 x 7 = 56'",
+        "If wrong: log 'Not quite. The answer was 56. You said: ' + their answer",
+        "Test it with a right answer and a wrong answer."
+      ],
+      "hint": "Number(prompt(...)) gets the input and converts it. Then compare with ===.",
+      "starterCode": "let answer = Number(prompt('What is 8 times 7?'));\n\n// Check the answer\n",
+      "checks": [
+        { "type": "console", "includes": "56", "label": "mentions 56 in the output" }
+      ]
+    },
+    {
+      "title": "Multiple conditions with &&",
+      "type": "practice",
+      "duration": "7 min",
+      "tasks": [
+        "Declare: playerLevel = 5, hasKey = true, bossDefeated = false",
+        "Write an if that logs 'You can enter the castle!' only when: level is 5 or higher AND hasKey is true.",
+        "Write a second if that logs 'Game over. Please restart.' when bossDefeated is false AND playerLevel is below 3.",
+        "Change the values and confirm the messages only appear under the right conditions.",
+        "Challenge: add an else to each if with an appropriate message."
+      ],
+      "hint": "Combine conditions with &&: if (playerLevel >= 5 && hasKey === true)",
+      "starterCode": "let playerLevel = 5;\nlet hasKey = true;\nlet bossDefeated = false;\n\n// Castle entry check\n\n\n// Game over check\n\n"
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The else block never runs",
+      "description": "No matter what score is set to, only the first message prints. Why?",
+      "buggyCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
+      "starterCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
+      "hint": "Think about the first condition. Is score >= 0 true for any score?",
+      "checks": [
+        { "type": "console", "includes": "You failed.", "label": "logs 'You failed.' for score = 40" }
+      ],
+      "explanation": "score >= 0 is true for every possible score (including 40), so the very first branch always wins. The else if and else never get a chance to run. Fix: reorder so the most specific conditions come first — check >= 50 before >= 0."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The discount code only works sometimes",
+      "description": "The store should give a discount when the customer has a coupon OR has spent more than $100. But it's only giving the discount when BOTH are true.",
+      "buggyCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
+      "starterCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
+      "hint": "Should both conditions need to be true, or just one?",
+      "checks": [
+        { "type": "variable", "name": "getsDiscount", "expected": true, "label": "getsDiscount is true when hasCoupon is true" }
+      ],
+      "explanation": "&& requires both conditions. The customer has a coupon but only spent $50. Since amountSpent > 100 is false, the whole && expression is false. Change && to || so having either condition is enough."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "The game never ends",
+      "description": "The game should end when lives reach 0 OR score hits 100. Find the three bugs.",
+      "buggyCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
+      "starterCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
+      "hint": "Count the equals signs in the condition. What do single, double, and triple equals each do?",
+      "checks": [
+        { "type": "console", "includes": "Game over!", "label": "logs 'Game over!'" }
+      ],
+      "explanation": "There are three = signs where there should be === (comparison, not assignment). lives = 0 SETS lives to 0 inside the condition — it doesn't check if lives IS 0. Fix all three: lives === 0 || score === 100."
+    }
+  ]
+}

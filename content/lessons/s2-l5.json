@@ -1,0 +1,127 @@
+{
+  "id": "s2-l5",
+  "session": "Session 2",
+  "title": "Getting Input",
+  "content": {
+    "heading": "prompt() — making programs interactive",
+    "body": [
+      { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful — real programs respond to the person using them. prompt() pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
+
+      { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
+      { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "prompt() ALWAYS returns a string. Wrap it in Number() if you need to do math with it." },
+
+      { "kind": "code", "lines": [
+        "// Basic input",
+        "let name = prompt('What is your name?');",
+        "console.log('Hello, ' + name + '!');",
+        "",
+        "// Input for math — must convert to number",
+        "let ageInput = prompt('How old are you?');",
+        "console.log(typeof ageInput);  // 'string' — not a number yet!",
+        "",
+        "let age = Number(ageInput);    // now it's a number",
+        "let nextYear = age + 1;",
+        "console.log(`Next year you will be ${nextYear} years old.`);"
+      ]},
+
+      { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time — even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Your first interactive program",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Use prompt() to ask the user for their name.",
+        "Store it in a variable called userName.",
+        "Use a template literal to log: 'Nice to meet you, [name]! Welcome to Curia.'",
+        "Run it and type your name in the pop-up."
+      ],
+      "hint": "The string inside prompt() is the message the user sees. Whatever they type becomes your variable's value.",
+      "starterCode": "// Ask for the user's name\nlet userName = prompt('What is your name?');\n\n// Log a welcome message\nconsole.log(`Nice to meet you, ${userName}! Welcome to Curia.`);\n",
+      "checks": [
+        { "type": "variable", "name": "userName", "expected": null, "label": "a variable called 'userName' exists" }
+      ]
+    },
+    {
+      "title": "Age calculator",
+      "type": "practice",
+      "duration": "7 min",
+      "tasks": [
+        "Ask the user how old they are using prompt().",
+        "Convert the input to a number with Number().",
+        "Calculate how old they'll be in 5 years and in 10 years.",
+        "Log both results with labels.",
+        "Bonus: log what year they were born (use 2025 as the current year)."
+      ],
+      "hint": "Number(prompt('...')) does both steps at once: asks the question and converts the answer.",
+      "starterCode": "// Get age from user — remember to convert!\nlet age = Number(prompt('How old are you?'));\n\n// Calculate future ages\n\n\nconsole.log(`In 5 years you will be ${age + 5} years old.`);\n// Add the 10 years one below\n\n// Bonus: birth year\n",
+      "checks": [
+        { "type": "console", "includes": "years old", "label": "logged a future age message" }
+      ]
+    },
+    {
+      "title": "The string trap with prompt()",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Run the starter code. When the prompt appears, type: 10",
+        "Look at the result. Is it what you expected?",
+        "Now look at the second version using Number(). Run that and type 10 again.",
+        "Explain the difference in your own words."
+      ],
+      "hint": "prompt() returns text, not a number — even when the user types digits.",
+      "starterCode": "// Version 1 — no conversion\nlet input1 = prompt('Enter a number (version 1):');\nconsole.log('Without Number():', input1 + 5);\nconsole.log('Type:', typeof input1);\n\n// Version 2 — with conversion\nlet input2 = Number(prompt('Enter a number (version 2):'));\nconsole.log('With Number():', input2 + 5);\nconsole.log('Type:', typeof input2);\n"
+    },
+    {
+      "title": "Build a personal fact card",
+      "type": "practice",
+      "duration": "8 min",
+      "tasks": [
+        "Use prompt() to ask 3 questions: name, favorite animal, and a lucky number.",
+        "Convert the lucky number to a Number.",
+        "Build a single string using a template literal that combines all three.",
+        "Log the full sentence.",
+        "Log the lucky number doubled.",
+        "Log the length of their name."
+      ],
+      "hint": "Ask all three questions first, store all three, then do the math and build the sentence.",
+      "starterCode": "let name = prompt('What is your name?');\nlet animal = prompt('What is your favorite animal?');\nlet luckyNumber = Number(prompt('What is your lucky number?'));\n\n// Build your fact card\nlet factCard = ``;\n\nconsole.log(factCard);\nconsole.log('Lucky number doubled:', luckyNumber * 2);\nconsole.log('Name length:', name.length);\n",
+      "checks": [
+        { "type": "variable", "name": "luckyNumber", "expected": null, "label": "luckyNumber exists" },
+        { "type": "console", "includes": "doubled", "label": "logged the doubled lucky number" }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The adder adds wrong",
+      "description": "This program should add two numbers the user enters. But it always concatenates them instead of adding. Fix it.",
+      "buggyCode": "let num1 = prompt('Enter first number:');\nlet num2 = prompt('Enter second number:');\nlet total = num1 + num2;\nconsole.log('Total:', total);",
+      "starterCode": "let num1 = prompt('Enter first number:');\nlet num2 = prompt('Enter second number:');\nlet total = num1 + num2;\nconsole.log('Total:', total);",
+      "hint": "What does prompt() always return? What do you need to do before math?",
+      "checks": [
+        { "type": "console", "includes": "Total:", "label": "logged the total" }
+      ],
+      "explanation": "prompt() returns strings. String + String = concatenation. Wrap both in Number(): let num1 = Number(prompt(...)). Now it does actual addition."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The greeting ignores what the user typed",
+      "description": "No matter what name the user enters, the greeting says 'Hello, friend!' instead of their name. Why?",
+      "buggyCode": "prompt('What is your name?');\nlet name = 'friend';\nconsole.log('Hello, ' + name + '!');",
+      "starterCode": "prompt('What is your name?');\nlet name = 'friend';\nconsole.log('Hello, ' + name + '!');",
+      "hint": "What happens to the value returned by prompt() on line 1?",
+      "checks": [
+        { "type": "console", "includes": "Hello,", "label": "logged a greeting using the user's input" }
+      ],
+      "explanation": "The result of prompt() is being thrown away on line 1 — nothing stores it. Line 2 then declares a brand new variable called name with the value 'friend', ignoring what the user typed. Fix: let name = prompt('What is your name?');"
+    }
+  ]
+}

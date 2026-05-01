@@ -1,0 +1,129 @@
+{
+  "id": "s2-l4",
+  "session": "Session 2",
+  "title": "Data Types",
+  "content": {
+    "heading": "Data Types — what kind of thing is this?",
+    "body": [
+      { "kind": "p", "text": "Every value in JavaScript has a type. The type determines what you can do with it. You can't do math with text, and you can't use string methods on a number. Knowing types helps you avoid bugs that seem totally random but have a very simple cause." },
+
+      { "kind": "table", "headers": ["Type", "What it is", "Example"], "rows": [
+        ["string", "Text — anything in quotes", "'hello'   \"world\"   `hi`"],
+        ["number", "Any number — whole or decimal", "42   3.14   -7   0"],
+        ["boolean", "True or false — only two options", "true   false"],
+        ["undefined", "A variable was created but never given a value", "let x;"]
+      ]},
+
+      { "kind": "concept", "code": "typeof score", "desc": "The typeof operator tells you what type a value is. It returns a string like 'number', 'string', or 'boolean'." },
+
+      { "kind": "code", "lines": [
+        "let score = 42;",
+        "let name = 'Alex';",
+        "let isWinning = true;",
+        "let nothing;",
+        "",
+        "console.log(typeof score);      // 'number'",
+        "console.log(typeof name);       // 'string'",
+        "console.log(typeof isWinning);  // 'boolean'",
+        "console.log(typeof nothing);    // 'undefined'",
+        "",
+        "// The classic trap:",
+        "let a = '5';   // this is a string",
+        "let b = 5;     // this is a number",
+        "console.log(a + b);  // '55' — not 10!"
+      ]},
+
+      { "kind": "callout", "variant": "danger", "label": "The most common beginner trap", "text": "If a number comes from user input or an HTML field, it arrives as a STRING. So '5' + 5 gives you '55'. Always check your types when math isn't working the way you expect." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Identify the types",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Before running: write down the type you expect for each variable.",
+        "Then run and use typeof to check each one.",
+        "Which one surprises you?"
+      ],
+      "hint": "Remember: anything in quotes is a string, even if it looks like a number.",
+      "starterCode": "let a = 100;\nlet b = '100';\nlet c = true;\nlet d = 'false';\nlet e = 3.14;\nlet f;\n\nconsole.log('a:', typeof a);\nconsole.log('b:', typeof b);\nconsole.log('c:', typeof c);\nconsole.log('d:', typeof d);\nconsole.log('e:', typeof e);\nconsole.log('f:', typeof f);\n"
+    },
+    {
+      "title": "Fix the broken math",
+      "type": "debug",
+      "duration": "6 min",
+      "tasks": [
+        "The code below should add two numbers together and get 15.",
+        "Run it first and see what you get.",
+        "Use typeof to figure out what's wrong.",
+        "Fix it so the result is actually 15."
+      ],
+      "hint": "The Number() function converts a string to a number: Number('10') gives you 10.",
+      "starterCode": "let a = '10';\nlet b = 5;\nlet result = a + b;\nconsole.log('Result:', result);\nconsole.log('Type of a:', typeof a);\n\n// Fix it here:\n",
+      "checks": [
+        { "type": "variable", "name": "result", "expected": 15, "label": "result equals 15" }
+      ]
+    },
+    {
+      "title": "Booleans",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Declare a variable called gameOver and set it to false.",
+        "Declare a variable called playerAlive and set it to true.",
+        "Log both variables and their types.",
+        "Now try: console.log('false' === false). What do you get? Why?",
+        "Flip gameOver to true and log it again."
+      ],
+      "hint": "true and false (without quotes) are booleans. 'true' and 'false' (with quotes) are strings — completely different things.",
+      "starterCode": "let gameOver = false;\nlet playerAlive = true;\n\nconsole.log('gameOver:', gameOver, '- type:', typeof gameOver);\nconsole.log('playerAlive:', playerAlive, '- type:', typeof playerAlive);\n\n// Try this — what does it print?\nconsole.log('false' === false);\n\n// Change gameOver to true\n",
+      "checks": [
+        { "type": "variable", "name": "gameOver", "expected": true, "label": "gameOver was changed to true" }
+      ]
+    },
+    {
+      "title": "Type detective",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Create one variable of each type: string, number, boolean, and leave one undefined.",
+        "Use typeof on all four and log the results with labels.",
+        "Now try typeof on some expressions: typeof (5 + 3), typeof ('hi' + 5), typeof (5 > 3).",
+        "Predict the result before running each one."
+      ],
+      "hint": "An expression like (5 > 3) evaluates to true or false — so its type is boolean.",
+      "starterCode": "// Create one of each type\nlet myString = '';\nlet myNumber = 0;\nlet myBoolean = true;\nlet myUndefined;\n\n// Log each with typeof\nconsole.log('string:', typeof myString);\n// continue for the others...\n\n// Bonus: check expression types\nconsole.log(typeof (5 + 3));\nconsole.log(typeof ('hi' + 5));\nconsole.log(typeof (5 > 3));\n"
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "Why does 'true' behave differently than true?",
+      "description": "The code below checks if something is true, but it never works. Figure out why.",
+      "buggyCode": "let isReady = 'true';\nif (isReady === true) {\n    console.log('Ready!');\n} else {\n    console.log('Not ready.');\n}",
+      "starterCode": "let isReady = 'true';\nif (isReady === true) {\n    console.log('Ready!');\n} else {\n    console.log('Not ready.');\n}",
+      "hint": "What type is 'true' in quotes? What type does the condition check for?",
+      "checks": [
+        { "type": "console", "includes": "Ready!", "label": "prints 'Ready!'" }
+      ],
+      "explanation": "'true' (in quotes) is a string. true (without quotes) is a boolean. They are completely different values. === checks type AND value, so 'true' === true is false. Fix: remove the quotes from 'true' on line 1 so isReady is a real boolean."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The total should be 100 but it's '5050'",
+      "description": "Someone tried to add two scores but got a weird result. Diagnose and fix it using typeof.",
+      "buggyCode": "let score1 = '50';\nlet score2 = '50';\nlet total = score1 + score2;\nconsole.log('Total:', total);",
+      "starterCode": "let score1 = '50';\nlet score2 = '50';\nlet total = score1 + score2;\nconsole.log('Total:', total);",
+      "hint": "Use typeof to check what score1 and score2 actually are. Then use Number() to fix them.",
+      "checks": [
+        { "type": "variable", "name": "total", "expected": 100, "label": "total equals 100" }
+      ],
+      "explanation": "Both score1 and score2 are strings because they're in quotes. String + string = concatenation. '50' + '50' = '5050'. Fix: either remove the quotes (let score1 = 50) or convert with Number(): total = Number(score1) + Number(score2)."
+    }
+  ]
+}

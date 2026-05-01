@@ -1,63 +1,149 @@
 {
   "id": "s2-l3",
   "session": "Session 2",
-  "title": "The Three-Part Loop",
+  "title": "Strings",
   "content": {
-    "heading": "The Three-Part Loop",
+    "heading": "Strings — working with text",
     "body": [
-      { "kind": "p", "text": "Every interactive program follows the same pattern: something happens, a variable updates, the page reflects that update. These are three separate steps — the third never happens automatically." },
-      { "kind": "concept", "code": "event fires", "desc": "User clicks, types, or interacts — something happens" },
-      { "kind": "concept", "code": "variable updates", "desc": "JavaScript updates the value stored in a variable" },
-      { "kind": "concept", "code": "page updates", "desc": "JavaScript explicitly writes the new value onto the page" },
+      { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there — letters, numbers, symbols, spaces, emojis — if it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
+
+      { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
+      { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property — it tells you how many characters are inside." },
+      { "kind": "concept", "code": "`Hello, ${name}!`", "desc": "Template literals use backticks (`) instead of quotes. You can drop variables right into the text using ${variableName}. Much cleaner than using +." },
+
       { "kind": "code", "lines": [
-        "let count = 0;",
-        "let display = document.getElementById('display');",
+        "// Creating strings",
+        "let firstName = 'Alex';",
+        "let lastName = 'Smith';",
         "",
-        "button.addEventListener('click', function() {",
-        "    count = count + 1;                        // step 2: variable updates",
-        "    display.textContent = 'Count: ' + count; // step 3: page updates",
-        "});",
+        "// Joining strings with +",
+        "let fullName = firstName + ' ' + lastName;",
+        "console.log(fullName);  // Alex Smith",
         "",
-        "// Changing a variable does NOT change the page",
-        "// You must always write the new value back explicitly"
+        "// .length — how many characters?",
+        "console.log(firstName.length);  // 4",
+        "console.log('hello'.length);    // 5",
+        "",
+        "// Template literals — cleaner way to build strings",
+        "let age = 13;",
+        "let intro = `My name is ${firstName} and I am ${age} years old.`;",
+        "console.log(intro);  // My name is Alex and I am 13 years old."
       ]},
-      { "kind": "callout", "variant": "danger", "label": "Most common beginner mistake", "text": "Students update the variable and assume the page will change automatically. It will not. You must always update the DOM separately." }
+
+      { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up — watch for it." }
     ]
   },
   "exercises": [
     {
-      "title": "Find the missing step",
-      "type": "debug",
-      "duration": "6 min",
+      "title": "Build a name tag",
+      "type": "practice",
+      "duration": "5 min",
       "tasks": [
-        "The code below increments count on every log call — but it never prints the updated value correctly.",
-        "Read it carefully. Identify which of the three steps is broken or missing.",
-        "Fix it so that each console.log prints the correct current value of count.",
-        "Then add a fourth variable called doubled and log count multiplied by 2 each time."
+        "Declare variables for your first name and last name.",
+        "Join them together into a variable called fullName with a space in between.",
+        "Log fullName.",
+        "Log fullName.length — how many characters total including the space?",
+        "Log just your first name's length."
       ],
-      "hint": "Look at what is being passed to console.log. Is it the variable, or something else?",
-      "starterCode": "// Something is wrong here — find and fix it\n\nlet count = 0;\n\nfunction increment() {\n    count = count + 1;\n    console.log('Count: ' + 0); // bug is here\n}\n\nincrement();\nincrement();\nincrement();\n",
+      "hint": "Don't forget the space: firstName + ' ' + lastName",
+      "starterCode": "let firstName = 'Your';\nlet lastName = 'Name';\n\n// Build fullName\n\n\nconsole.log(fullName);\nconsole.log('Length:', fullName.length);\n",
       "checks": [
-        {
-          "type": "console",
-          "includes": "Count: 3",
-          "label": "console logs 'Count: 3' after three increments"
-        }
+        { "type": "variable", "name": "fullName", "expected": null, "label": "a variable called 'fullName' exists" },
+        { "type": "console", "includes": "Length:", "label": "logged the length to the console" }
       ]
     },
     {
-      "title": "Build the loop from scratch",
+      "title": "Template literals",
       "type": "practice",
-      "duration": "8 min",
+      "duration": "6 min",
       "tasks": [
-        "In a blank editor, write all three steps yourself with no reference code.",
-        "Declare a count variable. Add a click listener to the document.",
-        "Inside the listener: update count, then log 'Count: ' + count.",
-        "Run it and click 5 times. Confirm the count increases correctly.",
-        "Challenge: log a different message when count reaches exactly 5."
+        "Declare variables: name (your name), age (your age), city (your city).",
+        "Using template literals (backticks), build a sentence: 'Hi! I'm [name], I'm [age] years old, and I live in [city].'",
+        "Log it.",
+        "Now change your city and log it again — the sentence updates automatically.",
+        "Challenge: add a 4th variable for your favorite food and include it in the sentence."
       ],
-      "hint": "Step 2 is count = count + 1. Step 3 is console.log(...). Both go inside the listener.",
-      "starterCode": "// Build the full three-part loop from scratch\n// No hints in the code — use the exercise panel\n\n"
+      "hint": "Template literals use the backtick key — it's in the top-left of your keyboard, same key as ~",
+      "starterCode": "let name = 'Alex';\nlet age = 13;\nlet city = 'Atlanta';\n\n// Build your sentence with a template literal\nlet intro = ``;\n\nconsole.log(intro);\n",
+      "checks": [
+        { "type": "variable", "name": "intro", "expected": null, "label": "a variable called 'intro' exists" },
+        { "type": "console", "includes": "", "label": "something is logged to the console" }
+      ]
+    },
+    {
+      "title": "String + number trap",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Before running: predict the output of each console.log below.",
+        "Write your predictions down.",
+        "Run the code and see which ones surprised you.",
+        "Explain in your own words why '5' + 5 doesn't give you 10."
+      ],
+      "hint": "The + sign has two jobs: add numbers AND join strings. Which one it uses depends on the types involved.",
+      "starterCode": "console.log(5 + 5);\nconsole.log('5' + 5);\nconsole.log('5' + '5');\nconsole.log('Score: ' + 100);\nconsole.log(10 + 20 + ' points');\nconsole.log('Points: ' + 10 + 20);\n"
+    },
+    {
+      "title": "Username generator",
+      "type": "practice",
+      "duration": "7 min",
+      "tasks": [
+        "Declare firstName, lastName, and a lucky number.",
+        "Build a username by combining the first 3 characters aren't available yet — just use the full firstName + lastName + luckyNumber.",
+        "Log: 'Your username is: ' + username",
+        "Log the length of the username.",
+        "Challenge: using a template literal, build a welcome message: 'Welcome, [username]! Your username is [length] characters long.'"
+      ],
+      "hint": "Joining strings and numbers with + works fine: 'Jordan' + 7 gives 'Jordan7'",
+      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet luckyNumber = 7;\n\n// Build username\nlet username = '';\n\nconsole.log('Your username is:', username);\nconsole.log('Length:', username.length);\n\n// Challenge: welcome message with template literal\n",
+      "checks": [
+        { "type": "variable", "name": "username", "expected": null, "label": "a variable called 'username' exists" },
+        { "type": "console", "includes": "username", "label": "logged the username message" }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The greeting is missing a space",
+      "description": "The greeting prints 'HelloAlex' instead of 'Hello Alex'. One character is missing. Find and fix it.",
+      "buggyCode": "let name = 'Alex';\nlet greeting = 'Hello' + name;\nconsole.log(greeting);",
+      "starterCode": "let name = 'Alex';\nlet greeting = 'Hello' + name;\nconsole.log(greeting);",
+      "hint": "Strings join exactly as written — there's no automatic space.",
+      "checks": [
+        { "type": "console", "includes": "Hello Alex", "label": "prints 'Hello Alex' with a space" }
+      ],
+      "explanation": "When you join strings with +, JavaScript doesn't add spaces for you. You have to add them yourself: 'Hello ' + name or 'Hello' + ' ' + name."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The score displays wrong",
+      "description": "The score should show 150 (100 + 50) but it's showing '10050'. Why? Fix it.",
+      "buggyCode": "let baseScore = '100';\nlet bonus = 50;\nlet total = baseScore + bonus;\nconsole.log('Total score:', total);",
+      "starterCode": "let baseScore = '100';\nlet bonus = 50;\nlet total = baseScore + bonus;\nconsole.log('Total score:', total);",
+      "hint": "Look at how baseScore is declared. What type is it?",
+      "checks": [
+        { "type": "variable", "name": "total", "expected": 150, "label": "total equals 150" }
+      ],
+      "explanation": "baseScore is declared as '100' in quotes — that makes it a string, not a number. When you add a string to a number, JavaScript joins them as text: '100' + 50 = '10050'. Fix: remove the quotes so baseScore is 100, not '100'."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "The intro sentence uses the wrong variable names",
+      "description": "The intro should say 'Hi, I am Sam and I am 14 years old.' but it prints something weird. Find all the bugs.",
+      "buggyCode": "let playerName = 'Sam';\nlet playerAge = 14;\nlet intro = `Hi, I am ${name} and I am ${age} years old.`;\nconsole.log(intro);",
+      "starterCode": "let playerName = 'Sam';\nlet playerAge = 14;\nlet intro = `Hi, I am ${name} and I am ${age} years old.`;\nconsole.log(intro);",
+      "hint": "Look carefully at the variable names declared on lines 1 and 2. Then look at what's inside the ${}.",
+      "checks": [
+        { "type": "console", "includes": "Hi, I am Sam and I am 14 years old.", "label": "prints the correct intro sentence" }
+      ],
+      "explanation": "The variables are called playerName and playerAge, but the template literal uses ${name} and ${age} — those don't exist. Fix: change ${name} to ${playerName} and ${age} to ${playerAge}."
     }
   ]
 }

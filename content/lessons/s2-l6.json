@@ -1,0 +1,133 @@
+{
+  "id": "s2-l6",
+  "session": "Session 2",
+  "title": "Comparisons",
+  "content": {
+    "heading": "Comparisons — asking yes or no questions",
+    "body": [
+      { "kind": "p", "text": "Every decision a program makes comes down to a question with a yes or no answer. Is the score high enough? Is the player alive? Is this the right answer? Comparison operators ask those questions. The answer is always a boolean: true or false." },
+
+      { "kind": "table", "headers": ["Operator", "Meaning", "Example", "Result"], "rows": [
+        ["===", "exactly equal (value AND type)", "5 === 5", "true"],
+        ["!==", "NOT equal", "5 !== 3", "true"],
+        [">", "greater than", "10 > 5", "true"],
+        ["<", "less than", "3 < 1", "false"],
+        [">=", "greater than or equal", "5 >= 5", "true"],
+        ["<=", "less than or equal", "4 <= 3", "false"]
+      ]},
+
+      { "kind": "concept", "code": "age >= 13 && hasTicket === true", "desc": "AND — both conditions must be true for the whole thing to be true" },
+      { "kind": "concept", "code": "isVIP || hasCoupon", "desc": "OR — at least one condition must be true" },
+      { "kind": "concept", "code": "!isGameOver", "desc": "NOT — flips true to false and false to true" },
+
+      { "kind": "code", "lines": [
+        "let score = 85;",
+        "let lives = 3;",
+        "",
+        "console.log(score > 80);          // true",
+        "console.log(score === 100);        // false",
+        "console.log(lives !== 0);          // true",
+        "",
+        "// AND — both must be true",
+        "console.log(score > 80 && lives > 0);  // true",
+        "",
+        "// OR — at least one must be true",
+        "console.log(score > 90 || lives > 0);  // true",
+        "",
+        "// NOT — flips it",
+        "let gameOver = false;",
+        "console.log(!gameOver);  // true"
+      ]},
+
+      { "kind": "callout", "variant": "danger", "label": "=== not ==", "text": "Always use === (three equals signs) to check if things are equal. Using == (two equals signs) lets JavaScript change types before comparing, which causes bugs. Stick to === and you'll avoid a whole class of problems." }
+    ]
+  },
+  "exercises": [
+    {
+      "title": "Predict true or false",
+      "type": "predict",
+      "duration": "6 min",
+      "tasks": [
+        "Before running anything — write true or false for each line in the starter code.",
+        "Then run it and check your answers.",
+        "For any wrong ones: explain why the result is what it is."
+      ],
+      "hint": "Work through each comparison one at a time. Don't rush — this is the most important skill in programming.",
+      "starterCode": "let age = 15;\nlet score = 80;\nlet name = 'Alex';\n\nconsole.log(age > 13);\nconsole.log(score === 100);\nconsole.log(score >= 80);\nconsole.log(name === 'alex');\nconsole.log(age !== 15);\nconsole.log(score > 50 && age > 10);\nconsole.log(score > 90 || age > 10);\nconsole.log(!(age === 15));\n"
+    },
+    {
+      "title": "Build your own comparisons",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Declare: playerScore = 72, maxScore = 100, lives = 2, playerName = 'Sam'",
+        "Write a comparison that checks if playerScore is at least 70. Log it.",
+        "Write a comparison that checks if lives is NOT 0. Log it.",
+        "Write a comparison that checks if playerScore is above 50 AND lives is above 0. Log it.",
+        "Write a comparison that checks if playerName equals 'Sam' OR 'Alex'. Log it.",
+        "Challenge: write a comparison that's true only when the player has NOT won (score below 100)."
+      ],
+      "hint": "For the OR name check: playerName === 'Sam' || playerName === 'Alex'",
+      "starterCode": "let playerScore = 72;\nlet maxScore = 100;\nlet lives = 2;\nlet playerName = 'Sam';\n\n// Score at least 70?\nconsole.log(playerScore >= 70);\n\n// Lives not 0?\n\n// Score above 50 AND lives above 0?\n\n// Name is Sam OR Alex?\n\n// Player has NOT won?\n",
+      "checks": [
+        { "type": "console", "includes": "true", "label": "at least one comparison logged true" }
+      ]
+    },
+    {
+      "title": "Logical operator puzzles",
+      "type": "predict",
+      "duration": "6 min",
+      "tasks": [
+        "Predict the result of each expression before running.",
+        "After checking, write one sentence explaining the rule for &&, one for ||, and one for !.",
+        "Then come up with your own example of a real-world situation for each operator."
+      ],
+      "hint": "For &&: both sides must be true. For ||: either side just needs to be true. For !: it just flips it.",
+      "starterCode": "console.log(true && true);\nconsole.log(true && false);\nconsole.log(false && false);\nconsole.log(true || false);\nconsole.log(false || false);\nconsole.log(!true);\nconsole.log(!false);\nconsole.log(!(5 > 3));\nconsole.log(5 > 3 && 10 < 20);\nconsole.log(5 > 10 || 3 < 4);\n"
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The age check is always wrong",
+      "description": "This check should be true when age is 13 or older. But it's returning false for age = 13. One character is wrong.",
+      "buggyCode": "let age = 13;\nconsole.log(age > 13);",
+      "starterCode": "let age = 13;\nconsole.log(age > 13);",
+      "hint": "The condition is 'older than 13' not '13 or older'. One extra character fixes it.",
+      "checks": [
+        { "type": "console", "includes": "true", "label": "logs true for age = 13" }
+      ],
+      "explanation": "> means strictly greater than — 13 > 13 is false. To include 13 itself, you need >= (greater than OR equal to)."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The password check always passes",
+      "description": "This login check should only pass when BOTH the username AND password are correct. Right now it passes even with the wrong password.",
+      "buggyCode": "let username = 'admin';\nlet password = 'wrong';\nlet isLoggedIn = username === 'admin' || password === 'secret123';\nconsole.log('Logged in:', isLoggedIn);",
+      "starterCode": "let username = 'admin';\nlet password = 'wrong';\nlet isLoggedIn = username === 'admin' || password === 'secret123';\nconsole.log('Logged in:', isLoggedIn);",
+      "hint": "The logic requires BOTH to be correct. Which operator requires both sides to be true?",
+      "checks": [
+        { "type": "variable", "name": "isLoggedIn", "expected": false, "label": "isLoggedIn is false when password is wrong" }
+      ],
+      "explanation": "|| means OR — if either condition is true, the whole thing is true. Since username === 'admin' IS true, it doesn't even check the password. Change || to && so BOTH must be true."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "The name check never matches",
+      "description": "The check should be true when the name is 'Alex'. It's never true even when you set name to 'Alex'.",
+      "buggyCode": "let name = 'Alex';\nconsole.log(name == 'alex');",
+      "starterCode": "let name = 'Alex';\nconsole.log(name == 'alex');",
+      "hint": "There are TWO problems here. Look at the operator AND look at the capitalization.",
+      "checks": [
+        { "type": "console", "includes": "true", "label": "logs true" }
+      ],
+      "explanation": "Two bugs: (1) 'Alex' !== 'alex' — strings are case-sensitive. (2) Using == instead of ===. Fix both: change == to === and change 'alex' to 'Alex'."
+    }
+  ]
+}

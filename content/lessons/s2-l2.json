@@ -6,8 +6,9 @@
     {
       "heading": "Numbers — doing math with JavaScript",
       "blocks": [
-        { "kind": "p", "text": "JavaScript can do math just like a calculator. You already know +, -, *, and /. But there are a few extra tools that are extremely useful in games and real programs." },
+        { "kind": "p", "text": "JavaScript does math the same way your calculator does — plus a few extra tricks." },
         { "kind": "concept", "code": "10 % 3", "desc": "The remainder operator — divides 10 by 3 and gives back what's left over (1). Useful for checking if something is even or odd." },
+        { "kind": "diagram", "variant": "percent-operator" },
         { "kind": "concept", "code": "score += 10", "desc": "A shortcut for score = score + 10. You can do this with any operator: +=, -=, *=, /=" },
         { "kind": "concept", "code": "score++", "desc": "An even shorter shortcut — adds exactly 1. score-- subtracts 1. You'll see these everywhere." }
       ]

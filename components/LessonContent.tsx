@@ -45,6 +45,73 @@ const variantStyles: Record<
   },
 }
 
+function DownArrow({ color = '#888780' }: { color?: string }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', margin: '5px 0' }}>
+      <svg width="14" height="22" viewBox="0 0 14 22">
+        <line x1="7" y1="0" x2="7" y2="18" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+        <polyline points="3,13 7,18 11,13" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  )
+}
+
+function DiagramPercentOperator() {
+  return (
+    <div style={{ background: '#F0F2F8', borderRadius: 16, padding: '2rem 2.5rem 2.5rem', margin: '16px 0' }}>
+      <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: '0.07em', color: '#888780', textTransform: 'uppercase', marginBottom: '1.75rem' }}>
+        What % does
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ borderRadius: 99, padding: '5px 18px', fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 500, background: '#E6F1FB', border: '1.5px solid #378ADD', color: '#0C447C' }}>
+            number
+          </div>
+          <DownArrow />
+          <div style={{ borderRadius: 10, width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--mono)', fontSize: 32, fontWeight: 500, background: '#fff', border: '2px solid #378ADD', color: '#0C447C' }}>
+            10
+          </div>
+          <div style={{ fontSize: 12, color: '#888780', marginTop: 5 }}>the value</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 500, color: '#D85A30', margin: '12px 0' }}>%</div>
+          <div style={{ borderRadius: 99, padding: '5px 18px', fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 500, background: '#F1EFE8', border: '1.5px solid #888780', color: '#444441' }}>
+            divisor
+          </div>
+          <DownArrow />
+          <div style={{ borderRadius: 10, width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--mono)', fontSize: 32, fontWeight: 500, background: '#fff', border: '2px solid #888780', color: '#444441' }}>
+            3
+          </div>
+          <div style={{ fontSize: 12, color: '#888780', marginTop: 5 }}>divide by</div>
+        </div>
+
+        <div style={{ fontSize: 28, color: '#B4B2A9', fontWeight: 300, lineHeight: 1 }}>→</div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ borderRadius: 99, padding: '5px 18px', fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 500, background: '#FAECE7', border: '1.5px solid #D85A30', color: '#712B13' }}>
+            remainder
+          </div>
+          <DownArrow color="#D85A30" />
+          <div style={{ borderRadius: 10, width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--mono)', fontSize: 32, fontWeight: 500, background: '#FAECE7', border: '2px solid #D85A30', color: '#712B13' }}>
+            1
+          </div>
+          <div style={{ fontSize: 12, color: '#888780', marginTop: 5 }}>what&apos;s left over</div>
+        </div>
+
+        <div style={{ minWidth: 200, flex: 1 }}>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 500, color: '#2C2C2A', marginBottom: 10 }}>
+            10 <span style={{ color: '#D85A30' }}>%</span> 3
+          </div>
+          <div style={{ fontSize: 13, color: '#5F5E5A', lineHeight: 1.65 }}>
+            10 ÷ 3 = 3 groups, with <strong style={{ color: '#712B13', fontWeight: 500 }}>1 left over</strong>.<br />
+            The % operator gives you just that leftover. Not the answer — the remainder.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
 function Block({ block }: { block: ContentBlock }) {
   if (block.kind === 'p') {
     return (
@@ -227,6 +294,11 @@ function Block({ block }: { block: ContentBlock }) {
         ) : null}
       </figure>
     )
+  }
+
+  if (block.kind === 'diagram') {
+    if (block.variant === 'percent-operator') return <DiagramPercentOperator />
+    return null
   }
 
   if (block.kind === 'table') {

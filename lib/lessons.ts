@@ -26,6 +26,7 @@ export type ContentBlock =
   | { kind: 'table'; headers: string[]; rows: string[][] }
   | { kind: 'image'; src: string; alt: string; caption?: string }
   | { kind: 'video'; src: string; caption?: string }
+  | { kind: 'diagram'; variant: string }
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }

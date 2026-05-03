@@ -96,9 +96,15 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
     }
   }
 
+  const isCorrectLocked = (index: number) =>
+    answerState === 'idle' &&
+    filled[index] !== null &&
+    filled[index] === correctOrder[index]
+
   const handleBlankClick = (index: number) => {
     if (answerState === 'correct') return
     if (filled[index] === null) return
+    if (isCorrectLocked(index)) return
     const nextFilled = [...filled]
     const nextIds = [...filledTokenIds]
     nextFilled[index] = null
@@ -124,8 +130,8 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
       setWrongFlags(wrong)
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
       resetTimerRef.current = setTimeout(() => {
-        setFilled(Array(blankCount).fill(null))
-        setFilledTokenIds(Array(blankCount).fill(null))
+        setFilled((prev) => prev.map((v, i) => (wrong[i] ? null : v)))
+        setFilledTokenIds((prev) => prev.map((v, i) => (wrong[i] ? null : v)))
         setWrongFlags(Array(blankCount).fill(false))
         setAnswerState('idle')
         resetTimerRef.current = null
@@ -141,7 +147,8 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
       if (wrongFlags[index]) classes.push('filled', 'wrong')
       else if (filled[index] !== null) classes.push('filled', 'correct')
     } else if (filled[index] !== null) {
-      classes.push('filled')
+      if (filled[index] === correctOrder[index]) classes.push('filled', 'correct')
+      else classes.push('filled')
     }
     return classes.join(' ')
   }

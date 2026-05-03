@@ -10,11 +10,7 @@ import { ChallengePrompt } from './ChallengePrompt'
 import { CodeEditor, type CodeEditorHandle } from './CodeEditor'
 import { ExercisePrompt } from './ExercisePrompt'
 import { OutputConsole } from './OutputConsole'
-import {
-  FillBlankPanel,
-  MultipleChoicePanel,
-  getPanelFormat,
-} from './exercise-panels'
+import { getPanelFormat, panelRegistry } from './exercise-panels'
 
 const TIMEOUT_MS = 5000
 const SHORTCUT_GAP_MS = 200
@@ -111,6 +107,7 @@ export function RightPanel({
       setCheckResults([])
       setStatusMsg('Ready')
       setStatusType('default')
+      setIsRunning(false)
       runEntriesRef.current = []
       runCheckResultsRef.current = []
       if (cleanupRef.current) {
@@ -144,6 +141,7 @@ export function RightPanel({
       setCheckResults([])
       setStatusMsg('Ready')
       setStatusType('default')
+      setIsRunning(false)
       runEntriesRef.current = []
       runCheckResultsRef.current = []
       if (cleanupRef.current) {
@@ -350,7 +348,13 @@ export function RightPanel({
         const now = Date.now()
         if (now - lastShortcutRef.current < SHORTCUT_GAP_MS) return
         lastShortcutRef.current = now
-        handleRun()
+        const activeFmt = activeExercise ? getPanelFormat(activeExercise) : 'code-editor'
+        const inPanelFormat = mode === 'exercises' && !!activeExercise && activeFmt !== 'code-editor'
+        if (inPanelFormat) {
+          document.dispatchEvent(new CustomEvent('panel:check-answer'))
+        } else {
+          handleRun()
+        }
         return
       }
 
@@ -517,18 +521,15 @@ export function RightPanel({
 
       {isPanelFormat && activeExercise ? (
         <div className={`panel-region${isFading ? ' fading' : ''}`}>
-          {activeFormat === 'multiple-choice' ? (
-            <MultipleChoicePanel
-              exercise={activeExercise}
-              onComplete={handlePanelComplete}
-            />
-          ) : null}
-          {activeFormat === 'fill-blank' ? (
-            <FillBlankPanel
-              exercise={activeExercise}
-              onComplete={handlePanelComplete}
-            />
-          ) : null}
+          {(() => {
+            const PanelComponent = panelRegistry[activeFormat]
+            return PanelComponent ? (
+              <PanelComponent
+                exercise={activeExercise}
+                onComplete={handlePanelComplete}
+              />
+            ) : null
+          })()}
         </div>
       ) : (
         <>

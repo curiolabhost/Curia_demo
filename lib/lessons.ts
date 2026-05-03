@@ -37,6 +37,9 @@ export type ExerciseFormat =
   | 'code-editor'
   | 'multiple-choice'
   | 'fill-blank'
+  | 'fill-blank-typed'
+  | 'drag-reorder'
+  | 'sort-buckets'
 
 export type MultipleChoiceOption = {
   id: string
@@ -47,6 +50,18 @@ export type MultipleChoiceOption = {
 export type FillBlankToken = {
   id: string
   label: string
+}
+
+export type SortBucket = {
+  id: string
+  label: string
+}
+
+export type SortItem = {
+  id: string
+  label: string
+  code?: string
+  correctBucketId: string
 }
 
 export type Exercise = {
@@ -64,6 +79,11 @@ export type Exercise = {
   codeWithBlanks?: string[]
   tokenBank?: FillBlankToken[]
   correctOrder?: string[]
+  blankPlaceholders?: string[]
+  blankWidths?: number[]
+  codeLines?: string[]
+  buckets?: SortBucket[]
+  bucketItems?: SortItem[]
   explanation?: string
 }
 

@@ -205,6 +205,78 @@
       "checks": []
     },
     {
+      "title": "Type the missing keyword",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Type the missing parts to complete this variable declaration."],
+      "hint": "Every variable starts with let. The value goes after the equals sign.",
+      "codeWithBlanks": [
+        "___BLANK___ age = ___BLANK___;"
+      ],
+      "blankPlaceholders": ["keyword", "value"],
+      "blankWidths": [7, 4],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "age",
+          "expected": null,
+          "label": "a variable called 'age' exists"
+        }
+      ],
+      "explanation": "Every variable declaration needs let, a name, an equals sign, and a value."
+    },
+    {
+      "title": "Sort the values by type",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Drag each value into the correct type bucket."],
+      "hint": "Text in quotes is a string. Plain numbers are numbers. true and false are booleans.",
+      "buckets": [
+        { "id": "string",  "label": "String" },
+        { "id": "number",  "label": "Number" },
+        { "id": "boolean", "label": "Boolean" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "'hello'",  "correctBucketId": "string" },
+        { "id": "i2", "label": "42",       "correctBucketId": "number" },
+        { "id": "i3", "label": "true",     "correctBucketId": "boolean" },
+        { "id": "i4", "label": "'false'",  "correctBucketId": "string" },
+        { "id": "i5", "label": "3.14",     "correctBucketId": "number" },
+        { "id": "i6", "label": "false",    "correctBucketId": "boolean" }
+      ],
+      "checks": [],
+      "explanation": "'false' in quotes is a string — it just looks like a boolean. Only true and false without quotes are real booleans."
+    },
+    {
+      "title": "Put the code in order",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": ["Drag these lines into the correct order to make the code work."],
+      "hint": "You have to create a variable before you can use it.",
+      "codeLines": [
+        "let score = 0;",
+        "score = score + 10;",
+        "console.log(score);"
+      ],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 10,
+          "label": "score equals 10"
+        },
+        {
+          "type": "console",
+          "includes": "10",
+          "label": "10 is printed to the console"
+        }
+      ],
+      "explanation": "Variables must be declared with let before you can assign values or log them. Order always matters in JavaScript."
+    },
+    {
       "title": "Run your first variable",
       "type": "practice",
       "duration": "3 min",

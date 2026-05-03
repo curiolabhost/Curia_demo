@@ -14,7 +14,7 @@ pnpm dev
 bun dev
 ```
 
-A workflow that prevents both
+A workflow that prevents errors with stale or missing npm nodes
 Add this as a habit (or a git hook) after every pull:
 
 

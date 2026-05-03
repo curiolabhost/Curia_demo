@@ -4,11 +4,11 @@
   "title": "Numbers & Math",
   "content": [
     {
-      "heading": "Numbers \u2014 doing math with JavaScript",
+      "heading": "Numbers doing math with JavaScript",
       "blocks": [
         {
           "kind": "p",
-          "text": "JavaScript can do math the same way a calculator can. You already know most of the symbols \u2014 plus, minus, multiply, divide. There are five operators total, and each one has a job."
+          "text": "JavaScript can do math the same way a calculator can. You already know most of the symbols plus, minus, multiply, divide. There are five operators total, and each one has a job."
         },
         {
           "kind": "image",
@@ -20,7 +20,7 @@
           "kind": "callout",
           "variant": "warn",
           "label": "One difference from math class",
-          "text": "Multiplication uses * (not \u00d7) and division uses / (not \u00f7). Your keyboard doesn't have those symbols \u2014 so JavaScript uses these instead."
+          "text": "Multiplication uses * (not \u00d7) and division uses / (not \u00f7). Your keyboard doesn't have those symbols so JavaScript uses these instead."
         }
       ]
     },
@@ -35,12 +35,12 @@
           "kind": "image",
           "src": "/assets/lessons/s2-l2/math-variables.svg",
           "alt": "Four step flowchart showing: declare variables with let, store numbers in them, use the variable names in a math expression, then log the result to the console",
-          "caption": "You write the variable name \u2014 JavaScript looks up the number stored inside it and uses that."
+          "caption": "You write the variable name JavaScript looks up the number stored inside it and uses that."
         },
         {
           "kind": "concept",
           "code": "let total = price + tax",
-          "desc": "JavaScript reads price (20) and tax (2), adds them, and stores 22 into total. You never have to type the actual numbers again \u2014 just the names."
+          "desc": "JavaScript reads price (20) and tax (2), adds them, and stores 22 into total. You never have to type the actual numbers again just the names."
         },
         {
           "kind": "callout",
@@ -55,7 +55,7 @@
       "blocks": [
         {
           "kind": "p",
-          "text": "The % operator is the one that looks strangest at first. It doesn't give you the result of dividing \u2014 it gives you the leftover after dividing as evenly as possible. That leftover is called the remainder."
+          "text": "The % operator is the one that looks strangest at first. It doesn't give you the result of dividing it gives you the leftover after dividing as evenly as possible. That leftover is called the remainder."
         },
         {
           "kind": "image",
@@ -67,7 +67,7 @@
           "kind": "callout",
           "variant": "info",
           "label": "The even/odd trick",
-          "text": "Any number % 2 gives you either 0 or 1. If the answer is 0, the number is even. If it's 1, the number is odd. Game developers use this constantly \u2014 for example, to do something every other turn."
+          "text": "Any number % 2 gives you either 0 or 1. If the answer is 0, the number is even. If it's 1, the number is odd. Game developers use this constantly for example, to do something every other turn."
         }
       ]
     },
@@ -76,18 +76,18 @@
       "blocks": [
         {
           "kind": "p",
-          "text": "Updating a variable using itself is so common \u2014 adding to a score, losing a life, collecting coins \u2014 that JavaScript has shortcuts for it. Instead of writing the full thing every time, you can use a shorter version."
+          "text": "Updating a variable using itself is so common adding to a score, losing a life, collecting coins that JavaScript has shortcuts for it. Instead of writing the full thing every time, you can use a shorter version."
         },
         {
           "kind": "image",
           "src": "/assets/lessons/s2-l2/math-shortcuts.svg",
           "alt": "Side by side table: the long way to write score = score + 10 versus the shortcut score += 10, repeated for -=, *=, ++, and --",
-          "caption": "The shortcut does exactly the same thing \u2014 it just saves you from typing the variable name twice."
+          "caption": "The shortcut does exactly the same thing it just saves you from typing the variable name twice."
         },
         {
           "kind": "concept",
           "code": "score++",
-          "desc": "The most common shortcut of all \u2014 adds exactly 1. You'll see this in almost every program that counts something."
+          "desc": "The most common shortcut of all adds exactly 1. You'll see this in almost every program that counts something."
         }
       ]
     },
@@ -96,19 +96,19 @@
       "blocks": [
         {
           "kind": "p",
-          "text": "JavaScript follows the same math rules you learned in school. Multiplication and division happen before addition and subtraction. If you want a different order, use parentheses \u2014 they always run first."
+          "text": "JavaScript follows the same math rules you learned in school. Multiplication and division happen before addition and subtraction. If you want a different order, use parentheses they always run first."
         },
         {
           "kind": "image",
           "src": "/assets/lessons/s2-l2/math-order.svg",
           "alt": "Two expressions side by side: 2 + 3 * 4 equals 14 because * runs first, versus (2 + 3) * 4 equals 20 because parentheses run first",
-          "caption": "Same numbers, different answer \u2014 all because of where the parentheses go."
+          "caption": "Same numbers, different answer all because of where the parentheses go."
         },
         {
           "kind": "callout",
           "variant": "warn",
           "label": "When in doubt, use parentheses",
-          "text": "If you're not sure what order JavaScript will evaluate your math, add parentheses to make it explicit. There's no penalty for using them \u2014 and they make your intention obvious to anyone reading your code."
+          "text": "If you're not sure what order JavaScript will evaluate your math, add parentheses to make it explicit. There's no penalty for using them and they make your intention obvious to anyone reading your code."
         }
       ]
     },
@@ -117,26 +117,26 @@
       "blocks": [
         {
           "kind": "p",
-          "text": "Here's a code block that uses everything from this lesson at once. Read through each line before running it \u2014 try to predict what the final value of score will be."
+          "text": "Here's a code block that uses everything from this lesson at once. Read through each line before running it try to predict what the final value of score will be."
         },
         {
           "kind": "code",
           "lines": [
             "let score = 0;",
             "",
-            "score += 50;     // score is now 50",
-            "score *= 3;      // score is now 150",
-            "score -= 25;     // score is now 125",
-            "score++;         // score is now 126",
+            "score += 50; // score is now 50",
+            "score *= 3; // score is now 150",
+            "score -= 25; // score is now 125",
+            "score++; // score is now 126",
             "",
-            "console.log('Final score:', score);  // 126",
+            "console.log('Final score:', score); // 126",
             "",
             "// Is the score even or odd?",
-            "console.log(score % 2);  // 0 = even, 1 = odd",
+            "console.log(score % 2); // 0 = even, 1 = odd",
             "",
             "// Order of operations matters:",
-            "let bonus = 2 + 3 * 10;     // 32, not 50",
-            "let bonus2 = (2 + 3) * 10;  // 50",
+            "let bonus = 2 + 3 * 10; // 32, not 50",
+            "let bonus2 = (2 + 3) * 10; // 50",
             "console.log(bonus, bonus2);"
           ]
         },
@@ -144,7 +144,7 @@
           "kind": "callout",
           "variant": "info",
           "label": "Predict before you run",
-          "text": "Before hitting Run, write down what you think score will be at the end. Then run it and compare. If you were wrong, trace through each line again \u2014 this is the most important skill in programming."
+          "text": "Before hitting Run, write down what you think score will be at the end. Then run it and compare. If you were wrong, trace through each line again this is the most important skill in programming."
         }
       ]
     }
@@ -155,7 +155,7 @@
       "type": "practice",
       "duration": "3 min",
       "tasks": [
-        "The code is already written \u2014 just hit Run.",
+        "The code is already written just hit Run.",
         "Look at each line printed in the console.",
         "Which result surprised you? Why do you think it came out that way?",
         "Change one of the numbers and run it again."
@@ -168,7 +168,7 @@
       "type": "practice",
       "duration": "2 min",
       "tasks": [
-        "The code is already written \u2014 just hit Run.",
+        "The code is already written just hit Run.",
         "You should see 5 printed in the console.",
         "Read each line and make sure you understand why saving is 5.",
         "Change money to 20 and run again. What does saving become?"
@@ -197,10 +197,10 @@
         "brotherAge is already set to 5.",
         "Create a new variable called sisterAge and set it to 10 + brotherAge.",
         "On the next line, write: console.log(sisterAge)",
-        "Run it \u2014 you should see 15 printed.",
+        "Run it you should see 15 printed.",
         "Change brotherAge to 8 and run again. Does sisterAge update?"
       ],
-      "hint": "let sisterAge = 10 + brotherAge;  \u2014 use the variable name, not the number.",
+      "hint": "let sisterAge = 10 + brotherAge; use the variable name, not the number.",
       "starterCode": "let brotherAge = 5;\n\n// Create sisterAge here\n\n\n// Log sisterAge here\n\n",
       "checks": [
         {
@@ -226,7 +226,7 @@
         "You should see 8 printed.",
         "Now change apples to 10. What does total become without touching the total line?"
       ],
-      "hint": "Just add console.log(total); at the very bottom \u2014 one line is all you need.",
+      "hint": "Just add console.log(total); at the very bottom one line is all you need.",
       "starterCode": "let apples = 5;\nlet oranges = 3;\nlet total = apples + oranges;\n\n// Add your console.log here\n\n",
       "checks": [
         {
@@ -249,10 +249,10 @@
       "tasks": [
         "Two variables are declared: length and width.",
         "Your job: complete the area line by writing length * width after the = sign.",
-        "Run it \u2014 you should see 40 printed.",
+        "Run it you should see 40 printed.",
         "Change length to 8 and run again. Does area update automatically?"
       ],
-      "hint": "let area = length * width;  \u2014 use the variable names, not the actual numbers.",
+      "hint": "let area = length * width; use the variable names, not the actual numbers.",
       "starterCode": "let length = 10;\nlet width = 4;\nlet area = // write length * width here\n\nconsole.log(area);\n",
       "checks": [
         {
@@ -275,7 +275,7 @@
       "tasks": [
         "A price calculator is already set up. Hit Run and read the output.",
         "Now change price to 25 and quantity to 2. Don't touch the total line.",
-        "Run it again \u2014 total should update on its own.",
+        "Run it again total should update on its own.",
         "Try a few more combinations. Notice that you never have to rewrite the math."
       ],
       "hint": "Only change the numbers on lines 1 and 2. The total line calculates itself.",
@@ -298,7 +298,7 @@
         "Declare a variable called yearsLeft and set it to 100 - age.",
         "Declare a variable called doubleAge and set it to age * 2.",
         "Log all three with labels.",
-        "Bonus: log a sentence using all three \u2014 like 'I am 13, double that is 26, and I have 87 years until 100.'"
+        "Bonus: log a sentence using all three like 'I am 13, double that is 26, and I have 87 years until 100.'"
       ],
       "hint": "Use variable names in your math, not raw numbers: let yearsLeft = 100 - age;",
       "starterCode": "// Your age\n\n\n// Years until you turn 100\n\n\n// Double your age\n\n\n// Log all three\n\n\n// Bonus sentence\n\n",
@@ -332,7 +332,7 @@
         "Then run it and check which ones you got right.",
         "Can you figure out the pattern for what % 2 always gives you?"
       ],
-      "hint": "Think about how many times the second number fits into the first \u2014 then what's left over.",
+      "hint": "Think about how many times the second number fits into the first then what's left over.",
       "starterCode": "console.log(10 % 3);\nconsole.log(10 % 2);\nconsole.log(7 % 2);\nconsole.log(8 % 4);\nconsole.log(15 % 6);\n",
       "checks": [
         {
@@ -353,7 +353,7 @@
         "Use coins += 10 three times. Log coins after each.",
         "Then use coins *= 2 to double them. Log the final result."
       ],
-      "hint": "lives-- subtracts 1. coins += 10 adds 10. Both are shortcuts \u2014 you don't need the full version.",
+      "hint": "lives-- subtracts 1. coins += 10 adds 10. Both are shortcuts you don't need the full version.",
       "starterCode": "let lives = 3;\nconsole.log('Lives:', lives);\n\n// Lose a life\n\nconsole.log('After losing one:', lives);\n\nlet coins = 0;\n// Collect 10 coins three times\n\n\n\n// Double your coins\n\nconsole.log('Final coins:', coins);\n",
       "checks": [
         {
@@ -376,7 +376,7 @@
       "duration": "5 min",
       "tasks": [
         "Before running: write down the result of each expression on paper.",
-        "5 + 3 * 2   \u2192   (5 + 3) * 2   \u2192   10 + 10 / 2   \u2192   (10 + 10) / 2",
+        "5 + 3 * 2 \u2192 (5 + 3) * 2 \u2192 10 + 10 / 2 \u2192 (10 + 10) / 2",
         "Then run the code and check.",
         "For any wrong predictions: trace through the order of operations step by step."
       ],
@@ -474,7 +474,7 @@
           "label": "score equals 200"
         }
       ],
-      "explanation": "score + 50 calculates the result but throws it away \u2014 it never stores it back into score. Fix: change it to score += 50 so score actually gets updated to 100 before being doubled to 200."
+      "explanation": "score + 50 calculates the result but throws it away it never stores it back into score. Fix: change it to score += 50 so score actually gets updated to 100 before being doubled to 200."
     },
     {
       "id": "c3",
@@ -482,8 +482,8 @@
       "difficulty": "tricky",
       "title": "Is the player's turn even or odd?",
       "description": "This code should log 'Even turn' when turnNumber is even and 'Odd turn' when it's odd. But it always says the same thing. Find the bug.",
-      "buggyCode": "let turnNumber = 4;\nlet remainder = turnNumber % 3;\n\nif (remainder === 0) {\n    console.log('Even turn');\n} else {\n    console.log('Odd turn');\n}",
-      "starterCode": "let turnNumber = 4;\nlet remainder = turnNumber % 3;\n\nif (remainder === 0) {\n    console.log('Even turn');\n} else {\n    console.log('Odd turn');\n}",
+      "buggyCode": "let turnNumber = 4;\nlet remainder = turnNumber % 3;\n\nif (remainder === 0) {\n console.log('Even turn');\n} else {\n console.log('Odd turn');\n}",
+      "starterCode": "let turnNumber = 4;\nlet remainder = turnNumber % 3;\n\nif (remainder === 0) {\n console.log('Even turn');\n} else {\n console.log('Odd turn');\n}",
       "hint": "To check if a number is even, what should you divide by?",
       "checks": [
         {
@@ -492,7 +492,7 @@
           "label": "correctly identifies turn 4 as even"
         }
       ],
-      "explanation": "The bug is using % 3 instead of % 2. To check if a number is even or odd, you always divide by 2. turnNumber % 3 gives the remainder after dividing by 3 \u2014 that's a completely different thing. Fix: change % 3 to % 2."
+      "explanation": "The bug is using % 3 instead of % 2. To check if a number is even or odd, you always divide by 2. turnNumber % 3 gives the remainder after dividing by 3 that's a completely different thing. Fix: change % 3 to % 2."
     }
   ]
 }

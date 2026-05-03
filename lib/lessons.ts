@@ -33,15 +33,38 @@ export type Check =
   | { type: 'call'; fn: string; args: unknown[]; assert: string; label?: string }
   | { type: 'console'; includes: string; label?: string }
 
+export type ExerciseFormat =
+  | 'code-editor'
+  | 'multiple-choice'
+  | 'fill-blank'
+
+export type MultipleChoiceOption = {
+  id: string
+  label: string
+  code?: string
+}
+
+export type FillBlankToken = {
+  id: string
+  label: string
+}
+
 export type Exercise = {
   title: string
   type: 'practice' | 'predict' | 'debug' | 'apply' | 'independent' | 'challenge'
   duration: string
   tasks: string[]
   hint?: string
-  starterCode: string
+  starterCode?: string
   carryFrom?: number
   checks?: Check[]
+  format?: ExerciseFormat
+  options?: MultipleChoiceOption[]
+  correctOptionId?: string
+  codeWithBlanks?: string[]
+  tokenBank?: FillBlankToken[]
+  correctOrder?: string[]
+  explanation?: string
 }
 
 export type Challenge = {

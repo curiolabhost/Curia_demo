@@ -10,6 +10,11 @@ import { ChallengePrompt } from './ChallengePrompt'
 import { CodeEditor, type CodeEditorHandle } from './CodeEditor'
 import { ExercisePrompt } from './ExercisePrompt'
 import { OutputConsole } from './OutputConsole'
+import {
+  FillBlankPanel,
+  MultipleChoicePanel,
+  getPanelFormat,
+} from './exercise-panels'
 
 const TIMEOUT_MS = 5000
 const SHORTCUT_GAP_MS = 200
@@ -448,13 +453,23 @@ export function RightPanel({
     ? (activeChallenge?.starterCode ?? '')
     : activeExercise
       ? activeExercise.carryFrom !== undefined
-        ? loadCode(renderedLesson.id, activeExercise.carryFrom, activeExercise.starterCode)
-        : activeExercise.starterCode
+        ? loadCode(renderedLesson.id, activeExercise.carryFrom, activeExercise.starterCode ?? '')
+        : (activeExercise.starterCode ?? '')
       : ''
   const hasActiveItem = mode === 'challenges' ? !!activeChallenge : !!activeExercise
 
+  const activeFormat = activeExercise ? getPanelFormat(activeExercise) : 'code-editor'
+  const isPanelFormat = mode === 'exercises' && !!activeExercise && activeFormat !== 'code-editor'
+
+  const handlePanelComplete = useCallback((correct: boolean) => {
+    if (correct) goNextExercise()
+  }, [goNextExercise])
+
   return (
-    <div className="right-panel">
+    <div
+      className="right-panel"
+      style={isPanelFormat ? { gridTemplateRows: 'auto 1fr' } : undefined}
+    >
       <div>
         <div className="mode-tab-bar">
           <button
@@ -500,32 +515,51 @@ export function RightPanel({
         )}
       </div>
 
-      <div className="editor-output">
-        {hasActiveItem ? (
-          <CodeEditor
-            ref={editorRef}
-            lessonId={renderedLesson.id}
-            exerciseIndex={editorExerciseIndex}
-            starterCode={editorStarterCode}
-            isFading={isFading}
+      {isPanelFormat && activeExercise ? (
+        <div className={`panel-region${isFading ? ' fading' : ''}`}>
+          {activeFormat === 'multiple-choice' ? (
+            <MultipleChoicePanel
+              exercise={activeExercise}
+              onComplete={handlePanelComplete}
+            />
+          ) : null}
+          {activeFormat === 'fill-blank' ? (
+            <FillBlankPanel
+              exercise={activeExercise}
+              onComplete={handlePanelComplete}
+            />
+          ) : null}
+        </div>
+      ) : (
+        <>
+          <div className="editor-output">
+            {hasActiveItem ? (
+              <CodeEditor
+                ref={editorRef}
+                lessonId={renderedLesson.id}
+                exerciseIndex={editorExerciseIndex}
+                starterCode={editorStarterCode}
+                isFading={isFading}
+              />
+            ) : (
+              <div className="editor-pane" />
+            )}
+            <OutputConsole
+              entries={entries}
+              checkResults={checkResults}
+              onClear={handleClear}
+            />
+          </div>
+          <BottomBar
+            onRun={handleRun}
+            onHintToggle={() => setHintVisible((v) => !v)}
+            hintDisabled={!activeHint}
+            isRunning={isRunning}
+            statusMessage={statusMsg}
+            statusType={statusType}
           />
-        ) : (
-          <div className="editor-pane" />
-        )}
-        <OutputConsole
-          entries={entries}
-          checkResults={checkResults}
-          onClear={handleClear}
-        />
-      </div>
-      <BottomBar
-        onRun={handleRun}
-        onHintToggle={() => setHintVisible((v) => !v)}
-        hintDisabled={!activeHint}
-        isRunning={isRunning}
-        statusMessage={statusMsg}
-        statusType={statusType}
-      />
+        </>
+      )}
     </div>
   )
 }

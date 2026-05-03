@@ -168,6 +168,43 @@
   ],
   "exercises": [
     {
+      "title": "What does 'let' do?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What does the word 'let' do in JavaScript?"],
+      "hint": "Think about what you're telling JavaScript to create.",
+      "options": [
+        { "id": "a", "label": "Runs the code immediately" },
+        { "id": "b", "label": "Creates a new variable", "code": "let score = 0;" },
+        { "id": "c", "label": "Prints something to the console" },
+        { "id": "d", "label": "Adds two numbers together" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "'let' tells JavaScript to create a new container with that name. You only use it the first time — after that, just use the name by itself.",
+      "checks": []
+    },
+    {
+      "title": "Complete the variable",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Fill in the blanks to declare a variable called score and set it to 10."],
+      "hint": "Every variable needs let, a name, an equals sign, and a value.",
+      "codeWithBlanks": [
+        "___BLANK___ score = ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "let" },
+        { "id": "t2", "label": "10" },
+        { "id": "t3", "label": "var" },
+        { "id": "t4", "label": "100" }
+      ],
+      "correctOrder": ["let", "10"],
+      "explanation": "Every variable starts with 'let' the first time, then the name, then = and the value.",
+      "checks": []
+    },
+    {
       "title": "Run your first variable",
       "type": "practice",
       "duration": "3 min",

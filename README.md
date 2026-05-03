@@ -14,6 +14,18 @@ pnpm dev
 bun dev
 ```
 
+A workflow that prevents both
+Add this as a habit (or a git hook) after every pull:
+
+
+git pull
+npm ci          # if package-lock.json changed
+rm -rf .next    # if anything in node_modules or next config changed
+npm run dev
+Or one-liner: git pull && npm ci && rm -rf .next && npm run dev.
+
+
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

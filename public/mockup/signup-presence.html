@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CodeLab — Sign Up & Presence Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F9FC;
+    --surface: #FFFFFF;
+    --surface2: #F1F3F8;
+    --border: #E2E6F0;
+    --border2: #CDD2E0;
+    --text: #1A1E2E;
+    --text2: #2a2e3f;
+    --text3: #8B91A8;
+    --accent: #3B6FE8;
+    --accent-dim: #EBF0FD;
+    --green: #059669;
+    --red: #DC2626;
+    --orange: #D97706;
+    --purple: #7C3AED;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+
+  /* ---------- App shell ---------- */
+  .app-shell { display: grid; grid-template-rows: 48px 1fr; height: 100vh; width: 100vw; }
+  .app-main  { display: grid; grid-template-columns: 50% 1fr; overflow: hidden; }
+
+  /* ---------- TopBar (replicated from globals.css) ---------- */
+  .topbar {
+    position: relative; z-index: 210;
+    display: flex; align-items: center; gap: 14px;
+    height: 48px; padding: 0 16px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .topbar-menu {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 8px; background: none; border: none; border-radius: 4px; cursor: pointer;
+  }
+  .topbar-menu:hover { background: var(--surface2); }
+  .topbar-menu-line { display: block; width: 16px; height: 1.5px; background: var(--text3); margin: 3px 0; }
+
+  .logo { font-family: 'DM Serif Display', serif; font-size: 18px; line-height: 1; }
+  .logo-accent { color: var(--accent); }
+
+  .session-label { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+  .completion-badge {
+    font-family: var(--mono); font-size: 11px; color: var(--text2);
+    border: 1px solid var(--border2); padding: 3px 10px; border-radius: 4px;
+  }
+
+  /* ---------- NEW: presence stack ---------- */
+  .presence-stack {
+    display: flex; align-items: center;
+    margin-left: auto;
+  }
+  .presence-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white; font-size: 12px; font-weight: 600; font-family: var(--sans);
+    border: 2px solid var(--surface);
+    margin-left: -8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    cursor: default; position: relative;
+    transition: transform 120ms ease;
+    animation: avatar-in 240ms ease both;
+  }
+  .presence-avatar:first-child { margin-left: 0; }
+  .presence-avatar:hover { transform: translateY(-1px); z-index: 5; }
+  .presence-avatar[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute; top: 36px; left: 50%; transform: translateX(-50%);
+    background: var(--text); color: white;
+    font-family: var(--mono); font-size: 11px;
+    padding: 4px 8px; border-radius: 4px; white-space: nowrap;
+    pointer-events: none; z-index: 1000;
+  }
+  .presence-overflow {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface2); color: var(--text3);
+    font-size: 11px; font-weight: 600;
+    border: 2px solid var(--surface);
+    margin-left: -8px;
+  }
+  @keyframes avatar-in {
+    from { opacity: 0; transform: scale(0.6); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* ---------- NEW: Sign Up button / current user button ---------- */
+  .signup-btn {
+    height: 28px; padding: 0 14px;
+    background: var(--accent); color: white;
+    border: none; border-radius: 14px;
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: opacity 120ms ease;
+  }
+  .signup-btn:hover { opacity: 0.9; }
+  .signup-btn:active { transform: scale(0.98); }
+
+  .user-avatar-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white; font-size: 12px; font-weight: 600;
+    border: 2px solid var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer; padding: 0; position: relative;
+  }
+  .user-menu {
+    position: absolute; top: 36px; right: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    min-width: 160px; padding: 6px; z-index: 1000;
+    display: none;
+  }
+  .user-menu.open { display: block; }
+  .user-menu-header {
+    padding: 8px 10px 6px;
+    font-size: 12px; color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .user-menu-header strong { display: block; color: var(--text); font-weight: 600; }
+  .user-menu-item {
+    display: block; width: 100%; text-align: left;
+    background: none; border: none; padding: 7px 10px;
+    font-family: var(--sans); font-size: 13px; color: var(--text2);
+    cursor: pointer; border-radius: 4px;
+  }
+  .user-menu-item:hover { background: var(--surface2); color: var(--text); }
+  .user-menu-item.danger { color: var(--red); }
+
+  /* ---------- Workspace stub ---------- */
+  .stub-pane {
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 24px; display: flex; flex-direction: column; gap: 12px;
+    overflow: auto;
+  }
+  .stub-pane:last-child { border-right: none; }
+  .stub-label {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text3);
+  }
+  .stub-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px; font-family: var(--mono);
+    font-size: 12px; color: var(--text2); line-height: 1.6;
+  }
+  .stub-actions {
+    margin-top: auto; display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .stub-actions button {
+    background: var(--surface); color: var(--text2);
+    border: 1px solid var(--border2); border-radius: 5px;
+    padding: 8px 14px; font-family: var(--sans); font-size: 12px; cursor: pointer;
+  }
+  .stub-actions button:hover { background: var(--surface2); border-color: var(--text3); color: var(--text); }
+  .demo-note {
+    font-size: 11px; color: var(--text3); font-family: var(--mono);
+    margin-top: 4px; line-height: 1.5;
+  }
+
+  /* ---------- NEW: exercise prompt nav ---------- */
+  .right-pane {
+    background: var(--surface);
+    display: flex; flex-direction: column;
+    overflow: auto; min-height: 0;
+  }
+  .stub-pane-inner {
+    padding: 24px; display: flex; flex-direction: column; gap: 12px; flex: 1;
+  }
+  .exercise-prompt {
+    padding: 16px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .exercise-nav {
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .exercise-counter {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+  }
+  .exercise-presence {
+    display: flex; align-items: center;
+    margin-left: auto; /* push presence + nav-buttons to the right of counter */
+  }
+  .exercise-presence .presence-avatar {
+    width: 22px; height: 22px; font-size: 10px;
+    margin-left: -6px; border-width: 1.5px;
+  }
+  .exercise-presence .presence-avatar:first-child { margin-left: 0; }
+  .exercise-presence .presence-overflow {
+    width: 22px; height: 22px; font-size: 10px;
+    margin-left: -6px; border-width: 1.5px;
+  }
+  .exercise-nav-buttons { display: flex; gap: 6px; }
+  .exercise-nav-button {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border2); border-radius: 4px;
+    background: none; color: var(--text2); cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .exercise-nav-button:hover { background: var(--surface2); border-color: var(--text3); }
+  .exercise-nav-button:disabled { opacity: 0.3; pointer-events: none; }
+  .prompt-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .type-badge {
+    font-family: var(--mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 2px 8px; border-radius: 3px;
+  }
+  .type-challenge { background: #ECFDF5; color: var(--green); }
+  .prompt-title { font-size: 15px; font-weight: 600; color: var(--text); margin: 0; }
+  .prompt-duration {
+    font-family: var(--mono); font-size: 11px; color: var(--text3); margin-left: auto;
+  }
+  .task-list { list-style: none; padding: 0; margin: 0; }
+  .task-item {
+    display: flex; gap: 10px;
+    font-size: 14px; color: var(--text2); line-height: 1.5; padding: 4px 0;
+  }
+  .task-step {
+    font-family: var(--mono); font-size: 10px; color: var(--text3);
+    min-width: 18px; padding-top: 3px;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.18); backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: all; }
+  .modal-panel {
+    background: var(--surface); border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+    width: min(360px, calc(100vw - 32px));
+    padding: 24px;
+    transform: translateY(8px); transition: transform 0.2s ease;
+  }
+  .modal-backdrop.open .modal-panel { transform: translateY(0); }
+  .modal-title {
+    font-family: 'DM Serif Display', serif; font-size: 22px;
+    margin: 0 0 4px; color: var(--text);
+  }
+  .modal-subtitle {
+    font-size: 13px; color: var(--text3); margin: 0 0 18px;
+  }
+  .form-row { margin-bottom: 12px; }
+  .form-label {
+    display: block; font-family: var(--mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--text3); margin-bottom: 4px;
+  }
+  .form-input {
+    width: 100%; height: 36px; padding: 0 10px;
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 5px; font-family: var(--sans); font-size: 13px;
+    color: var(--text); outline: none; transition: border-color 120ms ease;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-error {
+    color: var(--red); font-size: 12px; margin-top: 4px; min-height: 16px;
+  }
+  .modal-primary-btn {
+    width: 100%; margin-top: 8px;
+    height: 38px; background: var(--accent); color: white;
+    border: none; border-radius: 5px;
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity 120ms ease;
+  }
+  .modal-primary-btn:hover:not(:disabled) { opacity: 0.9; }
+  .modal-primary-btn:disabled { opacity: 0.4; cursor: default; }
+  .modal-secondary-btn {
+    width: 100%; margin-top: 8px;
+    height: 32px; background: none; color: var(--text3);
+    border: none;
+    font-family: var(--mono); font-size: 11px; cursor: pointer;
+  }
+  .modal-secondary-btn:hover { color: var(--text2); }
+  .modal-step-indicator {
+    font-family: var(--mono); font-size: 10px; color: var(--text3);
+    text-align: right; margin-bottom: 6px;
+  }
+
+  /* Color grid */
+  .color-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    margin: 8px 0 16px;
+  }
+  .color-swatch {
+    width: 100%; aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 0; padding: 0; cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: transform 120ms ease, box-shadow 120ms ease;
+    position: relative;
+  }
+  .color-swatch:hover { transform: scale(1.06); }
+  .color-swatch.selected {
+    box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text);
+  }
+  .color-swatch.selected::after {
+    content: "✓"; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 18px; font-weight: 700;
+  }
+
+  /* Reset link in footer */
+  .reset-link {
+    margin-top: 12px; text-align: center;
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text3);
+  }
+  .reset-link a { color: var(--text3); text-decoration: underline; cursor: pointer; }
+  .reset-link a:hover { color: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- ===== TopBar ===== -->
+  <header class="topbar">
+    <button type="button" class="topbar-menu" aria-label="Toggle lesson nav">
+      <span class="topbar-menu-line"></span>
+      <span class="topbar-menu-line"></span>
+      <span class="topbar-menu-line"></span>
+    </button>
+    <span class="logo">code<span class="logo-accent">lab</span></span>
+    <span class="session-label">s2-l1</span>
+
+    <!-- presence stack: anchored on the LEFT after the session label -->
+    <div class="presence-stack" id="presence-stack" aria-label="Other learners on this lesson"></div>
+
+    <span class="completion-badge">3 / 12 complete</span>
+
+    <!-- right-side: Sign Up button OR current-user avatar (swapped by JS) -->
+    <div id="auth-slot"></div>
+  </header>
+
+  <!-- ===== Workspace stub ===== -->
+  <main class="app-main">
+    <section class="stub-pane">
+      <div class="stub-label">Editor (mock)</div>
+      <div class="stub-block">// while_loop_practice.js<br>let count = 0<br>while (count &lt; 5) {<br>&nbsp;&nbsp;console.log(count)<br>&nbsp;&nbsp;count = count + 1<br>}</div>
+      <div class="stub-block" style="font-family: var(--sans); font-size: 13px; color: var(--text2);">
+        Print the numbers 0 through 4 using a <code style="font-family: var(--mono); background: var(--accent-dim); color: var(--accent); padding: 1px 5px; border-radius: 3px;">while</code> loop.
+      </div>
+      <div class="stub-actions">
+        <button id="btn-sim-lesson-join" type="button">+ User joins lesson</button>
+        <button id="btn-sim-lesson-leave" type="button">– User leaves lesson</button>
+        <button id="btn-sim-ex-join" type="button">+ User joins this exercise</button>
+        <button id="btn-sim-ex-leave" type="button">– User leaves this exercise</button>
+      </div>
+      <div class="demo-note">
+        Top-bar avatars = others on the same lesson.<br>
+        Exercise-nav avatars = subset who are also on this specific exercise.<br>
+        Joining the exercise auto-adds the user to the lesson; leaving the lesson cascades to the exercise.
+      </div>
+    </section>
+
+    <section class="right-pane">
+      <section class="exercise-prompt">
+        <div class="exercise-nav">
+          <span class="exercise-counter">Challenge 1 of 3</span>
+          <div class="exercise-presence" id="exercise-presence" aria-label="Other learners on this exercise"></div>
+          <div class="exercise-nav-buttons">
+            <button class="exercise-nav-button" type="button" disabled aria-label="Previous exercise">←</button>
+            <button class="exercise-nav-button" type="button" aria-label="Next exercise">→</button>
+          </div>
+        </div>
+        <div class="prompt-header">
+          <span class="type-badge type-challenge">challenge</span>
+          <h2 class="prompt-title">Sum the even numbers</h2>
+          <span class="prompt-duration">8 min</span>
+        </div>
+        <ol class="task-list">
+          <li class="task-item"><span class="task-step">01</span><span>Write a while loop that iterates from 0 to 10.</span></li>
+          <li class="task-item"><span class="task-step">02</span><span>Add only the even numbers to a running total.</span></li>
+          <li class="task-item"><span class="task-step">03</span><span>Print the total when the loop ends.</span></li>
+        </ol>
+      </section>
+      <div class="stub-pane-inner">
+        <div class="stub-label">Output (mock)</div>
+        <div class="stub-block" style="background: #0F1224; color: #C8CDE3; border-color: #0F1224;">
+          $ run while_loop_practice.js<br>0<br>1<br>2<br>3<br>4<br><span style="color: #5BD68F;">✓ Passed all 4 checks</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ===== Sign-Up modal ===== -->
+<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-panel">
+    <!-- Step 1: credentials -->
+    <div id="modal-step-1">
+      <div class="modal-step-indicator">Step 1 of 2</div>
+      <h2 class="modal-title" id="modal-title">Create your account</h2>
+      <p class="modal-subtitle">This is a test sign-up — no data leaves your browser.</p>
+
+      <div class="form-row">
+        <label class="form-label" for="su-name">Name</label>
+        <input class="form-input" id="su-name" type="text" autocomplete="off" placeholder="e.g. Alex" />
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="su-pw1">Password</label>
+        <input class="form-input" id="su-pw1" type="password" autocomplete="new-password" />
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="su-pw2">Confirm password</label>
+        <input class="form-input" id="su-pw2" type="password" autocomplete="new-password" />
+        <div class="form-error" id="su-error"></div>
+      </div>
+
+      <button class="modal-primary-btn" id="btn-continue" type="button">Continue</button>
+      <button class="modal-secondary-btn" id="btn-cancel-1" type="button">Cancel</button>
+    </div>
+
+    <!-- Step 2: avatar color -->
+    <div id="modal-step-2" style="display: none;">
+      <div class="modal-step-indicator">Step 2 of 2</div>
+      <h2 class="modal-title">Pick your color</h2>
+      <p class="modal-subtitle">Other learners will see this circle when you're on a lesson together.</p>
+
+      <div class="color-grid" id="color-grid"></div>
+
+      <button class="modal-primary-btn" id="btn-finish" type="button" disabled>Finish</button>
+      <button class="modal-secondary-btn" id="btn-back" type="button">← Back</button>
+    </div>
+
+    <div class="reset-link">
+      <a id="reset-demo">Reset demo (clear saved user)</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ----- Constants -----
+  const STORAGE_KEY = 'codelab__demo_user';
+  const COLORS = [
+    { hex: '#3B6FE8', name: 'Blue'   },
+    { hex: '#059669', name: 'Green'  },
+    { hex: '#DC2626', name: 'Red'    },
+    { hex: '#D97706', name: 'Orange' },
+    { hex: '#7C3AED', name: 'Purple' },
+    { hex: '#0891B2', name: 'Teal'   },
+    { hex: '#DB2777', name: 'Pink'   },
+    { hex: '#65A30D', name: 'Lime'   },
+    { hex: '#475569', name: 'Slate'  },
+    { hex: '#CA8A04', name: 'Gold'   },
+  ];
+  const FAKE_USERS = [
+    { name: 'Mia', color: '#0891B2' },
+    { name: 'Jay', color: '#D97706' },
+    { name: 'Sam', color: '#7C3AED' },
+  ];
+  const POOL = [
+    { name: 'Avery', color: '#DB2777' },
+    { name: 'Riley', color: '#65A30D' },
+    { name: 'Drew',  color: '#475569' },
+    { name: 'Quinn', color: '#CA8A04' },
+    { name: 'Noor',  color: '#059669' },
+    { name: 'Theo',  color: '#DC2626' },
+  ];
+  const MAX_VISIBLE = 5;
+
+  // ----- State -----
+  let presence = [...FAKE_USERS];
+  // exercise presence is a subset of lesson presence — only learners currently on this specific exercise
+  let exercisePresence = [FAKE_USERS[0]]; // Mia is on the same exercise; Jay/Sam are on the lesson but a different exercise
+  let currentUser = loadUser();
+  let pendingUser = null;
+  let selectedColor = null;
+
+  // ----- Persistence -----
+  function loadUser() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || null; }
+    catch { return null; }
+  }
+  function saveUser(u) { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
+  function clearUser() { localStorage.removeItem(STORAGE_KEY); }
+
+  // ----- Render: presence stacks (lesson + exercise share the same renderer) -----
+  function renderStack(targetId, list) {
+    const stack = document.getElementById(targetId);
+    stack.innerHTML = '';
+    const visible = list.slice(0, MAX_VISIBLE);
+    const overflow = list.length - visible.length;
+    visible.forEach(u => {
+      const el = document.createElement('div');
+      el.className = 'presence-avatar';
+      el.style.background = u.color;
+      el.dataset.tooltip = u.name;
+      el.textContent = (u.name[0] || '?').toUpperCase();
+      stack.appendChild(el);
+    });
+    if (overflow > 0) {
+      const el = document.createElement('div');
+      el.className = 'presence-overflow';
+      el.textContent = '+' + overflow;
+      stack.appendChild(el);
+    }
+  }
+  function renderPresence() { renderStack('presence-stack', presence); }
+  function renderExercisePresence() { renderStack('exercise-presence', exercisePresence); }
+
+  // ----- Render: auth slot (Sign Up button OR user avatar) -----
+  function renderAuth() {
+    const slot = document.getElementById('auth-slot');
+    slot.innerHTML = '';
+    if (!currentUser) {
+      const btn = document.createElement('button');
+      btn.className = 'signup-btn';
+      btn.id = 'btn-signup';
+      btn.type = 'button';
+      btn.textContent = 'Sign Up';
+      btn.addEventListener('click', openModal);
+      slot.appendChild(btn);
+    } else {
+      const wrap = document.createElement('div');
+      wrap.style.position = 'relative';
+
+      const btn = document.createElement('button');
+      btn.className = 'user-avatar-btn';
+      btn.type = 'button';
+      btn.style.background = currentUser.color;
+      btn.textContent = (currentUser.name[0] || '?').toUpperCase();
+      btn.setAttribute('aria-label', 'Account menu for ' + currentUser.name);
+
+      const menu = document.createElement('div');
+      menu.className = 'user-menu';
+      menu.innerHTML = `
+        <div class="user-menu-header">
+          Signed in as<br><strong></strong>
+        </div>
+        <button class="user-menu-item" data-action="change-color">Change color</button>
+        <button class="user-menu-item danger" data-action="signout">Sign out</button>
+      `;
+      menu.querySelector('strong').textContent = currentUser.name;
+
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        menu.classList.toggle('open');
+      });
+      document.addEventListener('click', () => menu.classList.remove('open'));
+      menu.addEventListener('click', e => {
+        const action = e.target.dataset?.action;
+        if (action === 'change-color') {
+          pendingUser = { ...currentUser };
+          selectedColor = currentUser.color;
+          openModal({ skipToColor: true });
+        } else if (action === 'signout') {
+          currentUser = null;
+          clearUser();
+          renderAuth();
+        }
+        menu.classList.remove('open');
+      });
+
+      wrap.appendChild(btn);
+      wrap.appendChild(menu);
+      slot.appendChild(wrap);
+    }
+  }
+
+  // ----- Modal: open/close, step navigation -----
+  const modal     = document.getElementById('modal');
+  const step1     = document.getElementById('modal-step-1');
+  const step2     = document.getElementById('modal-step-2');
+  const errorEl   = document.getElementById('su-error');
+  const nameInput = document.getElementById('su-name');
+  const pw1Input  = document.getElementById('su-pw1');
+  const pw2Input  = document.getElementById('su-pw2');
+
+  function openModal(opts = {}) {
+    errorEl.textContent = '';
+    if (opts.skipToColor) {
+      step1.style.display = 'none';
+      step2.style.display = 'block';
+      buildColorGrid();
+    } else {
+      step1.style.display = 'block';
+      step2.style.display = 'none';
+      nameInput.value = '';
+      pw1Input.value = '';
+      pw2Input.value = '';
+      pendingUser = null;
+      selectedColor = null;
+    }
+    modal.classList.add('open');
+    setTimeout(() => (opts.skipToColor ? null : nameInput.focus()), 80);
+  }
+  function closeModal() {
+    modal.classList.remove('open');
+  }
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  // ----- Step 1 → Step 2 -----
+  document.getElementById('btn-continue').addEventListener('click', () => {
+    const name = nameInput.value.trim();
+    const pw1 = pw1Input.value;
+    const pw2 = pw2Input.value;
+    if (!name) { errorEl.textContent = 'Please enter your name.'; return; }
+    if (!pw1)  { errorEl.textContent = 'Please enter a password.'; return; }
+    if (pw1 !== pw2) { errorEl.textContent = "Passwords don't match."; return; }
+    errorEl.textContent = '';
+    pendingUser = { name };
+    selectedColor = null;
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+    buildColorGrid();
+  });
+
+  document.getElementById('btn-back').addEventListener('click', () => {
+    step2.style.display = 'none';
+    step1.style.display = 'block';
+  });
+  document.getElementById('btn-cancel-1').addEventListener('click', closeModal);
+
+  // ----- Color grid -----
+  function buildColorGrid() {
+    const grid = document.getElementById('color-grid');
+    grid.innerHTML = '';
+    COLORS.forEach(c => {
+      const sw = document.createElement('button');
+      sw.className = 'color-swatch';
+      sw.type = 'button';
+      sw.style.background = c.hex;
+      sw.setAttribute('aria-label', c.name);
+      if (selectedColor === c.hex) sw.classList.add('selected');
+      sw.addEventListener('click', () => {
+        selectedColor = c.hex;
+        grid.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('selected'));
+        sw.classList.add('selected');
+        document.getElementById('btn-finish').disabled = false;
+      });
+      grid.appendChild(sw);
+    });
+    document.getElementById('btn-finish').disabled = !selectedColor;
+  }
+
+  document.getElementById('btn-finish').addEventListener('click', () => {
+    if (!selectedColor) return;
+    const name = pendingUser?.name || currentUser?.name;
+    if (!name) return;
+    currentUser = { name, color: selectedColor };
+    saveUser(currentUser);
+    pendingUser = null;
+    selectedColor = null;
+    closeModal();
+    renderAuth();
+  });
+
+  // ----- Reset demo link -----
+  document.getElementById('reset-demo').addEventListener('click', e => {
+    e.preventDefault();
+    clearUser();
+    currentUser = null;
+    presence = [...FAKE_USERS];
+    exercisePresence = [FAKE_USERS[0]];
+    closeModal();
+    renderAuth();
+    renderPresence();
+    renderExercisePresence();
+  });
+
+  // ----- Simulate: lesson presence -----
+  document.getElementById('btn-sim-lesson-join').addEventListener('click', () => {
+    const remaining = POOL.filter(p => !presence.find(u => u.name === p.name));
+    if (!remaining.length) return;
+    const next = remaining[Math.floor(Math.random() * remaining.length)];
+    presence.push(next);
+    renderPresence();
+  });
+  document.getElementById('btn-sim-lesson-leave').addEventListener('click', () => {
+    if (!presence.length) return;
+    const removed = presence.pop();
+    // cascade: if this user was on the exercise too, drop them
+    exercisePresence = exercisePresence.filter(u => u.name !== removed.name);
+    renderPresence();
+    renderExercisePresence();
+  });
+
+  // ----- Simulate: exercise presence (subset of lesson) -----
+  document.getElementById('btn-sim-ex-join').addEventListener('click', () => {
+    // Prefer pulling someone already on the lesson but not yet on this exercise
+    const lessonOnly = presence.filter(u => !exercisePresence.find(x => x.name === u.name));
+    if (lessonOnly.length) {
+      const next = lessonOnly[Math.floor(Math.random() * lessonOnly.length)];
+      exercisePresence.push(next);
+      renderExercisePresence();
+      return;
+    }
+    // Everyone in the lesson is already in the exercise — pull a fresh user from the pool
+    // and add them to BOTH (you can't be in the exercise without being in the lesson).
+    const poolLeft = POOL.filter(p => !presence.find(u => u.name === p.name));
+    if (!poolLeft.length) return;
+    const next = poolLeft[Math.floor(Math.random() * poolLeft.length)];
+    presence.push(next);
+    exercisePresence.push(next);
+    renderPresence();
+    renderExercisePresence();
+  });
+  document.getElementById('btn-sim-ex-leave').addEventListener('click', () => {
+    if (!exercisePresence.length) return;
+    exercisePresence.pop();
+    renderExercisePresence();
+  });
+
+  // ----- Initial render -----
+  renderPresence();
+  renderExercisePresence();
+  renderAuth();
+})();
+</script>
+
+</body>
+</html>

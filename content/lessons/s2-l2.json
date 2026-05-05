@@ -20,7 +20,7 @@
           "kind": "callout",
           "variant": "warn",
           "label": "One difference from math class",
-          "text": "Multiplication uses * (not \u00d7) and division uses / (not \u00f7). Your keyboard doesn't have those symbols so JavaScript uses these instead."
+          "text": "Multiplication uses \" * \" (not \u00d7) and division uses \" / \" (not \u00f7). Your keyboard doesn't have those symbols \u2014 so JavaScript uses these instead."
         }
       ]
     },
@@ -29,7 +29,15 @@
       "blocks": [
         {
           "kind": "p",
-          "text": "A number on its own is fine for one calculation. But what if you need to use that number again later? Or change it? That's where variables come in. You store your numbers in variables, then use the variable names in your math. JavaScript swaps in the value automatically."
+          "text": "A number on its own is fine for one calculation. But what if you need to use that number again later? Or change it?"
+        },
+        {
+          "kind": "p",
+          "text": "**That's where variables come in.** "
+        },
+        {
+          "kind": "p",
+          "text": "You store your numbers in variables, then use the variable names in your math. JavaScript swaps in the value automatically."
         },
         {
           "kind": "image",
@@ -37,6 +45,7 @@
           "alt": "Four step flowchart showing: declare variables with let, store numbers in them, use the variable names in a math expression, then log the result to the console",
           "caption": "You write the variable name JavaScript looks up the number stored inside it and uses that."
         },
+        
         {
           "kind": "concept",
           "code": "let total = price + tax",

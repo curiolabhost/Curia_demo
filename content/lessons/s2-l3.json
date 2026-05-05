@@ -4,8 +4,10 @@
   "title": "Strings",
   "content": [
     {
-      "heading": "Strings — working with text",
+      "heading": "Strings — text in a variable (instead of numbers)",
       "blocks": [
+         { "kind": "image", "src": "/assets/lessons/s2-l3/strings_javascript_high_contrast.svg", "alt": "Visual explainer of strings in JavaScript" },
+
         { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there — letters, numbers, symbols, spaces, emojis — if it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
         { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
         { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property — it tells you how many characters are inside." }

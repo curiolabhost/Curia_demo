@@ -3,7 +3,7 @@ import type { ContentBlock, ContentPage, Lesson } from '@/lib/lessons'
 
 function renderInline(text: string): ReactNode[] {
   const parts: ReactNode[] = []
-  const re = /`([^`]+)`/g
+  const re = /`([^`]+)`|\*\*([^*]+)\*\*/g
   let lastIndex = 0
   let match: RegExpExecArray | null
   let key = 0
@@ -11,11 +11,15 @@ function renderInline(text: string): ReactNode[] {
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index))
     }
-    parts.push(
-      <code className="inline-code" key={`c-${key++}`}>
-        {match[1]}
-      </code>,
-    )
+    if (match[1] !== undefined) {
+      parts.push(
+        <code className="inline-code" key={`c-${key++}`}>
+          {match[1]}
+        </code>,
+      )
+    } else {
+      parts.push(<strong key={`b-${key++}`}>{match[2]}</strong>)
+    }
     lastIndex = match.index + match[0].length
   }
   if (lastIndex < text.length) {

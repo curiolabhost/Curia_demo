@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Curia Block Racer — 2 Players</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #1a1f29;
+    --p1: #4a8cff;
+    --p1-dark: #1f4dad;
+    --p2: #ff5a5a;
+    --p2-dark: #a82424;
+    --ink: #e9edf2;
+    --muted: #8a93a3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  body { min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 18px 12px 28px; gap: 10px; }
+  h1 { margin: 0; font-size: 22px; letter-spacing: .2px; font-weight: 700; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 2px; }
+  .hud { display: flex; gap: 14px; }
+  .pill { padding: 8px 14px; border-radius: 999px; background: var(--panel);
+    font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(255,255,255,.05); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .p1 .dot { background: var(--p1); box-shadow: 0 0 0 2px var(--p1-dark); }
+  .p2 .dot { background: var(--p2); box-shadow: 0 0 0 2px var(--p2-dark); }
+  .laps { color: var(--muted); font-weight: 500; }
+  .lapnum { color: var(--ink); font-weight: 700; }
+  canvas { background: #2f7a36; border-radius: 12px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.5), 0 2px 0 rgba(255,255,255,.04) inset;
+    display: block; }
+  .controls { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+  .controls kbd { background: #222a36; padding: 2px 6px; border-radius: 4px;
+    border: 1px solid rgba(255,255,255,.08); font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px; color: var(--ink); }
+  #banner { position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+    background: rgba(8,10,14,.78); backdrop-filter: blur(4px); z-index: 10; }
+  #banner.show { display: flex; }
+  .card { background: var(--panel); border: 1px solid rgba(255,255,255,.07); padding: 28px 36px;
+    border-radius: 14px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+  .card h2 { margin: 0 0 6px; font-size: 36px; }
+  .card p { color: var(--muted); margin: 0 0 18px; }
+  .card button { font-size: 15px; padding: 10px 22px; border-radius: 8px; border: 0;
+    background: var(--p1); color: #fff; font-weight: 700; cursor: pointer;
+    transition: transform .08s ease; }
+  .card button:hover { transform: translateY(-1px); }
+</style>
+</head>
+<body>
+  <h1>Block Racer</h1>
+  <div class="sub">Two players, one keyboard. First to 3 laps wins.</div>
+
+  <div class="hud">
+    <div class="pill p1"><span class="dot"></span>P1 <span class="laps">Lap <span class="lapnum" id="lap1">0</span> / <span id="totalLaps1">3</span></span></div>
+    <div class="pill p2"><span class="dot"></span>P2 <span class="laps">Lap <span class="lapnum" id="lap2">0</span> / <span id="totalLaps2">3</span></span></div>
+  </div>
+
+  <canvas id="game" width="960" height="600"></canvas>
+
+  <div class="controls">
+    P1: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> &nbsp;·&nbsp;
+    P2: <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> &nbsp;·&nbsp;
+    Restart: <kbd>R</kbd>
+  </div>
+
+  <div id="banner">
+    <div class="card">
+      <h2 id="bannerTitle">Player 1 wins!</h2>
+      <p id="bannerSub">Press R or click the button to race again.</p>
+      <button id="restart">Race again</button>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+//  CURIA BLOCK RACER — Session 2..5 concepts in one file
+//  Variables, numbers, strings, conditionals, functions,
+//  arrays, loops, state, and a requestAnimationFrame loop.
+// ============================================================
+
+const canvas = document.getElementById('game');
+const ctx    = canvas.getContext('2d');
+const W = canvas.width;
+const H = canvas.height;
+
+const TOTAL_LAPS = 3;
+document.getElementById('totalLaps1').textContent = TOTAL_LAPS;
+document.getElementById('totalLaps2').textContent = TOTAL_LAPS;
+
+// ---------- Track geometry ----------
+const trackCx       = W / 2;
+const trackCy       = H / 2;
+const straightHalf  = 220;
+const turnRadius    = 180;
+const trackHalfW    = 56;
+const SAMPLES       = 480;
+
+const centerline = [];
+(function buildCenterline() {
+  const segLengths = [
+    2 * straightHalf,
+    Math.PI * turnRadius,
+    2 * straightHalf,
+    Math.PI * turnRadius,
+  ];
+  const total = segLengths.reduce((a, b) => a + b, 0);
+
+  for (let i = 0; i < SAMPLES; i++) {
+    const s = (i / SAMPLES) * total;
+    let x, y, heading;
+    if (s < segLengths[0]) {
+      x = trackCx - straightHalf + s;
+      y = trackCy - turnRadius;
+      heading = 0;
+    } else if (s < segLengths[0] + segLengths[1]) {
+      const u = s - segLengths[0];
+      const a = -Math.PI / 2 + u / turnRadius;
+      x = trackCx + straightHalf + turnRadius * Math.cos(a);
+      y = trackCy + turnRadius * Math.sin(a);
+      heading = a + Math.PI / 2;
+    } else if (s < segLengths[0] + segLengths[1] + segLengths[2]) {
+      const u = s - segLengths[0] - segLengths[1];
+      x = trackCx + straightHalf - u;
+      y = trackCy + turnRadius;
+      heading = Math.PI;
+    } else {
+      const u = s - segLengths[0] - segLengths[1] - segLengths[2];
+      const a = Math.PI / 2 + u / turnRadius;
+      x = trackCx - straightHalf + turnRadius * Math.cos(a);
+      y = trackCy + turnRadius * Math.sin(a);
+      heading = a + Math.PI / 2;
+    }
+    centerline.push({ x, y, heading });
+  }
+})();
+
+function nearestOnCenter(px, py) {
+  let bestIdx = 0;
+  let bestSq  = Infinity;
+  for (let i = 0; i < centerline.length; i++) {
+    const c  = centerline[i];
+    const dx = c.x - px;
+    const dy = c.y - py;
+    const d  = dx * dx + dy * dy;
+    if (d < bestSq) { bestSq = d; bestIdx = i; }
+  }
+  return { idx: bestIdx, dist: Math.sqrt(bestSq) };
+}
+
+// ---------- Drawing the track ----------
+function drawTrack() {
+  ctx.fillStyle = '#2f7a36';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  for (let i = 0; i < 260; i++) ctx.fillRect((i * 97) % W, (i * 53 + 11) % H, 2, 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.04)';
+  for (let i = 0; i < 180; i++) ctx.fillRect((i * 131 + 17) % W, (i * 71 + 29) % H, 2, 2);
+
+  ctx.strokeStyle = '#3d3f46';
+  ctx.lineWidth   = trackHalfW * 2;
+  ctx.lineJoin    = 'round';
+  ctx.lineCap     = 'round';
+  ctx.beginPath();
+  for (let i = 0; i < centerline.length; i++) {
+    const c = centerline[i];
+    if (i === 0) ctx.moveTo(c.x, c.y); else ctx.lineTo(c.x, c.y);
+  }
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.strokeStyle = '#494c54';
+  ctx.lineWidth   = trackHalfW * 2 - 14;
+  ctx.beginPath();
+  for (let i = 0; i < centerline.length; i++) {
+    const c = centerline[i];
+    if (i === 0) ctx.moveTo(c.x, c.y); else ctx.lineTo(c.x, c.y);
+  }
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.strokeStyle = '#f1d24a';
+  ctx.lineWidth   = 2;
+  ctx.setLineDash([14, 18]);
+  ctx.beginPath();
+  for (let i = 0; i < centerline.length; i++) {
+    const c = centerline[i];
+    if (i === 0) ctx.moveTo(c.x, c.y); else ctx.lineTo(c.x, c.y);
+  }
+  ctx.closePath();
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawKerb( trackHalfW + 2);
+  drawKerb(-trackHalfW - 2);
+  drawCheckerLine(centerline[0]);
+}
+
+function drawKerb(offset) {
+  const stripeEvery = 6;
+  ctx.lineWidth = 8;
+  ctx.lineCap   = 'butt';
+  for (let i = 0; i < centerline.length; i++) {
+    const a = centerline[i];
+    const b = centerline[(i + 1) % centerline.length];
+    const ax = a.x + Math.cos(a.heading + Math.PI / 2) * offset;
+    const ay = a.y + Math.sin(a.heading + Math.PI / 2) * offset;
+    const bx = b.x + Math.cos(b.heading + Math.PI / 2) * offset;
+    const by = b.y + Math.sin(b.heading + Math.PI / 2) * offset;
+    ctx.strokeStyle = (Math.floor(i / stripeEvery) % 2 === 0) ? '#d94545' : '#f5f5f5';
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(bx, by);
+    ctx.stroke();
+  }
+}
+
+function drawCheckerLine(c) {
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  ctx.rotate(c.heading);
+  const w = 16, h = trackHalfW * 2 - 14;
+  const rows = 6, cols = 2;
+  const cw = w / cols, ch = h / rows;
+  for (let r = 0; r < rows; r++) {
+    for (let cc = 0; cc < cols; cc++) {
+      ctx.fillStyle = ((r + cc) % 2 === 0) ? '#fff' : '#111';
+      ctx.fillRect(-w / 2 + cc * cw, -h / 2 + r * ch, cw, ch);
+    }
+  }
+  ctx.restore();
+}
+
+// ---------- Cars ----------
+// Velocity is a real (vx, vy) vector so collisions can transfer momentum
+// on any axis. Forward speed = projection of velocity onto heading.
+function makeCar(color, accent, controls, sideOffset) {
+  const start = centerline[0];
+  const perp  = start.heading + Math.PI / 2;
+  return {
+    x:        start.x + Math.cos(perp) * sideOffset,
+    y:        start.y + Math.sin(perp) * sideOffset,
+    angle:    start.heading,
+    vx: 0, vy: 0,
+    radius: 14,
+    color, accent, controls,
+    laps:        0,
+    progress:    0,
+    halfPassed:  false,
+    finished:    false,
+  };
+}
+
+const cars = [
+  makeCar('#4a8cff', '#1f4dad',
+          { up: 'w',        down: 's',          left: 'a',         right: 'd'          },
+          -18),
+  makeCar('#ff5a5a', '#a82424',
+          { up: 'arrowup',  down: 'arrowdown',  left: 'arrowleft', right: 'arrowright' },
+          18),
+];
+
+// ---------- Input ----------
+const keys = {};
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  keys[k] = true;
+  if (k === 'r') restart();
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+// ---------- Physics constants (60% of original feel) ----------
+const ACCEL          = 0.078;
+const REVERSE_ACCEL  = 0.054;
+const MAX_SPEED      = 2.64;
+const MAX_REVERSE    = -1.2;
+const TRACK_FRICTION = 0.985;
+const GRASS_FRICTION = 0.90;
+const TURN_RATE      = 0.0288;
+const GRIP           = 0.18;   // 0 = ice, 1 = no drift. Pulls velocity back toward heading.
+const RESTITUTION    = 0.95;   // collision elasticity (1.0 = perfectly elastic)
+
+let countdown   = 3.6;
+let raceOver    = false;
+let winnerText  = '';
+let lastTime    = 0;
+
+function updateCar(car) {
+  let driving = true;
+  if (raceOver || countdown > 0) {
+    car.vx *= 0.94; car.vy *= 0.94;
+    driving = false;
+  } else if (car.finished) {
+    car.vx *= 0.97; car.vy *= 0.97;
+    driving = false;
+  }
+
+  if (driving) {
+    const c = car.controls;
+    if (keys[c.up])   { car.vx += Math.cos(car.angle) * ACCEL;        car.vy += Math.sin(car.angle) * ACCEL; }
+    if (keys[c.down]) { car.vx -= Math.cos(car.angle) * REVERSE_ACCEL; car.vy -= Math.sin(car.angle) * REVERSE_ACCEL; }
+
+    let fwd = car.vx * Math.cos(car.angle) + car.vy * Math.sin(car.angle);
+    if (fwd > MAX_SPEED)  { const e = fwd - MAX_SPEED;  car.vx -= Math.cos(car.angle) * e; car.vy -= Math.sin(car.angle) * e; }
+    if (fwd < MAX_REVERSE){ const e = fwd - MAX_REVERSE; car.vx -= Math.cos(car.angle) * e; car.vy -= Math.sin(car.angle) * e; }
+
+    const speed = Math.hypot(car.vx, car.vy);
+    if (speed > 0.05) {
+      const dir  = fwd >= 0 ? 1 : -1;
+      const turn = TURN_RATE * Math.min(1, speed / 1.6);
+      if (keys[c.left])  car.angle -= turn * dir;
+      if (keys[c.right]) car.angle += turn * dir;
+    }
+
+    // Tire grip: pull velocity toward the heading axis so sideways momentum
+    // (e.g. from a collision) decays naturally instead of vanishing.
+    const newFwd = car.vx * Math.cos(car.angle) + car.vy * Math.sin(car.angle);
+    const tgtVx  = Math.cos(car.angle) * newFwd;
+    const tgtVy  = Math.sin(car.angle) * newFwd;
+    car.vx += (tgtVx - car.vx) * GRIP;
+    car.vy += (tgtVy - car.vy) * GRIP;
+  }
+
+  // Move
+  car.x += car.vx;
+  car.y += car.vy;
+
+  // Hard wall: clamp + zero only the component pushing into the wall
+  const margin = 15;
+  if (car.x < margin)          { car.x = margin;     if (car.vx < 0) car.vx = 0; }
+  else if (car.x > W - margin) { car.x = W - margin; if (car.vx > 0) car.vx = 0; }
+  if (car.y < margin)          { car.y = margin;     if (car.vy < 0) car.vy = 0; }
+  else if (car.y > H - margin) { car.y = H - margin; if (car.vy > 0) car.vy = 0; }
+
+  const near    = nearestOnCenter(car.x, car.y);
+  const onTrack = near.dist < trackHalfW - 4;
+  const fric    = onTrack ? TRACK_FRICTION : GRASS_FRICTION;
+  car.vx *= fric; car.vy *= fric;
+
+  if (!car.finished && !raceOver && countdown <= 0) {
+    const newProgress = near.idx / SAMPLES;
+    if (newProgress > 0.45 && newProgress < 0.55) car.halfPassed = true;
+    const wrappedForward = car.progress > 0.85 && newProgress < 0.15;
+    if (wrappedForward && car.halfPassed) {
+      car.laps += 1;
+      car.halfPassed = false;
+      if (car.laps >= TOTAL_LAPS) {
+        car.finished = true;
+        if (!raceOver) {
+          raceOver   = true;
+          winnerText = (car === cars[0]) ? 'Player 1 (Blue) wins!' : 'Player 2 (Red) wins!';
+          showBanner(winnerText);
+        }
+      }
+    }
+    car.progress = newProgress;
+  }
+}
+
+// Equal-mass elastic collision between two cars (treated as circles).
+function resolveCarCollision(a, b) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const dist = Math.hypot(dx, dy);
+  const minDist = a.radius + b.radius;
+  if (dist === 0 || dist >= minDist) return;
+
+  const nx = dx / dist;
+  const ny = dy / dist;
+
+  const overlap = (minDist - dist) * 0.5 + 0.01;
+  a.x -= nx * overlap; a.y -= ny * overlap;
+  b.x += nx * overlap; b.y += ny * overlap;
+
+  const vRelN = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+  if (vRelN > 0) return;
+
+  const j = -(1 + RESTITUTION) * vRelN * 0.5;
+  a.vx -= j * nx; a.vy -= j * ny;
+  b.vx += j * nx; b.vy += j * ny;
+}
+
+function drawCar(car) {
+  ctx.save();
+  ctx.translate(car.x, car.y);
+  ctx.rotate(car.angle);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(-15, -10 + 3, 30, 20);
+  ctx.fillStyle = car.color;
+  ctx.fillRect(-15, -10, 30, 20);
+  ctx.fillStyle = car.accent;
+  ctx.fillRect(-13, -10, 6, 20);
+  ctx.fillStyle = 'rgba(20,28,40,0.85)';
+  ctx.fillRect(2, -7, 8, 14);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(13, -10, 2, 20);
+  ctx.restore();
+}
+
+// ---------- HUD + banner ----------
+const lap1El      = document.getElementById('lap1');
+const lap2El      = document.getElementById('lap2');
+const banner      = document.getElementById('banner');
+const bannerTitle = document.getElementById('bannerTitle');
+
+function showBanner(text) {
+  bannerTitle.textContent = text;
+  banner.classList.add('show');
+}
+function hideBanner() { banner.classList.remove('show'); }
+
+function restart() {
+  raceOver  = false;
+  winnerText = '';
+  countdown = 3.6;
+  hideBanner();
+  cars.forEach((car, i) => {
+    const start = centerline[0];
+    const perp  = start.heading + Math.PI / 2;
+    const off   = i === 0 ? -18 : 18;
+    car.x = start.x + Math.cos(perp) * off;
+    car.y = start.y + Math.sin(perp) * off;
+    car.angle      = start.heading;
+    car.vx         = 0;
+    car.vy         = 0;
+    car.laps       = 0;
+    car.progress   = 0;
+    car.halfPassed = false;
+    car.finished   = false;
+  });
+}
+document.getElementById('restart').addEventListener('click', restart);
+
+function drawCountdown() {
+  if (countdown <= 0) return;
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.fillRect(0, 0, W, H);
+  const n = Math.ceil(countdown - 0.6);
+  const text = n > 0 ? String(n) : 'GO!';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font         = 'bold 130px ui-sans-serif, system-ui, sans-serif';
+  ctx.fillStyle    = 'rgba(0,0,0,0.6)';
+  ctx.fillText(text, W / 2 + 4, H / 2 + 4);
+  ctx.fillStyle    = (text === 'GO!') ? '#7CFFB2' : '#fff';
+  ctx.fillText(text, W / 2, H / 2);
+}
+
+function loop(t) {
+  const dt = lastTime ? (t - lastTime) / 1000 : 0;
+  lastTime = t;
+  if (countdown > 0) countdown -= dt;
+  cars.forEach(updateCar);
+  for (let i = 0; i < cars.length; i++)
+    for (let j = i + 1; j < cars.length; j++)
+      resolveCarCollision(cars[i], cars[j]);
+  drawTrack();
+  cars.forEach(drawCar);
+  drawCountdown();
+  lap1El.textContent = Math.min(cars[0].laps, TOTAL_LAPS);
+  lap2El.textContent = Math.min(cars[1].laps, TOTAL_LAPS);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

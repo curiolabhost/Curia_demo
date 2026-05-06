@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Curia Block Racer — 2 Players + Event Monitor</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #1a1f29;
+    --p1: #4a8cff;
+    --p1-dark: #1f4dad;
+    --p2: #ff5a5a;
+    --p2-dark: #a82424;
+    --ink: #e9edf2;
+    --muted: #8a93a3;
+    --mon-bg: #0d1117;
+    --mon-border: rgba(255,255,255,.07);
+    --mon-text: #c9d1d9;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  body { min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 18px 12px 28px; gap: 10px; }
+  h1 { margin: 0; font-size: 22px; letter-spacing: .2px; font-weight: 700; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 2px; }
+
+  /* Two columns: race on the left, fixed-height monitor on the right */
+  .stage { display: flex; gap: 18px; align-items: flex-start; max-width: 100%; }
+  .game-col { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+
+  .hud { display: flex; gap: 14px; }
+  .pill { padding: 8px 14px; border-radius: 999px; background: var(--panel);
+    font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(255,255,255,.05); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .pill.p1 .dot { background: var(--p1); box-shadow: 0 0 0 2px var(--p1-dark); }
+  .pill.p2 .dot { background: var(--p2); box-shadow: 0 0 0 2px var(--p2-dark); }
+  .laps { color: var(--muted); font-weight: 500; }
+  .lapnum { color: var(--ink); font-weight: 700; }
+  canvas { background: #2f7a36; border-radius: 12px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.5), 0 2px 0 rgba(255,255,255,.04) inset;
+    display: block; }
+  .controls { color: var(--muted); font-size: 12.5px; margin-top: 4px; }
+  .controls kbd { background: #222a36; padding: 2px 6px; border-radius: 4px;
+    border: 1px solid rgba(255,255,255,.08); font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px; color: var(--ink); }
+
+  /* Event monitor — fixed height matched to the canvas via JS,
+     internal scroll only for the event list. */
+  .monitor { width: 380px; flex: 0 0 380px;
+    background: var(--mon-bg); border: 1px solid var(--mon-border); border-radius: 12px;
+    overflow: hidden; display: flex; flex-direction: column; }
+  .mon-title { padding: 10px 14px; background: #161b22;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    display: flex; align-items: center; justify-content: space-between; }
+  .mon-title .label { font-size: 13px; font-weight: 600; color: #e9edf2; }
+  .mon-title .meta { font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px; color: #8b949e; }
+  .keystate { display: flex; gap: 14px; padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,.05); background: #10151c; }
+  .keystate .group { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .keystate .glabel { font-size: 11px; color: #8b949e; letter-spacing: .4px; text-transform: uppercase; }
+  .keystate .keys { display: flex; gap: 4px; flex-wrap: wrap; }
+  .keystate .k { font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+    padding: 4px 7px; border-radius: 5px;
+    background: #1c232e; border: 1px solid rgba(255,255,255,.06); color: #c9d1d9;
+    transition: background .08s ease, color .08s ease, border-color .08s ease; }
+  .keystate .k.active.p1 { background: rgba(74,140,255,.25); border-color: var(--p1); color: #fff; }
+  .keystate .k.active.p2 { background: rgba(255,90,90,.25); border-color: var(--p2); color: #fff; }
+  .mon-list { flex: 1; min-height: 0; overflow: auto; padding: 6px 0; }
+  .mon-list ol { list-style: none; margin: 0; padding: 0;
+    font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--mon-text); }
+  .mon-list li { padding: 4px 14px;
+    display: grid; grid-template-columns: 64px 36px 1fr; column-gap: 8px;
+    border-bottom: 1px dashed rgba(255,255,255,.04); }
+  .mon-list li.fade { opacity: .55; }
+  .mon-list li.flash { animation: flash .5s ease; }
+  @keyframes flash {
+    from { background: rgba(255,210,77,.25); }
+    to   { background: transparent; }
+  }
+  .mon-list .t   { color: #6e7681; }
+  .mon-list .who { font-weight: 700; }
+  .mon-list .who.p1 { color: #79b8ff; }
+  .mon-list .who.p2 { color: #ff7b72; }
+  .mon-list .who.sys { color: #a1a8b0; }
+  .mon-list .body .ev { color: #ffd24d; }
+  .mon-list .body .arg { color: #c9d1d9; }
+  .mon-foot { padding: 8px 14px; border-top: 1px solid rgba(255,255,255,.05);
+    background: #10151c; display: flex; justify-content: space-between; gap: 8px;
+    font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #8b949e; }
+  .mon-foot button { background: #1c232e; color: var(--ink); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 5px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
+  .mon-foot button:hover { background: #232c39; }
+
+  /* Banner */
+  #banner { position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+    background: rgba(8,10,14,.78); backdrop-filter: blur(4px); z-index: 10; }
+  #banner.show { display: flex; }
+  .card { background: var(--panel); border: 1px solid rgba(255,255,255,.07); padding: 28px 36px;
+    border-radius: 14px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+  .card h2 { margin: 0 0 6px; font-size: 36px; }
+  .card p { color: var(--muted); margin: 0 0 18px; }
+  .card button { font-size: 15px; padding: 10px 22px; border-radius: 8px; border: 0;
+    background: var(--p1); color: #fff; font-weight: 700; cursor: pointer;
+    transition: transform .08s ease; }
+  .card button:hover { transform: translateY(-1px); }
+</style>
+</head>
+<body>
+  <h1>Block Racer · Event Monitor</h1>
+  <div class="sub">Race on the left. The right panel logs every keypress, lap, and wall hit in real time.</div>
+
+  <div class="stage">
+    <!-- LEFT: the game -->
+    <div class="game-col">
+      <div class="hud">
+        <div class="pill p1"><span class="dot"></span>P1 <span class="laps">Lap <span class="lapnum" id="lap1">0</span> / <span id="totalLaps1">3</span></span></div>
+        <div class="pill p2"><span class="dot"></span>P2 <span class="laps">Lap <span class="lapnum" id="lap2">0</span> / <span id="totalLaps2">3</span></span></div>
+      </div>
+      <canvas id="game" width="900" height="560"></canvas>
+      <div class="controls">
+        P1: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> &nbsp;·&nbsp;
+        P2: <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> &nbsp;·&nbsp;
+        Restart: <kbd>R</kbd>
+      </div>
+    </div>
+
+    <!-- RIGHT: event monitor (fixed height = canvas height) -->
+    <div class="monitor" id="monitor">
+      <div class="mon-title">
+        <span class="label">Event Monitor</span>
+        <span class="meta"><span id="evCount">0</span> events</span>
+      </div>
+      <div class="keystate">
+        <div class="group">
+          <span class="glabel">P1 keys</span>
+          <div class="keys">
+            <span class="k p1" data-key="w">W</span>
+            <span class="k p1" data-key="a">A</span>
+            <span class="k p1" data-key="s">S</span>
+            <span class="k p1" data-key="d">D</span>
+          </div>
+        </div>
+        <div class="group">
+          <span class="glabel">P2 keys</span>
+          <div class="keys">
+            <span class="k p2" data-key="arrowup">↑</span>
+            <span class="k p2" data-key="arrowleft">←</span>
+            <span class="k p2" data-key="arrowdown">↓</span>
+            <span class="k p2" data-key="arrowright">→</span>
+          </div>
+        </div>
+      </div>
+      <div class="mon-list" id="monList"><ol id="eventLog"></ol></div>
+      <div class="mon-foot">
+        <span id="rateMeta">events/sec: 0</span>
+        <button id="clearLog">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="banner">
+    <div class="card">
+      <h2 id="bannerTitle">Player 1 wins!</h2>
+      <p id="bannerSub">Press R or click the button to race again.</p>
+      <button id="restart">Race again</button>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+//  CURIA BLOCK RACER — two-column with event monitor
+// ============================================================
+
+const canvas = document.getElementById('game');
+const ctx    = canvas.getContext('2d');
+const W = canvas.width;
+const H = canvas.height;
+
+const TOTAL_LAPS = 3;
+document.getElementById('totalLaps1').textContent = TOTAL_LAPS;
+document.getElementById('totalLaps2').textContent = TOTAL_LAPS;
+
+// ---------- Track geometry ----------
+const trackCx       = W / 2;
+const trackCy       = H / 2;
+const straightHalf  = 200;
+const turnRadius    = 165;
+const trackHalfW    = 52;
+const SAMPLES       = 480;
+
+const centerline = [];
+(function buildCenterline() {
+  const segLengths = [
+    2 * straightHalf,
+    Math.PI * turnRadius,
+    2 * straightHalf,
+    Math.PI * turnRadius,
+  ];
+  const total = segLengths.reduce((a, b) => a + b, 0);
+
+  for (let i = 0; i < SAMPLES; i++) {
+    const s = (i / SAMPLES) * total;
+    let x, y, heading;
+    if (s < segLengths[0]) {
+      x = trackCx - straightHalf + s;
+      y = trackCy - turnRadius;
+      heading = 0;
+    } else if (s < segLengths[0] + segLengths[1]) {
+      const u = s - segLengths[0];
+      const a = -Math.PI / 2 + u / turnRadius;
+      x = trackCx + straightHalf + turnRadius * Math.cos(a);
+      y = trackCy + turnRadius * Math.sin(a);
+      heading = a + Math.PI / 2;
+    } else if (s < segLengths[0] + segLengths[1] + segLengths[2]) {
+      const u = s - segLengths[0] - segLengths[1];
+      x = trackCx + straightHalf - u;
+      y = trackCy + turnRadius;
+      heading = Math.PI;
+    } else {
+      const u = s - segLengths[0] - segLengths[1] - segLengths[2];
+      const a = Math.PI / 2 + u / turnRadius;
+      x = trackCx - straightHalf + turnRadius * Math.cos(a);
+      y = trackCy + turnRadius * Math.sin(a);
+      heading = a + Math.PI / 2;
+    }
+    centerline.push({ x, y, heading });
+  }
+})();
+
+function nearestOnCenter(px, py) {
+  let bestIdx = 0;
+  let bestSq  = Infinity;
+  for (let i = 0; i < centerline.length; i++) {
+    const c  = centerline[i];
+    const dx = c.x - px;
+    const dy = c.y - py;
+    const d  = dx * dx + dy * dy;
+    if (d < bestSq) { bestSq = d; bestIdx = i; }
+  }
+  return { idx: bestIdx, dist: Math.sqrt(bestSq) };
+}
+
+// ---------- Drawing the track ----------
+function drawTrack() {
+  ctx.fillStyle = '#2f7a36';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  for (let i = 0; i < 240; i++) ctx.fillRect((i * 97) % W, (i * 53 + 11) % H, 2, 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.04)';
+  for (let i = 0; i < 160; i++) ctx.fillRect((i * 131 + 17) % W, (i * 71 + 29) % H, 2, 2);
+
+  ctx.strokeStyle = '#3d3f46';
+  ctx.lineWidth   = trackHalfW * 2;
+  ctx.lineJoin    = 'round';
+  ctx.lineCap     = 'round';
+  ctx.beginPath();
+  for (let i = 0; i < centerline.length; i++) {
+    const c = centerline[i];
+    if (i === 0) ctx.moveTo(c.x, c.y); else ctx.lineTo(c.x, c.y);
+  }
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.strokeStyle = '#494c54';
+  ctx.lineWidth   = trackHalfW * 2 - 14;
+  ctx.beginPath();
+  for (let i = 0; i < centerline.length; i++) {
+    const c = centerline[i];
+    if (i === 0) ctx.moveTo(c.x, c.y); else ctx.lineTo(c.x, c.y);
+  }
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.strokeStyle = '#f1d24a';
+  ctx.lineWidth   = 2;
+  ctx.setLineDash([14, 18]);
+  ctx.beginPath();
+  for (let i = 0; i < centerline.length; i++) {
+    const c = centerline[i];
+    if (i === 0) ctx.moveTo(c.x, c.y); else ctx.lineTo(c.x, c.y);
+  }
+  ctx.closePath();
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawKerb( trackHalfW + 2);
+  drawKerb(-trackHalfW - 2);
+  drawCheckerLine(centerline[0]);
+}
+
+function drawKerb(offset) {
+  const stripeEvery = 6;
+  ctx.lineWidth = 8;
+  ctx.lineCap   = 'butt';
+  for (let i = 0; i < centerline.length; i++) {
+    const a = centerline[i];
+    const b = centerline[(i + 1) % centerline.length];
+    const ax = a.x + Math.cos(a.heading + Math.PI / 2) * offset;
+    const ay = a.y + Math.sin(a.heading + Math.PI / 2) * offset;
+    const bx = b.x + Math.cos(b.heading + Math.PI / 2) * offset;
+    const by = b.y + Math.sin(b.heading + Math.PI / 2) * offset;
+    ctx.strokeStyle = (Math.floor(i / stripeEvery) % 2 === 0) ? '#d94545' : '#f5f5f5';
+    ctx.beginPath();
+    ctx.moveTo(ax, ay);
+    ctx.lineTo(bx, by);
+    ctx.stroke();
+  }
+}
+
+function drawCheckerLine(c) {
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  ctx.rotate(c.heading);
+  const w = 16, h = trackHalfW * 2 - 14;
+  const rows = 6, cols = 2;
+  const cw = w / cols, ch = h / rows;
+  for (let r = 0; r < rows; r++) {
+    for (let cc = 0; cc < cols; cc++) {
+      ctx.fillStyle = ((r + cc) % 2 === 0) ? '#fff' : '#111';
+      ctx.fillRect(-w / 2 + cc * cw, -h / 2 + r * ch, cw, ch);
+    }
+  }
+  ctx.restore();
+}
+
+// ---------- Cars ----------
+// Cars now move with a real velocity vector (vx, vy) so collisions can
+// transfer momentum on any axis. The player's "speed" along the heading
+// is recovered by projecting velocity onto the heading direction.
+function makeCar(color, accent, controls, sideOffset, label) {
+  const start = centerline[0];
+  const perp  = start.heading + Math.PI / 2;
+  return {
+    label,
+    x:        start.x + Math.cos(perp) * sideOffset,
+    y:        start.y + Math.sin(perp) * sideOffset,
+    angle:    start.heading,
+    vx: 0, vy: 0,
+    radius: 14,
+    color, accent, controls,
+    laps:        0,
+    progress:    0,
+    halfPassed:  false,
+    finished:    false,
+    wasHittingWall: false,
+    crashCooldown: 0,
+  };
+}
+
+const cars = [
+  makeCar('#4a8cff', '#1f4dad',
+          { up: 'w',        down: 's',          left: 'a',         right: 'd'          },
+          -18, 'p1'),
+  makeCar('#ff5a5a', '#a82424',
+          { up: 'arrowup',  down: 'arrowdown',  left: 'arrowleft', right: 'arrowright' },
+          18, 'p2'),
+];
+
+// ---------- Input ----------
+const keys = {};
+const P1_KEYS = ['w', 'a', 's', 'd'];
+const P2_KEYS = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright'];
+
+const KEY_LABEL = {
+  'w': 'W', 'a': 'A', 's': 'S', 'd': 'D',
+  'arrowup': '↑', 'arrowleft': '←', 'arrowdown': '↓', 'arrowright': '→',
+  'r': 'R',
+};
+
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  const wasDown = keys[k];
+  keys[k] = true;
+  if (k === 'r') restart();
+  if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(k)) e.preventDefault();
+  if (!wasDown) {
+    setKeyVisual(k, true);
+    const who = P1_KEYS.includes(k) ? 'p1' : P2_KEYS.includes(k) ? 'p2' : null;
+    if (who)         logEvent(who, 'keydown', KEY_LABEL[k] || k);
+    else if (k === 'r') logEvent('sys', 'restart', 'R');
+  }
+});
+
+addEventListener('keyup', e => {
+  const k = e.key.toLowerCase();
+  if (keys[k]) {
+    keys[k] = false;
+    setKeyVisual(k, false);
+    const who = P1_KEYS.includes(k) ? 'p1' : P2_KEYS.includes(k) ? 'p2' : null;
+    if (who) logEvent(who, 'keyup', KEY_LABEL[k] || k);
+  }
+});
+
+// ---------- Physics constants (60% of original feel) ----------
+const ACCEL          = 0.078;
+const REVERSE_ACCEL  = 0.054;
+const MAX_SPEED      = 2.64;
+const MAX_REVERSE    = -1.2;
+const TRACK_FRICTION = 0.985;
+const GRASS_FRICTION = 0.90;
+const TURN_RATE      = 0.0288;
+const GRIP           = 0.18;   // 0 = ice, 1 = no drift. Pulls velocity back toward heading.
+const RESTITUTION    = 0.95;   // collision elasticity (1.0 = perfectly elastic)
+
+let countdown   = 3.6;
+let raceOver    = false;
+let winnerText  = '';
+let lastTime    = 0;
+
+function updateCar(car) {
+  // Forward speed = projection of velocity onto heading (signed).
+  let fwd = car.vx * Math.cos(car.angle) + car.vy * Math.sin(car.angle);
+  let driving = true;
+
+  if (raceOver || countdown > 0) {
+    car.vx *= 0.94; car.vy *= 0.94;
+    driving = false;
+  } else if (car.finished) {
+    car.vx *= 0.97; car.vy *= 0.97;
+    driving = false;
+  }
+
+  if (driving) {
+    const c = car.controls;
+    if (keys[c.up])   { car.vx += Math.cos(car.angle) * ACCEL;        car.vy += Math.sin(car.angle) * ACCEL; }
+    if (keys[c.down]) { car.vx -= Math.cos(car.angle) * REVERSE_ACCEL; car.vy -= Math.sin(car.angle) * REVERSE_ACCEL; }
+
+    // Cap forward / reverse along the heading (sideways speed from collisions
+    // is not capped here — friction/grip handle it).
+    fwd = car.vx * Math.cos(car.angle) + car.vy * Math.sin(car.angle);
+    if (fwd > MAX_SPEED)  { const e = fwd - MAX_SPEED;  car.vx -= Math.cos(car.angle) * e; car.vy -= Math.sin(car.angle) * e; }
+    if (fwd < MAX_REVERSE){ const e = fwd - MAX_REVERSE; car.vx -= Math.cos(car.angle) * e; car.vy -= Math.sin(car.angle) * e; }
+
+    const speed = Math.hypot(car.vx, car.vy);
+    if (speed > 0.05) {
+      const dir  = fwd >= 0 ? 1 : -1;
+      const turn = TURN_RATE * Math.min(1, speed / 1.6);
+      if (keys[c.left])  car.angle -= turn * dir;
+      if (keys[c.right]) car.angle += turn * dir;
+    }
+
+    // Tire grip: blend velocity toward the heading axis. Lets sideways
+    // momentum from collisions dissipate gradually instead of instantly.
+    const newFwd = car.vx * Math.cos(car.angle) + car.vy * Math.sin(car.angle);
+    const tgtVx  = Math.cos(car.angle) * newFwd;
+    const tgtVy  = Math.sin(car.angle) * newFwd;
+    car.vx += (tgtVx - car.vx) * GRIP;
+    car.vy += (tgtVy - car.vy) * GRIP;
+  }
+
+  // Move
+  car.x += car.vx;
+  car.y += car.vy;
+
+  // Hard wall: clamp + zero the velocity component pushing into the wall.
+  const margin = 15;
+  let hitWall = false;
+  if (car.x < margin)          { car.x = margin;     if (car.vx < 0) car.vx = 0; hitWall = true; }
+  else if (car.x > W - margin) { car.x = W - margin; if (car.vx > 0) car.vx = 0; hitWall = true; }
+  if (car.y < margin)          { car.y = margin;     if (car.vy < 0) car.vy = 0; hitWall = true; }
+  else if (car.y > H - margin) { car.y = H - margin; if (car.vy > 0) car.vy = 0; hitWall = true; }
+  if (hitWall && !car.wasHittingWall) logEvent(car.label, 'wall hit', '');
+  car.wasHittingWall = hitWall;
+
+  // Surface friction
+  const near    = nearestOnCenter(car.x, car.y);
+  const onTrack = near.dist < trackHalfW - 4;
+  const fric    = onTrack ? TRACK_FRICTION : GRASS_FRICTION;
+  car.vx *= fric; car.vy *= fric;
+
+  if (car.crashCooldown > 0) car.crashCooldown--;
+
+  if (!car.finished && !raceOver && countdown <= 0) {
+    const newProgress = near.idx / SAMPLES;
+    if (newProgress > 0.45 && newProgress < 0.55) car.halfPassed = true;
+    const wrappedForward = car.progress > 0.85 && newProgress < 0.15;
+    if (wrappedForward && car.halfPassed) {
+      car.laps += 1;
+      car.halfPassed = false;
+      logEvent(car.label, 'lap done', `lap ${car.laps}/${TOTAL_LAPS}`);
+      if (car.laps >= TOTAL_LAPS) {
+        car.finished = true;
+        if (!raceOver) {
+          raceOver   = true;
+          winnerText = (car === cars[0]) ? 'Player 1 (Blue) wins!' : 'Player 2 (Red) wins!';
+          showBanner(winnerText);
+          logEvent('sys', 'race over', winnerText);
+        }
+      }
+    }
+    car.progress = newProgress;
+  }
+}
+
+// Equal-mass elastic collision between two cars (treated as circles).
+// Separates them so they don't overlap, then reflects the normal-axis
+// component of their relative velocity. Tangential motion is preserved.
+function resolveCarCollision(a, b) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const dist = Math.hypot(dx, dy);
+  const minDist = a.radius + b.radius;
+  if (dist === 0 || dist >= minDist) return;
+
+  const nx = dx / dist;
+  const ny = dy / dist;
+
+  // Separate so they're just touching (split the overlap evenly).
+  const overlap = (minDist - dist) * 0.5 + 0.01;
+  a.x -= nx * overlap; a.y -= ny * overlap;
+  b.x += nx * overlap; b.y += ny * overlap;
+
+  // Relative velocity along the normal. Positive = separating.
+  const vRelN = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
+  if (vRelN > 0) return;
+
+  // For equal masses, impulse magnitude = -(1+e)*vRelN/2.
+  const j = -(1 + RESTITUTION) * vRelN * 0.5;
+  a.vx -= j * nx; a.vy -= j * ny;
+  b.vx += j * nx; b.vy += j * ny;
+
+  if (a.crashCooldown <= 0 && b.crashCooldown <= 0) {
+    logEvent('sys', 'crash', `${a.label.toUpperCase()} ↔ ${b.label.toUpperCase()}`);
+  }
+  a.crashCooldown = 12;
+  b.crashCooldown = 12;
+}
+
+function drawCar(car) {
+  ctx.save();
+  ctx.translate(car.x, car.y);
+  ctx.rotate(car.angle);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(-15, -10 + 3, 30, 20);
+  ctx.fillStyle = car.color;
+  ctx.fillRect(-15, -10, 30, 20);
+  ctx.fillStyle = car.accent;
+  ctx.fillRect(-13, -10, 6, 20);
+  ctx.fillStyle = 'rgba(20,28,40,0.85)';
+  ctx.fillRect(2, -7, 8, 14);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(13, -10, 2, 20);
+  ctx.restore();
+}
+
+// ---------- HUD + banner ----------
+const lap1El      = document.getElementById('lap1');
+const lap2El      = document.getElementById('lap2');
+const banner      = document.getElementById('banner');
+const bannerTitle = document.getElementById('bannerTitle');
+
+function showBanner(text) {
+  bannerTitle.textContent = text;
+  banner.classList.add('show');
+}
+function hideBanner() { banner.classList.remove('show'); }
+
+function restart() {
+  raceOver  = false;
+  winnerText = '';
+  countdown = 3.6;
+  hideBanner();
+  cars.forEach((car, i) => {
+    const start = centerline[0];
+    const perp  = start.heading + Math.PI / 2;
+    const off   = i === 0 ? -18 : 18;
+    car.x = start.x + Math.cos(perp) * off;
+    car.y = start.y + Math.sin(perp) * off;
+    car.angle      = start.heading;
+    car.vx         = 0;
+    car.vy         = 0;
+    car.laps       = 0;
+    car.progress   = 0;
+    car.halfPassed = false;
+    car.finished   = false;
+    car.wasHittingWall = false;
+    car.crashCooldown  = 0;
+  });
+  logEvent('sys', 'restart', 'race reset');
+}
+document.getElementById('restart').addEventListener('click', restart);
+
+function drawCountdown() {
+  if (countdown <= 0) return;
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.fillRect(0, 0, W, H);
+  const n = Math.ceil(countdown - 0.6);
+  const text = n > 0 ? String(n) : 'GO!';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font         = 'bold 130px ui-sans-serif, system-ui, sans-serif';
+  ctx.fillStyle    = 'rgba(0,0,0,0.6)';
+  ctx.fillText(text, W / 2 + 4, H / 2 + 4);
+  ctx.fillStyle    = (text === 'GO!') ? '#7CFFB2' : '#fff';
+  ctx.fillText(text, W / 2, H / 2);
+}
+
+// ---------- Event monitor ----------
+const monitor   = document.getElementById('monitor');
+const eventLog  = document.getElementById('eventLog');
+const evCountEl = document.getElementById('evCount');
+const rateEl    = document.getElementById('rateMeta');
+const monList   = document.getElementById('monList');
+
+// Lock the monitor's height to the canvas height, AND push it down so its
+// top edge lines up with the canvas top (not with the HUD lap counters).
+function syncMonitorHeight() {
+  const stage = document.querySelector('.stage');
+  monitor.style.height = canvas.clientHeight + 'px';
+  const canvasTop = canvas.getBoundingClientRect().top;
+  const stageTop  = stage.getBoundingClientRect().top;
+  monitor.style.marginTop = Math.max(0, canvasTop - stageTop) + 'px';
+}
+addEventListener('resize', syncMonitorHeight);
+// Run after a frame so layout is settled.
+requestAnimationFrame(syncMonitorHeight);
+
+let evCount = 0;
+const recentTimes = [];
+
+function logEvent(who, eventName, arg) {
+  evCount++;
+  evCountEl.textContent = String(evCount);
+
+  // Track events/sec over the last second
+  const now = performance.now();
+  recentTimes.push(now);
+  while (recentTimes.length && now - recentTimes[0] > 1000) recentTimes.shift();
+  rateEl.textContent = 'events/sec: ' + recentTimes.length;
+
+  const li = document.createElement('li');
+  li.classList.add('flash');
+
+  const time = new Date();
+  const ts = String(time.getMinutes()).padStart(2, '0') + ':' +
+             String(time.getSeconds()).padStart(2, '0') + '.' +
+             String(time.getMilliseconds()).padStart(3, '0');
+
+  const tEl = document.createElement('span'); tEl.className = 't'; tEl.textContent = ts;
+
+  const wEl = document.createElement('span');
+  wEl.className = 'who ' + (who || 'sys');
+  wEl.textContent = who ? who.toUpperCase() : '—';
+
+  const bEl = document.createElement('span'); bEl.className = 'body';
+  const eEl = document.createElement('span'); eEl.className = 'ev'; eEl.textContent = eventName;
+  const aEl = document.createElement('span'); aEl.className = 'arg';
+  aEl.textContent = arg ? '  ' + arg : '';
+  bEl.append(eEl, aEl);
+
+  li.append(tEl, wEl, bEl);
+  // Terminal-style: append newest at the bottom, drop oldest from the top.
+  eventLog.appendChild(li);
+  while (eventLog.children.length > 200) eventLog.removeChild(eventLog.firstChild);
+
+  const n = eventLog.children.length;
+  for (let i = 0; i < n; i++) {
+    eventLog.children[i].classList.toggle('fade', i < n - 9);
+  }
+
+  // Auto-scroll to the bottom so the newest entry is always visible.
+  monList.scrollTop = monList.scrollHeight;
+}
+
+function setKeyVisual(k, isDown) {
+  const el = document.querySelector(`.keystate .k[data-key="${CSS.escape(k)}"]`);
+  if (el) el.classList.toggle('active', isDown);
+}
+
+document.getElementById('clearLog').addEventListener('click', () => {
+  eventLog.innerHTML = '';
+  evCount = 0;
+  evCountEl.textContent = '0';
+});
+
+// ---------- Main loop ----------
+function loop(t) {
+  const dt = lastTime ? (t - lastTime) / 1000 : 0;
+  lastTime = t;
+  if (countdown > 0) countdown -= dt;
+  cars.forEach(updateCar);
+  // Resolve pairwise car-vs-car collisions after movement.
+  for (let i = 0; i < cars.length; i++)
+    for (let j = i + 1; j < cars.length; j++)
+      resolveCarCollision(cars[i], cars[j]);
+  drawTrack();
+  cars.forEach(drawCar);
+  drawCountdown();
+  lap1El.textContent = Math.min(cars[0].laps, TOTAL_LAPS);
+  lap2El.textContent = Math.min(cars[1].laps, TOTAL_LAPS);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+logEvent('sys', 'init', 'game loop started');
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+Screen Turns Green and User Clicks As Fast As they Can. Time shows up. 
+===================================================================
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reaction Timer</title>
+
+
+  <!-- ============================================================
+    CSS — controls how everything looks
+  ============================================================ -->
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f5f4f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    #box {
+      width: 480px;
+      height: 300px;
+      border-radius: 12px;
+      background: #e5e5e5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;   /* stops text from getting highlighted on click */
+      transition: background 0.1s;
+    }
+
+    #big {
+      font-size: 32px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    #small {
+      font-size: 15px;
+      color: #888;
+    }
+  </style>
+</head>
+
+
+<!-- ============================================================
+  HTML — the structure of the page (just one box with two text labels)
+============================================================ -->
+<body>
+  <div id="box">
+    <div id="big">Click to start</div>
+    <div id="small">Test your reaction time</div>
+  </div>
+
+
+  <!-- ============================================================
+    JAVASCRIPT — all the game logic
+  ============================================================ -->
+  <script>
+    // grab the elements we need to update
+    const box   = document.getElementById('box');
+    const big   = document.getElementById('big');
+    const small = document.getElementById('small');
+
+    // the game has 4 states:
+    //   idle    → player hasn't started yet
+    //   waiting → player clicked start, waiting for green
+    //   ready   → box is green, waiting for player to click
+    //   done    → player clicked, showing the result
+    let state     = 'idle';
+    let startTime = 0;      // records when the box turned green
+    let timeout   = null;   // holds the timer so we can cancel it if needed
+
+    // everything happens in one click handler
+    box.addEventListener('click', function() {
+
+      if (state === 'idle' || state === 'done') {
+        // --- start a new attempt ---
+        state = 'waiting';
+        box.style.background = '#ccc';
+        big.textContent      = 'Wait for green...';
+        small.textContent    = '';
+        big.style.color      = '#1a1a1a';
+        small.style.color    = '#888';
+
+        // go green after a random delay between 1 and 4 seconds
+        const delay = 1000 + Math.random() * 3000;
+        timeout = setTimeout(function() {
+          state = 'ready';
+          box.style.background = '#2d7d46';
+          big.style.color      = '#fff';
+          small.style.color    = 'rgba(255,255,255,0.7)';
+          big.textContent      = 'Click!';
+          startTime            = Date.now();  // start the clock
+        }, delay);
+
+      } else if (state === 'waiting') {
+        // --- player clicked too early ---
+        clearTimeout(timeout);  // cancel the green light
+        state = 'done';
+        box.style.background = '#c0392b';
+        big.style.color      = '#fff';
+        small.style.color    = 'rgba(255,255,255,0.7)';
+        big.textContent      = 'Too early!';
+        small.textContent    = 'Click to try again';
+
+      } else if (state === 'ready') {
+        // --- player clicked on green — calculate reaction time ---
+        const ms = Date.now() - startTime;  // milliseconds since green appeared
+        state = 'done';
+        box.style.background = '#e5e5e5';
+        big.style.color      = '#1a1a1a';
+        small.style.color    = '#888';
+        big.textContent      = ms + ' ms';
+        small.textContent    = rating(ms) + ' · Click to try again';
+      }
+
+    });
+
+    // --- return a label based on how fast the player was ---
+    function rating(ms) {
+      if (ms < 200) return 'Superhuman';
+      if (ms < 250) return 'Excellent';
+      if (ms < 350) return 'Good';
+      if (ms < 500) return 'Average';
+      return 'Keep practicing';
+    }
+  </script>
+</body>
+</html>
+

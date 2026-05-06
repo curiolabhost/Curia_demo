@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simon Says</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet" />
+
+  <!-- =============================================
+       STYLES (style.css)
+  ============================================= -->
+  <style>
+    :root {
+      --bg:             #f5f5f0;
+      --surface:        #ffffff;
+      --border:         #e2e2dc;
+      --cell-idle:      #e8e8e2;
+      --cell-border:    #d4d4ce;
+      --cell-lit:       #4f8ef7;
+      --cell-lit-glow:  rgba(79, 142, 247, 0.35);
+      --cell-wrong:     #f25c54;
+      --cell-correct:   #34c97e;
+      --accent:         #4f8ef7;
+      --accent-dark:    #2f6fd4;
+      --text-primary:   #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --text-muted:     #a0a0a0;
+      --cell-size:      76px;
+      --grid-gap:       8px;
+      --grid-cols:      4;
+      --radius-cell:    10px;
+      --radius-card:    16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 64px;
+      color: var(--text-primary);
+    }
+
+    header { text-align: center; margin-bottom: 32px; }
+    .game-title { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+    .game-subtitle { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+
+    .stats-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+    .stat-box {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 12px 28px;
+      text-align: center;
+      min-width: 100px;
+    }
+    .stat-box--best { border-color: var(--accent); background: #f0f5ff; }
+    .stat-label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 4px; }
+    .stat-number { display: block; font-family: 'DM Mono', monospace; font-size: 1.8rem; font-weight: 500; color: var(--text-primary); line-height: 1; }
+    .stat-box--best .stat-number { color: var(--accent); }
+
+    .status-message {
+      font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: 50px;
+      padding: 8px 22px; margin-bottom: 24px; min-height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(var(--grid-cols), var(--cell-size));
+      grid-template-rows: repeat(var(--grid-cols), var(--cell-size));
+      gap: var(--grid-gap);
+      background: var(--surface); padding: 14px;
+      border-radius: var(--radius-card); border: 1.5px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .cell {
+      width: var(--cell-size); height: var(--cell-size);
+      background-color: var(--cell-idle); border: 1.5px solid var(--cell-border);
+      border-radius: var(--radius-cell); cursor: pointer;
+      transition: background-color 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease;
+    }
+    .cell:hover { background-color: #ddddd6; transform: scale(1.04); }
+    .cell:active { transform: scale(0.96); }
+    .cell.lit { background-color: var(--cell-lit); border-color: var(--accent-dark); box-shadow: 0 0 0 4px var(--cell-lit-glow); transform: scale(1.06); }
+    .cell.wrong { background-color: var(--cell-wrong); border-color: #c0392b; box-shadow: 0 0 0 4px rgba(242,92,84,0.3); animation: shake 0.3s ease; }
+    .cell.clicked { background-color: var(--cell-correct); border-color: #27ae60; box-shadow: 0 0 0 4px rgba(52,201,126,0.3); transform: scale(0.96); }
+
+    .start-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700;
+      background: var(--accent); color: #fff; border: none; border-radius: 50px;
+      padding: 13px 40px; cursor: pointer; letter-spacing: 0.2px;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .start-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .start-btn:active { transform: translateY(1px); }
+
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(20,20,20,0.5); backdrop-filter: blur(6px);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .overlay-box {
+      background: var(--surface); border-radius: 20px; border: 1.5px solid var(--border);
+      padding: 48px 40px 40px; text-align: center; max-width: 300px; width: 90%;
+      animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .overlay-eyebrow { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--cell-wrong); margin-bottom: 8px; }
+    .overlay-title { font-size: 1.1rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 12px; }
+    .overlay-level-display { font-family: 'DM Mono', monospace; font-size: 3.5rem; font-weight: 500; color: var(--text-primary); line-height: 1; margin-bottom: 10px; }
+    .overlay-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 28px; }
+
+    .wrong-flash { display: none; position: fixed; inset: 0; background: rgba(242,92,84,0.25); z-index: 50; pointer-events: none; }
+    .wrong-flash.active { display: block; animation: flashFade 0.45s ease forwards; }
+
+    .grid.disabled .cell { cursor: not-allowed; pointer-events: none; }
+
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes flashFade { from { opacity: 1; } to { opacity: 0; } }
+
+    @media (max-width: 420px) {
+      :root { --cell-size: 62px; --grid-gap: 6px; }
+      .game-title { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =============================
+       HEADER
+  ============================== -->
+  <header>
+    <h1 class="game-title">Simon Says</h1>
+    <p class="game-subtitle">Watch the pattern — repeat it back</p>
+  </header>
+
+  <!-- =============================
+       STATS BAR
+  ============================== -->
+  <div class="stats-bar">
+    <div class="stat-box">
+      <span class="stat-label">Level</span>
+      <span class="stat-number" id="current-level">1</span>
+    </div>
+    <div class="stat-box stat-box--best">
+      <span class="stat-label">Best</span>
+      <span class="stat-number" id="best-level">—</span>
+    </div>
+  </div>
+
+  <!-- =============================
+       STATUS MESSAGE
+  ============================== -->
+  <div class="status-message" id="status-message">Press Start to play</div>
+
+  <!-- =============================
+       THE GRID
+  ============================== -->
+  <div class="grid" id="grid">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+    <div class="cell" data-index="9"></div>
+    <div class="cell" data-index="10"></div>
+    <div class="cell" data-index="11"></div>
+    <div class="cell" data-index="12"></div>
+    <div class="cell" data-index="13"></div>
+    <div class="cell" data-index="14"></div>
+    <div class="cell" data-index="15"></div>
+  </div>
+
+  <button class="start-btn" id="start-btn">Start Game</button>
+
+  <!-- =============================
+       GAME OVER OVERLAY
+  ============================== -->
+  <div class="overlay" id="game-over-screen">
+    <div class="overlay-box">
+      <p class="overlay-eyebrow">Game Over</p>
+      <h2 class="overlay-title">You reached</h2>
+      <div class="overlay-level-display">Level <span id="final-level">1</span></div>
+      <p class="overlay-sub" id="overlay-sub-message">Keep practicing!</p>
+      <button class="start-btn" id="restart-btn">Try Again</button>
+    </div>
+  </div>
+
+  <div class="wrong-flash" id="wrong-flash"></div>
+
+  <!-- =============================================
+       JAVASCRIPT (game.js)
+  ============================================= -->
+  <script>
+    // --- DOM Elements ---
+    const grid           = document.getElementById('grid');
+    const startBtn       = document.getElementById('start-btn');
+    const restartBtn     = document.getElementById('restart-btn');
+    const statusMessage  = document.getElementById('status-message');
+    const currentLevel   = document.getElementById('current-level');
+    const bestLevelEl    = document.getElementById('best-level');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const finalLevel     = document.getElementById('final-level');
+    const wrongFlash     = document.getElementById('wrong-flash');
+    const cells          = document.querySelectorAll('.cell');
+
+    // --- State ---
+    let sequence       = [];
+    let playerClicks   = [];
+    let isInputAllowed = false;
+    let level          = 1;
+    let bestLevel      = 0;
+
+    // --- Cell click listeners ---
+    cells.forEach(function(cell) {
+      cell.addEventListener('click', function() {
+        handleClick(Number(this.dataset.index), this);
+      });
+    });
+
+    // --- Helpers ---
+    function pickCells(n) {
+      let pool = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+      let picked = [];
+      for (let i = 0; i < n; i++) {
+        let pos = Math.floor(Math.random() * pool.length);
+        picked.push(pool[pos]);
+        pool.splice(pos, 1);
+      }
+      return picked;
+    }
+
+    function setStatus(msg) { statusMessage.textContent = msg; }
+
+    function updateLevelDisplay() {
+      currentLevel.textContent = level;
+      if (level > bestLevel) {
+        bestLevel = level;
+        bestLevelEl.textContent = bestLevel;
+      }
+    }
+
+    // --- Core: startRound ---
+    const DISPLAY_SPEED = 700;
+    const LIT_DURATION  = 400;
+
+    function startRound() {
+      playerClicks   = [];
+      isInputAllowed = false;
+      grid.classList.add('disabled');
+      sequence = pickCells(level);
+      updateLevelDisplay();
+      setStatus('Watch carefully...');
+
+      for (let i = 0; i < sequence.length; i++) {
+        setTimeout(function() {
+          let cell = cells[sequence[i]];
+          cell.classList.add('lit');
+          setTimeout(function() { cell.classList.remove('lit'); }, LIT_DURATION);
+        }, (i + 1) * DISPLAY_SPEED);
+      }
+
+      setTimeout(function() {
+        isInputAllowed = true;
+        grid.classList.remove('disabled');
+        setStatus('Your turn!');
+      }, (sequence.length + 1) * DISPLAY_SPEED);
+    }
+
+    // --- Core: handleClick ---
+    function handleClick(index, cellEl) {
+      if (!isInputAllowed) return;
+
+      let expected = sequence[playerClicks.length];
+
+      if (index === expected) {
+        cellEl.classList.add('clicked');
+        setTimeout(function() { cellEl.classList.remove('clicked'); }, 250);
+        playerClicks.push(index);
+
+        if (playerClicks.length === sequence.length) {
+          isInputAllowed = false;
+          grid.classList.add('disabled');
+          setStatus('Nice one!');
+          setTimeout(checkResult, 800);
+        }
+      } else {
+        cellEl.classList.add('wrong');
+        setTimeout(function() { cellEl.classList.remove('wrong'); }, 300);
+        wrongFlash.classList.add('active');
+        setTimeout(function() { wrongFlash.classList.remove('active'); }, 450);
+        isInputAllowed = false;
+        grid.classList.add('disabled');
+        setTimeout(showGameOver, 600);
+      }
+    }
+
+    // --- Core: checkResult ---
+    function checkResult() {
+      level++;
+      setStatus('Level ' + level + '!');
+      setTimeout(startRound, 800);
+    }
+
+    // --- Core: showGameOver ---
+    function showGameOver() {
+      finalLevel.textContent = level;
+      gameOverScreen.style.display = 'flex';
+    }
+
+    // --- Core: resetGame ---
+    function resetGame() {
+      sequence = []; playerClicks = []; level = 1; isInputAllowed = false;
+      gameOverScreen.style.display = 'none';
+      startRound();
+    }
+
+    // --- Button listeners ---
+    startBtn.addEventListener('click', function() {
+      startBtn.style.display = 'none';
+      level = 1;
+      startRound();
+    });
+
+    restartBtn.addEventListener('click', resetGame);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+{
+  "id": "s6-l1",
+  "session": "Session 6",
+  "title": "Reaction Timer",
+  "content": [],
+  "challenges": [],
+  "finalProject": {
+    "htmlTemplate": "<div id=\"box\">\n  <div id=\"big\">Click to start</div>\n  <div id=\"small\">Test your reaction time</div>\n</div>\n",
+    "cssTemplate": "html, body {\n  height: 100%;\n  margin: 0;\n}\n\nbody {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: #f5f4f0;\n  font-family: system-ui, -apple-system, sans-serif;\n  color: #1A1E2E;\n}\n\n#box {\n  width: 400px;\n  height: 220px;\n  border-radius: 12px;\n  background: #e5e5ea;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n  transition: background 120ms ease, color 120ms ease;\n}\n\n#big {\n  font-size: 28px;\n  font-weight: 600;\n}\n\n#small {\n  font-size: 14px;\n  color: #6b7280;\n}\n\n#box.ready {\n  background: #059669;\n  color: #ffffff;\n}\n#box.ready #small {\n  color: rgba(255, 255, 255, 0.85);\n}\n\n#box.early {\n  background: #DC2626;\n  color: #ffffff;\n}\n#box.early #small {\n  color: rgba(255, 255, 255, 0.85);\n}\n"
+  },
+  "exercises": [
+    {
+      "title": "Set up your variables",
+      "type": "practice",
+      "duration": "3 min",
+      "format": "final-project",
+      "lessonRefs": ["s2-l1", "s2-l0"],
+      "tasks": [
+        "Every program needs memory. Drag the right starting value into each blank.",
+        "state tracks what is happening: idle, waiting, ready, or done.",
+        "startTime will record when the box turns green.",
+        "timeout holds a timer we can cancel if needed."
+      ],
+      "hint": "state starts as idle. startTime starts at 0. timeout starts as null because no timer is running.",
+      "codeWithBlanks": [
+        "let state     = ___BLANK___;",
+        "let startTime = ___BLANK___;",
+        "let timeout   = ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "'idle'" },
+        { "id": "t2", "label": "0" },
+        { "id": "t3", "label": "null" },
+        { "id": "t4", "label": "'done'" },
+        { "id": "t5", "label": "1" },
+        { "id": "t6", "label": "false" }
+      ],
+      "correctOrder": ["'idle'", "0", "null"],
+      "blankInputMode": ["wordbank", "type", "freeline"],
+      "expectedEffects": [
+        { "type": "declaration", "value": null }
+      ],
+      "blankInstructions": [
+        "Create a variable called state and set it to the starting value from the word bank.",
+        "Create a variable called startTime and type in a starting number value.",
+        "Type the full line. Declare a variable called timeout with a value that means nothing is there yet."
+      ],
+      "blankExplanations": [
+        "This program uses a variable called state to track what is happening at any moment. Is the game waiting? Is it green? Is it over? The value you pick here is what state holds before the player does anything.",
+        "When the box turns green, we save the current time into startTime. Then when the player clicks, we subtract startTime from the current time to get their reaction time. Right now the game has not started, so startTime holds a placeholder number.",
+        "setTimeout gives us back a timer ID we can use to cancel the timer if needed. We store it in timeout. But right now no timer is running, so timeout starts as the JavaScript value that means empty."
+      ],
+      "explanation": "state, startTime and timeout are the three variables that run the whole game. They live outside any function so every part of the code can read them.",
+      "checks": []
+    },
+    {
+      "title": "Grab the HTML elements",
+      "type": "practice",
+      "duration": "3 min",
+      "format": "final-project",
+      "lessonRefs": ["s2-l1"],
+      "tasks": [
+        "JavaScript needs to find the elements on the page before it can change them.",
+        "getElementById returns the element whose id matches the string you pass in.",
+        "Drag the right id string into each blank."
+      ],
+      "hint": "The ids match the elements in index.html exactly: box, big, and small.",
+      "codePrefix": "let state     = 'idle';\nlet startTime = 0;\nlet timeout   = null;\n",
+      "codeWithBlanks": [
+        "const box   = document.getElementById(___BLANK___);",
+        "const big   = document.getElementById(___BLANK___);",
+        "const small = document.getElementById(___BLANK___);"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "'box'" },
+        { "id": "t2", "label": "'big'" },
+        { "id": "t3", "label": "'small'" },
+        { "id": "t4", "label": "'div'" },
+        { "id": "t5", "label": "'button'" },
+        { "id": "t6", "label": "'text'" }
+      ],
+      "correctOrder": ["'box'", "'big'", "'small'"],
+      "blankInputMode": ["wordbank", "type", "type"],
+      "blankInstructions": [
+        "Pass the id of the main clickable box into getElementById. Find it in the word bank.",
+        "Type the id of the element that shows the large text inside the box.",
+        "Type the id of the element that shows the smaller text below the main message."
+      ],
+      "blankExplanations": [
+        "Before JavaScript can change something on the page, it needs to find it. getElementById looks through the HTML and returns the element whose id matches exactly. Open the index.html tab to see what ids are available.",
+        "This is the element that displays text like 'Click to start' and 'CLICK!' and the reaction time result. We store a reference to it so we can update its text at any point in the game.",
+        "This element shows secondary messages like 'Test your reaction time' and 'Click to try again'. Having a direct reference means we can update it instantly without searching the page again."
+      ],
+      "explanation": "These three const variables now point to the real DOM elements. Any change to box, big, or small instantly updates what the player sees.",
+      "checks": []
+    },
+    {
+      "title": "Listen for clicks and go green",
+      "type": "practice",
+      "duration": "5 min",
+      "format": "final-project",
+      "lessonRefs": ["s2-l2", "s2-l3", "s5-l2"],
+      "tasks": [
+        "When the player clicks the box, the game starts waiting. After a random delay the box turns green.",
+        "addEventListener watches for the event you name. Drag the right event name into the first blank.",
+        "When the box turns green, state must change. Drag the right state value into the second blank.",
+        "Date.now() returns the current time in milliseconds. Drag it into the third blank to start the clock."
+      ],
+      "hint": "We listen for a click event. When green appears state becomes ready. The clock starts with Date.now().",
+      "codePrefix": "let state     = 'idle';\nlet startTime = 0;\nlet timeout   = null;\n\nconst box   = document.getElementById('box');\nconst big   = document.getElementById('big');\nconst small = document.getElementById('small');\n",
+      "codeWithBlanks": [
+        "box.addEventListener(___BLANK___, function() {",
+        "  if (state === 'idle' || state === 'done') {",
+        "    state = 'waiting';",
+        "    box.style.background = '#ccc';",
+        "    big.textContent = 'Wait for green...';",
+        "    const delay = 1000 + Math.random() * 3000;",
+        "    timeout = setTimeout(function() {",
+        "      state = ___BLANK___;",
+        "      box.style.background = '#059669';",
+        "      big.textContent = 'CLICK!';",
+        "      startTime = ___BLANK___;",
+        "    }, delay);",
+        "  }",
+        "});"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "'click'" },
+        { "id": "t2", "label": "'ready'" },
+        { "id": "t3", "label": "Date.now()" },
+        { "id": "t4", "label": "'keydown'" },
+        { "id": "t5", "label": "'waiting'" },
+        { "id": "t6", "label": "Math.random()" }
+      ],
+      "correctOrder": ["'click'", "'ready'", "Date.now()"],
+      "blankInputMode": ["type", "type", "wordbank"],
+      "blankInstructions": [
+        "Type the name of the event that fires when a user presses and releases their mouse button.",
+        "Type the state value the game should have when the box is green and waiting for the player to click.",
+        "Pick the option from the word bank that returns the current time in milliseconds."
+      ],
+      "blankExplanations": [
+        "addEventListener takes two things: the name of the event to listen for, and a function to run when that event happens. There are many event names in JavaScript. The one for a mouse press is one of the most common you will use.",
+        "When the box turns green, we update state so the click handler knows what to do next. If state is still 'waiting' when the player clicks, the code would treat it as a too-early click. Updating state here is what makes the timing logic work.",
+        "Date.now() gives you a number representing how many milliseconds have passed since January 1st 1970. That sounds strange but it is just a very large number that increases every millisecond. Saving it here and subtracting it later gives you an exact time difference."
+      ],
+      "explanation": "addEventListener is how JavaScript responds to user actions. setTimeout delays the green light by a random amount so the player cannot predict it.",
+      "checks": []
+    },
+    {
+      "title": "Measure the reaction time",
+      "type": "practice",
+      "duration": "4 min",
+      "format": "final-project",
+      "lessonRefs": ["s2-l2", "s2-l7", "s5-l2"],
+      "tasks": [
+        "When the player clicks the green box, we calculate how long they took.",
+        "We only want to measure if the box is currently green. Drag the right state value into the first blank.",
+        "Subtract startTime from Date.now() to get milliseconds. Drag the formula into the second blank.",
+        "After showing the result, the game is done. Drag the right state value into the third blank."
+      ],
+      "hint": "Only measure when state is ready. The formula is Date.now() minus startTime. Then state becomes done.",
+      "codePrefix": "let state     = 'idle';\nlet startTime = 0;\nlet timeout   = null;\n\nconst box   = document.getElementById('box');\nconst big   = document.getElementById('big');\nconst small = document.getElementById('small');\n\nbox.addEventListener('click', function() {\n  if (state === 'idle' || state === 'done') {\n    state = 'waiting';\n    box.style.background = '#ccc';\n    big.textContent = 'Wait for green...';\n    const delay = 1000 + Math.random() * 3000;\n    timeout = setTimeout(function() {\n      state = 'ready';\n      box.style.background = '#059669';\n      big.textContent = 'CLICK!';\n      startTime = Date.now();\n    }, delay);\n  }\n",
+      "codeSuffix": "});",
+      "codeWithBlanks": [
+        "  } else if (state === ___BLANK___) {",
+        "    const ms = ___BLANK___;",
+        "    state = ___BLANK___;",
+        "    box.style.background = '#e5e5ea';",
+        "    big.textContent = ms + ' ms';",
+        "    small.textContent = 'Click to try again';"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "'ready'" },
+        { "id": "t2", "label": "Date.now() - startTime" },
+        { "id": "t3", "label": "'done'" },
+        { "id": "t4", "label": "'waiting'" },
+        { "id": "t5", "label": "startTime - Date.now()" },
+        { "id": "t6", "label": "'idle'" }
+      ],
+      "correctOrder": ["'ready'", "Date.now() - startTime", "'done'"],
+      "blankInputMode": ["type", "freeline", "type"],
+      "expectedEffects": [
+        { "type": "declaration", "valueType": "number" }
+      ],
+      "blankInstructions": [
+        "Type the state value that means the box is green and the player is supposed to be clicking.",
+        "Type the full line. Declare a variable called ms and set it to the difference between the current time and when the box turned green.",
+        "Type the state value that means the game has finished and is showing a result."
+      ],
+      "blankExplanations": [
+        "This condition makes sure we only calculate reaction time when appropriate. If the player clicks before the box is green, state is still 'waiting' and this branch is skipped. If the player clicks after already getting a result, state is 'done' and this also skips. Only 'ready' triggers the measurement.",
+        "This is the core calculation of the whole program. Date.now() gives you the current time in milliseconds. startTime holds the time when the box turned green. Subtracting them gives you exactly how long the player took to click. That gap is the reaction time.",
+        "Setting state to 'done' here means the next click will restart the game instead of trying to measure another reaction time. Every state change in this program is intentional. It controls exactly what the next click does."
+      ],
+      "explanation": "Date.now() minus startTime gives the exact number of milliseconds between the green light and the click. That is the player's reaction time.",
+      "checks": []
+    }
+  ]
+}

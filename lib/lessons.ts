@@ -18,6 +18,13 @@ import s5l1 from '@/content/lessons/s5-l1.json'
 import s5l2 from '@/content/lessons/s5-l2.json'
 import s5l3 from '@/content/lessons/s5-l3.json'
 
+import s6l1 from '@/content/lessons/s6-l1.json'
+
+export type { ExpectedEffect } from './checkLineEffect'
+import type { ExpectedEffect } from './checkLineEffect'
+
+export type BlankInputMode = 'wordbank' | 'type' | 'freeline'
+
 export type ContentBlock =
   | { kind: 'p'; text: string }
   | { kind: 'code'; lines: string[] }
@@ -40,6 +47,9 @@ export type ExerciseFormat =
   | 'fill-blank-typed'
   | 'drag-reorder'
   | 'sort-buckets'
+  | 'final-project'
+
+export type FinalProjectFile = 'script' | 'html' | 'css'
 
 export type MultipleChoiceOption = {
   id: string
@@ -81,10 +91,17 @@ export type Exercise = {
   correctOrder?: string[]
   blankPlaceholders?: string[]
   blankWidths?: number[]
+  blankInstructions?: string[]
+  blankExplanations?: string[]
   codeLines?: string[]
   buckets?: SortBucket[]
   bucketItems?: SortItem[]
   explanation?: string
+  lessonRefs?: string[]
+  codePrefix?: string
+  codeSuffix?: string
+  blankInputMode?: BlankInputMode[]
+  expectedEffects?: ExpectedEffect[]
 }
 
 export type Challenge = {
@@ -113,6 +130,10 @@ export type Lesson = {
   exercises: Exercise[]
   challenges?: Challenge[]
   customize?: string[]
+  finalProject?: {
+    htmlTemplate: string
+    cssTemplate: string
+  }
 }
 
 const lessons: Lesson[] = [
@@ -120,10 +141,37 @@ const lessons: Lesson[] = [
   s3l1, s3l2, s3l3,
   s4l1, s4l2, s4l3,
   s5l1, s5l2, s5l3,
+  s6l1,
 ] as Lesson[]
 
 export function getAllLessons(): Lesson[] {
   return lessons
+}
+
+export type SessionGroup = {
+  sessionId: string
+  sessionLabel: string
+  lessons: Lesson[]
+}
+
+export function getLessonsBySession(): SessionGroup[] {
+  const order = ['s2', 's3', 's4', 's5', 's6']
+  const map = new Map<string, SessionGroup>()
+  for (const lesson of lessons) {
+    const sessionId = lesson.id.split('-')[0]
+    let group = map.get(sessionId)
+    if (!group) {
+      group = { sessionId, sessionLabel: lesson.session, lessons: [] }
+      map.set(sessionId, group)
+    }
+    group.lessons.push(lesson)
+  }
+  const result: SessionGroup[] = []
+  for (const id of order) {
+    const group = map.get(id)
+    if (group) result.push(group)
+  }
+  return result
 }
 
 export function getLessonById(id: string): Lesson | undefined {

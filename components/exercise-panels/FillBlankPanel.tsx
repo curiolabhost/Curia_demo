@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import type { Exercise } from '@/lib/lessons'
+import { useWordBankFiller } from '@/lib/useWordBankFiller'
 
 type FillBlankPanelProps = {
   exercise: Exercise
@@ -54,21 +55,22 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
 
   const blankCount = correctOrder.length
 
-  const [filled, setFilled] = useState<(string | null)[]>(() => Array(blankCount).fill(null))
-  const [filledTokenIds, setFilledTokenIds] = useState<(string | null)[]>(() => Array(blankCount).fill(null))
+  const filler = useWordBankFiller(lines, correctOrder, tokens)
+  const { filled, usedTokenIds, allFilled, reset } = filler
+
   const [answerState, setAnswerState] = useState<AnswerState>('idle')
   const [wrongFlags, setWrongFlags] = useState<boolean[]>(() => Array(blankCount).fill(false))
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    setFilled(Array(blankCount).fill(null))
-    setFilledTokenIds(Array(blankCount).fill(null))
+    reset()
     setAnswerState('idle')
     setWrongFlags(Array(blankCount).fill(false))
     if (resetTimerRef.current) {
       clearTimeout(resetTimerRef.current)
       resetTimerRef.current = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, blankCount])
 
   useEffect(() => {
@@ -77,19 +79,9 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
     }
   }, [])
 
-  const usedTokenIds = new Set(filledTokenIds.filter((id): id is string => id !== null))
-
   const handleTokenClick = (tokenId: string, label: string) => {
     if (answerState === 'correct') return
-    if (usedTokenIds.has(tokenId)) return
-    const nextEmpty = filled.findIndex((v) => v === null)
-    if (nextEmpty === -1) return
-    const nextFilled = [...filled]
-    const nextIds = [...filledTokenIds]
-    nextFilled[nextEmpty] = label
-    nextIds[nextEmpty] = tokenId
-    setFilled(nextFilled)
-    setFilledTokenIds(nextIds)
+    filler.handleTokenClick(tokenId, label)
     if (answerState === 'wrong') {
       setAnswerState('idle')
       setWrongFlags(Array(blankCount).fill(false))
@@ -105,19 +97,12 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
     if (answerState === 'correct') return
     if (filled[index] === null) return
     if (isCorrectLocked(index)) return
-    const nextFilled = [...filled]
-    const nextIds = [...filledTokenIds]
-    nextFilled[index] = null
-    nextIds[index] = null
-    setFilled(nextFilled)
-    setFilledTokenIds(nextIds)
+    filler.handleBlankClick(index)
     if (answerState === 'wrong') {
       setAnswerState('idle')
       setWrongFlags(Array(blankCount).fill(false))
     }
   }
-
-  const allFilled = filled.every((v) => v !== null)
 
   const handleCheck = () => {
     if (!allFilled) return
@@ -130,8 +115,9 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
       setWrongFlags(wrong)
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
       resetTimerRef.current = setTimeout(() => {
-        setFilled((prev) => prev.map((v, i) => (wrong[i] ? null : v)))
-        setFilledTokenIds((prev) => prev.map((v, i) => (wrong[i] ? null : v)))
+        for (let i = 0; i < wrong.length; i += 1) {
+          if (wrong[i]) filler.handleBlankClick(i)
+        }
         setWrongFlags(Array(blankCount).fill(false))
         setAnswerState('idle')
         resetTimerRef.current = null

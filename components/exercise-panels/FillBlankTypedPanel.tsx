@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import type { PanelProps } from './index'
 import { runChecksSilently } from '@/lib/runChecks'
+import { useTypedFiller } from '@/lib/useTypedFiller'
 
 type AnswerState = 'idle' | 'checking' | 'correct' | 'wrong'
 type BlankState = 'idle' | 'correct' | 'wrong'
@@ -55,17 +56,27 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
 
   const blankCount = parsed.total
 
-  const [values, setValues] = useState<string[]>(() => Array(blankCount).fill(''))
+  const filler = useTypedFiller(lines, placeholders, widths)
+  const {
+    values,
+    setValueAt,
+    registerInputRef,
+    focusBlank,
+    allFilled,
+    reset: resetFiller,
+  } = filler
+
   const [answerState, setAnswerState] = useState<AnswerState>('idle')
-  const [blankStates, setBlankStates] = useState<BlankState[]>(() => Array(blankCount).fill('idle'))
+  const [blankStates, setBlankStates] = useState<BlankState[]>(() =>
+    Array(blankCount).fill('idle'),
+  )
   const [errorMessage, setErrorMessage] = useState('')
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const checkRef = useRef<() => void>(() => {})
 
   useEffect(() => {
-    setValues(Array(blankCount).fill(''))
+    resetFiller()
     setBlankStates(Array(blankCount).fill('idle'))
     setAnswerState('idle')
     setErrorMessage('')
@@ -73,6 +84,7 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
       clearTimeout(resetTimerRef.current)
       resetTimerRef.current = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, blankCount])
 
   useEffect(() => {
@@ -80,8 +92,6 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
     }
   }, [])
-
-  const allFilled = values.every((v) => v.trim().length > 0)
 
   const handleCheck = async () => {
     if (answerState === 'checking') return
@@ -115,14 +125,16 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
         setBlankStates(Array(blankCount).fill('correct'))
         setAnswerState('correct')
       } else {
-        const nextStates: BlankState[] = values.map((v) =>
-          v.trim().length === 0 ? 'wrong' : 'wrong',
-        )
+        const nextStates: BlankState[] = values.map(() => 'wrong')
         setBlankStates(nextStates)
         setAnswerState('wrong')
         if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
         resetTimerRef.current = setTimeout(() => {
-          setValues((prev) => prev.map((v, i) => (nextStates[i] === 'correct' ? v : '')))
+          for (let i = 0; i < nextStates.length; i += 1) {
+            if (nextStates[i] !== 'correct') {
+              setValueAt(i, '')
+            }
+          }
           setBlankStates((prev) => prev.map((s) => (s === 'correct' ? 'correct' : 'idle')))
           setAnswerState('idle')
           resetTimerRef.current = null
@@ -146,11 +158,7 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
 
   const handleChange = (index: number, value: string) => {
     if (blankStates[index] === 'correct') return
-    setValues((prev) => {
-      const next = [...prev]
-      next[index] = value
-      return next
-    })
+    setValueAt(index, value)
     if (blankStates[index] === 'wrong') {
       setBlankStates((prev) => {
         const next = [...prev]
@@ -160,34 +168,28 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
     }
   }
 
-  const focusBlank = (index: number) => {
-    const target = inputRefs.current[index]
-    if (target) target.focus()
-  }
-
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      let next = -1
-      for (let i = index + 1; i < blankCount; i++) {
+    if (e.key !== 'Enter') return
+    e.preventDefault()
+    let next = -1
+    for (let i = index + 1; i < blankCount; i++) {
+      if (blankStates[i] !== 'correct' && (values[i] ?? '').trim().length === 0) {
+        next = i
+        break
+      }
+    }
+    if (next === -1) {
+      for (let i = 0; i < index; i++) {
         if (blankStates[i] !== 'correct' && (values[i] ?? '').trim().length === 0) {
           next = i
           break
         }
       }
-      if (next === -1) {
-        for (let i = 0; i < index; i++) {
-          if (blankStates[i] !== 'correct' && (values[i] ?? '').trim().length === 0) {
-            next = i
-            break
-          }
-        }
-      }
-      if (next !== -1) {
-        focusBlank(next)
-      } else if (allFilled) {
-        handleCheck()
-      }
+    }
+    if (next !== -1) {
+      focusBlank(next)
+    } else if (allFilled) {
+      handleCheck()
     }
   }
 
@@ -215,9 +217,7 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
               return (
                 <input
                   key={segIdx}
-                  ref={(el) => {
-                    inputRefs.current[i] = el
-                  }}
+                  ref={(el) => registerInputRef(i, el)}
                   className={inputClass(i)}
                   type="text"
                   value={values[i] ?? ''}

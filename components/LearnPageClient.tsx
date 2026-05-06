@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import type { Lesson } from '@/lib/lessons'
+import { FinalProjectSidebar } from './FinalProjectSidebar'
 import { LessonWorkspace } from './LessonWorkspace'
 import { NavOverlay } from './NavOverlay'
 import { Sidebar } from './Sidebar'
@@ -26,6 +28,17 @@ export function LearnPageClient({
 }: LearnPageClientProps) {
   const [navOpen, setNavOpen] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
+  const [homeExpanded, setHomeExpanded] = useState(false)
+
+  const searchParams = useSearchParams()
+  const exParam = searchParams?.get('ex')
+  const parsedEx = exParam !== null && exParam !== undefined ? Number(exParam) : NaN
+  const initialExerciseIndex = Number.isFinite(parsedEx) && parsedEx >= 0 ? Math.floor(parsedEx) : undefined
+
+  const [activeExerciseIndex, setActiveExerciseIndex] = useState<number>(
+    initialExerciseIndex ?? 0,
+  )
+  const [activeBankIndex, setActiveBankIndex] = useState<number>(0)
 
   useEffect(() => {
     setNavOpen(false)
@@ -33,9 +46,15 @@ export function LearnPageClient({
 
   useEffect(() => {
     setPageIndex(0)
-  }, [activeLessonId])
+    setActiveExerciseIndex(initialExerciseIndex ?? 0)
+    setActiveBankIndex(0)
+  }, [activeLessonId, initialExerciseIndex])
 
   const totalPages = activeLesson?.content.length ?? 1
+  const isFinalProject =
+    !!activeLesson &&
+    activeLesson.exercises.length > 0 &&
+    activeLesson.exercises[0].format === 'final-project'
 
   useEffect(() => {
     if (navOpen) {
@@ -95,21 +114,52 @@ export function LearnPageClient({
       >
         <span className="nav-edge-toggle-icon">{navOpen ? '‹' : '›'}</span>
       </button>
-      <div className="app-main">
-        <Sidebar
-          lesson={activeLesson}
-          pageIndex={pageIndex}
-          setPageIndex={setPageIndex}
-          totalPages={totalPages}
-        />
+      <div
+        className="app-main"
+        style={{
+          gridTemplateColumns: homeExpanded ? '0% 1fr' : '50% 1fr',
+          transition: 'grid-template-columns 0.25s ease',
+        }}
+      >
+        <div
+          style={{
+            overflow: 'hidden',
+            transition: 'all 0.25s ease',
+            minHeight: 0,
+            display: 'grid',
+            gridTemplateRows: '1fr',
+          }}
+        >
+          {isFinalProject && activeLesson ? (
+            <FinalProjectSidebar
+              lesson={activeLesson}
+              activeBlockIndex={activeExerciseIndex}
+              activeBankIndex={activeBankIndex}
+              allLessons={lessons}
+            />
+          ) : (
+            <Sidebar
+              lesson={activeLesson}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              totalPages={totalPages}
+            />
+          )}
+        </div>
         {activeLesson ? (
           <LessonWorkspace
             lesson={activeLesson}
+            allLessons={lessons}
             prevLessonId={prevLessonId}
             nextLessonId={nextLessonId}
             pageIndex={pageIndex}
             setPageIndex={setPageIndex}
             totalPages={totalPages}
+            homeExpanded={homeExpanded}
+            setHomeExpanded={setHomeExpanded}
+            initialExerciseIndex={initialExerciseIndex}
+            onExerciseIndexChange={setActiveExerciseIndex}
+            onActiveBankIndexChange={setActiveBankIndex}
           />
         ) : (
           <div className="right-panel">

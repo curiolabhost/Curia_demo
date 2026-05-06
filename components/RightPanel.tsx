@@ -9,8 +9,13 @@ import { BottomBar } from './BottomBar'
 import { ChallengePrompt } from './ChallengePrompt'
 import { CodeEditor, type CodeEditorHandle } from './CodeEditor'
 import { ExercisePrompt } from './ExercisePrompt'
+import { HomeView } from './HomeView'
 import { OutputConsole } from './OutputConsole'
-import { getPanelFormat, panelRegistry } from './exercise-panels'
+import {
+  FinalProjectPanel,
+  getPanelFormat,
+  panelRegistry,
+} from './exercise-panels'
 
 const TIMEOUT_MS = 5000
 const SHORTCUT_GAP_MS = 200
@@ -23,11 +28,17 @@ type StatusType = 'default' | 'ok' | 'err'
 
 type RightPanelProps = {
   lesson: Lesson
+  allLessons: Lesson[]
   prevLessonId?: string
   nextLessonId?: string
   pageIndex: number
   setPageIndex: (index: number) => void
   totalPages: number
+  homeExpanded: boolean
+  setHomeExpanded: (v: boolean) => void
+  initialExerciseIndex?: number
+  onExerciseIndexChange?: (index: number) => void
+  onActiveBankIndexChange?: (index: number) => void
 }
 
 function isInsideEditor(target: EventTarget | null): boolean {
@@ -45,15 +56,22 @@ function isInTextField(target: EventTarget | null): boolean {
 
 export function RightPanel({
   lesson,
+  allLessons,
   prevLessonId,
   nextLessonId,
   pageIndex,
   setPageIndex,
   totalPages,
+  homeExpanded,
+  setHomeExpanded,
+  initialExerciseIndex,
+  onExerciseIndexChange,
+  onActiveBankIndexChange,
 }: RightPanelProps) {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>('exercises')
-  const [exerciseIndex, setExerciseIndex] = useState(0)
+  const [showHome, setShowHome] = useState(false)
+  const [exerciseIndex, setExerciseIndex] = useState(initialExerciseIndex ?? 0)
   const [challengeIndex, setChallengeIndex] = useState(0)
   const [hintVisible, setHintVisible] = useState(false)
   const [entries, setEntries] = useState<LogEntry[]>([])
@@ -63,7 +81,7 @@ export function RightPanel({
   const [statusType, setStatusType] = useState<StatusType>('default')
 
   const [renderedLesson, setRenderedLesson] = useState<Lesson>(lesson)
-  const [renderedExerciseIndex, setRenderedExerciseIndex] = useState(0)
+  const [renderedExerciseIndex, setRenderedExerciseIndex] = useState(initialExerciseIndex ?? 0)
   const [lessonFading, setLessonFading] = useState(false)
   const [exerciseFading, setExerciseFading] = useState(false)
 
@@ -85,6 +103,14 @@ export function RightPanel({
   const totalChallenges = challenges.length
   const hasChallenges = totalChallenges > 0
 
+  const isFinalProjectLesson =
+    renderedLesson.exercises.length > 0 &&
+    renderedLesson.exercises[0].format === 'final-project'
+  const finalProjectFallback = isFinalProjectLesson
+    ? renderedLesson.exercises[totalExercises - 1]
+    : undefined
+  const panelExercise = activeExercise ?? finalProjectFallback
+
   const solved =
     mode === 'challenges' &&
     (activeChallenge?.checks?.length ?? 0) > 0 &&
@@ -97,9 +123,10 @@ export function RightPanel({
     setLessonFading(true)
     if (lessonFadeTimerRef.current) clearTimeout(lessonFadeTimerRef.current)
     lessonFadeTimerRef.current = setTimeout(() => {
+      const seedIndex = initialExerciseIndex ?? 0
       setRenderedLesson(lesson)
-      setRenderedExerciseIndex(0)
-      setExerciseIndex(0)
+      setRenderedExerciseIndex(seedIndex)
+      setExerciseIndex(seedIndex)
       setChallengeIndex(0)
       setMode('exercises')
       setHintVisible(false)
@@ -127,7 +154,7 @@ export function RightPanel({
     return () => {
       if (lessonFadeTimerRef.current) clearTimeout(lessonFadeTimerRef.current)
     }
-  }, [lesson, renderedLesson.id])
+  }, [lesson, renderedLesson.id, initialExerciseIndex])
 
   // Cross-fade on exercise change
   useEffect(() => {
@@ -171,6 +198,22 @@ export function RightPanel({
       if (lessonFadeTimerRef.current) clearTimeout(lessonFadeTimerRef.current)
       if (exerciseFadeTimerRef.current) clearTimeout(exerciseFadeTimerRef.current)
     }
+  }, [])
+
+  useEffect(() => {
+    onExerciseIndexChange?.(exerciseIndex)
+  }, [exerciseIndex, onExerciseIndexChange])
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const ce = event as CustomEvent<{ index: number }>
+      const idx = ce.detail?.index
+      if (typeof idx !== 'number') return
+      if (idx < 0) return
+      setExerciseIndex(idx)
+    }
+    window.addEventListener('fp:goto-block', handler)
+    return () => window.removeEventListener('fp:goto-block', handler)
   }, [])
 
   const clearRunState = useCallback(() => {
@@ -348,8 +391,14 @@ export function RightPanel({
         const now = Date.now()
         if (now - lastShortcutRef.current < SHORTCUT_GAP_MS) return
         lastShortcutRef.current = now
-        const activeFmt = activeExercise ? getPanelFormat(activeExercise) : 'code-editor'
-        const inPanelFormat = mode === 'exercises' && !!activeExercise && activeFmt !== 'code-editor'
+        const lessonExercises = renderedLesson.exercises
+        const isFpLesson =
+          lessonExercises.length > 0 &&
+          lessonExercises[0].format === 'final-project'
+        const kbExercise =
+          activeExercise ?? (isFpLesson ? lessonExercises[lessonExercises.length - 1] : undefined)
+        const activeFmt = kbExercise ? getPanelFormat(kbExercise) : 'code-editor'
+        const inPanelFormat = mode === 'exercises' && !!kbExercise && activeFmt !== 'code-editor'
         if (inPanelFormat) {
           document.dispatchEvent(new CustomEvent('panel:check-answer'))
         } else {
@@ -431,6 +480,7 @@ export function RightPanel({
     goPrevExercise,
     goNextLesson,
     goPrevLesson,
+    renderedLesson,
     goNextPage,
     goPrevPage,
     handleChallengeNavigate,
@@ -462,103 +512,203 @@ export function RightPanel({
       : ''
   const hasActiveItem = mode === 'challenges' ? !!activeChallenge : !!activeExercise
 
-  const activeFormat = activeExercise ? getPanelFormat(activeExercise) : 'code-editor'
-  const isPanelFormat = mode === 'exercises' && !!activeExercise && activeFormat !== 'code-editor'
+  const activeFormat = panelExercise ? getPanelFormat(panelExercise) : 'code-editor'
+  const isPanelFormat = mode === 'exercises' && !!panelExercise && activeFormat !== 'code-editor'
+  const isFinalProject = isPanelFormat && activeFormat === 'final-project'
 
   const handlePanelComplete = useCallback((correct: boolean) => {
-    if (correct) goNextExercise()
-  }, [goNextExercise])
+    if (!correct) return
+    if (isFinalProjectLesson) {
+      setExerciseIndex((i) => Math.min(i + 1, totalExercises))
+    } else {
+      goNextExercise()
+    }
+  }, [goNextExercise, isFinalProjectLesson, totalExercises])
+
+  const handleHomeToggle = useCallback(() => {
+    setShowHome((v) => {
+      const next = !v
+      if (!next) {
+        setHomeExpanded(false)
+      }
+      return next
+    })
+  }, [setHomeExpanded])
+
+  const handleHomeNavigate = useCallback(
+    (lessonId: string, exIndex: number) => {
+      setShowHome(false)
+      setHomeExpanded(false)
+      if (lessonId === lesson.id) {
+        setExerciseIndex(exIndex)
+      } else {
+        router.push(`/learn/${lessonId}?ex=${exIndex}`)
+      }
+    },
+    [lesson.id, router, setHomeExpanded],
+  )
+
+  const handleHomeClose = useCallback(() => {
+    setShowHome(false)
+    setHomeExpanded(false)
+  }, [setHomeExpanded])
+
+  const rightPanelStyle: React.CSSProperties | undefined = showHome
+    ? { gridTemplateRows: 'auto 1fr' }
+    : isPanelFormat
+      ? { gridTemplateRows: 'auto 1fr' }
+      : undefined
+
+  const handleModeButtonClick = (next: Mode) => {
+    if (showHome) {
+      setShowHome(false)
+      setHomeExpanded(false)
+    }
+    handleModeSwitch(next)
+  }
+
+  const modeTabBar = (
+    <div className="mode-tab-bar">
+      <button
+        type="button"
+        className={`home-mode-btn${showHome ? ' active' : ''}`}
+        onClick={handleHomeToggle}
+        aria-label="Toggle home view"
+        title="Home"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <path d="M9 22V12h6v10" />
+        </svg>
+      </button>
+      <span className="home-mode-divider" aria-hidden />
+      <button
+        type="button"
+        className={`mode-tab${!showHome && mode === 'exercises' ? ' active' : ''}`}
+        onClick={() => handleModeButtonClick('exercises')}
+      >
+        Exercises
+      </button>
+      <button
+        type="button"
+        className={`mode-tab${!showHome && mode === 'challenges' ? ' active' : ''}`}
+        onClick={() => handleModeButtonClick('challenges')}
+        disabled={!hasChallenges}
+      >
+        Challenges
+      </button>
+    </div>
+  )
 
   return (
-    <div
-      className="right-panel"
-      style={isPanelFormat ? { gridTemplateRows: 'auto 1fr' } : undefined}
-    >
-      <div>
-        <div className="mode-tab-bar">
-          <button
-            type="button"
-            className={`mode-tab${mode === 'exercises' ? ' active' : ''}`}
-            onClick={() => handleModeSwitch('exercises')}
-          >
-            Exercises
-          </button>
-          <button
-            type="button"
-            className={`mode-tab${mode === 'challenges' ? ' active' : ''}`}
-            onClick={() => handleModeSwitch('challenges')}
-            disabled={!hasChallenges}
-          >
-            Challenges
-          </button>
-        </div>
-
-        {mode === 'exercises' ? (
-          activeExercise ? (
-            <ExercisePrompt
-              exercises={renderedLesson.exercises}
-              activeIndex={renderedExerciseIndex}
-              onNavigate={setExerciseIndex}
-              hintVisible={hintVisible}
-              isFading={isFading}
-            />
-          ) : (
-            <section className="exercise-prompt">
-              <div className="empty-state-block">No exercises for this lesson.</div>
-            </section>
-          )
-        ) : (
-          <ChallengePrompt
-            challenges={challenges}
-            activeIndex={challengeIndex}
-            onNavigate={handleChallengeNavigate}
-            hintVisible={hintVisible}
-            solved={solved}
-            isFading={isFading}
+    <div className="right-panel" style={rightPanelStyle}>
+      {showHome ? (
+        <>
+          <div>{modeTabBar}</div>
+          <HomeView
+            allLessons={allLessons}
+            activeLessonId={lesson.id}
+            activeExerciseIndex={exerciseIndex}
+            homeExpanded={homeExpanded}
+            setHomeExpanded={setHomeExpanded}
+            onNavigate={handleHomeNavigate}
+            onClose={handleHomeClose}
           />
-        )}
-      </div>
-
-      {isPanelFormat && activeExercise ? (
-        <div className={`panel-region${isFading ? ' fading' : ''}`}>
-          {(() => {
-            const PanelComponent = panelRegistry[activeFormat]
-            return PanelComponent ? (
-              <PanelComponent
-                exercise={activeExercise}
-                onComplete={handlePanelComplete}
-              />
-            ) : null
-          })()}
-        </div>
+        </>
       ) : (
         <>
-          <div className="editor-output">
-            {hasActiveItem ? (
-              <CodeEditor
-                ref={editorRef}
-                lessonId={renderedLesson.id}
-                exerciseIndex={editorExerciseIndex}
-                starterCode={editorStarterCode}
+          <div>
+            {modeTabBar}
+
+            {isFinalProject ? null : mode === 'exercises' ? (
+              activeExercise ? (
+                <ExercisePrompt
+                  exercises={renderedLesson.exercises}
+                  activeIndex={renderedExerciseIndex}
+                  onNavigate={setExerciseIndex}
+                  hintVisible={hintVisible}
+                  isFading={isFading}
+                />
+              ) : (
+                <section className="exercise-prompt">
+                  <div className="empty-state-block">No exercises for this lesson.</div>
+                </section>
+              )
+            ) : (
+              <ChallengePrompt
+                challenges={challenges}
+                activeIndex={challengeIndex}
+                onNavigate={handleChallengeNavigate}
+                hintVisible={hintVisible}
+                solved={solved}
                 isFading={isFading}
               />
-            ) : (
-              <div className="editor-pane" />
             )}
-            <OutputConsole
-              entries={entries}
-              checkResults={checkResults}
-              onClear={handleClear}
-            />
           </div>
-          <BottomBar
-            onRun={handleRun}
-            onHintToggle={() => setHintVisible((v) => !v)}
-            hintDisabled={!activeHint}
-            isRunning={isRunning}
-            statusMessage={statusMsg}
-            statusType={statusType}
-          />
+
+          {isPanelFormat && panelExercise ? (
+            <div className={`panel-region${isFading ? ' fading' : ''}`}>
+              {isFinalProject ? (
+                <FinalProjectPanel
+                  exercise={panelExercise}
+                  onComplete={handlePanelComplete}
+                  allExercises={renderedLesson.exercises}
+                  activeIndex={renderedExerciseIndex}
+                  lesson={renderedLesson}
+                  onActiveBankIndexChange={onActiveBankIndexChange}
+                />
+              ) : (
+                (() => {
+                  const PanelComponent = panelRegistry[activeFormat]
+                  return PanelComponent ? (
+                    <PanelComponent
+                      exercise={panelExercise}
+                      onComplete={handlePanelComplete}
+                    />
+                  ) : null
+                })()
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="editor-output">
+                {hasActiveItem ? (
+                  <CodeEditor
+                    ref={editorRef}
+                    lessonId={renderedLesson.id}
+                    exerciseIndex={editorExerciseIndex}
+                    starterCode={editorStarterCode}
+                    isFading={isFading}
+                  />
+                ) : (
+                  <div className="editor-pane" />
+                )}
+                <OutputConsole
+                  entries={entries}
+                  checkResults={checkResults}
+                  onClear={handleClear}
+                />
+              </div>
+              <BottomBar
+                onRun={handleRun}
+                onHintToggle={() => setHintVisible((v) => !v)}
+                hintDisabled={!activeHint}
+                isRunning={isRunning}
+                statusMessage={statusMsg}
+                statusType={statusType}
+              />
+            </>
+          )}
         </>
       )}
     </div>

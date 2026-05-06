@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simon Says</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1 class="game-title">Simon Says</h1>
+    <p class="game-subtitle">Watch the pattern — repeat it back</p>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-box">
+      <span class="stat-label">Level</span>
+      <span class="stat-number" id="current-level">1</span>
+    </div>
+    <div class="stat-box stat-box--best">
+      <span class="stat-label">Best</span>
+      <span class="stat-number" id="best-level">—</span>
+    </div>
+  </div>
+
+  <div class="status-message" id="status-message">
+    Press Start to play
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+    <div class="cell" data-index="9"></div>
+    <div class="cell" data-index="10"></div>
+    <div class="cell" data-index="11"></div>
+    <div class="cell" data-index="12"></div>
+    <div class="cell" data-index="13"></div>
+    <div class="cell" data-index="14"></div>
+    <div class="cell" data-index="15"></div>
+  </div>
+
+  <button class="start-btn" id="start-btn">Start Game</button>
+
+  <div class="overlay" id="game-over-screen">
+    <div class="overlay-box">
+      <p class="overlay-eyebrow">Game Over</p>
+      <h2 class="overlay-title">You reached</h2>
+      <div class="overlay-level-display">
+        Level <span id="final-level">1</span>
+      </div>
+      <p class="overlay-sub" id="overlay-sub-message">Keep practicing!</p>
+      <button class="start-btn" id="restart-btn">Try Again</button>
+    </div>
+  </div>
+
+  <div class="wrong-flash" id="wrong-flash"></div>
+
+  <script src="game.js"></script>
+
+</body>
+</html>

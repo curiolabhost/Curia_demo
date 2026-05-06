@@ -1,0 +1,34 @@
+{
+  "id": "s1-l1",
+  "session": "Session 1",
+  "title": "Game Demo",
+  "content": [
+    {
+      "heading": "Simon-Says: Remember This!",
+      "blocks": [
+        { "kind": "p", "text": "Watch the squares light up — then repeat the pattern back. See how far you can get." },
+        {
+          "kind": "embed",
+          "src": "/assets/lessons/s1-l1/index.html",
+          "height": 640,
+          "caption": "Simon Says — a pattern memory game"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "title": "The game's code",
+      "type": "practice",
+      "format": "code-viewer",
+      "duration": "5 min",
+      "tasks": ["Three files make this game work. Toggle between them and explore."],
+      "codeFiles": [
+        { "filename": "index.html", "src": "/assets/lessons/s1-l1/index.html" },
+        { "filename": "style.css",  "src": "/assets/lessons/s1-l1/style.css"  },
+        { "filename": "game.js",    "src": "/assets/lessons/s1-l1/game.js"    }
+      ]
+    }
+  ],
+  "challenges": []
+}

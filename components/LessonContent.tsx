@@ -300,6 +300,37 @@ function Block({ block }: { block: ContentBlock }) {
     )
   }
 
+  if (block.kind === 'embed') {
+    return (
+      <figure style={{ margin: '24px 0' }}>
+        <iframe
+          src={block.src}
+          style={{
+            width: '100%',
+            height: block.height ?? 620,
+            border: '1px solid var(--border)',
+            borderRadius: 8,
+            display: 'block',
+          }}
+          title={block.caption ?? 'Embedded content'}
+        />
+        {block.caption ? (
+          <figcaption
+            style={{
+              fontSize: 13,
+              color: 'var(--text3)',
+              marginTop: 8,
+              textAlign: 'center',
+              fontStyle: 'italic',
+            }}
+          >
+            {block.caption}
+          </figcaption>
+        ) : null}
+      </figure>
+    )
+  }
+
   if (block.kind === 'diagram') {
     if (block.variant === 'percent-operator') return <DiagramPercentOperator />
     return null

@@ -1,3 +1,6 @@
+import s1l1 from '@/content/lessons/s1-l1.json'
+import s1l2 from '@/content/lessons/s1-l2.json'
+
 import s2l0 from '@/content/lessons/s2-l0.json'
 import s2l1 from '@/content/lessons/s2-l1.json'
 import s2l2 from '@/content/lessons/s2-l2.json'
@@ -34,6 +37,7 @@ export type ContentBlock =
   | { kind: 'image'; src: string; alt: string; caption?: string }
   | { kind: 'video'; src: string; caption?: string }
   | { kind: 'diagram'; variant: string }
+  | { kind: 'embed'; src: string; height?: number; caption?: string }
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }
@@ -48,6 +52,12 @@ export type ExerciseFormat =
   | 'drag-reorder'
   | 'sort-buckets'
   | 'final-project'
+  | 'code-viewer'
+
+export type CodeViewerFile = {
+  filename: string
+  src: string
+}
 
 export type FinalProjectFile = 'script' | 'html' | 'css'
 
@@ -102,6 +112,7 @@ export type Exercise = {
   codeSuffix?: string
   blankInputMode?: BlankInputMode[]
   expectedEffects?: ExpectedEffect[]
+  codeFiles?: CodeViewerFile[]
 }
 
 export type Challenge = {
@@ -137,6 +148,7 @@ export type Lesson = {
 }
 
 const lessons: Lesson[] = [
+  s1l1, s1l2,
   s2l0, s2l1, s2l2, s2l3, s2l4, s2l5, s2l6, s2l7, s2l8,
   s3l1, s3l2, s3l3,
   s4l1, s4l2, s4l3,
@@ -155,7 +167,7 @@ export type SessionGroup = {
 }
 
 export function getLessonsBySession(): SessionGroup[] {
-  const order = ['s2', 's3', 's4', 's5', 's6']
+  const order = ['s1', 's2', 's3', 's4', 's5', 's6']
   const map = new Map<string, SessionGroup>()
   for (const lesson of lessons) {
     const sessionId = lesson.id.split('-')[0]

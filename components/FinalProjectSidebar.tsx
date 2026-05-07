@@ -241,6 +241,66 @@ function RefreshIcon() {
   )
 }
 
+function ExpandIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+      <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+      <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+      <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+    </svg>
+  )
+}
+
+function CollapseIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M4 14h6m0 0v6m0-6l-7 7" />
+      <path d="M20 10h-6m0 0V4m0 6l7-7" />
+    </svg>
+  )
+}
+
+function NewTabIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <path d="M15 3h6v6" />
+      <path d="M10 14L21 3" />
+    </svg>
+  )
+}
+
 function CheckIcon({ size = 11 }: { size?: number }) {
   return (
     <svg
@@ -274,6 +334,7 @@ export function FinalProjectSidebar({
   const activeBlock = blocks[safeActiveIndex]
   const doneCount = allDone ? totalBlocks : safeActiveIndex
   const [refreshKey, setRefreshKey] = useState(0)
+  const [previewExpanded, setPreviewExpanded] = useState(false)
 
   const assembledUpTo = allDone ? totalBlocks : safeActiveIndex
   const assembledJs = useMemo(
@@ -315,6 +376,26 @@ export function FinalProjectSidebar({
 
   const handleRefresh = () => {
     setRefreshKey((k) => k + 1)
+  }
+
+  const handleOpenInNewTab = () => {
+    if (typeof window === 'undefined') return
+    const doc = [
+      '<!doctype html>',
+      '<html>',
+      '<head>',
+      '<meta charset="UTF-8">',
+      '<style>' + cssTemplate + '</style>',
+      '</head>',
+      '<body>',
+      htmlTemplate,
+      '<script>' + assembledJs + '<\/script>',
+      '</body>',
+      '</html>',
+    ].join('\n')
+    const blob = new Blob([doc], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank')
   }
 
   return (
@@ -365,7 +446,11 @@ export function FinalProjectSidebar({
         </div>
       </div>
 
-      <div className="fp-block-nav" role="tablist" aria-label="Final project blocks">
+      <div
+        className={`fp-block-nav${previewExpanded ? ' hidden' : ''}`}
+        role="tablist"
+        aria-label="Final project blocks"
+      >
         {blocks.map((block, idx) => {
           const isDone = allDone || idx < safeActiveIndex
           const isActive = !allDone && idx === safeActiveIndex
@@ -392,7 +477,7 @@ export function FinalProjectSidebar({
         })}
       </div>
 
-      <div className="fp-instructions">
+      <div className={`fp-instructions${previewExpanded ? ' hidden' : ''}`}>
         {allDone ? (
           <div className="fp-celebration">
             <div className="fp-celebration-icon" aria-hidden>
@@ -619,7 +704,9 @@ export function FinalProjectSidebar({
         )}
       </div>
 
-      <div className="fp-preview-section">
+      <div
+        className={`fp-preview-section${previewExpanded ? ' expanded' : ''}`}
+      >
         <div className="fp-preview-bar">
           <span
             className="fp-preview-dot"
@@ -637,15 +724,42 @@ export function FinalProjectSidebar({
             aria-hidden
           />
           <span className="fp-preview-label">Live Preview</span>
-          <button
-            type="button"
-            className="fp-preview-refresh"
-            onClick={handleRefresh}
-            aria-label="Refresh preview"
-            title="Refresh preview"
+          <div
+            style={{
+              marginLeft: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
           >
-            <RefreshIcon />
-          </button>
+            <button
+              type="button"
+              className="fp-preview-btn"
+              onClick={() => setPreviewExpanded((v) => !v)}
+              aria-label={previewExpanded ? 'Collapse preview' : 'Expand preview'}
+              title={previewExpanded ? 'Collapse preview' : 'Expand preview'}
+            >
+              {previewExpanded ? <CollapseIcon /> : <ExpandIcon />}
+            </button>
+            <button
+              type="button"
+              className="fp-preview-btn"
+              onClick={handleOpenInNewTab}
+              aria-label="Open in new tab"
+              title="Open in new tab"
+            >
+              <NewTabIcon />
+            </button>
+            <button
+              type="button"
+              className="fp-preview-refresh"
+              onClick={handleRefresh}
+              aria-label="Refresh preview"
+              title="Refresh preview"
+            >
+              <RefreshIcon />
+            </button>
+          </div>
         </div>
         <div className="fp-preview-iframe">
           <PreviewIframe

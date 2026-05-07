@@ -1993,3 +1993,52 @@ body {
   height: 20px;
   margin-top: 6px;
 }
+
+/* ---------- Final project preview expand ---------- */
+
+.fp-preview-section {
+  transition: flex 0.2s ease, height 0.2s ease;
+}
+
+.fp-preview-section.expanded {
+  flex: 1;
+  height: auto;
+}
+
+.fp-instructions {
+  transition: max-height 0.2s ease,
+              opacity 0.2s ease,
+              padding 0.2s ease;
+}
+
+.fp-instructions.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fp-block-nav.hidden {
+  display: none;
+}
+
+.fp-preview-btn {
+  width: 22px;
+  height: 22px;
+  padding: 2px;
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: color 0.12s, background 0.12s;
+}
+.fp-preview-btn:hover {
+  color: var(--text);
+  background: var(--border);
+}

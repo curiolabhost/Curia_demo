@@ -217,6 +217,47 @@ function Block({ block }: { block: ContentBlock }) {
     )
   }
 
+  if (block.kind === 'heading') {
+    return (
+      <h2
+        style={{
+          fontSize: 15,
+          fontWeight: 600,
+          color: 'var(--text)',
+          margin: '18px 0 8px 0',
+        }}
+      >
+        {block.text}
+      </h2>
+    )
+  }
+
+  if (block.kind === 'list') {
+    return (
+      <ul
+        style={{
+          margin: '0 0 12px 0',
+          paddingLeft: 20,
+          listStyleType: 'disc',
+        }}
+      >
+        {block.items.map((item, i) => (
+          <li
+            key={i}
+            style={{
+              fontSize: 14,
+              color: 'var(--text2)',
+              lineHeight: 1.7,
+              marginBottom: 4,
+            }}
+          >
+            {renderInline(item)}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
   if (block.kind === 'concept') {
     return (
       <div

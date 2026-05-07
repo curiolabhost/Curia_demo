@@ -1,0 +1,66 @@
+<svg width="580" height="232" viewBox="0 0 580 232" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>The + sign has two jobs</title>
+<desc>Two rows showing how the + operator behaves differently depending on types. When both sides are numbers it adds. When either side is a string it joins as text.</desc>
+
+<!-- Section label -->
+<text x="290" y="28" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.07em">THE + SIGN HAS TWO JOBS</text>
+
+<!-- ── ROW 1: number + number ── -->
+<text x="40" y="58" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#0F6E56" letter-spacing="0.05em">BOTH NUMBERS</text>
+
+<rect x="40" y="68" width="500" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+
+<!-- 5 -->
+<rect x="60" y="80" width="52" height="28" rx="6" fill="#ffffff" stroke="#5DCAA5" stroke-width="0.5"/>
+<text x="86" y="98" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="16" font-weight="600" fill="#085041">5</text>
+<text x="86" y="118" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="9" fill="#1D9E75">number</text>
+
+<!-- + -->
+<text x="136" y="98" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="18" font-weight="600" fill="#0F6E56">+</text>
+
+<!-- 5 -->
+<rect x="158" y="80" width="52" height="28" rx="6" fill="#ffffff" stroke="#5DCAA5" stroke-width="0.5"/>
+<text x="184" y="98" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="16" font-weight="600" fill="#085041">5</text>
+<text x="184" y="118" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="9" fill="#1D9E75">number</text>
+
+<!-- = -->
+<text x="234" y="98" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="18" fill="#4A5068">=</text>
+
+<!-- result -->
+<rect x="254" y="76" width="80" height="36" rx="6" fill="#1A1E2E" stroke="#1A1E2E" stroke-width="0"/>
+<text x="294" y="99" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="18" font-weight="600" fill="#ffffff">10</text>
+
+<!-- label -->
+<text x="360" y="92" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#085041" font-weight="600">adds</text>
+<text x="360" y="108" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">both sides are numbers</text>
+
+<!-- ── ROW 2: string + number ── -->
+<text x="40" y="148" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#993C1D" letter-spacing="0.05em">STRING + NUMBER</text>
+
+<rect x="40" y="158" width="500" height="52" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+
+<!-- '5' -->
+<rect x="60" y="170" width="52" height="28" rx="6" fill="#ffffff" stroke="#F0997B" stroke-width="0.5"/>
+<text x="86" y="188" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="16" font-weight="600" fill="#712B13">'5'</text>
+<text x="86" y="208" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="9" fill="#D85A30">string</text>
+
+<!-- + -->
+<text x="136" y="188" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="18" font-weight="600" fill="#993C1D">+</text>
+
+<!-- 5 -->
+<rect x="158" y="170" width="52" height="28" rx="6" fill="#ffffff" stroke="#5DCAA5" stroke-width="0.5"/>
+<text x="184" y="188" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="16" font-weight="600" fill="#085041">5</text>
+<text x="184" y="208" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="9" fill="#1D9E75">number</text>
+
+<!-- = -->
+<text x="234" y="188" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="18" fill="#4A5068">=</text>
+
+<!-- result -->
+<rect x="254" y="166" width="80" height="36" rx="6" fill="#1A1E2E" stroke="#1A1E2E" stroke-width="0"/>
+<text x="294" y="189" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="18" font-weight="600" fill="#ffffff">'55'</text>
+
+<!-- label -->
+<text x="360" y="182" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#993C1D" font-weight="600">joins</text>
+<text x="360" y="198" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">one side is a string</text>
+
+</svg>

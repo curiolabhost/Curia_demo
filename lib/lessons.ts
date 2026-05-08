@@ -115,6 +115,7 @@ export type Exercise = {
   blankInputMode?: BlankInputMode[]
   expectedEffects?: ExpectedEffect[]
   codeFiles?: CodeViewerFile[]
+  editableFiles?: string[]
 }
 
 export type Challenge = {

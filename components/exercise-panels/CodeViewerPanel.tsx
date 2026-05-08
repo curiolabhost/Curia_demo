@@ -38,14 +38,22 @@ function setupTheme(monaco: Monaco) {
   monaco.editor.setTheme('codelab-light')
 }
 
+function broadcastCss(css: string) {
+  document.querySelectorAll<HTMLIFrameElement>('iframe').forEach((iframe) => {
+    iframe.contentWindow?.postMessage({ type: 'css-override', css }, '*')
+  })
+}
+
 export function CodeViewerPanel({ exercise }: Props) {
   const files = exercise.codeFiles ?? []
   const [activeIndex, setActiveIndex] = useState(0)
   const [contents, setContents] = useState<(string | null)[]>(files.map(() => null))
+  const [editedContents, setEditedContents] = useState<(string | undefined)[]>(files.map(() => undefined))
 
   useEffect(() => {
     setActiveIndex(0)
     setContents(files.map(() => null))
+    setEditedContents(files.map(() => undefined))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise])
 
@@ -74,6 +82,17 @@ export function CodeViewerPanel({ exercise }: Props) {
 
   const activeFile = files[activeIndex]
   const activeContent = contents[activeIndex]
+  const isEditable = exercise.editableFiles?.includes(activeFile?.filename ?? '') ?? false
+
+  function handleChange(val: string | undefined) {
+    const css = val ?? ''
+    setEditedContents((prev) => {
+      const next = [...prev]
+      next[activeIndex] = css
+      return next
+    })
+    broadcastCss(css)
+  }
 
   return (
     <div className="panel-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 0 }}>
@@ -83,27 +102,48 @@ export function CodeViewerPanel({ exercise }: Props) {
       ) : null}
 
       <div style={{ display: 'flex', gap: 2, borderBottom: '1px solid var(--border)' }}>
-        {files.map((file, i) => (
-          <button
-            key={file.filename}
-            type="button"
-            onClick={() => setActiveIndex(i)}
-            style={{
-              fontFamily: 'var(--mono)',
-              fontSize: 11,
-              fontWeight: 500,
-              padding: '6px 12px',
-              border: 'none',
-              borderBottom: i === activeIndex ? '2px solid var(--accent)' : '2px solid transparent',
-              background: 'transparent',
-              color: i === activeIndex ? 'var(--accent)' : 'var(--text3)',
-              cursor: 'pointer',
-              borderRadius: '4px 4px 0 0',
-            }}
-          >
-            {file.filename}
-          </button>
-        ))}
+        {files.map((file, i) => {
+          const tabEditable = exercise.editableFiles?.includes(file.filename) ?? false
+          return (
+            <button
+              key={file.filename}
+              type="button"
+              onClick={() => setActiveIndex(i)}
+              style={{
+                fontFamily: 'var(--mono)',
+                fontSize: 11,
+                fontWeight: 500,
+                padding: '6px 12px',
+                border: 'none',
+                borderBottom: i === activeIndex ? '2px solid var(--accent)' : '2px solid transparent',
+                background: 'transparent',
+                color: i === activeIndex ? 'var(--accent)' : 'var(--text3)',
+                cursor: 'pointer',
+                borderRadius: '4px 4px 0 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+            >
+              {file.filename}
+              {tabEditable ? (
+                <span style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  color: i === activeIndex ? 'var(--accent)' : 'var(--text3)',
+                  opacity: 0.7,
+                  background: i === activeIndex ? 'var(--accent-dim, #EBF0FD)' : 'var(--surface2)',
+                  borderRadius: 3,
+                  padding: '1px 4px',
+                }}>
+                  live
+                </span>
+              ) : null}
+            </button>
+          )
+        })}
       </div>
 
       <div style={{ flex: 1, minHeight: 0 }}>
@@ -116,14 +156,15 @@ export function CodeViewerPanel({ exercise }: Props) {
             key={`${activeFile?.filename}-${activeIndex}`}
             height="100%"
             language={langFromFilename(activeFile?.filename ?? '')}
-            value={activeContent}
+            defaultValue={editedContents[activeIndex] ?? activeContent}
+            onChange={isEditable ? handleChange : undefined}
             onMount={(_editor, monaco) => setupTheme(monaco)}
             theme="codelab-light"
             options={{
-              readOnly: true,
+              readOnly: !isEditable,
               automaticLayout: true,
               padding: { top: 16, bottom: 16 },
-              renderLineHighlight: 'none',
+              renderLineHighlight: isEditable ? 'line' : 'none',
               wordWrap: 'off',
               tabSize: 2,
               fontSize: 12,

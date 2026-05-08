@@ -68,5 +68,18 @@
 
   <script src="game.js"></script>
 
+  <script>
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.type !== 'css-override') return;
+      var el = document.getElementById('__css_override__');
+      if (!el) {
+        el = document.createElement('style');
+        el.id = '__css_override__';
+        document.head.appendChild(el);
+      }
+      el.textContent = e.data.css;
+    });
+  </script>
+
 </body>
 </html>

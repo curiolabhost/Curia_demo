@@ -39,6 +39,10 @@ type RightPanelProps = {
   initialExerciseIndex?: number
   onExerciseIndexChange?: (index: number) => void
   onActiveBankIndexChange?: (index: number) => void
+  onLineSelect?: (
+    lineIndex: number | null,
+    blankIndex: number | null,
+  ) => void
 }
 
 function isInsideEditor(target: EventTarget | null): boolean {
@@ -67,6 +71,7 @@ export function RightPanel({
   initialExerciseIndex,
   onExerciseIndexChange,
   onActiveBankIndexChange,
+  onLineSelect,
 }: RightPanelProps) {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>('exercises')
@@ -666,6 +671,7 @@ export function RightPanel({
                   activeIndex={renderedExerciseIndex}
                   lesson={renderedLesson}
                   onActiveBankIndexChange={onActiveBankIndexChange}
+                  onLineSelect={onLineSelect}
                 />
               ) : (
                 (() => {

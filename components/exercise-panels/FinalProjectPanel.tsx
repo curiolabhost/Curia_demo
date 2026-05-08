@@ -8,7 +8,7 @@ import type {
   FinalProjectFile,
   Lesson,
 } from '@/lib/lessons'
-import { checkLineEffect } from '@/lib/checkLineEffect'
+import { runInProjectSandbox } from '@/lib/projectSandbox'
 
 type FinalProjectPanelProps = {
   exercise: Exercise
@@ -17,6 +17,10 @@ type FinalProjectPanelProps = {
   activeIndex: number
   lesson: Lesson
   onActiveBankIndexChange?: (index: number) => void
+  onLineSelect?: (
+    lineIndex: number | null,
+    blankIndex: number | null,
+  ) => void
 }
 
 type AnswerState = 'idle' | 'checking' | 'correct' | 'wrong'
@@ -267,11 +271,15 @@ type CodeLineProps = {
   lineNumber: number
   children: React.ReactNode
   extraClass?: string
+  onClick?: (event: React.MouseEvent) => void
 }
 
-function CodeLine({ lineNumber, children, extraClass }: CodeLineProps) {
+function CodeLine({ lineNumber, children, extraClass, onClick }: CodeLineProps) {
   return (
-    <div className={`fp-code-line${extraClass ? ` ${extraClass}` : ''}`}>
+    <div
+      className={`fp-code-line${extraClass ? ` ${extraClass}` : ''}`}
+      onClick={onClick}
+    >
       <span className="fp-line-num">{lineNumber}</span>
       <span style={{ flex: 1, whiteSpace: 'pre' }}>{children}</span>
     </div>
@@ -287,6 +295,7 @@ export function FinalProjectPanel({
   activeIndex,
   lesson,
   onActiveBankIndexChange,
+  onLineSelect,
 }: FinalProjectPanelProps) {
   const [activeFile, setActiveFile] = useState<FinalProjectFile>('script')
   const [dropValues, setDropValues] = useState<Record<string, string>>({})
@@ -304,6 +313,12 @@ export function FinalProjectPanel({
   const [draggingTokenId, setDraggingTokenId] = useState<string | null>(null)
   const [hoverBlankId, setHoverBlankId] = useState<string | null>(null)
   const [activeBankIndex, setActiveBankIndex] = useState<number>(0)
+  const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(
+    null,
+  )
+  const [selectedBlankIndex, setSelectedBlankIndex] = useState<number | null>(
+    null,
+  )
   const [editedHtml, setEditedHtml] = useState<string>(
     lesson.finalProject?.htmlTemplate ?? '',
   )
@@ -341,6 +356,8 @@ export function FinalProjectPanel({
     setDraggingTokenId(null)
     setHoverBlankId(null)
     setActiveBankIndex(0)
+    setSelectedLineIndex(null)
+    setSelectedBlankIndex(null)
     setTypedValues(Array(blankCount).fill(''))
     setFeedbackMessage('')
     if (resetTimerRef.current) {
@@ -352,6 +369,18 @@ export function FinalProjectPanel({
   useEffect(() => {
     onActiveBankIndexChange?.(activeBankIndex)
   }, [activeBankIndex, onActiveBankIndexChange])
+
+  useEffect(() => {
+    onLineSelect?.(selectedLineIndex, selectedBlankIndex)
+  }, [selectedLineIndex, selectedBlankIndex, onLineSelect])
+
+  const handleLineClick = (lineIdx: number, blankIdx: number | null) => {
+    setSelectedLineIndex(lineIdx)
+    setSelectedBlankIndex(blankIdx)
+    if (blankIdx !== null) {
+      setActiveBankIndex(blankIdx)
+    }
+  }
 
   useEffect(() => {
     return () => {
@@ -459,6 +488,7 @@ export function FinalProjectPanel({
     if (answerState === 'wrong') {
       setAnswerState('idle')
     }
+    if (feedbackMessage) setFeedbackMessage('')
   }
 
   const buildContextForFreeline = (blankIndex: number): string => {
@@ -533,6 +563,12 @@ export function FinalProjectPanel({
       parts.push(out)
     }
 
+    if (exercise.codeSuffix) parts.push(exercise.codeSuffix)
+    for (let idx = activeIndex + 1; idx < allExercises.length; idx += 1) {
+      const block = allExercises[idx]
+      if (block.codeSuffix) parts.push(block.codeSuffix)
+    }
+
     return extractTopLevelDecls(parts.join('\n'))
   }
 
@@ -558,18 +594,22 @@ export function FinalProjectPanel({
         pass =
           (typedValues[i] ?? '').trim() === (correctOrder[i] ?? '').trim()
       } else {
-        const eIdx = effectIndexFor(i, blankInputModes)
-        const expected = expectedEffects[eIdx]
-        if (!expected) {
+        const studentLine = (typedValues[i] ?? '').trim()
+        if (studentLine.length === 0) {
           pass = false
-          message = 'Missing expected effect for this blank'
+          message = 'Type a line first.'
         } else {
+          const eIdx = effectIndexFor(i, blankInputModes)
+          const expectedEffect: ExpectedEffect =
+            expectedEffects[eIdx] ?? { type: 'noError' }
           const contextCode = buildContextForFreeline(i)
-          const studentLine = (typedValues[i] ?? '').trim()
-          const result = await checkLineEffect(
-            contextCode,
-            studentLine,
-            expected,
+          const studentCode = contextCode + '\n' + studentLine
+          const result = await runInProjectSandbox(
+            lesson.finalProject?.htmlTemplate ?? '',
+            lesson.finalProject?.cssTemplate ?? '',
+            studentCode,
+            expectedEffect,
+            6000,
           )
           pass = result.pass
           message = result.message
@@ -665,7 +705,7 @@ export function FinalProjectPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dropValues, typedValues, blankStates, answerState, allFilled])
 
-  const renderDropZone = (blankIndex: number) => {
+  const renderDropZone = (blankIndex: number, lineIdx?: number) => {
     const id = `b${blankIndex}`
     const filled = dropValues[id]
     const status = blankStates[id]
@@ -700,8 +740,13 @@ export function FinalProjectPanel({
           if (tok) placeToken(id, tok.id, tok.label)
           setHoverBlankId(null)
           setDraggingTokenId(null)
+          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIndex)
         }}
-        onClick={() => clearBlank(id)}
+        onClick={(e) => {
+          e.stopPropagation()
+          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIndex)
+          clearBlank(id)
+        }}
         role="button"
       >
         {filled !== undefined ? (
@@ -713,7 +758,7 @@ export function FinalProjectPanel({
     )
   }
 
-  const renderTypeInput = (blankIndex: number) => {
+  const renderTypeInput = (blankIndex: number, lineIdx?: number) => {
     const id = `b${blankIndex}`
     const status = blankStates[id]
     const value = typedValues[blankIndex] ?? ''
@@ -759,12 +804,19 @@ export function FinalProjectPanel({
             }
           }
         }}
-        onFocus={() => setActiveBankIndex(blankIndex)}
+        onClick={(e) => e.stopPropagation()}
+        onFocus={() => {
+          if (lineIdx !== undefined) {
+            handleLineClick(lineIdx, blankIndex)
+          } else {
+            setActiveBankIndex(blankIndex)
+          }
+        }}
       />
     )
   }
 
-  const renderFreelineInput = (blankIndex: number) => {
+  const renderFreelineInput = (blankIndex: number, lineIdx?: number) => {
     const id = `b${blankIndex}`
     const status = blankStates[id]
     const value = typedValues[blankIndex] ?? ''
@@ -798,7 +850,14 @@ export function FinalProjectPanel({
             if (allFilled) handleCheck()
           }
         }}
-        onFocus={() => setActiveBankIndex(blankIndex)}
+        onClick={(e) => e.stopPropagation()}
+        onFocus={() => {
+          if (lineIdx !== undefined) {
+            handleLineClick(lineIdx, blankIndex)
+          } else {
+            setActiveBankIndex(blankIndex)
+          }
+        }}
       />
     )
   }
@@ -945,7 +1004,19 @@ export function FinalProjectPanel({
             )
           }
 
-          const extraClass = i === activeLineIndex ? 'fp-active-line' : undefined
+          const classes: string[] = ['clickable']
+          if (i === activeLineIndex) {
+            classes.push('fp-active-line')
+          } else if (i === selectedLineIndex) {
+            classes.push('line-selected')
+          }
+          const extraClass = classes.join(' ')
+
+          const defaultBlankIdx =
+            blanksOnLine === 1 ? lineBlankIndices[0] : null
+          const handleClickLine = () => {
+            handleLineClick(i, defaultBlankIdx)
+          }
 
           if (freelineIdx !== undefined) {
             return (
@@ -953,8 +1024,9 @@ export function FinalProjectPanel({
                 key={`b-${i}`}
                 lineNumber={num}
                 extraClass={extraClass}
+                onClick={handleClickLine}
               >
-                {renderFreelineInput(freelineIdx)}
+                {renderFreelineInput(freelineIdx, i)}
               </CodeLine>
             )
           }
@@ -965,14 +1037,15 @@ export function FinalProjectPanel({
               key={`b-${i}`}
               lineNumber={num}
               extraClass={extraClass}
+              onClick={handleClickLine}
             >
               {segments.map((seg, j) => {
                 if (seg.kind === 'text') {
                   return <HighlightedText key={j} value={seg.value} />
                 }
                 const m = modeOf(seg.index)
-                if (m === 'type') return renderTypeInput(seg.index)
-                return renderDropZone(seg.index)
+                if (m === 'type') return renderTypeInput(seg.index, i)
+                return renderDropZone(seg.index, i)
               })}
             </CodeLine>
           )
@@ -1153,11 +1226,19 @@ export function FinalProjectPanel({
                   })}
                 </div>
               ) : null}
-              {answerState === 'wrong' ? (
-                <div className="fp-feedback fp-fb-err">
-                  {feedbackMessage || 'Some blanks are wrong. Try again.'}
-                </div>
-              ) : null}
+              {answerState === 'wrong'
+                ? (() => {
+                    const msg =
+                      feedbackMessage || 'Some blanks are wrong. Try again.'
+                    const isError =
+                      !feedbackMessage ||
+                      msg.startsWith('Your code has an error:')
+                    const variant = isError ? 'fp-fb-err' : 'fp-fb-hint'
+                    return (
+                      <div className={`fp-feedback ${variant}`}>{msg}</div>
+                    )
+                  })()
+                : null}
               {answerState === 'correct' ? (
                 <div className="fp-feedback fp-fb-ok">Block complete!</div>
               ) : null}

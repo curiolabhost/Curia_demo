@@ -23,8 +23,12 @@ import s5l3 from '@/content/lessons/s5-l3.json'
 
 import s6l1 from '@/content/lessons/s6-l1.json'
 
-export type { ExpectedEffect } from './checkLineEffect'
-import type { ExpectedEffect } from './checkLineEffect'
+export type ExpectedEffect =
+  | { type: 'declaration'; valueType?: string; value?: unknown }
+  | { type: 'assignment'; valueType?: string; value?: unknown }
+  | { type: 'noError' }
+  | { type: 'domAssignment'; elementId: string; property: string; valueType?: string }
+  | { type: 'variableValue'; name: string; expected: unknown }
 
 export type BlankInputMode = 'wordbank' | 'type' | 'freeline'
 
@@ -84,6 +88,14 @@ export type SortItem = {
   correctBucketId: string
 }
 
+export type LineExplanation = {
+  lineIndex: number
+  blankIndex: number | null
+  instruction?: string
+  explanation: string
+  lessonRefs?: string[]
+}
+
 export type Exercise = {
   title: string
   type: 'practice' | 'predict' | 'debug' | 'apply' | 'independent' | 'challenge'
@@ -113,6 +125,7 @@ export type Exercise = {
   blankInputMode?: BlankInputMode[]
   expectedEffects?: ExpectedEffect[]
   codeFiles?: CodeViewerFile[]
+  lineExplanations?: LineExplanation[]
 }
 
 export type Challenge = {

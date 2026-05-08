@@ -1728,6 +1728,7 @@ body {
 .fp-feedback { font-family:var(--mono); font-size:11px; margin-top:6px; }
 .fp-feedback.fp-fb-ok { color:#a6e3a1; }
 .fp-feedback.fp-fb-err { color:#f38ba8; }
+.fp-feedback.fp-fb-hint { color:#fab387; }
 .fp-file-editor { width:100%; height:100%; background:#1e1e2e; color:#cdd6f4; font-family:var(--mono); font-size:13px; padding:16px; border:none; outline:none; resize:none; line-height:1.7; }
 .fp-file-banner { background:rgba(59,111,232,0.1); color:#89b4fa; font-family:var(--mono); font-size:11px; padding:6px 16px; flex-shrink:0; }
 .fp-lesson-ref-pill { background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:3px 10px; display:inline-flex; align-items:center; gap:6px; margin:0 4px 4px 0; }
@@ -2041,4 +2042,43 @@ body {
 .fp-preview-btn:hover {
   color: var(--text);
   background: var(--border);
+}
+
+/* ---------- Final project line click ---------- */
+
+.fp-code-line.clickable {
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  margin-left: -2px;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+.fp-code-line.clickable:hover {
+  background: rgba(255,255,255,0.04);
+}
+.fp-code-line.line-selected {
+  background: rgba(59,111,232,0.1);
+  border-left: 2px solid rgba(89,130,232,0.5);
+}
+.fp-code-line.line-selected:hover {
+  background: rgba(59,111,232,0.13);
+}
+
+.fp-no-blank-snippet {
+  background: #1e1e2e;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.fp-line-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 6px;
 }

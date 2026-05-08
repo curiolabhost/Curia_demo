@@ -14,6 +14,10 @@ type LessonWorkspaceProps = {
   initialExerciseIndex?: number
   onExerciseIndexChange?: (index: number) => void
   onActiveBankIndexChange?: (index: number) => void
+  onLineSelect?: (
+    lineIndex: number | null,
+    blankIndex: number | null,
+  ) => void
 }
 
 export function LessonWorkspace({
@@ -29,6 +33,7 @@ export function LessonWorkspace({
   initialExerciseIndex,
   onExerciseIndexChange,
   onActiveBankIndexChange,
+  onLineSelect,
 }: LessonWorkspaceProps) {
   return (
     <RightPanel
@@ -44,6 +49,7 @@ export function LessonWorkspace({
       initialExerciseIndex={initialExerciseIndex}
       onExerciseIndexChange={onExerciseIndexChange}
       onActiveBankIndexChange={onActiveBankIndexChange}
+      onLineSelect={onLineSelect}
     />
   )
 }

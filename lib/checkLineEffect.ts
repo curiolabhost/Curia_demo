@@ -1,9 +1,5 @@
 import { runInSandbox, type LogEntry } from './sandbox'
-
-export type ExpectedEffect =
-  | { type: 'declaration'; valueType?: string; value?: unknown }
-  | { type: 'assignment'; valueType?: string; value?: unknown }
-  | { type: 'noError' }
+import type { ExpectedEffect } from './lessons'
 
 type EffectResult = {
   ok: boolean

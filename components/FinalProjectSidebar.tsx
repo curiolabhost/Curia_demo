@@ -8,7 +8,86 @@ type FinalProjectSidebarProps = {
   lesson: Lesson
   activeBlockIndex: number
   activeBankIndex: number
+  selectedLineIndex: number | null
+  selectedBlankIndex: number | null
   allLessons: Lesson[]
+}
+
+type ResolvedEntry = {
+  lineIndex: number | null
+  blankIndex: number | null
+  instruction?: string
+  explanation: string
+  lessonRefs?: string[]
+}
+
+function resolveEntry(
+  exercise: Exercise | undefined,
+  selectedLineIndex: number | null,
+  selectedBlankIndex: number | null,
+  activeBankIndex: number,
+): ResolvedEntry | null {
+  if (!exercise) return null
+  const lineExplanations = exercise.lineExplanations
+  if (lineExplanations && lineExplanations.length > 0) {
+    if (selectedLineIndex !== null) {
+      const exact = lineExplanations.find(
+        (e) =>
+          e.lineIndex === selectedLineIndex &&
+          e.blankIndex === selectedBlankIndex,
+      )
+      if (exact) return exact
+      if (selectedBlankIndex === null) {
+        const lineEntry = lineExplanations.find(
+          (e) => e.lineIndex === selectedLineIndex,
+        )
+        if (lineEntry) return lineEntry
+      }
+    }
+    const byBlank = lineExplanations.find(
+      (e) => e.blankIndex === activeBankIndex,
+    )
+    if (byBlank) return byBlank
+    return lineExplanations[0] ?? null
+  }
+  const blankInstructions = exercise.blankInstructions ?? []
+  const blankExplanations = exercise.blankExplanations ?? []
+  if (blankInstructions.length === 0 && blankExplanations.length === 0) {
+    return null
+  }
+  const idx = Math.max(
+    0,
+    Math.min(
+      activeBankIndex,
+      Math.max(blankInstructions.length, blankExplanations.length) - 1,
+    ),
+  )
+  return {
+    lineIndex: null,
+    blankIndex: idx,
+    instruction: blankInstructions[idx],
+    explanation: blankExplanations[idx] ?? '',
+  }
+}
+
+function findCompletedEntry(
+  exercise: Exercise,
+  blankIdx: number,
+): ResolvedEntry | null {
+  const lineExplanations = exercise.lineExplanations
+  if (lineExplanations && lineExplanations.length > 0) {
+    const found = lineExplanations.find((e) => e.blankIndex === blankIdx)
+    if (found) return found
+    return null
+  }
+  const blankInstructions = exercise.blankInstructions ?? []
+  const blankExplanations = exercise.blankExplanations ?? []
+  return {
+    lineIndex: null,
+    blankIndex: blankIdx,
+    instruction: blankInstructions[blankIdx],
+    explanation: blankExplanations[blankIdx] ?? '',
+  }
 }
 
 const BLOCK_TOKEN = '___BLANK___'
@@ -323,6 +402,8 @@ export function FinalProjectSidebar({
   lesson,
   activeBlockIndex,
   activeBankIndex,
+  selectedLineIndex,
+  selectedBlankIndex,
   allLessons,
 }: FinalProjectSidebarProps) {
   const blocks = lesson.exercises
@@ -345,26 +426,53 @@ export function FinalProjectSidebar({
   const htmlTemplate = lesson.finalProject?.htmlTemplate ?? ''
   const cssTemplate = lesson.finalProject?.cssTemplate ?? ''
 
-  const lessonRefs = activeBlock?.lessonRefs ?? []
-  const refLessons = lessonRefs
-    .map((id) => allLessons.find((l) => l.id === id))
-    .filter((l): l is Lesson => Boolean(l))
-
-  const blankInstructions = activeBlock?.blankInstructions ?? []
-  const blankExplanations = activeBlock?.blankExplanations ?? []
-  const totalBlanks = blankInstructions.length
+  const blockLessonRefs = activeBlock?.lessonRefs ?? []
+  const totalBlanks = activeBlock?.correctOrder?.length ?? 0
   const safeBankIndex = Math.max(
     0,
     Math.min(activeBankIndex, Math.max(totalBlanks - 1, 0)),
   )
   const codeWithBlanks = activeBlock?.codeWithBlanks ?? []
-  const activeLineIdx = findLineIndexForBlank(codeWithBlanks, safeBankIndex)
+  const activeEntry = useMemo(
+    () =>
+      resolveEntry(
+        activeBlock,
+        selectedLineIndex,
+        selectedBlankIndex,
+        safeBankIndex,
+      ),
+    [activeBlock, selectedLineIndex, selectedBlankIndex, safeBankIndex],
+  )
+
+  const entryLineIdx =
+    activeEntry?.lineIndex ??
+    (activeEntry?.blankIndex !== null && activeEntry?.blankIndex !== undefined
+      ? findLineIndexForBlank(codeWithBlanks, activeEntry.blankIndex)
+      : -1)
   const activeLine =
-    activeLineIdx >= 0 ? codeWithBlanks[activeLineIdx] : codeWithBlanks[0] ?? ''
-  const currentInstruction = blankInstructions[safeBankIndex] ?? ''
-  const currentExplanation = blankExplanations[safeBankIndex] ?? ''
+    entryLineIdx >= 0 && entryLineIdx < codeWithBlanks.length
+      ? codeWithBlanks[entryLineIdx]
+      : codeWithBlanks[0] ?? ''
+  const entryBlankIdx = activeEntry?.blankIndex ?? null
+  const currentInstruction = activeEntry?.instruction ?? ''
+  const currentExplanation = activeEntry?.explanation ?? ''
   const currentMode: BlankInputMode =
-    activeBlock?.blankInputMode?.[safeBankIndex] ?? 'wordbank'
+    entryBlankIdx !== null
+      ? activeBlock?.blankInputMode?.[entryBlankIdx] ?? 'wordbank'
+      : 'wordbank'
+
+  const entryLessonRefs =
+    activeEntry?.lessonRefs && activeEntry.lessonRefs.length > 0
+      ? activeEntry.lessonRefs
+      : blockLessonRefs
+  const refLessons = entryLessonRefs
+    .map((id) => allLessons.find((l) => l.id === id))
+    .filter((l): l is Lesson => Boolean(l))
+
+  const hasInstructionContent = Boolean(
+    activeEntry &&
+      (activeEntry.instruction || activeEntry.explanation),
+  )
 
   const handleDotClick = (index: number) => {
     if (index >= safeActiveIndex && !allDone) return
@@ -534,56 +642,77 @@ export function FinalProjectSidebar({
               {activeBlock?.title ?? ''}
             </div>
 
-            {blankInstructions.length > 0 ? (
+            {hasInstructionContent ? (
               <>
-                <div className="fp-line-instruction-label">
-                  You are working on:
-                </div>
-                <div className="fp-line-code-preview">
-                  {currentMode === 'freeline' ? (
-                    <>
-                      <div
-                        style={{
-                          color: '#45475a',
-                          fontFamily: 'var(--mono)',
-                          fontSize: '11px',
-                        }}
-                      >
-                        {activeLineIdx >= 0 ? activeLineIdx + 1 : 1}
-                      </div>
-                      <span className="fp-freeline-slot" />
-                    </>
-                  ) : (
-                    renderLineWithBlankBoxes(activeLine, currentMode)
-                  )}
-                </div>
+                {entryBlankIdx !== null ? (
+                  <>
+                    <div className="fp-line-instruction-label">
+                      You are working on:
+                    </div>
+                    <div className="fp-line-code-preview">
+                      {currentMode === 'freeline' ? (
+                        <>
+                          <div
+                            style={{
+                              color: '#45475a',
+                              fontFamily: 'var(--mono)',
+                              fontSize: '11px',
+                            }}
+                          >
+                            {entryLineIdx >= 0 ? entryLineIdx + 1 : 1}
+                          </div>
+                          <span className="fp-freeline-slot" />
+                        </>
+                      ) : (
+                        renderLineWithBlankBoxes(activeLine, currentMode)
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="fp-line-label">This line does:</div>
+                    <div className="fp-no-blank-snippet">
+                      <HighlightedSnippet value={activeLine} />
+                    </div>
+                  </>
+                )}
 
-                <div className="fp-instruction-card">{currentInstruction}</div>
+                {activeEntry?.instruction ? (
+                  <div className="fp-instruction-card">{currentInstruction}</div>
+                ) : null}
                 {currentExplanation ? (
                   <div className="fp-explanation">{currentExplanation}</div>
                 ) : null}
 
-                <div className="fp-blank-progress">
-                  {Array.from({ length: totalBlanks }, (_, i) => {
-                    const cls =
-                      i < safeBankIndex
-                        ? 'fp-blank-dot done'
-                        : i === safeBankIndex
-                          ? 'fp-blank-dot current'
-                          : 'fp-blank-dot upcoming'
-                    return <span key={i} className={cls} aria-hidden />
-                  })}
-                  <span className="fp-blank-progress-label">
-                    Blank {safeBankIndex + 1} of {totalBlanks}
-                  </span>
-                </div>
+                {entryBlankIdx !== null ? (
+                  <div className="fp-blank-progress">
+                    {Array.from({ length: totalBlanks }, (_, i) => {
+                      const cls =
+                        i < entryBlankIdx
+                          ? 'fp-blank-dot done'
+                          : i === entryBlankIdx
+                            ? 'fp-blank-dot current'
+                            : 'fp-blank-dot upcoming'
+                      return <span key={i} className={cls} aria-hidden />
+                    })}
+                    <span className="fp-blank-progress-label">
+                      Blank {entryBlankIdx + 1} of {totalBlanks}
+                    </span>
+                  </div>
+                ) : null}
 
-                {safeBankIndex > 0 ? (
+                {entryBlankIdx !== null && entryBlankIdx > 0 ? (
                   <div className="fp-completed-blanks">
                     <div className="fp-completed-label">Completed blanks</div>
-                    {blankInstructions
-                      .slice(0, safeBankIndex)
-                      .map((instr, i) => (
+                    {Array.from({ length: entryBlankIdx }, (_, i) => {
+                      const completed = activeBlock
+                        ? findCompletedEntry(activeBlock, i)
+                        : null
+                      const text =
+                        completed?.instruction ??
+                        completed?.explanation ??
+                        ''
+                      return (
                         <div
                           key={i}
                           className="fp-completed-row"
@@ -601,9 +730,10 @@ export function FinalProjectSidebar({
                           <span className="fp-completed-check" aria-hidden>
                             <CheckIcon size={8} />
                           </span>
-                          <span className="fp-completed-text">{instr}</span>
+                          <span className="fp-completed-text">{text}</span>
                         </div>
-                      ))}
+                      )
+                    })}
                   </div>
                 ) : null}
               </>

@@ -25,6 +25,11 @@ export type FinalProjectPanelProps = PanelProps & {
   allExercises: Exercise[]
   activeIndex: number
   lesson: Lesson
+  onActiveBankIndexChange?: (index: number) => void
+  onLineSelect?: (
+    lineIndex: number | null,
+    blankIndex: number | null,
+  ) => void
 }
 
 export function getPanelFormat(exercise: Exercise): ExerciseFormat {

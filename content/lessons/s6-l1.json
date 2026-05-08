@@ -1,200 +1,349 @@
 {
   "id": "s6-l1",
   "session": "Session 6",
-  "title": "Reaction Timer",
+  "title": "Simon Says Memory Game",
   "content": [],
   "challenges": [],
   "finalProject": {
-    "htmlTemplate": "<div id=\"box\">\n  <div id=\"big\">Click to start</div>\n  <div id=\"small\">Test your reaction time</div>\n</div>\n",
-    "cssTemplate": "html, body {\n  height: 100%;\n  margin: 0;\n}\n\nbody {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: #f5f4f0;\n  font-family: system-ui, -apple-system, sans-serif;\n  color: #1A1E2E;\n}\n\n#box {\n  width: 400px;\n  height: 220px;\n  border-radius: 12px;\n  background: #e5e5ea;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n  transition: background 120ms ease, color 120ms ease;\n}\n\n#big {\n  font-size: 28px;\n  font-weight: 600;\n}\n\n#small {\n  font-size: 14px;\n  color: #6b7280;\n}\n\n#box.ready {\n  background: #059669;\n  color: #ffffff;\n}\n#box.ready #small {\n  color: rgba(255, 255, 255, 0.85);\n}\n\n#box.early {\n  background: #DC2626;\n  color: #ffffff;\n}\n#box.early #small {\n  color: rgba(255, 255, 255, 0.85);\n}\n"
+    "htmlTemplate": "<header>\n  <h1 class=\"game-title\">Simon Says</h1>\n  <p class=\"game-subtitle\">Watch the pattern, repeat it back</p>\n</header>\n\n<div class=\"stats-bar\">\n  <div class=\"stat-box\">\n    <span class=\"stat-label\">Level</span>\n    <span class=\"stat-number\" id=\"current-level\">1</span>\n  </div>\n  <div class=\"stat-box stat-box--best\">\n    <span class=\"stat-label\">Best</span>\n    <span class=\"stat-number\" id=\"best-level\">-</span>\n  </div>\n</div>\n\n<div class=\"status-message\" id=\"status-message\">\n  Press Start to play\n</div>\n\n<div class=\"grid\" id=\"grid\">\n  <div class=\"cell\" data-index=\"0\"></div>\n  <div class=\"cell\" data-index=\"1\"></div>\n  <div class=\"cell\" data-index=\"2\"></div>\n  <div class=\"cell\" data-index=\"3\"></div>\n  <div class=\"cell\" data-index=\"4\"></div>\n  <div class=\"cell\" data-index=\"5\"></div>\n  <div class=\"cell\" data-index=\"6\"></div>\n  <div class=\"cell\" data-index=\"7\"></div>\n  <div class=\"cell\" data-index=\"8\"></div>\n  <div class=\"cell\" data-index=\"9\"></div>\n  <div class=\"cell\" data-index=\"10\"></div>\n  <div class=\"cell\" data-index=\"11\"></div>\n  <div class=\"cell\" data-index=\"12\"></div>\n  <div class=\"cell\" data-index=\"13\"></div>\n  <div class=\"cell\" data-index=\"14\"></div>\n  <div class=\"cell\" data-index=\"15\"></div>\n</div>\n\n<button class=\"start-btn\" id=\"start-btn\">Start Game</button>\n\n<div class=\"overlay\" id=\"game-over-screen\">\n  <div class=\"overlay-box\">\n    <p class=\"overlay-eyebrow\">Game Over</p>\n    <h2 class=\"overlay-title\">You reached</h2>\n    <div class=\"overlay-level-display\">\n      Level <span id=\"final-level\">1</span>\n    </div>\n    <p class=\"overlay-sub\" id=\"overlay-sub-message\">Keep practicing!</p>\n    <button class=\"start-btn\" id=\"restart-btn\">Try Again</button>\n  </div>\n</div>\n\n<div class=\"wrong-flash\" id=\"wrong-flash\"></div>\n",
+    "cssTemplate": ":root {\n  --bg:             #f5f5f0;\n  --surface:        #ffffff;\n  --border:         #e2e2dc;\n  --cell-idle:      #e8e8e2;\n  --cell-border:    #d4d4ce;\n  --cell-lit:       #4f8ef7;\n  --cell-lit-glow:  rgba(79, 142, 247, 0.35);\n  --cell-wrong:     #f25c54;\n  --cell-correct:   #34c97e;\n  --accent:         #4f8ef7;\n  --accent-dark:    #2f6fd4;\n  --text-primary:   #1a1a1a;\n  --text-secondary: #6b6b6b;\n  --text-muted:     #a0a0a0;\n  --cell-size:      76px;\n  --grid-gap:       8px;\n  --grid-cols:      4;\n  --radius-cell:    10px;\n  --radius-card:    16px;\n}\n*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\nbody { font-family: 'DM Sans', sans-serif; background-color: var(--bg); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 16px 64px; color: var(--text-primary); }\nheader { text-align: center; margin-bottom: 32px; }\n.game-title { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }\n.game-subtitle { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }\n.stats-bar { display: flex; gap: 12px; margin-bottom: 20px; }\n.stat-box { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-card); padding: 12px 28px; text-align: center; min-width: 100px; }\n.stat-box--best { border-color: var(--accent); background: #f0f5ff; }\n.stat-label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 4px; }\n.stat-number { display: block; font-family: 'DM Mono', monospace; font-size: 1.8rem; font-weight: 500; color: var(--text-primary); line-height: 1; }\n.stat-box--best .stat-number { color: var(--accent); }\n.status-message { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); background: var(--surface); border: 1.5px solid var(--border); border-radius: 50px; padding: 8px 22px; margin-bottom: 24px; min-height: 40px; display: flex; align-items: center; justify-content: center; transition: color 0.2s ease; }\n.grid { display: grid; grid-template-columns: repeat(var(--grid-cols), var(--cell-size)); grid-template-rows: repeat(var(--grid-cols), var(--cell-size)); gap: var(--grid-gap); background: var(--surface); padding: 14px; border-radius: var(--radius-card); border: 1.5px solid var(--border); margin-bottom: 28px; }\n.cell { width: var(--cell-size); height: var(--cell-size); background-color: var(--cell-idle); border: 1.5px solid var(--cell-border); border-radius: var(--radius-cell); cursor: pointer; transition: background-color 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease; }\n.cell:hover { background-color: #ddddd6; transform: scale(1.04); }\n.cell:active { transform: scale(0.96); }\n.cell.lit { background-color: var(--cell-lit); border-color: var(--accent-dark); box-shadow: 0 0 0 4px var(--cell-lit-glow); transform: scale(1.06); }\n.cell.wrong { background-color: var(--cell-wrong); border-color: #c0392b; box-shadow: 0 0 0 4px rgba(242, 92, 84, 0.3); animation: shake 0.3s ease; }\n.cell.clicked { background-color: var(--cell-correct); border-color: #27ae60; box-shadow: 0 0 0 4px rgba(52, 201, 126, 0.3); transform: scale(0.96); }\n.start-btn { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700; background: var(--accent); color: #fff; border: none; border-radius: 50px; padding: 13px 40px; cursor: pointer; letter-spacing: 0.2px; transition: background 0.15s ease, transform 0.1s ease; }\n.start-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }\n.start-btn:active { transform: translateY(1px); }\n.overlay { display: none; position: fixed; inset: 0; background: rgba(20, 20, 20, 0.5); backdrop-filter: blur(6px); z-index: 100; align-items: center; justify-content: center; }\n.overlay-box { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--border); padding: 48px 40px 40px; text-align: center; max-width: 300px; width: 90%; animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }\n.overlay-eyebrow { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--cell-wrong); margin-bottom: 8px; }\n.overlay-title { font-size: 1.1rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 12px; }\n.overlay-level-display { font-family: 'DM Mono', monospace; font-size: 3.5rem; font-weight: 500; color: var(--text-primary); line-height: 1; margin-bottom: 10px; }\n.overlay-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 28px; }\n.wrong-flash { display: none; position: fixed; inset: 0; background: rgba(242, 92, 84, 0.25); z-index: 50; pointer-events: none; }\n.wrong-flash.active { display: block; animation: flashFade 0.45s ease forwards; }\n.grid.disabled .cell { cursor: not-allowed; pointer-events: none; }\n@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }\n@keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }\n@keyframes flashFade { from { opacity: 1; } to { opacity: 0; } }\n@media (max-width: 420px) { :root { --cell-size: 62px; --grid-gap: 6px; } .game-title { font-size: 1.6rem; } }\n"
   },
   "exercises": [
     {
       "title": "Set up your variables",
       "type": "practice",
-      "duration": "3 min",
+      "duration": "4 min",
       "format": "final-project",
       "lessonRefs": ["s2-l1", "s2-l0"],
       "tasks": [
-        "Every program needs memory. Drag the right starting value into each blank.",
-        "state tracks what is happening: idle, waiting, ready, or done.",
-        "startTime will record when the box turns green.",
-        "timeout holds a timer we can cancel if needed."
+        "This block sets up every variable and DOM reference the game needs.",
+        "Click any line to learn what it does. Click a blank to see what to fill in."
       ],
-      "hint": "state starts as idle. startTime starts at 0. timeout starts as null because no timer is running.",
+      "hint": "const is for variables that never get reassigned. getElementById finds one element by id. querySelectorAll finds many elements by CSS selector.",
       "codeWithBlanks": [
-        "let state     = ___BLANK___;",
-        "let startTime = ___BLANK___;",
-        "let timeout   = ___BLANK___;"
+        "___BLANK___ grid          = document.getElementById('grid');",
+        "___BLANK___ startBtn      = ___BLANK___('start-btn');",
+        "___BLANK___ statusMessage = document.getElementById(___BLANK___);",
+        "const cells         = document.querySelectorAll('.cell');",
+        "",
+        "let sequence       = ___BLANK___;",
+        "let playerClicks   = [];",
+        "let isInputAllowed = ___BLANK___;",
+        "let level          = 1;"
+      ],
+      "correctOrder": [
+        "const",
+        "const",
+        "document.getElementById",
+        "const",
+        "'status-message'",
+        "[]",
+        "false"
+      ],
+      "blankInputMode": [
+        "wordbank",
+        "wordbank",
+        "wordbank",
+        "type",
+        "type",
+        "wordbank",
+        "type"
       ],
       "tokenBank": [
-        { "id": "t1", "label": "'idle'" },
-        { "id": "t2", "label": "0" },
-        { "id": "t3", "label": "null" },
-        { "id": "t4", "label": "'done'" },
-        { "id": "t5", "label": "1" },
-        { "id": "t6", "label": "false" }
+        { "id": "t1", "label": "const" },
+        { "id": "t2", "label": "document.getElementById" },
+        { "id": "t3", "label": "[]" },
+        { "id": "t4", "label": "'grid'" },
+        { "id": "t5", "label": "let" },
+        { "id": "t6", "label": "document.querySelectorAll" },
+        { "id": "t7", "label": "var" }
       ],
-      "correctOrder": ["'idle'", "0", "null"],
-      "blankInputMode": ["wordbank", "type", "freeline"],
-      "expectedEffects": [
-        { "type": "declaration", "value": null }
+      "lineExplanations": [
+        {
+          "lineIndex": 0,
+          "blankIndex": 0,
+          "instruction": "This line creates a constant variable. Drag the keyword that declares a variable that will never be reassigned.",
+          "explanation": "const is used when you know the variable will always point to the same thing. grid will always refer to the same HTML element so const is the right choice over let.",
+          "lessonRefs": ["s2-l1"]
+        },
+        {
+          "lineIndex": 1,
+          "blankIndex": 1,
+          "instruction": "This line also creates a constant. Drag the same keyword you used on line 1.",
+          "explanation": "Every DOM reference in this program uses const because we grab each element once at the start and never replace it. The variable name changes but the pattern is identical.",
+          "lessonRefs": ["s2-l1"]
+        },
+        {
+          "lineIndex": 1,
+          "blankIndex": 2,
+          "instruction": "Drag the method that searches the page for a single element by its id string.",
+          "explanation": "document.getElementById is the standard way to find one specific element. You pass in the id exactly as it appears in the HTML. It returns the element itself so you can change it later.",
+          "lessonRefs": ["s2-l1"]
+        },
+        {
+          "lineIndex": 2,
+          "blankIndex": 3,
+          "instruction": "Type the keyword that declares a variable that will not be reassigned.",
+          "explanation": "You typed it this time instead of dragging it. The keyword is the same as lines 1 and 2. Recognizing the pattern is the point.",
+          "lessonRefs": ["s2-l1"]
+        },
+        {
+          "lineIndex": 2,
+          "blankIndex": 4,
+          "instruction": "Type the id string of the status message element. Open the index.html tab to find it.",
+          "explanation": "The id is written directly in the HTML as id='status-message'. You pass it as a string with quotes. The string must match exactly including the hyphen.",
+          "lessonRefs": ["s2-l1"]
+        },
+        {
+          "lineIndex": 3,
+          "blankIndex": null,
+          "explanation": "querySelectorAll works like getElementById but returns ALL elements that match a CSS selector, not just one. A CSS class selector starts with a dot. So '.cell' finds every element with class='cell' on the page. This gives us all 16 grid squares at once as a list we can loop through.",
+          "lessonRefs": ["s2-l1"]
+        },
+        {
+          "lineIndex": 5,
+          "blankIndex": 5,
+          "instruction": "sequence will hold the list of cell indexes for each round. It starts empty. Drag the value that represents an empty list.",
+          "explanation": "An empty array [] is the right starting value because startRound will fill it with a fresh random set of indexes at the beginning of every round. Starting empty means no leftover data from a previous round.",
+          "lessonRefs": ["s2-l1", "s2-l0"]
+        },
+        {
+          "lineIndex": 6,
+          "blankIndex": null,
+          "explanation": "playerClicks tracks which cells the player has clicked so far this round. It also starts as an empty array. startRound resets it to [] at the beginning of each round so old clicks do not carry over.",
+          "lessonRefs": ["s2-l1"]
+        },
+        {
+          "lineIndex": 7,
+          "blankIndex": 6,
+          "instruction": "isInputAllowed controls whether player clicks do anything. At the start the game is not running yet. Type the boolean that means clicking is blocked.",
+          "explanation": "false means clicking is turned off. The game turns it on after the display sequence finishes by setting isInputAllowed = true. Without this gate the player could click cells before the pattern is shown.",
+          "lessonRefs": ["s2-l1", "s2-l0"]
+        },
+        {
+          "lineIndex": 8,
+          "blankIndex": null,
+          "explanation": "level tracks which round the player is on. It starts at 1. Each time the player completes a round correctly checkResult adds 1 to level. The number also determines how many cells appear in the sequence that round.",
+          "lessonRefs": ["s2-l1"]
+        }
       ],
-      "blankInstructions": [
-        "Create a variable called state and set it to the starting value from the word bank.",
-        "Create a variable called startTime and type in a starting number value.",
-        "Type the full line. Declare a variable called timeout with a value that means nothing is there yet."
-      ],
-      "blankExplanations": [
-        "This program uses a variable called state to track what is happening at any moment. Is the game waiting? Is it green? Is it over? The value you pick here is what state holds before the player does anything.",
-        "When the box turns green, we save the current time into startTime. Then when the player clicks, we subtract startTime from the current time to get their reaction time. Right now the game has not started, so startTime holds a placeholder number.",
-        "setTimeout gives us back a timer ID we can use to cancel the timer if needed. We store it in timeout. But right now no timer is running, so timeout starts as the JavaScript value that means empty."
-      ],
-      "explanation": "state, startTime and timeout are the three variables that run the whole game. They live outside any function so every part of the code can read them.",
-      "checks": []
+      "checks": [],
+      "expectedEffects": []
     },
     {
-      "title": "Grab the HTML elements",
-      "type": "practice",
-      "duration": "3 min",
-      "format": "final-project",
-      "lessonRefs": ["s2-l1"],
-      "tasks": [
-        "JavaScript needs to find the elements on the page before it can change them.",
-        "getElementById returns the element whose id matches the string you pass in.",
-        "Drag the right id string into each blank."
-      ],
-      "hint": "The ids match the elements in index.html exactly: box, big, and small.",
-      "codePrefix": "let state     = 'idle';\nlet startTime = 0;\nlet timeout   = null;\n",
-      "codeWithBlanks": [
-        "const box   = document.getElementById(___BLANK___);",
-        "const big   = document.getElementById(___BLANK___);",
-        "const small = document.getElementById(___BLANK___);"
-      ],
-      "tokenBank": [
-        { "id": "t1", "label": "'box'" },
-        { "id": "t2", "label": "'big'" },
-        { "id": "t3", "label": "'small'" },
-        { "id": "t4", "label": "'div'" },
-        { "id": "t5", "label": "'button'" },
-        { "id": "t6", "label": "'text'" }
-      ],
-      "correctOrder": ["'box'", "'big'", "'small'"],
-      "blankInputMode": ["wordbank", "type", "type"],
-      "blankInstructions": [
-        "Pass the id of the main clickable box into getElementById. Find it in the word bank.",
-        "Type the id of the element that shows the large text inside the box.",
-        "Type the id of the element that shows the smaller text below the main message."
-      ],
-      "blankExplanations": [
-        "Before JavaScript can change something on the page, it needs to find it. getElementById looks through the HTML and returns the element whose id matches exactly. Open the index.html tab to see what ids are available.",
-        "This is the element that displays text like 'Click to start' and 'CLICK!' and the reaction time result. We store a reference to it so we can update its text at any point in the game.",
-        "This element shows secondary messages like 'Test your reaction time' and 'Click to try again'. Having a direct reference means we can update it instantly without searching the page again."
-      ],
-      "explanation": "These three const variables now point to the real DOM elements. Any change to box, big, or small instantly updates what the player sees.",
-      "checks": []
-    },
-    {
-      "title": "Listen for clicks and go green",
+      "title": "Helper functions",
       "type": "practice",
       "duration": "5 min",
       "format": "final-project",
-      "lessonRefs": ["s2-l2", "s2-l3", "s5-l2"],
+      "lessonRefs": ["s3-l1", "s4-l2", "s4-l3"],
       "tasks": [
-        "When the player clicks the box, the game starts waiting. After a random delay the box turns green.",
-        "addEventListener watches for the event you name. Drag the right event name into the first blank.",
-        "When the box turns green, state must change. Drag the right state value into the second blank.",
-        "Date.now() returns the current time in milliseconds. Drag it into the third blank to start the clock."
+        "These three helpers are used by the rest of the game.",
+        "pickCells chooses a random set of cell indexes for the round.",
+        "setStatus updates the message at the top of the screen.",
+        "updateLevelDisplay shows the current level number."
       ],
-      "hint": "We listen for a click event. When green appears state becomes ready. The clock starts with Date.now().",
-      "codePrefix": "let state     = 'idle';\nlet startTime = 0;\nlet timeout   = null;\n\nconst box   = document.getElementById('box');\nconst big   = document.getElementById('big');\nconst small = document.getElementById('small');\n",
+      "hint": "picked is an array that gets filled by the loop. The parameter name must match what is used inside the function body.",
+      "codePrefix": "const grid          = document.getElementById('grid');\nconst startBtn      = document.getElementById('start-btn');\nconst statusMessage = document.getElementById('status-message');\nconst cells         = document.querySelectorAll('.cell');\n\nlet sequence       = [];\nlet playerClicks   = [];\nlet isInputAllowed = false;\nlet level          = 1;\nlet bestLevel      = 0;\n",
       "codeWithBlanks": [
-        "box.addEventListener(___BLANK___, function() {",
-        "  if (state === 'idle' || state === 'done') {",
-        "    state = 'waiting';",
-        "    box.style.background = '#ccc';",
-        "    big.textContent = 'Wait for green...';",
-        "    const delay = 1000 + Math.random() * 3000;",
-        "    timeout = setTimeout(function() {",
-        "      state = ___BLANK___;",
-        "      box.style.background = '#059669';",
-        "      big.textContent = 'CLICK!';",
-        "      startTime = ___BLANK___;",
-        "    }, delay);",
+        "function pickCells(n) {",
+        "  let allIndexes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];",
+        "  let picked = ___BLANK___;",
+        "",
+        "  for (let i = 0; i < n; i++) {",
+        "    let pos = Math.floor(Math.random() * allIndexes.length);",
+        "    picked.push(allIndexes[pos]);",
+        "    allIndexes.splice(pos, 1);",
         "  }",
-        "});"
+        "  return picked;",
+        "}",
+        "",
+        "function setStatus(___BLANK___) {",
+        "  statusMessage.textContent = message;",
+        "}",
+        "",
+        "function updateLevelDisplay() {",
+        "  currentLevel.textContent = ___BLANK___;",
+        "}"
       ],
       "tokenBank": [
-        { "id": "t1", "label": "'click'" },
-        { "id": "t2", "label": "'ready'" },
-        { "id": "t3", "label": "Date.now()" },
-        { "id": "t4", "label": "'keydown'" },
-        { "id": "t5", "label": "'waiting'" },
-        { "id": "t6", "label": "Math.random()" }
+        { "id": "t1", "label": "[]" },
+        { "id": "t2", "label": "message" },
+        { "id": "t3", "label": "level" },
+        { "id": "t4", "label": "0" },
+        { "id": "t5", "label": "text" },
+        { "id": "t6", "label": "n" },
+        { "id": "t7", "label": "sequence" }
       ],
-      "correctOrder": ["'click'", "'ready'", "Date.now()"],
-      "blankInputMode": ["type", "type", "wordbank"],
+      "correctOrder": ["[]", "message", "level"],
+      "blankInputMode": ["type", "type", "freeline"],
       "blankInstructions": [
-        "Type the name of the event that fires when a user presses and releases their mouse button.",
-        "Type the state value the game should have when the box is green and waiting for the player to click.",
-        "Pick the option from the word bank that returns the current time in milliseconds."
+        "picked will collect the randomly chosen cell indexes. Type the value that represents an empty list in JavaScript.",
+        "setStatus takes one input. The function body refers to it as 'message'. Type the parameter name that matches.",
+        "Type the full line. updateLevelDisplay should set the textContent of the currentLevel element to the current level number."
       ],
       "blankExplanations": [
-        "addEventListener takes two things: the name of the event to listen for, and a function to run when that event happens. There are many event names in JavaScript. The one for a mouse press is one of the most common you will use.",
-        "When the box turns green, we update state so the click handler knows what to do next. If state is still 'waiting' when the player clicks, the code would treat it as a too-early click. Updating state here is what makes the timing logic work.",
-        "Date.now() gives you a number representing how many milliseconds have passed since January 1st 1970. That sounds strange but it is just a very large number that increases every millisecond. Saving it here and subtracting it later gives you an exact time difference."
+        "The for loop pushes items into picked one at a time. Before the loop runs, picked needs to be empty so nothing carries over from a previous call.",
+        "A function parameter is a name you choose. Whatever name you put here must match every place it is used inside the function body. The body uses 'message', so the parameter must be 'message'.",
+        "currentLevel is the DOM element that shows the level on screen. Setting its textContent property to the level variable makes the display update whenever the function is called."
       ],
-      "explanation": "addEventListener is how JavaScript responds to user actions. setTimeout delays the green light by a random amount so the player cannot predict it.",
-      "checks": []
+      "checks": [],
+      "expectedEffects": [
+        {
+          "type": "domAssignment",
+          "elementId": "current-level",
+          "property": "textContent"
+        }
+      ]
     },
     {
-      "title": "Measure the reaction time",
+      "title": "Start the round",
       "type": "practice",
-      "duration": "4 min",
+      "duration": "6 min",
       "format": "final-project",
-      "lessonRefs": ["s2-l2", "s2-l7", "s5-l2"],
+      "lessonRefs": ["s5-l2", "s4-l2", "s5-l1"],
       "tasks": [
-        "When the player clicks the green box, we calculate how long they took.",
-        "We only want to measure if the box is currently green. Drag the right state value into the first blank.",
-        "Subtract startTime from Date.now() to get milliseconds. Drag the formula into the second blank.",
-        "After showing the result, the game is done. Drag the right state value into the third blank."
+        "startRound shows the player a sequence of cells one at a time, then lets them try to repeat it.",
+        "Pick the right delay between cells, the class that disables clicks during the display, and the value that re-enables input afterward."
       ],
-      "hint": "Only measure when state is ready. The formula is Date.now() minus startTime. Then state becomes done.",
-      "codePrefix": "let state     = 'idle';\nlet startTime = 0;\nlet timeout   = null;\n\nconst box   = document.getElementById('box');\nconst big   = document.getElementById('big');\nconst small = document.getElementById('small');\n\nbox.addEventListener('click', function() {\n  if (state === 'idle' || state === 'done') {\n    state = 'waiting';\n    box.style.background = '#ccc';\n    big.textContent = 'Wait for green...';\n    const delay = 1000 + Math.random() * 3000;\n    timeout = setTimeout(function() {\n      state = 'ready';\n      box.style.background = '#059669';\n      big.textContent = 'CLICK!';\n      startTime = Date.now();\n    }, delay);\n  }\n",
-      "codeSuffix": "});",
+      "hint": "Check the CSS for the class that disables pointer events on cells.",
+      "codePrefix": "const grid          = document.getElementById('grid');\nconst startBtn      = document.getElementById('start-btn');\nconst statusMessage = document.getElementById('status-message');\nconst cells         = document.querySelectorAll('.cell');\n\nlet sequence       = [];\nlet playerClicks   = [];\nlet isInputAllowed = false;\nlet level          = 1;\nlet bestLevel      = 0;\n\nfunction pickCells(n) {\n  let allIndexes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];\n  let picked = [];\n  for (let i = 0; i < n; i++) {\n    let pos = Math.floor(Math.random() * allIndexes.length);\n    picked.push(allIndexes[pos]);\n    allIndexes.splice(pos, 1);\n  }\n  return picked;\n}\n\nfunction setStatus(message) {\n  statusMessage.textContent = message;\n}\n\nfunction updateLevelDisplay() {\n  currentLevel.textContent = level;\n}\n",
       "codeWithBlanks": [
-        "  } else if (state === ___BLANK___) {",
-        "    const ms = ___BLANK___;",
-        "    state = ___BLANK___;",
-        "    box.style.background = '#e5e5ea';",
-        "    big.textContent = ms + ' ms';",
-        "    small.textContent = 'Click to try again';"
+        "const DISPLAY_SPEED = ___BLANK___;",
+        "const LIT_DURATION  = 400;",
+        "",
+        "function startRound() {",
+        "  playerClicks = [];",
+        "  isInputAllowed = false;",
+        "  grid.classList.add(___BLANK___);",
+        "",
+        "  sequence = pickCells(level);",
+        "  updateLevelDisplay();",
+        "  setStatus('Watch carefully...');",
+        "",
+        "  for (let i = 0; i < sequence.length; i++) {",
+        "    setTimeout(function() {",
+        "      let cell = cells[sequence[i]];",
+        "      cell.classList.add('lit');",
+        "      setTimeout(function() {",
+        "        cell.classList.remove('lit');",
+        "      }, LIT_DURATION);",
+        "    }, (i + 1) * DISPLAY_SPEED);",
+        "  }",
+        "",
+        "  setTimeout(function() {",
+        "    isInputAllowed = ___BLANK___;",
+        "    grid.classList.remove('disabled');",
+        "    setStatus('Your turn!');",
+        "  }, (sequence.length + 1) * DISPLAY_SPEED);",
+        "}"
       ],
       "tokenBank": [
-        { "id": "t1", "label": "'ready'" },
-        { "id": "t2", "label": "Date.now() - startTime" },
-        { "id": "t3", "label": "'done'" },
-        { "id": "t4", "label": "'waiting'" },
-        { "id": "t5", "label": "startTime - Date.now()" },
-        { "id": "t6", "label": "'idle'" }
+        { "id": "t1", "label": "700" },
+        { "id": "t2", "label": "'disabled'" },
+        { "id": "t3", "label": "true" },
+        { "id": "t4", "label": "1000" },
+        { "id": "t5", "label": "'active'" },
+        { "id": "t6", "label": "false" }
       ],
-      "correctOrder": ["'ready'", "Date.now() - startTime", "'done'"],
-      "blankInputMode": ["type", "freeline", "type"],
-      "expectedEffects": [
-        { "type": "declaration", "valueType": "number" }
-      ],
+      "correctOrder": ["700", "'disabled'", "true"],
+      "blankInputMode": ["type", "type", "freeline"],
       "blankInstructions": [
-        "Type the state value that means the box is green and the player is supposed to be clicking.",
-        "Type the full line. Declare a variable called ms and set it to the difference between the current time and when the box turned green.",
-        "Type the state value that means the game has finished and is showing a result."
+        "Type the number of milliseconds between each cell lighting up. 700 means each cell appears 0.7 seconds after the previous one.",
+        "During the display phase, the grid needs to block all player clicks. Type the CSS class name (as a string) that makes the grid unclickable.",
+        "Type the full line. After the display finishes, the player needs to be able to click. Set isInputAllowed to the value that means clicking is allowed."
       ],
       "blankExplanations": [
-        "This condition makes sure we only calculate reaction time when appropriate. If the player clicks before the box is green, state is still 'waiting' and this branch is skipped. If the player clicks after already getting a result, state is 'done' and this also skips. Only 'ready' triggers the measurement.",
-        "This is the core calculation of the whole program. Date.now() gives you the current time in milliseconds. startTime holds the time when the box turned green. Subtracting them gives you exactly how long the player took to click. That gap is the reaction time.",
-        "Setting state to 'done' here means the next click will restart the game instead of trying to measure another reaction time. Every state change in this program is intentional. It controls exactly what the next click does."
+        "DISPLAY_SPEED is used in the formula (i + 1) * DISPLAY_SPEED inside the for loop. Each cell in the sequence gets a progressively later setTimeout so they light up one after another rather than all at once.",
+        "Open the style.css tab. Find the .grid.disabled rule. It sets pointer-events: none on every cell inside the grid. Adding this class name to the grid element switches that rule on.",
+        "isInputAllowed is the gate that handleClick checks before doing anything. Setting it to true here is what opens the gate after the display sequence finishes. Without this line the player could never click."
       ],
-      "explanation": "Date.now() minus startTime gives the exact number of milliseconds between the green light and the click. That is the player's reaction time.",
-      "checks": []
+      "checks": [],
+      "expectedEffects": [
+        {
+          "type": "variableValue",
+          "name": "isInputAllowed",
+          "expected": true
+        }
+      ]
+    },
+    {
+      "title": "Handle clicks and game over",
+      "type": "practice",
+      "duration": "6 min",
+      "format": "final-project",
+      "lessonRefs": ["s2-l7", "s3-l2", "s5-l1"],
+      "tasks": [
+        "handleClick runs every time the player clicks a cell.",
+        "It checks whether the click was correct and either advances the round or ends the game.",
+        "showGameOver displays the final level the player reached."
+      ],
+      "hint": "The ! operator flips a boolean. sequence.length is the target the player needs to reach.",
+      "codePrefix": "const grid          = document.getElementById('grid');\nconst startBtn      = document.getElementById('start-btn');\nconst statusMessage = document.getElementById('status-message');\nconst cells         = document.querySelectorAll('.cell');\n\nlet sequence       = [];\nlet playerClicks   = [];\nlet isInputAllowed = false;\nlet level          = 1;\nlet bestLevel      = 0;\n\nfunction pickCells(n) {\n  let allIndexes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];\n  let picked = [];\n  for (let i = 0; i < n; i++) {\n    let pos = Math.floor(Math.random() * allIndexes.length);\n    picked.push(allIndexes[pos]);\n    allIndexes.splice(pos, 1);\n  }\n  return picked;\n}\n\nfunction setStatus(message) {\n  statusMessage.textContent = message;\n}\n\nfunction updateLevelDisplay() {\n  currentLevel.textContent = level;\n}\n\nconst DISPLAY_SPEED = 700;\nconst LIT_DURATION  = 400;\n\nfunction startRound() {\n  playerClicks = [];\n  isInputAllowed = false;\n  grid.classList.add('disabled');\n  sequence = pickCells(level);\n  updateLevelDisplay();\n  setStatus('Watch carefully...');\n  for (let i = 0; i < sequence.length; i++) {\n    setTimeout(function() {\n      let cell = cells[sequence[i]];\n      cell.classList.add('lit');\n      setTimeout(function() {\n        cell.classList.remove('lit');\n      }, LIT_DURATION);\n    }, (i + 1) * DISPLAY_SPEED);\n  }\n  setTimeout(function() {\n    isInputAllowed = true;\n    grid.classList.remove('disabled');\n    setStatus('Your turn!');\n  }, (sequence.length + 1) * DISPLAY_SPEED);\n}\n\ncells.forEach(function(cell) {\n  cell.addEventListener('click', function() {\n    const index = Number(this.dataset.index);\n    handleClick(index, this);\n  });\n});\n\nstartBtn.addEventListener('click', function() {\n  startBtn.style.display = 'none';\n  level = 1;\n  startRound();\n});\n",
+      "codeWithBlanks": [
+        "function handleClick(index, cellEl) {",
+        "  if (___BLANK___) { return; }",
+        "",
+        "  let currentStep    = playerClicks.length;",
+        "  let expectedIndex  = sequence[currentStep];",
+        "",
+        "  if (index === expectedIndex) {",
+        "    cellEl.classList.add('clicked');",
+        "    setTimeout(function() {",
+        "      cellEl.classList.remove('clicked');",
+        "    }, 250);",
+        "",
+        "    playerClicks.push(index);",
+        "",
+        "    if (playerClicks.length === ___BLANK___) {",
+        "      isInputAllowed = false;",
+        "      setStatus('Nice one!');",
+        "      setTimeout(checkResult, 800);",
+        "    }",
+        "  } else {",
+        "    isInputAllowed = false;",
+        "    setTimeout(showGameOver, 600);",
+        "  }",
+        "}",
+        "",
+        "function checkResult() {",
+        "  level = level + 1;",
+        "  setTimeout(startRound, 800);",
+        "}",
+        "",
+        "function showGameOver() {",
+        "  finalLevel.textContent = ___BLANK___;",
+        "  gameOverScreen.style.display = 'flex';",
+        "}"
+      ],
+      "codeSuffix": "const currentLevel   = document.getElementById('current-level');\nconst finalLevel     = document.getElementById('final-level');\nconst gameOverScreen = document.getElementById('game-over-screen');\nconst restartBtn     = document.getElementById('restart-btn');\n\nfunction resetGame() {\n  gameOverScreen.style.display = 'none';\n  level = 1;\n  startRound();\n}\n\nrestartBtn.addEventListener('click', resetGame);",
+      "tokenBank": [
+        { "id": "t1", "label": "!isInputAllowed" },
+        { "id": "t2", "label": "sequence.length" },
+        { "id": "t3", "label": "level" },
+        { "id": "t4", "label": "isInputAllowed" },
+        { "id": "t5", "label": "playerClicks.length" },
+        { "id": "t6", "label": "level - 1" }
+      ],
+      "correctOrder": ["!isInputAllowed", "sequence.length", "level"],
+      "blankInputMode": ["type", "type", "freeline"],
+      "blankInstructions": [
+        "handleClick should do nothing if the player is not supposed to be clicking yet. Type the expression that is true when input is NOT allowed.",
+        "The round is complete when the player has clicked exactly as many times as there are items to click. Type the expression that gives the total number of items in the sequence.",
+        "Type the full line. showGameOver needs to display the level the player reached. Set the textContent of finalLevel to the variable that holds the current level."
+      ],
+      "blankExplanations": [
+        "isInputAllowed is true when clicking is open and false when it is blocked. To guard against clicks during the display phase, we need the opposite of isInputAllowed. The ! operator in JavaScript flips a boolean to its opposite.",
+        "sequence is the array of cell indexes for this round. Its length property gives you exactly how many cells were shown. When playerClicks.length reaches that same number, every correct click has been made.",
+        "finalLevel is the DOM element inside the game over overlay that shows which level the player reached. Setting its textContent to the level variable displays the right number before the overlay appears."
+      ],
+      "checks": [],
+      "expectedEffects": [
+        {
+          "type": "domAssignment",
+          "elementId": "final-level",
+          "property": "textContent"
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Curia Map – Phase 1</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #1a1e2e;
+      color: #f1f3f8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    #app { width: 100vw; height: 100vh; }
+    #status {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.7);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #legend {
+      position: fixed;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.7);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 10;
+      line-height: 1.6;
+    }
+    .swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      vertical-align: middle;
+      border-radius: 50%;
+    }
+    .err { color: #ff8a8a; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="status">Loading...</div>
+  <div id="legend">
+    <div><span class="swatch" style="background:#3B6FE8"></span>Slot (village position)</div>
+    <div><span class="swatch" style="background:#D97706"></span>Road waypoint</div>
+    <div><span class="swatch" style="background:#7C3AED"></span>Exit path point</div>
+    <div style="margin-top:6px; opacity:0.7;">Drag to pan · Scroll to zoom</div>
+  </div>
+
+  <!-- Pixi v8 from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.6.6/pixi.min.js"></script>
+
+  <script>
+    /*
+     * Curia Map — Phase 1 loader
+     * Renders the Tiled JSON map with pan/zoom and debug markers on slots,
+     * road waypoints, and exit path points.
+     *
+     * What it does:
+     *   - Loads the Tiled JSON
+     *   - Loads referenced tileset PNGs as Pixi textures
+     *   - Renders all visible tile layers in order
+     *   - Skips hidden layers (Villages, Village Decor reference layers)
+     *   - Draws debug markers on slot/waypoint/path object layers
+     *   - Wires up custom pan/zoom via native pointer + wheel events
+     */
+
+    const status = document.getElementById('status');
+    const setStatus = (msg, isErr = false) => {
+      status.textContent = msg;
+      status.className = isErr ? 'err' : '';
+      console.log(msg);
+    };
+    const fail = (err) => {
+      console.error(err);
+      setStatus('Error: ' + (err.message || err), true);
+    };
+
+    // Map .tsx source paths in the JSON to local PNG paths.
+    // The Tiled JSON references e.g. "../tiles/FDR_Dirt.tsx"
+    // We map each to the actual PNG file in our local tiles/ folder.
+    const TILESET_PNG_FOR = {
+      '../tiles/FDR_Dirt.tsx':                      'tiles/FDR_Dirt.png',
+      '../tiles/FDR_Water_Tiles.tsx':               'tiles/FDR_Water_Tiles.png',
+      '../tiles/FDR_Village.tsx':                   'tiles/FDR_Village.png',
+      '../tiles/Trees, stumps and bushes.tsx':      'tiles/Trees, stumps and bushes.png',
+      '../tiles/FDR_Groung_Tiles_A2.tsx':           'tiles/FDR_Groung_Tiles_A2.png',
+      '../tiles/FDR_Ground.tsx':                    'tiles/FDR_Ground.png',
+    };
+
+    // Bit flags Tiled uses for tile flipping/rotation in the data array.
+    // We strip these to get the actual tile gid; we don't apply rotation in Phase 1.
+    const FLIP_FLAGS = 0xE0000000;
+
+    async function main() {
+      try {
+        // 1. Load the Tiled JSON
+        setStatus('Loading map JSON...');
+        const mapData = await fetch('Village-map.tmj').then(r => {
+          if (!r.ok) throw new Error('Could not fetch Village-map.tmj');
+          return r.json();
+        });
+        const TILE_W = mapData.tilewidth;   // 16
+        const TILE_H = mapData.tileheight;  // 16
+        const MAP_W = mapData.width;        // 50
+        const MAP_H = mapData.height;       // 50
+
+        // 2. Load tileset PNGs and figure out tile-to-texture mapping.
+        // For each tileset, we slice it into individual 16x16 tile textures
+        // and store them indexed by their global tile id (gid).
+        setStatus('Loading tileset images...');
+        const gidToTexture = new Map(); // gid -> Pixi Texture
+
+        for (const ts of mapData.tilesets) {
+          const pngPath = TILESET_PNG_FOR[ts.source];
+          if (!pngPath) {
+            console.warn('No PNG mapping for tileset', ts.source);
+            continue;
+          }
+          const baseTexture = await PIXI.Assets.load(pngPath);
+          // Pixi v8: scaleMode is a property on the source
+          baseTexture.source.scaleMode = 'nearest';
+
+          const sheetW = baseTexture.width;
+          const sheetH = baseTexture.height;
+          const cols = Math.floor(sheetW / TILE_W);
+          const rows = Math.floor(sheetH / TILE_H);
+          const tileCount = cols * rows;
+
+          // Slice into individual tile textures, indexed by local id (0..N-1).
+          // Then assign global gid = firstgid + localId.
+          for (let i = 0; i < tileCount; i++) {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const frame = new PIXI.Rectangle(
+              col * TILE_W, row * TILE_H, TILE_W, TILE_H
+            );
+            const tileTexture = new PIXI.Texture({
+              source: baseTexture.source,
+              frame,
+            });
+            gidToTexture.set(ts.firstgid + i, tileTexture);
+          }
+          console.log(`Loaded ${ts.source}: ${tileCount} tiles, firstgid=${ts.firstgid}`);
+        }
+
+        // 3. Set up Pixi application
+        setStatus('Setting up renderer...');
+        const app = new PIXI.Application();
+        await app.init({
+          width: window.innerWidth,
+          height: window.innerHeight,
+          backgroundColor: 0x1a1e2e,
+          antialias: false,
+          resolution: window.devicePixelRatio || 1,
+          autoDensity: true,
+        });
+        document.getElementById('app').appendChild(app.canvas);
+
+        // Resize on window resize
+        window.addEventListener('resize', () => {
+          app.renderer.resize(window.innerWidth, window.innerHeight);
+        });
+
+        // 4. Custom pan/zoom on a plain Container, driven by native
+        // pointer + wheel events on the canvas. The container's transform
+        // (position + scale) is the world-to-screen mapping:
+        //   screen = world * scale + position
+        const viewport = new PIXI.Container();
+        app.stage.addChild(viewport);
+
+        const ZOOM_MIN = 0.3;
+        const ZOOM_MAX = 4;
+
+        // Zoom around an anchor in screen-space so the world point under
+        // the cursor stays fixed across the zoom step.
+        const zoomAt = (newScale, screenX, screenY) => {
+          newScale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, newScale));
+          const wx = (screenX - viewport.x) / viewport.scale.x;
+          const wy = (screenY - viewport.y) / viewport.scale.y;
+          viewport.scale.set(newScale);
+          viewport.x = screenX - wx * newScale;
+          viewport.y = screenY - wy * newScale;
+        };
+
+        const moveCenter = (wx, wy) => {
+          viewport.x = window.innerWidth / 2 - wx * viewport.scale.x;
+          viewport.y = window.innerHeight / 2 - wy * viewport.scale.y;
+        };
+
+        // Initial zoom and center.
+        viewport.scale.set(1.5);
+        moveCenter(MAP_W * TILE_W / 2, MAP_H * TILE_H / 2);
+
+        // Pan with pointer drag.
+        const canvas = app.canvas;
+        canvas.style.touchAction = 'none';
+        canvas.style.cursor = 'grab';
+        let dragPointerId = null;
+        let dragStart = null;
+
+        canvas.addEventListener('pointerdown', (e) => {
+          dragPointerId = e.pointerId;
+          dragStart = {
+            px: e.clientX,
+            py: e.clientY,
+            vx: viewport.x,
+            vy: viewport.y,
+          };
+          canvas.setPointerCapture(e.pointerId);
+          canvas.style.cursor = 'grabbing';
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+          if (e.pointerId !== dragPointerId || !dragStart) return;
+          viewport.x = dragStart.vx + (e.clientX - dragStart.px);
+          viewport.y = dragStart.vy + (e.clientY - dragStart.py);
+        });
+
+        const endDrag = (e) => {
+          if (e.pointerId !== dragPointerId) return;
+          dragPointerId = null;
+          dragStart = null;
+          canvas.style.cursor = 'grab';
+        };
+        canvas.addEventListener('pointerup', endDrag);
+        canvas.addEventListener('pointercancel', endDrag);
+
+        // Zoom with wheel. Exponential mapping keeps zoom-in/out symmetric
+        // and feels right with both line- and pixel-mode wheel events.
+        canvas.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const rect = canvas.getBoundingClientRect();
+          const sx = e.clientX - rect.left;
+          const sy = e.clientY - rect.top;
+          const factor = Math.exp(-e.deltaY * 0.0015);
+          zoomAt(viewport.scale.x * factor, sx, sy);
+        }, { passive: false });
+
+        // 5. Render tile layers
+        // We respect the order in the JSON (drawn back-to-front)
+        // and skip layers with visible: false.
+        setStatus('Rendering tiles...');
+        const worldContainer = new PIXI.Container();
+        viewport.addChild(worldContainer);
+
+        for (const layer of mapData.layers) {
+          if (layer.visible === false) {
+            console.log(`Skipping hidden layer: ${layer.name}`);
+            continue;
+          }
+          if (layer.type !== 'tilelayer') continue;
+
+          // Each layer becomes a Container holding all its sprites.
+          // Putting them in a ParticleContainer would be faster but Sprites
+          // are fine at this scale and easier to debug.
+          const layerContainer = new PIXI.Container();
+          layerContainer.label = layer.name;
+
+          for (let i = 0; i < layer.data.length; i++) {
+            const rawGid = layer.data[i];
+            if (rawGid === 0) continue; // empty cell
+
+            // Strip flip/rotation bits to get the actual tile gid
+            const gid = rawGid & ~FLIP_FLAGS;
+            const texture = gidToTexture.get(gid);
+            if (!texture) {
+              // Tile referenced that we don't have a texture for
+              continue;
+            }
+
+            const col = i % MAP_W;
+            const row = Math.floor(i / MAP_W);
+            const sprite = new PIXI.Sprite(texture);
+            sprite.x = col * TILE_W;
+            sprite.y = row * TILE_H;
+            layerContainer.addChild(sprite);
+          }
+
+          worldContainer.addChild(layerContainer);
+          console.log(`Rendered layer "${layer.name}": ${layerContainer.children.length} tiles`);
+        }
+
+        // 6. Draw debug markers on object layers (slots, waypoints, paths)
+        setStatus('Drawing debug markers...');
+        const debugContainer = new PIXI.Container();
+        viewport.addChild(debugContainer);
+
+        const drawMarker = (x, y, color, label, radius = 4) => {
+          const g = new PIXI.Graphics();
+          // Outer ring for visibility
+          g.circle(0, 0, radius + 1.5).fill({ color: 0xffffff, alpha: 0.9 });
+          g.circle(0, 0, radius).fill({ color });
+          g.x = x;
+          g.y = y;
+          debugContainer.addChild(g);
+
+          if (label) {
+            const text = new PIXI.Text({
+              text: label,
+              style: {
+                fontFamily: 'monospace',
+                fontSize: 9,
+                fill: 0xffffff,
+                stroke: { color: 0x000000, width: 3 },
+              }
+            });
+            text.x = x + radius + 3;
+            text.y = y - 6;
+            debugContainer.addChild(text);
+          }
+        };
+
+        // Color scheme matches your Curia design tokens.
+        const COLORS = {
+          slot:     0x3B6FE8, // accent (blue)
+          waypoint: 0xD97706, // orange
+          path:     0x7C3AED, // purple
+        };
+
+        let slotCount = 0;
+        let waypointCount = 0;
+        let pathCount = 0;
+
+        for (const layer of mapData.layers) {
+          if (layer.type !== 'objectgroup') continue;
+          if (layer.visible === false) continue;
+
+          for (const obj of layer.objects) {
+            const name = obj.name || '';
+            // Determine marker style based on layer name
+            const ln = layer.name.toLowerCase();
+            if (ln.includes('slot') && !ln.includes('path')) {
+              drawMarker(obj.x, obj.y, COLORS.slot, name, 5);
+              slotCount++;
+            } else if (ln.includes('waypoint')) {
+              drawMarker(obj.x, obj.y, COLORS.waypoint, name, 3);
+              waypointCount++;
+            } else if (ln.includes('path')) {
+              drawMarker(obj.x, obj.y, COLORS.path, name, 3);
+              pathCount++;
+            }
+          }
+        }
+
+        const tileCount = worldContainer.children.reduce(
+          (sum, c) => sum + c.children.length, 0
+        );
+        setStatus(
+          `Map: ${MAP_W}×${MAP_H} · Tiles: ${tileCount.toLocaleString()} · ` +
+          `Slots: ${slotCount} · Waypoints: ${waypointCount} · Paths: ${pathCount}`
+        );
+
+      } catch (err) {
+        fail(err);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>

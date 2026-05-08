@@ -39,6 +39,12 @@ export function LearnPageClient({
     initialExerciseIndex ?? 0,
   )
   const [activeBankIndex, setActiveBankIndex] = useState<number>(0)
+  const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(
+    null,
+  )
+  const [selectedBlankIndex, setSelectedBlankIndex] = useState<number | null>(
+    null,
+  )
 
   useEffect(() => {
     setNavOpen(false)
@@ -48,6 +54,8 @@ export function LearnPageClient({
     setPageIndex(0)
     setActiveExerciseIndex(initialExerciseIndex ?? 0)
     setActiveBankIndex(0)
+    setSelectedLineIndex(null)
+    setSelectedBlankIndex(null)
   }, [activeLessonId, initialExerciseIndex])
 
   const totalPages = activeLesson?.content.length ?? 1
@@ -135,6 +143,8 @@ export function LearnPageClient({
               lesson={activeLesson}
               activeBlockIndex={activeExerciseIndex}
               activeBankIndex={activeBankIndex}
+              selectedLineIndex={selectedLineIndex}
+              selectedBlankIndex={selectedBlankIndex}
               allLessons={lessons}
             />
           ) : (
@@ -160,6 +170,10 @@ export function LearnPageClient({
             initialExerciseIndex={initialExerciseIndex}
             onExerciseIndexChange={setActiveExerciseIndex}
             onActiveBankIndexChange={setActiveBankIndex}
+            onLineSelect={(li, bi) => {
+              setSelectedLineIndex(li)
+              setSelectedBlankIndex(bi)
+            }}
           />
         ) : (
           <div className="right-panel">

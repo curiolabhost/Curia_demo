@@ -1,0 +1,47 @@
+<svg width="580" height="352" viewBox="0 0 580 352" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>JavaScript data types</title>
+<desc>A table showing four JavaScript types: string, number, boolean, and undefined, with a description and example for each.</desc>
+
+<!-- Section label -->
+<text x="290" y="28" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.07em">JAVASCRIPT TYPES</text>
+
+<!-- ── HEADER ── -->
+<rect x="40" y="38" width="500" height="32" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<rect x="40" y="54" width="500" height="16" rx="0" fill="#F1EFE8"/>
+<text x="60" y="57" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#4A5068" letter-spacing="0.06em">TYPE</text>
+<text x="210" y="57" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#4A5068" letter-spacing="0.06em">WHAT IT IS</text>
+<text x="430" y="57" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#4A5068" letter-spacing="0.06em">EXAMPLE</text>
+
+<!-- ── ROW 1: string ── -->
+<text x="40" y="88" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#185FA5" letter-spacing="0.05em">STRING</text>
+<rect x="40" y="96" width="500" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="60" y="122" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="600" fill="#0C447C">string</text>
+<text x="210" y="122" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#2C2C2A">Text — anything in quotes</text>
+<rect x="428" y="108" width="96" height="22" rx="5" fill="#ffffff" stroke="#B5D4F4" stroke-width="0.5"/>
+<text x="476" y="122" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#185FA5">'hello'  "hi"</text>
+
+<!-- ── ROW 2: number ── -->
+<text x="40" y="158" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#0F6E56" letter-spacing="0.05em">NUMBER</text>
+<rect x="40" y="166" width="500" height="44" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+<text x="60" y="192" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="600" fill="#085041">number</text>
+<text x="210" y="192" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#2C2C2A">Any number — whole or decimal</text>
+<rect x="428" y="178" width="96" height="22" rx="5" fill="#ffffff" stroke="#5DCAA5" stroke-width="0.5"/>
+<text x="476" y="192" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#085041">42  3.14  -7</text>
+
+<!-- ── ROW 3: boolean ── -->
+<text x="40" y="228" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#854F0B" letter-spacing="0.05em">BOOLEAN</text>
+<rect x="40" y="236" width="500" height="44" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="60" y="262" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="600" fill="#633806">boolean</text>
+<text x="210" y="262" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#2C2C2A">True or false — only two options</text>
+<rect x="428" y="248" width="96" height="22" rx="5" fill="#ffffff" stroke="#FAC775" stroke-width="0.5"/>
+<text x="476" y="262" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#633806">true  false</text>
+
+<!-- ── ROW 4: undefined ── -->
+<text x="40" y="298" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.05em">UNDEFINED</text>
+<rect x="40" y="306" width="500" height="44" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="60" y="332" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="14" font-weight="600" fill="#4A5068">undefined</text>
+<text x="210" y="332" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#2C2C2A">Created but never given a value</text>
+<rect x="428" y="318" width="96" height="22" rx="5" fill="#ffffff" stroke="#C2C0B6" stroke-width="0.5"/>
+<text x="476" y="332" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#4A5068">let x;</text>
+
+</svg>

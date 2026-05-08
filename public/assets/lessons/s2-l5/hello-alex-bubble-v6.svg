@@ -1,0 +1,23 @@
+<svg width="580" height="140" viewBox="0 0 580 140" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Message bubble saying Hello Alex being received by Justin on the right</title>
+<desc>A chat bubble with tail on the left says Hello Alex, pointing toward Justin the sad face on the right who is receiving the message.</desc>
+
+<!-- tail on left side of bubble -->
+<polygon points="40,72 20,80 40,88" fill="#185FA5"/>
+<!-- bubble -->
+<rect x="40" y="50" width="200" height="52" rx="16" fill="#185FA5"/>
+<!-- text -->
+<text x="140" y="76" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="16" font-weight="500" fill="#ffffff">Hello, Alex! 👋</text>
+
+<!-- Justin label -->
+<text x="300" y="22" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#2C2C2A">Justin</text>
+
+<!-- sad face circle -->
+<circle cx="300" cy="76" r="28" fill="#ffffff" stroke="#2C2C2A" stroke-width="1.5"/>
+<!-- eyes -->
+<circle cx="291" cy="69" r="3" fill="#2C2C2A"/>
+<circle cx="309" cy="69" r="3" fill="#2C2C2A"/>
+<!-- sad mouth -->
+<path d="M289 86 Q300 78 311 86" fill="none" stroke="#2C2C2A" stroke-width="1.5" stroke-linecap="round"/>
+
+</svg>

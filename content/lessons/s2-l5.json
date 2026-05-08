@@ -4,28 +4,36 @@
   "title": "Getting Input",
   "content": [
     {
-      "heading": "prompt() — making programs interactive",
+      "heading": "Before we start coding — think about this:",
       "blocks": [
-        { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful — real programs respond to the person using them. prompt() pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
-        { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
-        { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "prompt() ALWAYS returns a string. Wrap it in Number() if you need to do math with it." }
+        { "kind": "image", "src": "/assets/lessons/s2-l5/hello-alex-bubble-v6.svg" },
+        { "kind": "p", "text": "You're building a game and you want to greet the player by name. But you don't know who's going to play it. You can't write `let name = 'Alex'` because it won't always be Alex." },
+        { "kind": "heading", "text": "So what do we do?" },
+        { "kind": "list", "items": [
+          "Could you just guess it?",
+          "Could the code figure it out on its own?",
+          "Could we tell the program to ask the user for their name?"
+        ]},
+        { "kind": "heading", "text": "Yes, we can!" },
+
+        {"kind": "image", "src": "/assets/lessons/s2-l5/before-we-code-v2.svg"}
       ]
     },
     {
+      "heading": "We can make the code interactive!",
       "blocks": [
-        { "kind": "code", "lines": [
-          "// Basic input",
-          "let name = prompt('What is your name?');",
-          "console.log('Hello, ' + name + '!');",
-          "",
-          "// Input for math — must convert to number",
-          "let ageInput = prompt('How old are you?');",
-          "console.log(typeof ageInput);  // 'string' — not a number yet!",
-          "",
-          "let age = Number(ageInput);    // now it's a number",
-          "let nextYear = age + 1;",
-          "console.log(`Next year you will be ${nextYear} years old.`);"
-        ]},
+        { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful — real programs respond to the person using them. `prompt()` pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
+        { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
+        { "kind": "image", "src": "/assets/lessons/s2-l5/prompt-visual-v4.svg"}
+      ]
+    },
+    {
+      "heading": "What happens if you are prompting for a number?",
+      "blocks": [
+        { "kind": "p", "text": "prompt() always gives you back a string — no exceptions. Even if the user types `42`, you get the text `'42'`, not the number `42`. That means you can't do math with it yet. `'42' + 1` gives you `'421'`, not `43`. The fix: wrap `prompt()` in `Number()` and it converts the answer the moment the user hits OK." },
+        { "kind": "concept", "code": "let age = prompt('How old are you?')", "desc": "Returns the string '13' even if the user typed 13. Looks like a number, but it's text — math won't work." },
+        { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "Number() converts the string '13' into the actual number 13. Now you can add, subtract, and multiply normally." },
+        { "kind": "image", "src": "/assets/lessons/s2-l5/prompt-number-visual.svg", "alt": "Visual showing prompt() returning a string vs Number(prompt()) returning a number" },
         { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time — even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14." }
       ]
     }

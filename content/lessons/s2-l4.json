@@ -6,35 +6,17 @@
     {
       "heading": "Data Types — what kind of thing is this?",
       "blocks": [
-        { "kind": "p", "text": "Every value in JavaScript has a type. The type determines what you can do with it. You can't do math with text, and you can't use string methods on a number. Knowing types helps you avoid bugs that seem totally random but have a very simple cause." },
-        { "kind": "table", "headers": ["Type", "What it is", "Example"], "rows": [
-          ["string", "Text — anything in quotes", "'hello'   \"world\"   `hi`"],
-          ["number", "Any number — whole or decimal", "42   3.14   -7   0"],
-          ["boolean", "True or false — only two options", "true   false"],
-          ["undefined", "A variable was created but never given a value", "let x;"]
-        ]}
+        { "kind": "p", "text": "Every value in JavaScript has a type. The type determines what you can do with it. You can't do math with text, and you can't use string methods on a number. " },
+        { "kind": "image", "src": "/assets/lessons/s2-l4/js-types-table (1).svg", "alt": "JavaScript Types Table" },
+        { "kind": "callout", "variant": "warn", "label": "Remember!", "text": "Knowing the types helps you avoid bugs that seem totally random but have a very simple cause." }
       ]
     },
     {
-      "heading": "Checking types with typeof",
+      "heading": "How to check types?",
       "blocks": [
-        { "kind": "concept", "code": "typeof score", "desc": "The typeof operator tells you what type a value is. It returns a string like 'number', 'string', or 'boolean'." },
-        { "kind": "code", "lines": [
-          "let score = 42;",
-          "let name = 'Alex';",
-          "let isWinning = true;",
-          "let nothing;",
-          "",
-          "console.log(typeof score);      // 'number'",
-          "console.log(typeof name);       // 'string'",
-          "console.log(typeof isWinning);  // 'boolean'",
-          "console.log(typeof nothing);    // 'undefined'",
-          "",
-          "// The classic trap:",
-          "let a = '5';   // this is a string",
-          "let b = 5;     // this is a number",
-          "console.log(a + b);  // '55' — not 10!"
-        ]},
+        { "kind": "p", "text": "You can check the type of a value using the `typeof` operator." },
+        { "kind": "image", "src": "/assets/lessons/s2-l4/typeof-visual.svg"},
+        { "kind": "concept", "code": "typeof variableName", "desc": "The typeof operator tells you what the type is for 'variableName'. It returns a string of the name of the type: 'number', 'string', or 'boolean'." },
         { "kind": "callout", "variant": "danger", "label": "The most common beginner trap", "text": "If a number comes from user input or an HTML field, it arrives as a STRING. So '5' + 5 gives you '55'. Always check your types when math isn't working the way you expect." }
       ]
     }

@@ -290,6 +290,67 @@
           console.log(`Rendered layer "${layer.name}": ${layerContainer.children.length} tiles`);
         }
 
+        // 5b. Render village sprites for slot objects.
+        // Each slot has a `door` property ("front", "left", "right") that selects
+        // which village PNG to use. Sprites anchor at bottom-center so the door
+        // pixel sits at the slot's (x, y). Added to worldContainer AFTER tiles,
+        // so villages render on top of terrain but below the debug overlay.
+        setStatus('Loading village sprites...');
+        const villageContainer = new PIXI.Container();
+        villageContainer.label = 'Villages';
+        worldContainer.addChild(villageContainer);
+
+        const getProp = (obj, name) => {
+          const p = obj.properties && obj.properties.find(p => p.name === name);
+          return p ? p.value : null;
+        };
+
+        // Cache: "door-variant" -> Texture | null (null = load failed, don't retry)
+        const villageTextureCache = new Map();
+        // Slot ids that successfully rendered a village; used in step 6 to skip
+        // the blue debug dot for those slots.
+        const slotsWithVillage = new Set();
+
+        const loadVillageTexture = async (door, variant) => {
+          const key = `${door}-${variant}`;
+          if (villageTextureCache.has(key)) return villageTextureCache.get(key);
+          const path = `tiles/villages/village-${door}-${variant}.png`;
+          try {
+            const tex = await PIXI.Assets.load(path);
+            tex.source.scaleMode = 'nearest';
+            villageTextureCache.set(key, tex);
+            return tex;
+          } catch (err) {
+            console.warn(`Failed to load village texture: ${path}`);
+            villageTextureCache.set(key, null);
+            return null;
+          }
+        };
+
+        let villageCount = 0;
+        for (const layer of mapData.layers) {
+          if (layer.type !== 'objectgroup') continue;
+          if (layer.visible === false) continue;
+          const ln = layer.name.toLowerCase();
+          // Same matcher as the debug-marker pass below.
+          if (!ln.includes('slot') || ln.includes('path')) continue;
+
+          await Promise.all(layer.objects.map(async (obj) => {
+            const door = getProp(obj, 'door');
+            if (!door) return; // no door -> falls through to blue dot
+            const tex = await loadVillageTexture(door, 1);
+            if (!tex) return;  // load failed -> falls through to blue dot
+            const sprite = new PIXI.Sprite(tex);
+            sprite.anchor.set(0.5, 1);
+            sprite.x = obj.x;
+            sprite.y = obj.y;
+            villageContainer.addChild(sprite);
+            slotsWithVillage.add(obj.id);
+            villageCount++;
+          }));
+        }
+        console.log(`Rendered ${villageCount} village sprites`);
+
         // 6. Draw debug markers on object layers (slots, waypoints, paths)
         setStatus('Drawing debug markers...');
         const debugContainer = new PIXI.Container();
@@ -340,7 +401,11 @@
             // Determine marker style based on layer name
             const ln = layer.name.toLowerCase();
             if (ln.includes('slot') && !ln.includes('path')) {
-              drawMarker(obj.x, obj.y, COLORS.slot, name, 5);
+              // Slots that got a village sprite skip the debug dot;
+              // slots without a door property or with a missing PNG fall back to it.
+              if (!slotsWithVillage.has(obj.id)) {
+                drawMarker(obj.x, obj.y, COLORS.slot, name, 5);
+              }
               slotCount++;
             } else if (ln.includes('waypoint')) {
               drawMarker(obj.x, obj.y, COLORS.waypoint, name, 3);
@@ -357,7 +422,8 @@
         );
         setStatus(
           `Map: ${MAP_W}×${MAP_H} · Tiles: ${tileCount.toLocaleString()} · ` +
-          `Slots: ${slotCount} · Waypoints: ${waypointCount} · Paths: ${pathCount}`
+          `Slots: ${slotCount} (${villageCount} villages) · ` +
+          `Waypoints: ${waypointCount} · Paths: ${pathCount}`
         );
 
       } catch (err) {

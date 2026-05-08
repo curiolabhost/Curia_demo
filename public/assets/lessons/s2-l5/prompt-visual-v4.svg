@@ -1,0 +1,64 @@
+<svg width="580" height="330" viewBox="0 0 580 330" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>How prompt() works — a pop-up window asking for user input</title>
+<desc>A code line above a browser-style popup window showing prompt asking for the user's name, with a text field and OK and Cancel buttons.</desc>
+
+<!-- Section label -->
+<text x="290" y="24" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.07em">PROMPT()</text>
+
+<!-- ── CODE LINE ── -->
+<rect x="100" y="36" width="380" height="36" rx="8" fill="#1A1E2E"/>
+<text x="120" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#AFA9EC">let </text>
+<text x="148" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#85B7EB">name </text>
+<text x="192" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#C2C0B6">= </text>
+<text x="208" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#FAC775">prompt</text>
+<text x="260" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#C2C0B6">(</text>
+<text x="270" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#9FE1CB">'What is your name?'</text>
+<text x="452" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#C2C0B6">)</text>
+
+<!-- down arrow -->
+<line x1="290" y1="74" x2="290" y2="94" stroke="#888780" stroke-width="1.5"/>
+<polygon points="284,90 290,100 296,90" fill="#888780"/>
+
+<!-- ── BROWSER CHROME ── -->
+<!-- window shadow -->
+<rect x="110" y="104" width="360" height="196" rx="10" fill="#2C2C2A" opacity="0.12" transform="translate(4,4)"/>
+<!-- window body -->
+<rect x="110" y="104" width="360" height="196" rx="10" fill="#F8F7F4" stroke="#D3D1C7" stroke-width="1"/>
+
+<!-- title bar -->
+<rect x="110" y="104" width="360" height="36" rx="10" fill="#E8E6E0" stroke="#D3D1C7" stroke-width="1"/>
+<rect x="110" y="122" width="360" height="18" rx="0" fill="#E8E6E0"/>
+
+<!-- traffic lights -->
+<circle cx="132" cy="122" r="6" fill="#E24B4A"/>
+<circle cx="152" cy="122" r="6" fill="#FAC775"/>
+<circle cx="172" cy="122" r="6" fill="#5DCAA5"/>
+
+<!-- title bar text -->
+<text x="290" y="127" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">localhost:3000 says</text>
+
+<!-- ── DIALOG BODY ── -->
+<!-- icon -->
+
+<!-- prompt question -->
+<text x="135" y="170" font-family="'DM Sans', system-ui, sans-serif" font-size="13" font-weight="500" fill="#2C2C2A">What is your name?</text>
+
+<!-- input field -->
+<rect x="135" y="192" width="310" height="32" rx="6" fill="#ffffff" stroke="#185FA5" stroke-width="1.5"/>
+<text x="150" y="211" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" fill="#B4B2A9">Type here...</text>
+<!-- cursor blink -->
+<rect x="150" y="200" width="1.5" height="16" rx="1" fill="#185FA5"/>
+
+<!-- ── BUTTONS ── -->
+<!-- Cancel -->
+<rect x="135" y="238" width="100" height="32" rx="6" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="185" y="254" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="500" fill="#4A5068">Cancel</text>
+
+<!-- OK -->
+<rect x="345" y="238" width="100" height="32" rx="6" fill="#185FA5"/>
+<text x="395" y="254" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#ffffff">OK</text>
+
+<!-- caption -->
+<text x="290" y="318" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#8B91A8">Whatever the user types gets stored in the variable name.</text>
+
+</svg>

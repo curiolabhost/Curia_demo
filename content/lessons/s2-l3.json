@@ -6,36 +6,51 @@
     {
       "heading": "Strings — text in a variable (instead of numbers)",
       "blocks": [
-         { "kind": "image", "src": "/assets/lessons/s2-l3/strings_javascript_high_contrast.svg", "alt": "Visual explainer of strings in JavaScript" },
+         { "kind": "image", "src": "/assets/lessons/s2-l3/strings_javascript_matched_style.svg", "alt": "Visual explainer of strings in JavaScript — showing text, numbers, and symbols all wrapped in quotes", "caption": "Anything inside quotes is a string — letters, numbers, symbols, even emojis. The quotes are what makes it text." },
 
         { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there — letters, numbers, symbols, spaces, emojis — if it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
         { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
-        { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property — it tells you how many characters are inside." }
+        { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property — it tells you how many characters are inside." },
+        { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up — watch for it." }
       ]
     },
     {
       "heading": "Template literals",
       "blocks": [
-        { "kind": "concept", "code": "`Hello, ${name}!`", "desc": "Template literals use backticks (`) instead of quotes. You can drop variables right into the text using ${variableName}. Much cleaner than using +." },
+        { "kind": "p", "text": "Think of Template Literals as a fill-in-the-blank sentence. `${VariableName}` marks the gaps where variables get dropped in — wrap the whole sentence in backtick (`) quotes." },
+        { "kind": "image", "src": "/assets/lessons/s2-l3/template-literals.svg", "alt": "A template literal using backticks with ${name} and ${age} dropped directly into the sentence" },
+
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "Easy to mix up",
+          "text": "Backtick (`) is not the same as a single quote ('). If your template literal isn't working, that's the first thing to check."
+        },        
+
         { "kind": "code", "lines": [
-          "// Creating strings",
           "let firstName = 'Alex';",
-          "let lastName = 'Smith';",
-          "",
-          "// Joining strings with +",
-          "let fullName = firstName + ' ' + lastName;",
-          "console.log(fullName);  // Alex Smith",
-          "",
-          "// .length — how many characters?",
-          "console.log(firstName.length);  // 4",
-          "console.log('hello'.length);    // 5",
-          "",
-          "// Template literals — cleaner way to build strings",
           "let age = 13;",
+          "",
+          "// Template literal — one clean sentence",
           "let intro = `My name is ${firstName} and I am ${age} years old.`;",
           "console.log(intro);  // My name is Alex and I am 13 years old."
+        ]}
+      ]
+    },
+    {
+      "heading": "The (+) sign has two jobs",
+      "blocks": [
+        { "kind": "p", "text": "The `+` sign does different things depending on what's on each side of it. With two numbers it adds. With a string on either side, it joins the values together as text. JavaScript checks the types first, then decides which job to do." },
+        { "kind": "image", "src": "/assets/lessons/s2-l3/plus-sign-final.svg", "alt": "Two examples side by side: 5 + 5 with both values labeled as numbers giving 10, and '5' + 5 with the string highlighted differently giving '55'", "caption": "Same + sign, different result — the types on each side decide whether it adds or joins." },
+
+
+        { "kind": "code", "lines": [
+          "console.log(5 + 5);           // 10       — both numbers, so + adds",
+          "console.log('5' + 5);         // '55'     — string + number, so + joins",
+          "console.log('5' + '5');       // '55'     — both strings, so + joins",
+          "console.log('Score: ' + 100); // 'Score: 100' — string + number, so + joins"
         ]},
-        { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up — watch for it." }
+        { "kind": "callout", "variant": "warn", "label": "Remember!", "text": "If either value is a string, + treats the whole thing as text and joins. It only adds when both sides are numbers." }
       ]
     }
   ],
@@ -48,8 +63,7 @@
         "Declare variables for your first name and last name.",
         "Join them together into a variable called fullName with a space in between.",
         "Log fullName.",
-        "Log fullName.length — how many characters total including the space?",
-        "Log just your first name's length."
+        "Log the length of both fullName and firstName. Which is longer, and by how much?"
       ],
       "hint": "Don't forget the space: firstName + ' ' + lastName",
       "starterCode": "let firstName = 'Your';\nlet lastName = 'Name';\n\n// Build fullName\n\n\nconsole.log(fullName);\nconsole.log('Length:', fullName.length);\n",

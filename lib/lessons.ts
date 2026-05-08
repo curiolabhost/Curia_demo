@@ -34,6 +34,8 @@ export type BlankInputMode = 'wordbank' | 'type' | 'freeline'
 
 export type ContentBlock =
   | { kind: 'p'; text: string }
+  | { kind: 'heading'; text: string }
+  | { kind: 'list'; items: string[] }
   | { kind: 'code'; lines: string[] }
   | { kind: 'concept'; code: string; desc: string }
   | { kind: 'callout'; variant: 'info' | 'warn' | 'danger'; label: string; text: string }
@@ -126,6 +128,7 @@ export type Exercise = {
   expectedEffects?: ExpectedEffect[]
   codeFiles?: CodeViewerFile[]
   lineExplanations?: LineExplanation[]
+  editableFiles?: string[]
 }
 
 export type Challenge = {

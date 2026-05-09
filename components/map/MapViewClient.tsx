@@ -178,6 +178,7 @@ export default function MapViewClient({
     [],
   )
   const selectChallenge = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (id: string, _challengeIndex: number) => {
       setSelectedLessonId(null)
       onNavigateRef.current(id, 0)

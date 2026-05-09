@@ -1,3 +1,4 @@
+import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import { RightPanel } from './RightPanel'
 
@@ -18,6 +19,8 @@ type LessonWorkspaceProps = {
     lineIndex: number | null,
     blankIndex: number | null,
   ) => void
+  editMode?: boolean
+  editActions?: EditActions
 }
 
 export function LessonWorkspace({
@@ -34,6 +37,8 @@ export function LessonWorkspace({
   onExerciseIndexChange,
   onActiveBankIndexChange,
   onLineSelect,
+  editMode = false,
+  editActions,
 }: LessonWorkspaceProps) {
   return (
     <RightPanel
@@ -50,6 +55,8 @@ export function LessonWorkspace({
       onExerciseIndexChange={onExerciseIndexChange}
       onActiveBankIndexChange={onActiveBankIndexChange}
       onLineSelect={onLineSelect}
+      editMode={editMode}
+      editActions={editActions}
     />
   )
 }

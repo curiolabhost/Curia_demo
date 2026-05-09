@@ -2,7 +2,14 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import Split from 'react-split'
-import type { BlankInputMode, Exercise, Lesson } from '@/lib/lessons'
+import type { EditActions } from '@/lib/admin/useLessonDraft'
+import type {
+  BlankInputMode,
+  Exercise,
+  FinalProjectBlank,
+  FinalProjectLine,
+  Lesson,
+} from '@/lib/lessons'
 import { PreviewIframe } from './PreviewIframe'
 
 type FinalProjectSidebarProps = {
@@ -12,6 +19,173 @@ type FinalProjectSidebarProps = {
   selectedLineIndex: number | null
   selectedBlankIndex: number | null
   allLessons: Lesson[]
+  editMode?: boolean
+  editActions?: EditActions
+}
+
+type InlineTextEditProps = {
+  value: string
+  onCommit: (next: string) => void
+  className?: string
+  multiline?: boolean
+  placeholder?: string
+}
+
+function InlineTextEdit({
+  value,
+  onCommit,
+  className,
+  multiline,
+  placeholder,
+}: InlineTextEditProps) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(value)
+
+  useEffect(() => {
+    if (!editing) setDraft(value)
+  }, [value, editing])
+
+  const baseClass = `admin-editable${editing ? ' editing' : ''}${className ? ` ${className}` : ''}`
+
+  if (!editing) {
+    return (
+      <span
+        className={baseClass}
+        onClick={() => setEditing(true)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            setEditing(true)
+          }
+        }}
+      >
+        {value.length > 0 ? value : (
+          <span style={{ color: 'var(--text3)' }}>{placeholder ?? 'Click to edit'}</span>
+        )}
+      </span>
+    )
+  }
+
+  if (multiline) {
+    return (
+      <textarea
+        className="admin-inline-textarea"
+        autoFocus
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => {
+          setEditing(false)
+          if (draft !== value) onCommit(draft)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            setDraft(value)
+            setEditing(false)
+          }
+        }}
+      />
+    )
+  }
+
+  return (
+    <input
+      className="admin-inline-input"
+      autoFocus
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={() => {
+        setEditing(false)
+        if (draft !== value) onCommit(draft)
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          ;(e.currentTarget as HTMLInputElement).blur()
+        } else if (e.key === 'Escape') {
+          setDraft(value)
+          setEditing(false)
+        }
+      }}
+    />
+  )
+}
+
+type AdminTaskListProps = {
+  blockIdx: number
+  tasks: string[]
+  actions: EditActions
+}
+
+function AdminTaskList({ blockIdx, tasks, actions }: AdminTaskListProps) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {tasks.map((task, i) => (
+        <div key={i} className="admin-task-row">
+          <span
+            style={{
+              flexShrink: 0,
+              width: '18px',
+              height: '18px',
+              borderRadius: '50%',
+              background: 'var(--accent)',
+              color: '#ffffff',
+              fontFamily: 'var(--mono)',
+              fontSize: '9px',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {i + 1}
+          </span>
+          <input
+            className="admin-task-input"
+            value={task}
+            onChange={(e) => actions.tasks.edit(blockIdx, i, e.target.value)}
+            placeholder="Task description"
+          />
+          <span className="admin-task-actions">
+            <button
+              type="button"
+              className="admin-icon-btn"
+              title="Move up"
+              onClick={() => actions.tasks.move(blockIdx, i, i - 1)}
+              disabled={i === 0}
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              className="admin-icon-btn"
+              title="Move down"
+              onClick={() => actions.tasks.move(blockIdx, i, i + 1)}
+              disabled={i === tasks.length - 1}
+            >
+              ↓
+            </button>
+            <button
+              type="button"
+              className="admin-icon-btn danger"
+              title="Delete task"
+              onClick={() => actions.tasks.delete(blockIdx, i)}
+            >
+              ×
+            </button>
+          </span>
+        </div>
+      ))}
+      <button
+        type="button"
+        className="admin-add-task-btn"
+        onClick={() => actions.tasks.add(blockIdx)}
+      >
+        + Add task
+      </button>
+    </div>
+  )
 }
 
 type ResolvedEntry = {
@@ -22,6 +196,32 @@ type ResolvedEntry = {
   lessonRefs?: string[]
 }
 
+const BLANK_RE = /<<([^>]+)>>/g
+
+function buildBlankMap(
+  blanks: FinalProjectBlank[],
+): Map<string, FinalProjectBlank> {
+  const m = new Map<string, FinalProjectBlank>()
+  for (const b of blanks) m.set(b.id, b)
+  return m
+}
+
+function findLineIndexForBlankId(
+  lines: FinalProjectLine[],
+  blankId: string,
+): number {
+  return lines.findIndex((l) => l.text.includes(`<<${blankId}>>`))
+}
+
+function fillLineFromMap(
+  text: string,
+  resolve: (id: string) => string,
+): string {
+  return text.replace(new RegExp(BLANK_RE.source, 'g'), (_, id: string) =>
+    resolve(id),
+  )
+}
+
 function resolveEntry(
   exercise: Exercise | undefined,
   selectedLineIndex: number | null,
@@ -29,69 +229,84 @@ function resolveEntry(
   activeBankIndex: number,
 ): ResolvedEntry | null {
   if (!exercise) return null
-  const lineExplanations = exercise.lineExplanations
-  if (lineExplanations && lineExplanations.length > 0) {
-    if (selectedLineIndex !== null) {
-      const exact = lineExplanations.find(
-        (e) =>
-          e.lineIndex === selectedLineIndex &&
-          e.blankIndex === selectedBlankIndex,
-      )
-      if (exact) return exact
-      if (selectedBlankIndex === null) {
-        const lineEntry = lineExplanations.find(
-          (e) => e.lineIndex === selectedLineIndex,
-        )
-        if (lineEntry) return lineEntry
+  const lines = exercise.lines ?? []
+  const blanks = exercise.blanks ?? []
+  if (lines.length === 0 && blanks.length === 0) return null
+
+  if (selectedLineIndex !== null) {
+    if (
+      selectedBlankIndex !== null &&
+      selectedBlankIndex >= 0 &&
+      selectedBlankIndex < blanks.length
+    ) {
+      const b = blanks[selectedBlankIndex]
+      return {
+        lineIndex: selectedLineIndex,
+        blankIndex: selectedBlankIndex,
+        instruction: b.instruction,
+        explanation: b.explanation ?? '',
+        lessonRefs: b.lessonRefs,
       }
     }
-    const byBlank = lineExplanations.find(
-      (e) => e.blankIndex === activeBankIndex,
-    )
-    if (byBlank) return byBlank
-    return lineExplanations[0] ?? null
+    if (
+      selectedBlankIndex === null &&
+      selectedLineIndex >= 0 &&
+      selectedLineIndex < lines.length
+    ) {
+      const l = lines[selectedLineIndex]
+      return {
+        lineIndex: selectedLineIndex,
+        blankIndex: null,
+        explanation: l.explanation ?? '',
+        lessonRefs: l.lessonRefs,
+      }
+    }
   }
-  const blankInstructions = exercise.blankInstructions ?? []
-  const blankExplanations = exercise.blankExplanations ?? []
-  if (blankInstructions.length === 0 && blankExplanations.length === 0) {
-    return null
+
+  if (activeBankIndex >= 0 && activeBankIndex < blanks.length) {
+    const b = blanks[activeBankIndex]
+    const lineIdx = findLineIndexForBlankId(lines, b.id)
+    return {
+      lineIndex: lineIdx >= 0 ? lineIdx : null,
+      blankIndex: activeBankIndex,
+      instruction: b.instruction,
+      explanation: b.explanation ?? '',
+      lessonRefs: b.lessonRefs,
+    }
   }
-  const idx = Math.max(
-    0,
-    Math.min(
-      activeBankIndex,
-      Math.max(blankInstructions.length, blankExplanations.length) - 1,
-    ),
-  )
-  return {
-    lineIndex: null,
-    blankIndex: idx,
-    instruction: blankInstructions[idx],
-    explanation: blankExplanations[idx] ?? '',
+
+  if (blanks.length > 0) {
+    const b = blanks[0]
+    const lineIdx = findLineIndexForBlankId(lines, b.id)
+    return {
+      lineIndex: lineIdx >= 0 ? lineIdx : null,
+      blankIndex: 0,
+      instruction: b.instruction,
+      explanation: b.explanation ?? '',
+      lessonRefs: b.lessonRefs,
+    }
   }
+
+  return null
 }
 
 function findCompletedEntry(
   exercise: Exercise,
   blankIdx: number,
 ): ResolvedEntry | null {
-  const lineExplanations = exercise.lineExplanations
-  if (lineExplanations && lineExplanations.length > 0) {
-    const found = lineExplanations.find((e) => e.blankIndex === blankIdx)
-    if (found) return found
-    return null
-  }
-  const blankInstructions = exercise.blankInstructions ?? []
-  const blankExplanations = exercise.blankExplanations ?? []
+  const blanks = exercise.blanks ?? []
+  const lines = exercise.lines ?? []
+  if (blankIdx < 0 || blankIdx >= blanks.length) return null
+  const b = blanks[blankIdx]
+  const lineIdx = findLineIndexForBlankId(lines, b.id)
   return {
-    lineIndex: null,
+    lineIndex: lineIdx >= 0 ? lineIdx : null,
     blankIndex: blankIdx,
-    instruction: blankInstructions[blankIdx],
-    explanation: blankExplanations[blankIdx] ?? '',
+    instruction: b.instruction,
+    explanation: b.explanation ?? '',
+    lessonRefs: b.lessonRefs,
   }
 }
-
-const BLOCK_TOKEN = '___BLANK___'
 
 const KEYWORDS = new Set([
   'let',
@@ -207,21 +422,26 @@ function HighlightedSnippet({ value }: { value: string }) {
   )
 }
 
-function renderLineWithBlankBoxes(line: string, mode: BlankInputMode = 'wordbank') {
+function renderLineWithBlankBoxes(
+  text: string,
+  blanksById: Map<string, FinalProjectBlank>,
+) {
   const parts: React.ReactNode[] = []
   let cursor = 0
   let key = 0
-  while (cursor < line.length) {
-    const found = line.indexOf(BLOCK_TOKEN, cursor)
-    if (found === -1) {
-      parts.push(<HighlightedSnippet key={key++} value={line.slice(cursor)} />)
-      break
-    }
-    if (found > cursor) {
+  const re = new RegExp(BLANK_RE.source, 'g')
+  let match: RegExpExecArray | null
+  while ((match = re.exec(text)) !== null) {
+    if (match.index > cursor) {
       parts.push(
-        <HighlightedSnippet key={key++} value={line.slice(cursor, found)} />,
+        <HighlightedSnippet
+          key={key++}
+          value={text.slice(cursor, match.index)}
+        />,
       )
     }
+    const blankId = match[1]
+    const mode = blanksById.get(blankId)?.mode ?? 'wordbank'
     if (mode === 'type') {
       parts.push(
         <span key={key++} className="fp-type-slot">type here</span>,
@@ -233,30 +453,15 @@ function renderLineWithBlankBoxes(line: string, mode: BlankInputMode = 'wordbank
         </span>,
       )
     }
-    cursor = found + BLOCK_TOKEN.length
+    cursor = match.index + match[0].length
+  }
+  if (cursor < text.length) {
+    parts.push(<HighlightedSnippet key={key++} value={text.slice(cursor)} />)
   }
   if (parts.length === 0) {
-    return <HighlightedSnippet value={line} />
+    return <HighlightedSnippet value={text} />
   }
   return <>{parts}</>
-}
-
-function fillBlanks(line: string, answers: string[]): string {
-  let cursor = 0
-  let result = ''
-  let i = 0
-  while (i < line.length) {
-    const found = line.indexOf(BLOCK_TOKEN, i)
-    if (found === -1) {
-      result += line.slice(i)
-      break
-    }
-    result += line.slice(i, found)
-    result += answers[cursor] ?? ''
-    cursor += 1
-    i = found + BLOCK_TOKEN.length
-  }
-  return result
 }
 
 function buildAssembledJs(blocks: Exercise[], upToIndex: number): string {
@@ -265,11 +470,14 @@ function buildAssembledJs(blocks: Exercise[], upToIndex: number): string {
     const block = blocks[i]
     if (!block) continue
     const prefix = block.codePrefix ?? ''
-    const lines = (block.codeWithBlanks ?? []).map((line) =>
-      fillBlanks(line, block.correctOrder ?? []),
+    const blockLines = block.lines ?? []
+    const blockBlanks = block.blanks ?? []
+    const blockBlanksById = buildBlankMap(blockBlanks)
+    const filledLines = blockLines.map((line) =>
+      fillLineFromMap(line.text, (id) => blockBlanksById.get(id)?.answer ?? ''),
     )
     const suffix = block.codeSuffix ?? ''
-    const piece = `${prefix}${lines.join('\n')}${suffix ? `\n${suffix}` : ''}`
+    const piece = `${prefix}${filledLines.join('\n')}${suffix ? `\n${suffix}` : ''}`
     out.push(piece)
   }
   return out.join('\n\n')
@@ -278,26 +486,6 @@ function buildAssembledJs(blocks: Exercise[], upToIndex: number): string {
 function truncate(label: string, max = 12): string {
   if (label.length <= max) return label
   return `${label.slice(0, max - 1)}…`
-}
-
-function findLineIndexForBlank(
-  codeWithBlanks: string[],
-  blankIdx: number,
-): number {
-  let cum = 0
-  for (let i = 0; i < codeWithBlanks.length; i += 1) {
-    let n = 0
-    let j = 0
-    while (true) {
-      const found = codeWithBlanks[i].indexOf(BLOCK_TOKEN, j)
-      if (found === -1) break
-      n += 1
-      j = found + BLOCK_TOKEN.length
-    }
-    if (n > 0 && blankIdx >= cum && blankIdx < cum + n) return i
-    cum += n
-  }
-  return -1
 }
 
 function RefreshIcon() {
@@ -406,6 +594,8 @@ export function FinalProjectSidebar({
   selectedLineIndex,
   selectedBlankIndex,
   allLessons,
+  editMode = false,
+  editActions,
 }: FinalProjectSidebarProps) {
   const blocks = lesson.exercises
   const totalBlocks = blocks.length
@@ -419,7 +609,9 @@ export function FinalProjectSidebar({
   const [previewExpanded, setPreviewExpanded] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [splitSizes, setSplitSizes] = useState<[number, number]>([62, 38])
-  const splitRef = useRef<any>(null)
+  const splitRef = useRef<
+    (Split & { split: { setSizes: (sizes: number[]) => void } }) | null
+  >(null)
 
   useEffect(() => {
     if (!splitRef.current?.split) return
@@ -440,12 +632,17 @@ export function FinalProjectSidebar({
   const cssTemplate = lesson.finalProject?.cssTemplate ?? ''
 
   const blockLessonRefs = activeBlock?.lessonRefs ?? []
-  const totalBlanks = activeBlock?.correctOrder?.length ?? 0
+  const activeBlockBlanks = activeBlock?.blanks ?? []
+  const activeBlockLines = activeBlock?.lines ?? []
+  const activeBlockBlanksById = useMemo(
+    () => buildBlankMap(activeBlockBlanks),
+    [activeBlockBlanks],
+  )
+  const totalBlanks = activeBlockBlanks.length
   const safeBankIndex = Math.max(
     0,
     Math.min(activeBankIndex, Math.max(totalBlanks - 1, 0)),
   )
-  const codeWithBlanks = activeBlock?.codeWithBlanks ?? []
   const activeEntry = useMemo(
     () =>
       resolveEntry(
@@ -457,22 +654,25 @@ export function FinalProjectSidebar({
     [activeBlock, selectedLineIndex, selectedBlankIndex, safeBankIndex],
   )
 
+  const entryBlankIdx = activeEntry?.blankIndex ?? null
   const entryLineIdx =
     activeEntry?.lineIndex ??
-    (activeEntry?.blankIndex !== null && activeEntry?.blankIndex !== undefined
-      ? findLineIndexForBlank(codeWithBlanks, activeEntry.blankIndex)
+    (entryBlankIdx !== null && entryBlankIdx >= 0 && entryBlankIdx < activeBlockBlanks.length
+      ? findLineIndexForBlankId(activeBlockLines, activeBlockBlanks[entryBlankIdx].id)
       : -1)
-  const activeLine =
-    entryLineIdx >= 0 && entryLineIdx < codeWithBlanks.length
-      ? codeWithBlanks[entryLineIdx]
-      : codeWithBlanks[0] ?? ''
-  const entryBlankIdx = activeEntry?.blankIndex ?? null
+  const activeLineText =
+    entryLineIdx >= 0 && entryLineIdx < activeBlockLines.length
+      ? activeBlockLines[entryLineIdx].text
+      : activeBlockLines[0]?.text ?? ''
   const currentInstruction = activeEntry?.instruction ?? ''
   const currentExplanation = activeEntry?.explanation ?? ''
-  const currentMode: BlankInputMode =
-    entryBlankIdx !== null
-      ? activeBlock?.blankInputMode?.[entryBlankIdx] ?? 'wordbank'
-      : 'wordbank'
+  const activeBlank =
+    entryBlankIdx !== null &&
+    entryBlankIdx >= 0 &&
+    entryBlankIdx < activeBlockBlanks.length
+      ? activeBlockBlanks[entryBlankIdx]
+      : null
+  const currentMode: BlankInputMode = activeBlank?.mode ?? 'wordbank'
 
   const entryLessonRefs =
     activeEntry?.lessonRefs && activeEntry.lessonRefs.length > 0
@@ -575,16 +775,24 @@ export function FinalProjectSidebar({
         {blocks.map((block, idx) => {
           const isDone = allDone || idx < safeActiveIndex
           const isActive = !allDone && idx === safeActiveIndex
-          const isLocked = !allDone && idx > safeActiveIndex
+          const isLocked = editMode ? false : !allDone && idx > safeActiveIndex
           const cls = `fp-block-dot ${
             isDone ? 'fp-done' : isActive ? 'fp-active' : 'fp-locked'
           }`
-          return (
+          const dotButton = (
             <button
-              key={`${block.title}-${idx}`}
               type="button"
               className={cls}
-              onClick={() => handleDotClick(idx)}
+              onClick={() => {
+                if (editMode) {
+                  if (typeof window === 'undefined') return
+                  window.dispatchEvent(
+                    new CustomEvent('fp:goto-block', { detail: { index: idx } }),
+                  )
+                  return
+                }
+                handleDotClick(idx)
+              }}
               disabled={isLocked}
               aria-current={isActive ? 'step' : undefined}
               title={block.title}
@@ -595,7 +803,76 @@ export function FinalProjectSidebar({
               <span className="fp-block-label">{truncate(block.title)}</span>
             </button>
           )
+          if (!editMode || !editActions) {
+            return <Fragment key={`${block.title}-${idx}`}>{dotButton}</Fragment>
+          }
+          const hasContent =
+            (block.lines?.length ?? 0) > 0 ||
+            (block.blanks?.length ?? 0) > 0 ||
+            (block.tokenBank?.length ?? 0) > 0 ||
+            (block.tasks?.length ?? 0) > 0
+          return (
+            <div
+              key={`${block.title}-${idx}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {dotButton}
+              <span className="admin-block-actions">
+                <button
+                  type="button"
+                  className="admin-icon-btn"
+                  title="Move block up"
+                  onClick={() => editActions.blocks.move(idx, idx - 1)}
+                  disabled={idx === 0}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className="admin-icon-btn"
+                  title="Move block down"
+                  onClick={() => editActions.blocks.move(idx, idx + 1)}
+                  disabled={idx === blocks.length - 1}
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  className="admin-icon-btn danger"
+                  title="Delete block"
+                  onClick={() => {
+                    if (
+                      hasContent &&
+                      typeof window !== 'undefined' &&
+                      !window.confirm(
+                        `Delete block "${block.title}"? It has content that will be lost.`,
+                      )
+                    ) {
+                      return
+                    }
+                    editActions.blocks.delete(idx)
+                  }}
+                >
+                  ×
+                </button>
+              </span>
+            </div>
+          )
         })}
+        {editMode && editActions ? (
+          <button
+            type="button"
+            className="admin-add-block-btn"
+            onClick={() => editActions.blocks.add(blocks.length)}
+            title="Add block at end"
+          >
+            + Add block
+          </button>
+        ) : null}
       </div>
 
       <Split
@@ -675,7 +952,19 @@ export function FinalProjectSidebar({
                 marginBottom: '14px',
               }}
             >
-              {activeBlock?.title ?? ''}
+              {editMode && editActions ? (
+                <InlineTextEdit
+                  value={activeBlock?.title ?? ''}
+                  onCommit={(next) =>
+                    editActions.blocks.updateMeta(safeActiveIndex, {
+                      title: next,
+                    })
+                  }
+                  placeholder="Block title"
+                />
+              ) : (
+                activeBlock?.title ?? ''
+              )}
             </div>
 
             {hasInstructionContent ? (
@@ -700,7 +989,10 @@ export function FinalProjectSidebar({
                           <span className="fp-freeline-slot" />
                         </>
                       ) : (
-                        renderLineWithBlankBoxes(activeLine, currentMode)
+                        renderLineWithBlankBoxes(
+                          activeLineText,
+                          activeBlockBlanksById,
+                        )
                       )}
                     </div>
                   </>
@@ -708,7 +1000,7 @@ export function FinalProjectSidebar({
                   <>
                     <div className="fp-line-label">This line does:</div>
                     <div className="fp-no-blank-snippet">
-                      <HighlightedSnippet value={activeLine} />
+                      <HighlightedSnippet value={activeLineText} />
                     </div>
                   </>
                 )}
@@ -773,6 +1065,12 @@ export function FinalProjectSidebar({
                   </div>
                 ) : null}
               </>
+            ) : editMode && editActions ? (
+              <AdminTaskList
+                blockIdx={safeActiveIndex}
+                tasks={activeBlock?.tasks ?? []}
+                actions={editActions}
+              />
             ) : (
               <ol
                 style={{
@@ -823,6 +1121,44 @@ export function FinalProjectSidebar({
                 ))}
               </ol>
             )}
+
+            {editMode && editActions && hasInstructionContent ? (
+              <div style={{ marginTop: 16 }}>
+                <div
+                  style={{
+                    fontFamily: 'var(--mono)',
+                    fontSize: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    color: 'var(--text3)',
+                    marginBottom: '6px',
+                  }}
+                >
+                  Tasks (edit)
+                </div>
+                <AdminTaskList
+                  blockIdx={safeActiveIndex}
+                  tasks={activeBlock?.tasks ?? []}
+                  actions={editActions}
+                />
+              </div>
+            ) : null}
+
+            {editMode && editActions ? (
+              <div className="admin-hint-block">
+                <span className="admin-hint-block-label">Hint</span>
+                <textarea
+                  className="admin-hint-block-input"
+                  value={activeBlock?.hint ?? ''}
+                  onChange={(e) =>
+                    editActions.blocks.updateMeta(safeActiveIndex, {
+                      hint: e.target.value,
+                    })
+                  }
+                  placeholder="Hint text shown to the student"
+                />
+              </div>
+            ) : null}
 
             {refLessons.length > 0 ? (
               <>

@@ -16,6 +16,7 @@ export type WordBankFiller = {
 export function useWordBankFiller(
   _codeWithBlanks: string[],
   correctOrder: string[],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _tokenBank: FillBlankToken[],
 ): WordBankFiller {
   const blankCount = correctOrder.length

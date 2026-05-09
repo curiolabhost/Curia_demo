@@ -26,9 +26,9 @@ export function PrismEditor({
     let cancelled = false
     import('prismjs').then(async (mod) => {
       const Prism = (mod as { default?: typeof import('prismjs') }).default ?? mod
-      // @ts-ignore - side-effect imports for language components
+      // @ts-expect-error - side-effect imports for language components
       await import('prismjs/components/prism-markup')
-      // @ts-ignore - side-effect imports for language components
+      // @ts-expect-error - side-effect imports for language components
       await import('prismjs/components/prism-css')
       if (cancelled) return
       const grammar =

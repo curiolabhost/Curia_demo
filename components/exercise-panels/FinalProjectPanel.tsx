@@ -1,11 +1,15 @@
 'use client'
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { BlankDetailPanel } from '@/components/admin/BlankDetailPanel'
+import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type {
   BlankInputMode,
   Exercise,
   ExpectedEffect,
+  FinalProjectBlank,
   FinalProjectFile,
+  FinalProjectLine,
   Lesson,
 } from '@/lib/lessons'
 import { runInProjectSandbox } from '@/lib/projectSandbox'
@@ -22,7 +26,23 @@ type FinalProjectPanelProps = {
     lineIndex: number | null,
     blankIndex: number | null,
   ) => void
+  editMode?: boolean
+  editActions?: EditActions
+  blockIdx?: number
 }
+
+type AdminBlankPickerState = {
+  blockIdx: number
+  lineIdx: number
+  segmentPos: number
+  anchorRect: { left: number; top: number; bottom: number; right: number }
+} | null
+
+type AdminBlankPanelState = {
+  blockIdx: number
+  blankId: string
+  anchorRect: { left: number; top: number; bottom: number; right: number }
+} | null
 
 type AnswerState = 'idle' | 'checking' | 'correct' | 'wrong'
 type BlankStatus = 'idle' | 'correct' | 'wrong'
@@ -31,9 +51,9 @@ type Token = { kind: string; value: string }
 
 type LineSegment =
   | { kind: 'text'; value: string }
-  | { kind: 'blank'; index: number }
+  | { kind: 'blank'; id: string }
 
-const BLANK_TOKEN = '___BLANK___'
+const BLANK_RE = /<<([^>]+)>>/g
 
 const KEYWORDS = new Set([
   'let',
@@ -147,44 +167,35 @@ function HighlightedText({ value, dim }: { value: string; dim?: boolean }) {
   )
 }
 
-function parseLineForBlanks(line: string, startBlankIndex: number): {
-  segments: LineSegment[]
-  nextBlankIndex: number
-} {
+function parseLineSegments(text: string): LineSegment[] {
   const segments: LineSegment[] = []
   let cursor = 0
-  let blankIndex = startBlankIndex
-  while (cursor < line.length) {
-    const found = line.indexOf(BLANK_TOKEN, cursor)
-    if (found === -1) {
-      segments.push({ kind: 'text', value: line.slice(cursor) })
-      break
+  const re = new RegExp(BLANK_RE.source, 'g')
+  let match: RegExpExecArray | null
+  while ((match = re.exec(text)) !== null) {
+    if (match.index > cursor) {
+      segments.push({ kind: 'text', value: text.slice(cursor, match.index) })
     }
-    if (found > cursor) {
-      segments.push({ kind: 'text', value: line.slice(cursor, found) })
-    }
-    segments.push({ kind: 'blank', index: blankIndex })
-    blankIndex += 1
-    cursor = found + BLANK_TOKEN.length
+    segments.push({ kind: 'blank', id: match[1] })
+    cursor = match.index + match[0].length
   }
-  if (cursor === 0 && line.length === 0) {
+  if (cursor < text.length) {
+    segments.push({ kind: 'text', value: text.slice(cursor) })
+  }
+  if (segments.length === 0) {
     segments.push({ kind: 'text', value: '' })
   }
-  return { segments, nextBlankIndex: blankIndex }
+  return segments
 }
 
-function countBlanks(lines: string[]): number {
-  let n = 0
-  for (const line of lines) {
-    let i = 0
-    while (true) {
-      const found = line.indexOf(BLANK_TOKEN, i)
-      if (found === -1) break
-      n += 1
-      i = found + BLANK_TOKEN.length
-    }
+function extractBlankIds(text: string): string[] {
+  const ids: string[] = []
+  const re = new RegExp(BLANK_RE.source, 'g')
+  let match: RegExpExecArray | null
+  while ((match = re.exec(text)) !== null) {
+    ids.push(match[1])
   }
-  return n
+  return ids
 }
 
 function splitToLines(s: string): string[] {
@@ -231,12 +242,21 @@ function extractTopLevelDecls(code: string): string {
   return out.join('\n')
 }
 
-function effectIndexFor(blankIndex: number, modes: BlankInputMode[]): number {
-  let count = 0
-  for (let i = 0; i < blankIndex; i += 1) {
-    if (modes[i] === 'freeline') count += 1
-  }
-  return count
+function buildBlankMap(
+  blanks: FinalProjectBlank[],
+): Map<string, FinalProjectBlank> {
+  const m = new Map<string, FinalProjectBlank>()
+  for (const b of blanks) m.set(b.id, b)
+  return m
+}
+
+function fillLineFromMap(
+  text: string,
+  resolve: (id: string) => string,
+): string {
+  return text.replace(new RegExp(BLANK_RE.source, 'g'), (_, id: string) =>
+    resolve(id),
+  )
 }
 
 type BlockHeaderProps = {
@@ -273,17 +293,77 @@ type CodeLineProps = {
   children: React.ReactNode
   extraClass?: string
   onClick?: (event: React.MouseEvent) => void
+  adminGutter?: React.ReactNode
 }
 
-function CodeLine({ lineNumber, children, extraClass, onClick }: CodeLineProps) {
+function CodeLine({
+  lineNumber,
+  children,
+  extraClass,
+  onClick,
+  adminGutter,
+}: CodeLineProps) {
   return (
     <div
       className={`fp-code-line${extraClass ? ` ${extraClass}` : ''}`}
       onClick={onClick}
     >
       <span className="fp-line-num">{lineNumber}</span>
+      {adminGutter}
       <span style={{ flex: 1, whiteSpace: 'pre' }}>{children}</span>
     </div>
+  )
+}
+
+type AdminTextSegmentProps = {
+  value: string
+  onCommit: (next: string) => void
+}
+
+function AdminTextSegment({ value, onCommit }: AdminTextSegmentProps) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(value)
+  useEffect(() => {
+    if (!editing) setDraft(value)
+  }, [value, editing])
+
+  if (editing) {
+    return (
+      <input
+        className="admin-line-text-input"
+        autoFocus
+        value={draft}
+        spellCheck={false}
+        size={Math.max(2, draft.length + 1)}
+        onChange={(e) => setDraft(e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        onBlur={() => {
+          setEditing(false)
+          if (draft !== value) onCommit(draft)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            ;(e.currentTarget as HTMLInputElement).blur()
+          } else if (e.key === 'Escape') {
+            setDraft(value)
+            setEditing(false)
+          }
+        }}
+      />
+    )
+  }
+
+  return (
+    <span
+      className="admin-line-text-segment"
+      onClick={(e) => {
+        e.stopPropagation()
+        setEditing(true)
+      }}
+    >
+      <HighlightedText value={value.length > 0 ? value : ' '} />
+    </span>
   )
 }
 
@@ -297,14 +377,20 @@ export function FinalProjectPanel({
   lesson,
   onActiveBankIndexChange,
   onLineSelect,
+  editMode = false,
+  editActions,
+  blockIdx,
 }: FinalProjectPanelProps) {
+  const [blankPicker, setBlankPicker] = useState<AdminBlankPickerState>(null)
+  const [blankPanel, setBlankPanel] = useState<AdminBlankPanelState>(null)
+  const editingBlockIdx = blockIdx ?? activeIndex
   const [activeFile, setActiveFile] = useState<FinalProjectFile>('script')
   const [dropValues, setDropValues] = useState<Record<string, string>>({})
   const [completedDropValues, setCompletedDropValues] = useState<
     Record<number, Record<string, string>>
   >({})
   const [completedTypedValues, setCompletedTypedValues] = useState<
-    Record<number, string[]>
+    Record<number, Record<string, string>>
   >({})
   const [blankStates, setBlankStates] = useState<Record<string, BlankStatus>>(
     {},
@@ -330,23 +416,17 @@ export function FinalProjectPanel({
 
   const allDone = activeIndex >= allExercises.length
 
-  const activeBlanks = exercise.codeWithBlanks ?? []
-  const correctOrder = exercise.correctOrder ?? []
+  const lines = exercise.lines ?? []
+  const blanks = exercise.blanks ?? []
   const tokens = exercise.tokenBank ?? []
-  const blankInputModes = exercise.blankInputMode ?? []
-  const expectedEffects = exercise.expectedEffects ?? []
+  const blanksById = useMemo(() => buildBlankMap(blanks), [blanks])
+  const blankCount = blanks.length
 
-  const blankCount = useMemo(() => {
-    return Math.max(countBlanks(activeBlanks), correctOrder.length)
-  }, [activeBlanks, correctOrder.length])
+  const modeOf = (id: string): BlankInputMode =>
+    blanksById.get(id)?.mode ?? 'wordbank'
 
-  const modeOf = (i: number): BlankInputMode =>
-    blankInputModes[i] ?? 'wordbank'
-
-  const [typedValues, setTypedValues] = useState<string[]>(() =>
-    Array(blankCount).fill(''),
-  )
-  const typedInputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const [typedValues, setTypedValues] = useState<Record<string, string>>({})
+  const typedInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
   useEffect(() => {
     setDropValues({})
@@ -357,7 +437,7 @@ export function FinalProjectPanel({
     setActiveBankIndex(0)
     setSelectedLineIndex(null)
     setSelectedBlankIndex(null)
-    setTypedValues(Array(blankCount).fill(''))
+    setTypedValues({})
     setFeedbackMessage('')
     if (resetTimerRef.current) {
       clearTimeout(resetTimerRef.current)
@@ -388,9 +468,11 @@ export function FinalProjectPanel({
   }, [])
 
   const isBlankFilled = (i: number) => {
-    const m = modeOf(i)
-    if (m === 'wordbank') return dropValues[`b${i}`] !== undefined
-    return (typedValues[i] ?? '').trim().length > 0
+    const blank = blanks[i]
+    if (!blank) return false
+    const m = blank.mode
+    if (m === 'wordbank') return dropValues[blank.id] !== undefined
+    return (typedValues[blank.id] ?? '').trim().length > 0
   }
 
   const allFilled =
@@ -414,14 +496,14 @@ export function FinalProjectPanel({
   const placeToken = (blankId: string, label: string) => {
     if (answerState === 'correct') return
     if (blankStates[blankId] === 'correct') return
-    const blankIdx = Number(blankId.slice(1))
-    if (modeOf(blankIdx) !== 'wordbank') return
+    if (modeOf(blankId) !== 'wordbank') return
     setDropValues((prev) => ({ ...prev, [blankId]: label }))
     if (answerState === 'wrong') {
       setAnswerState('idle')
       setBlankStates({})
     }
-    advanceActiveBankIndex(blankIdx)
+    const idx = blanks.findIndex((b) => b.id === blankId)
+    if (idx >= 0) advanceActiveBankIndex(idx)
   }
 
   const clearBlank = (blankId: string) => {
@@ -439,16 +521,12 @@ export function FinalProjectPanel({
     }
   }
 
-  const setTypedAt = (index: number, value: string) => {
-    setTypedValues((prev) => {
-      const next = [...prev]
-      next[index] = value
-      return next
-    })
-    if (blankStates[`b${index}`] === 'wrong') {
+  const setTypedAt = (blankId: string, value: string) => {
+    setTypedValues((prev) => ({ ...prev, [blankId]: value }))
+    if (blankStates[blankId] === 'wrong') {
       setBlankStates((prev) => {
         const next = { ...prev }
-        delete next[`b${index}`]
+        delete next[blankId]
         return next
       })
     }
@@ -458,40 +536,27 @@ export function FinalProjectPanel({
     if (feedbackMessage) setFeedbackMessage('')
   }
 
-  const buildContextForFreeline = (blankIndex: number): string => {
+  const buildContextForFreeline = (blankId: string): string => {
     const parts: string[] = []
 
     for (let idx = 0; idx < activeIndex; idx += 1) {
       const block = allExercises[idx]
       if (block.codePrefix) parts.push(block.codePrefix)
-      const blanksLines = block.codeWithBlanks ?? []
-      const correct = block.correctOrder ?? []
-      const blockModes = block.blankInputMode ?? []
+      const blockLines = block.lines ?? []
+      const blockBlanks = block.blanks ?? []
+      const blockBlanksById = buildBlankMap(blockBlanks)
       const savedDrops = completedDropValues[idx] ?? {}
-      const savedTyped = completedTypedValues[idx] ?? []
+      const savedTyped = completedTypedValues[idx] ?? {}
 
-      let counter = 0
-      for (const line of blanksLines) {
-        let out = ''
-        let i = 0
-        while (i < line.length) {
-          const found = line.indexOf(BLANK_TOKEN, i)
-          if (found === -1) {
-            out += line.slice(i)
-            break
+      for (const line of blockLines) {
+        const out = fillLineFromMap(line.text, (id) => {
+          const blank = blockBlanksById.get(id)
+          if (!blank) return ''
+          if (blank.mode === 'wordbank') {
+            return savedDrops[id] ?? blank.answer ?? ''
           }
-          out += line.slice(i, found)
-          const m = blockModes[counter] ?? 'wordbank'
-          let val = ''
-          if (m === 'wordbank') {
-            val = savedDrops[`b${counter}`] ?? correct[counter] ?? ''
-          } else {
-            val = savedTyped[counter] ?? correct[counter] ?? ''
-          }
-          out += val
-          counter += 1
-          i = found + BLANK_TOKEN.length
-        }
+          return savedTyped[id] ?? blank.answer ?? ''
+        })
         parts.push(out)
       }
       if (block.codeSuffix) parts.push(block.codeSuffix)
@@ -499,34 +564,18 @@ export function FinalProjectPanel({
 
     if (exercise.codePrefix) parts.push(exercise.codePrefix)
 
-    const blanksLines = exercise.codeWithBlanks ?? []
-    let counter = 0
-    for (const line of blanksLines) {
-      const lineEndCounter = counter + countBlanks([line])
-      if (counter <= blankIndex && blankIndex < lineEndCounter) {
+    for (const line of lines) {
+      if (extractBlankIds(line.text).includes(blankId)) {
         break
       }
-      let out = ''
-      let i = 0
-      while (i < line.length) {
-        const found = line.indexOf(BLANK_TOKEN, i)
-        if (found === -1) {
-          out += line.slice(i)
-          break
+      const out = fillLineFromMap(line.text, (id) => {
+        const blank = blanksById.get(id)
+        if (!blank) return ''
+        if (blank.mode === 'wordbank') {
+          return dropValues[id] ?? blank.answer ?? ''
         }
-        out += line.slice(i, found)
-        const m = modeOf(counter)
-        let val = ''
-        if (m === 'wordbank') {
-          val = dropValues[`b${counter}`] ?? correctOrder[counter] ?? ''
-        } else {
-          val =
-            (typedValues[counter] ?? '').trim() || correctOrder[counter] || ''
-        }
-        out += val
-        counter += 1
-        i = found + BLANK_TOKEN.length
-      }
+        return (typedValues[id] ?? '').trim() || blank.answer || ''
+      })
       parts.push(out)
     }
 
@@ -550,26 +599,26 @@ export function FinalProjectPanel({
     let firstFailMessage = ''
 
     for (let i = 0; i < blankCount; i += 1) {
-      const id = `b${i}`
-      const m = modeOf(i)
+      const blank = blanks[i]
+      if (!blank) continue
+      const id = blank.id
+      const m = blank.mode
       let pass = false
       let message = ''
 
       if (m === 'wordbank') {
-        pass = dropValues[id] === correctOrder[i]
+        pass = dropValues[id] === blank.answer
       } else if (m === 'type') {
-        pass =
-          (typedValues[i] ?? '').trim() === (correctOrder[i] ?? '').trim()
+        pass = (typedValues[id] ?? '').trim() === (blank.answer ?? '').trim()
       } else {
-        const studentLine = (typedValues[i] ?? '').trim()
+        const studentLine = (typedValues[id] ?? '').trim()
         if (studentLine.length === 0) {
           pass = false
           message = 'Type a line first.'
         } else {
-          const eIdx = effectIndexFor(i, blankInputModes)
           const expectedEffect: ExpectedEffect =
-            expectedEffects[eIdx] ?? { type: 'noError' }
-          const contextCode = buildContextForFreeline(i)
+            blank.expectedEffect ?? { type: 'noError' }
+          const contextCode = buildContextForFreeline(id)
           const studentCode = contextCode + '\n' + studentLine
           const result = await runInProjectSandbox(
             lesson.finalProject?.htmlTemplate ?? '',
@@ -601,28 +650,32 @@ export function FinalProjectPanel({
       resetTimerRef.current = setTimeout(() => {
         setDropValues((prev) => {
           const next = { ...prev }
-          for (let i = 0; i < blankCount; i += 1) {
-            const id = `b${i}`
-            if (newStates[id] === 'wrong' && modeOf(i) === 'wordbank') {
-              delete next[id]
+          for (const blank of blanks) {
+            if (
+              newStates[blank.id] === 'wrong' &&
+              blank.mode === 'wordbank'
+            ) {
+              delete next[blank.id]
             }
           }
           return next
         })
         setTypedValues((prev) => {
-          const next = [...prev]
-          for (let i = 0; i < blankCount; i += 1) {
-            if (newStates[`b${i}`] === 'wrong' && modeOf(i) !== 'wordbank') {
-              next[i] = ''
+          const next = { ...prev }
+          for (const blank of blanks) {
+            if (
+              newStates[blank.id] === 'wrong' &&
+              blank.mode !== 'wordbank'
+            ) {
+              next[blank.id] = ''
             }
           }
           return next
         })
         setBlankStates((prev) => {
           const next = { ...prev }
-          for (let i = 0; i < blankCount; i += 1) {
-            const id = `b${i}`
-            if (newStates[id] === 'wrong') delete next[id]
+          for (const blank of blanks) {
+            if (newStates[blank.id] === 'wrong') delete next[blank.id]
           }
           return next
         })
@@ -640,7 +693,7 @@ export function FinalProjectPanel({
     }))
     setCompletedTypedValues((prev) => ({
       ...prev,
-      [activeIndex]: [...typedValues],
+      [activeIndex]: { ...typedValues },
     }))
     onComplete(true)
   }
@@ -662,11 +715,10 @@ export function FinalProjectPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dropValues, typedValues, blankStates, answerState, allFilled])
 
-  const renderDropZone = (blankIndex: number, lineIdx?: number) => {
-    const id = `b${blankIndex}`
-    const filled = dropValues[id]
-    const status = blankStates[id]
-    const isHover = hoverBlankId === id
+  const renderDropZone = (blankId: string, lineIdx?: number) => {
+    const filled = dropValues[blankId]
+    const status = blankStates[blankId]
+    const isHover = hoverBlankId === blankId
     let cls = 'fp-drop-zone'
     if (status === 'correct' || (filled && answerState === 'correct')) {
       cls += ' fp-dz-correct'
@@ -679,30 +731,31 @@ export function FinalProjectPanel({
     } else {
       cls += ' fp-dz-empty'
     }
+    const blankIdx = blanks.findIndex((b) => b.id === blankId)
     return (
       <span
-        key={`dz-${blankIndex}`}
+        key={`dz-${blankId}`}
         className={cls}
         onDragOver={(e) => {
           e.preventDefault()
-          if (hoverBlankId !== id) setHoverBlankId(id)
+          if (hoverBlankId !== blankId) setHoverBlankId(blankId)
         }}
         onDragLeave={() => {
-          if (hoverBlankId === id) setHoverBlankId(null)
+          if (hoverBlankId === blankId) setHoverBlankId(null)
         }}
         onDrop={(e) => {
           e.preventDefault()
           const tokenId = e.dataTransfer.getData('text/plain')
           const tok = tokens.find((t) => t.id === tokenId)
-          if (tok) placeToken(id, tok.label)
+          if (tok) placeToken(blankId, tok.label)
           setHoverBlankId(null)
           setDraggingTokenId(null)
-          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIndex)
+          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIdx)
         }}
         onClick={(e) => {
           e.stopPropagation()
-          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIndex)
-          clearBlank(id)
+          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIdx)
+          clearBlank(blankId)
         }}
         role="button"
       >
@@ -715,10 +768,9 @@ export function FinalProjectPanel({
     )
   }
 
-  const renderTypeInput = (blankIndex: number, lineIdx?: number) => {
-    const id = `b${blankIndex}`
-    const status = blankStates[id]
-    const value = typedValues[blankIndex] ?? ''
+  const renderTypeInput = (blankId: string, lineIdx?: number) => {
+    const status = blankStates[blankId]
+    const value = typedValues[blankId] ?? ''
     let cls = 'fp-type-input'
     if (status === 'correct' || (value && answerState === 'correct')) {
       cls += ' correct'
@@ -726,11 +778,12 @@ export function FinalProjectPanel({
       cls += ' wrong'
     }
     const sized = Math.max(8, value.length + 2)
+    const blankIdx = blanks.findIndex((b) => b.id === blankId)
     return (
       <input
-        key={`ti-${blankIndex}`}
+        key={`ti-${blankId}`}
         ref={(el) => {
-          typedInputRefs.current[blankIndex] = el
+          typedInputRefs.current[blankId] = el
         }}
         type="text"
         className={cls}
@@ -744,19 +797,21 @@ export function FinalProjectPanel({
           status === 'correct' ||
           answerState === 'correct'
         }
-        onChange={(e) => setTypedAt(blankIndex, e.target.value)}
+        onChange={(e) => setTypedAt(blankId, e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault()
-            let next = -1
-            for (let k = blankIndex + 1; k < blankCount; k += 1) {
-              if (blankStates[`b${k}`] !== 'correct' && !isBlankFilled(k)) {
-                next = k
+            let nextId: string | null = null
+            for (let k = blankIdx + 1; k < blankCount; k += 1) {
+              const cand = blanks[k]
+              if (!cand) continue
+              if (blankStates[cand.id] !== 'correct' && !isBlankFilled(k)) {
+                nextId = cand.id
                 break
               }
             }
-            if (next !== -1) {
-              const target = typedInputRefs.current[next]
+            if (nextId) {
+              const target = typedInputRefs.current[nextId]
               if (target) target.focus()
             }
           }
@@ -766,30 +821,30 @@ export function FinalProjectPanel({
         onClick={(e) => e.stopPropagation()}
         onFocus={() => {
           if (lineIdx !== undefined) {
-            handleLineClick(lineIdx, blankIndex)
-          } else {
-            setActiveBankIndex(blankIndex)
+            handleLineClick(lineIdx, blankIdx)
+          } else if (blankIdx >= 0) {
+            setActiveBankIndex(blankIdx)
           }
         }}
       />
     )
   }
 
-  const renderFreelineInput = (blankIndex: number, lineIdx?: number) => {
-    const id = `b${blankIndex}`
-    const status = blankStates[id]
-    const value = typedValues[blankIndex] ?? ''
+  const renderFreelineInput = (blankId: string, lineIdx?: number) => {
+    const status = blankStates[blankId]
+    const value = typedValues[blankId] ?? ''
     let cls = 'fp-freeline-input'
     if (status === 'correct' || (value && answerState === 'correct')) {
       cls += ' correct'
     } else if (status === 'wrong') {
       cls += ' wrong'
     }
+    const blankIdx = blanks.findIndex((b) => b.id === blankId)
     return (
       <input
-        key={`fl-${blankIndex}`}
+        key={`fl-${blankId}`}
         ref={(el) => {
-          typedInputRefs.current[blankIndex] = el
+          typedInputRefs.current[blankId] = el
         }}
         type="text"
         className={cls}
@@ -802,7 +857,7 @@ export function FinalProjectPanel({
           status === 'correct' ||
           answerState === 'correct'
         }
-        onChange={(e) => setTypedAt(blankIndex, e.target.value)}
+        onChange={(e) => setTypedAt(blankId, e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault()
@@ -814,9 +869,9 @@ export function FinalProjectPanel({
         onClick={(e) => e.stopPropagation()}
         onFocus={() => {
           if (lineIdx !== undefined) {
-            handleLineClick(lineIdx, blankIndex)
-          } else {
-            setActiveBankIndex(blankIndex)
+            handleLineClick(lineIdx, blankIdx)
+          } else if (blankIdx >= 0) {
+            setActiveBankIndex(blankIdx)
           }
         }}
       />
@@ -824,39 +879,25 @@ export function FinalProjectPanel({
   }
 
   const renderCompletedLineSegments = (
-    line: string,
-    answers: string[],
-    typedAnswers: string[],
-    modes: BlankInputMode[],
-    startBlankIndex: number,
+    text: string,
+    blockBlanksById: Map<string, FinalProjectBlank>,
+    savedDrops: Record<string, string>,
+    savedTyped: Record<string, string>,
   ) => {
-    const segs: LineSegment[] = []
-    let cursor = 0
-    let blankIndex = startBlankIndex
-    while (cursor < line.length) {
-      const found = line.indexOf(BLANK_TOKEN, cursor)
-      if (found === -1) {
-        segs.push({ kind: 'text', value: line.slice(cursor) })
-        break
-      }
-      if (found > cursor) {
-        segs.push({ kind: 'text', value: line.slice(cursor, found) })
-      }
-      segs.push({ kind: 'blank', index: blankIndex })
-      blankIndex += 1
-      cursor = found + BLANK_TOKEN.length
-    }
+    const segs = parseLineSegments(text)
     return (
       <>
         {segs.map((seg, i) => {
           if (seg.kind === 'text') {
             return <HighlightedText key={i} value={seg.value} />
           }
-          const m = modes[seg.index] ?? 'wordbank'
+          const blank = blockBlanksById.get(seg.id)
           const ans =
-            m === 'wordbank'
-              ? answers[seg.index] ?? ''
-              : typedAnswers[seg.index] ?? answers[seg.index] ?? ''
+            !blank
+              ? ''
+              : blank.mode === 'wordbank'
+                ? savedDrops[seg.id] ?? blank.answer ?? ''
+                : savedTyped[seg.id] ?? blank.answer ?? ''
           return (
             <span key={i} className="fp-drop-zone fp-dz-filled">
               {ans}
@@ -869,8 +910,11 @@ export function FinalProjectPanel({
 
   let currentLineNumber = 1
   const renderBlock = (block: Exercise, idx: number) => {
-    const state: 'done' | 'active' | 'locked' =
+    const studentState: 'done' | 'active' | 'locked' =
       idx < activeIndex ? 'done' : idx === activeIndex ? 'active' : 'locked'
+    const state: 'done' | 'active' | 'locked' = editMode
+      ? 'active'
+      : studentState
     const cls = `fp-code-block ${
       state === 'done'
         ? 'fp-cb-done'
@@ -878,21 +922,18 @@ export function FinalProjectPanel({
           ? 'fp-cb-active'
           : 'fp-cb-locked'
     }`
-    const blanksLines = block.codeWithBlanks ?? []
+    const blockLines: FinalProjectLine[] = block.lines ?? []
+    const blockBlanks: FinalProjectBlank[] = block.blanks ?? []
+    const blockBlanksById = buildBlankMap(blockBlanks)
     const suffixLines = splitToLines(block.codeSuffix ?? '')
-    const answers = block.correctOrder ?? []
-    const blockModes = block.blankInputMode ?? []
-    const savedValues = completedDropValues[idx]
-    const savedTyped = completedTypedValues[idx] ?? []
-    const displayAnswers = answers.map(
-      (correct, k) => savedValues?.[`b${k}`] ?? correct,
-    )
+    const savedDrops = completedDropValues[idx] ?? {}
+    const savedTyped = completedTypedValues[idx] ?? {}
 
     if (state === 'locked') {
       return (
         <div key={`${block.title}-${idx}`} className={cls}>
           <BlockHeader index={idx} title={block.title} state={state} />
-          {blanksLines.map((_line, i) => {
+          {blockLines.map((_line, i) => {
             const num = currentLineNumber
             currentLineNumber += 1
             const width =
@@ -912,103 +953,258 @@ export function FinalProjectPanel({
     }
 
     let activeLineIndex = -1
-    if (state === 'active') {
-      let cum = 0
-      for (let i = 0; i < blanksLines.length; i += 1) {
-        const n = countBlanks([blanksLines[i]])
-        if (n > 0 && activeBankIndex >= cum && activeBankIndex < cum + n) {
-          activeLineIndex = i
-          break
-        }
-        cum += n
+    if (state === 'active' && !editMode) {
+      const activeBlankId = blanks[activeBankIndex]?.id
+      if (activeBlankId) {
+        activeLineIndex = blockLines.findIndex((l) =>
+          extractBlankIds(l.text).includes(activeBlankId),
+        )
       }
+    }
+
+    const renderAdminGutter = (lineIdx: number): React.ReactNode => {
+      if (!editMode || !editActions) return null
+      return (
+        <span className="admin-line-gutter" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className="admin-icon-btn"
+            title="Move line up"
+            onClick={() => editActions.lines.move(idx, lineIdx, lineIdx - 1)}
+            disabled={lineIdx === 0}
+          >
+            ↑
+          </button>
+          <button
+            type="button"
+            className="admin-icon-btn"
+            title="Move line down"
+            onClick={() => editActions.lines.move(idx, lineIdx, lineIdx + 1)}
+            disabled={lineIdx === blockLines.length - 1}
+          >
+            ↓
+          </button>
+          <button
+            type="button"
+            className="admin-icon-btn danger"
+            title="Delete line"
+            onClick={() => editActions.lines.delete(idx, lineIdx)}
+          >
+            ×
+          </button>
+        </span>
+      )
+    }
+
+    const adminAddLineDivider = (insertAt: number): React.ReactNode => {
+      if (!editMode || !editActions) return null
+      return (
+        <div
+          className="admin-line-add-divider"
+          onClick={() => editActions.lines.add(idx, insertAt)}
+        />
+      )
+    }
+
+    const editText = (
+      lineIdx: number,
+      segIdx: number,
+      nextValue: string,
+    ) => {
+      if (!editActions) return
+      const cur = blockLines[lineIdx]
+      if (!cur) return
+      const segs = parseLineSegments(cur.text).map((s) =>
+        s.kind === 'text'
+          ? { kind: 'text' as const, value: s.value }
+          : { kind: 'blank' as const, blankId: s.id },
+      )
+      // ensure the array is long enough
+      if (segIdx < 0 || segIdx >= segs.length) return
+      const target = segs[segIdx]
+      if (target.kind !== 'text') return
+      segs[segIdx] = { kind: 'text', value: nextValue }
+      editActions.lines.editSegments(idx, lineIdx, segs)
+    }
+
+    const openBlankPanel = (blankId: string, anchor: HTMLElement) => {
+      const rect = anchor.getBoundingClientRect()
+      setBlankPanel({
+        blockIdx: idx,
+        blankId,
+        anchorRect: {
+          left: rect.left,
+          top: rect.top,
+          bottom: rect.bottom,
+          right: rect.right,
+        },
+      })
     }
 
     return (
       <div key={`${block.title}-${idx}`} className={cls}>
         <BlockHeader index={idx} title={block.title} state={state} />
-        {blanksLines.map((line, i) => {
+        {editMode && editActions && blockLines.length === 0 ? (
+          <div
+            className="admin-line-add-divider"
+            onClick={() => editActions.lines.add(idx, 0)}
+            style={{ marginTop: 6 }}
+          />
+        ) : null}
+        {blockLines.map((line, i) => {
           const num = currentLineNumber
           currentLineNumber += 1
-          const startBlankCount = blanksLines
-            .slice(0, i)
-            .reduce((acc, ln) => acc + countBlanks([ln]), 0)
-          const blanksOnLine = countBlanks([line])
-          const lineBlankIndices = Array.from(
-            { length: blanksOnLine },
-            (_, k) => startBlankCount + k,
-          )
-          const freelineIdx = lineBlankIndices.find((bi) => {
-            const m = state === 'done' ? blockModes[bi] : modeOf(bi)
-            return m === 'freeline'
+          const idsOnLine = extractBlankIds(line.text)
+          const freelineBlankId = idsOnLine.find((id) => {
+            const blank = blockBlanksById.get(id)
+            return blank?.mode === 'freeline'
           })
 
-          if (state === 'done') {
-            if (freelineIdx !== undefined) {
-              const typedAns = savedTyped[freelineIdx] ?? ''
+          const lineNode: React.ReactNode = (() => {
+            if (state === 'done') {
+              if (freelineBlankId !== undefined) {
+                const typedAns = savedTyped[freelineBlankId] ?? ''
+                return (
+                  <CodeLine key={`b-${i}`} lineNumber={num}>
+                    <HighlightedText value={typedAns} />
+                  </CodeLine>
+                )
+              }
               return (
                 <CodeLine key={`b-${i}`} lineNumber={num}>
-                  <HighlightedText value={typedAns} />
+                  {renderCompletedLineSegments(
+                    line.text,
+                    blockBlanksById,
+                    savedDrops,
+                    savedTyped,
+                  )}
                 </CodeLine>
               )
             }
-            return (
-              <CodeLine key={`b-${i}`} lineNumber={num}>
-                {renderCompletedLineSegments(
-                  line,
-                  displayAnswers,
-                  savedTyped,
-                  blockModes,
-                  startBlankCount,
-                )}
-              </CodeLine>
-            )
-          }
 
-          const classes: string[] = ['clickable']
-          if (i === activeLineIndex) {
-            classes.push('fp-active-line')
-          } else if (i === selectedLineIndex) {
-            classes.push('line-selected')
-          }
-          const extraClass = classes.join(' ')
+            const classes: string[] = []
+            if (!editMode) {
+              classes.push('clickable')
+            }
+            if (i === activeLineIndex) {
+              classes.push('fp-active-line')
+            } else if (!editMode && i === selectedLineIndex) {
+              classes.push('line-selected')
+            }
+            const extraClass = classes.join(' ')
 
-          const defaultBlankIdx =
-            blanksOnLine === 1 ? lineBlankIndices[0] : null
-          const handleClickLine = () => {
-            handleLineClick(i, defaultBlankIdx)
-          }
+            const defaultBlankIdx =
+              idsOnLine.length === 1
+                ? blanks.findIndex((b) => b.id === idsOnLine[0])
+                : null
+            const handleClickLine = editMode
+              ? undefined
+              : () => handleLineClick(i, defaultBlankIdx ?? null)
 
-          if (freelineIdx !== undefined) {
+            const adminGutter = renderAdminGutter(i)
+
+            if (freelineBlankId !== undefined && !editMode) {
+              return (
+                <CodeLine
+                  key={`b-${i}`}
+                  lineNumber={num}
+                  extraClass={extraClass}
+                  onClick={handleClickLine}
+                  adminGutter={adminGutter}
+                >
+                  {renderFreelineInput(freelineBlankId, i)}
+                </CodeLine>
+              )
+            }
+
+            const segments = parseLineSegments(line.text)
             return (
               <CodeLine
                 key={`b-${i}`}
                 lineNumber={num}
                 extraClass={extraClass}
                 onClick={handleClickLine}
+                adminGutter={adminGutter}
               >
-                {renderFreelineInput(freelineIdx, i)}
+                {segments.map((seg, j) => {
+                  if (seg.kind === 'text') {
+                    if (editMode) {
+                      return (
+                        <Fragment key={j}>
+                          <AdminTextSegment
+                            value={seg.value}
+                            onCommit={(next) => editText(i, j, next)}
+                          />
+                          {editActions ? (
+                            <button
+                              type="button"
+                              className="admin-add-blank-btn"
+                              title="Insert blank after this text"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                const rect = (
+                                  e.currentTarget as HTMLButtonElement
+                                ).getBoundingClientRect()
+                                setBlankPicker({
+                                  blockIdx: idx,
+                                  lineIdx: i,
+                                  segmentPos: j + 1,
+                                  anchorRect: {
+                                    left: rect.left,
+                                    top: rect.top,
+                                    bottom: rect.bottom,
+                                    right: rect.right,
+                                  },
+                                })
+                              }}
+                            >
+                              + blank
+                            </button>
+                          ) : null}
+                        </Fragment>
+                      )
+                    }
+                    return <HighlightedText key={j} value={seg.value} />
+                  }
+                  const m = modeOf(seg.id)
+                  let chip: React.ReactNode
+                  if (m === 'type') chip = renderTypeInput(seg.id, i)
+                  else if (m === 'freeline') {
+                    chip = editMode ? (
+                      <span className="fp-drop-zone fp-dz-empty">
+                        <span className="fp-dz-hint">freeline</span>
+                      </span>
+                    ) : (
+                      renderFreelineInput(seg.id, i)
+                    )
+                  } else chip = renderDropZone(seg.id, i)
+                  if (!editMode) return <Fragment key={j}>{chip}</Fragment>
+                  return (
+                    <span key={j} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                      {chip}
+                      <button
+                        type="button"
+                        className="admin-blank-edit-icon"
+                        title="Edit blank"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openBlankPanel(seg.id, e.currentTarget)
+                        }}
+                      >
+                        ✎
+                      </button>
+                    </span>
+                  )
+                })}
               </CodeLine>
             )
-          }
+          })()
 
-          const { segments } = parseLineForBlanks(line, startBlankCount)
           return (
-            <CodeLine
-              key={`b-${i}`}
-              lineNumber={num}
-              extraClass={extraClass}
-              onClick={handleClickLine}
-            >
-              {segments.map((seg, j) => {
-                if (seg.kind === 'text') {
-                  return <HighlightedText key={j} value={seg.value} />
-                }
-                const m = modeOf(seg.index)
-                if (m === 'type') return renderTypeInput(seg.index, i)
-                return renderDropZone(seg.index, i)
-              })}
-            </CodeLine>
+            <Fragment key={`line-${i}`}>
+              {lineNode}
+              {adminAddLineDivider(i + 1)}
+            </Fragment>
           )
         })}
         {suffixLines.map((line, i) => {
@@ -1027,6 +1223,7 @@ export function FinalProjectPanel({
   const codeBlocks = allExercises.map((block, idx) => renderBlock(block, idx))
 
   const isCorrect = answerState === 'correct'
+  const activeBlank = blanks[activeBankIndex]
 
   return (
     <div className="fp-panel">
@@ -1122,6 +1319,35 @@ export function FinalProjectPanel({
                   const dragging = draggingTokenId === token.id
                   let cls = 'fp-token'
                   if (dragging) cls += ' fp-token-dragging'
+                  if (editMode && editActions) {
+                    return (
+                      <span key={token.id} className="admin-token-wrap">
+                        <input
+                          className="admin-token-input"
+                          value={token.label}
+                          spellCheck={false}
+                          onChange={(e) =>
+                            editActions.tokens.edit(
+                              editingBlockIdx,
+                              token.id,
+                              e.target.value,
+                            )
+                          }
+                          placeholder="token"
+                        />
+                        <button
+                          type="button"
+                          className="admin-token-delete"
+                          title="Delete token"
+                          onClick={() =>
+                            editActions.tokens.delete(editingBlockIdx, token.id)
+                          }
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )
+                  }
                   return (
                     <div
                       key={token.id}
@@ -1134,14 +1360,24 @@ export function FinalProjectPanel({
                       }}
                       onDragEnd={() => setDraggingTokenId(null)}
                       onClick={() => {
-                        if (modeOf(activeBankIndex) !== 'wordbank') return
-                        placeToken(`b${activeBankIndex}`, token.label)
+                        if (!activeBlank) return
+                        if (activeBlank.mode !== 'wordbank') return
+                        placeToken(activeBlank.id, token.label)
                       }}
                     >
                       {token.label}
                     </div>
                   )
                 })}
+                {editMode && editActions ? (
+                  <button
+                    type="button"
+                    className="admin-add-token-btn"
+                    onClick={() => editActions.tokens.add(editingBlockIdx)}
+                  >
+                    + Add token
+                  </button>
+                ) : null}
               </div>
               {answerState === 'wrong'
                 ? (() => {
@@ -1183,6 +1419,61 @@ export function FinalProjectPanel({
           )}
         </div>
       )}
+
+      {editMode && editActions && blankPicker ? (
+        <>
+          <div
+            className="admin-blank-panel-backdrop"
+            onClick={() => setBlankPicker(null)}
+          />
+          <div
+            className="admin-blank-mode-picker"
+            style={{
+              position: 'fixed',
+              left: blankPicker.anchorRect.left,
+              top: blankPicker.anchorRect.bottom + 4,
+              zIndex: 1101,
+            }}
+          >
+            {(['wordbank', 'type', 'freeline'] as BlankInputMode[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => {
+                  editActions.blanks.insert(
+                    blankPicker.blockIdx,
+                    blankPicker.lineIdx,
+                    blankPicker.segmentPos,
+                    m,
+                  )
+                  setBlankPicker(null)
+                }}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        </>
+      ) : null}
+
+      {editMode && editActions && blankPanel
+        ? (() => {
+            const block = allExercises[blankPanel.blockIdx]
+            const blank = (block?.blanks ?? []).find(
+              (b) => b.id === blankPanel.blankId,
+            )
+            if (!blank) return null
+            return (
+              <BlankDetailPanel
+                blockIdx={blankPanel.blockIdx}
+                blank={blank}
+                anchorRect={blankPanel.anchorRect}
+                actions={editActions}
+                onClose={() => setBlankPanel(null)}
+              />
+            )
+          })()
+        : null}
     </div>
   )
 }

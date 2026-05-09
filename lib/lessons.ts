@@ -98,6 +98,23 @@ export type LineExplanation = {
   lessonRefs?: string[]
 }
 
+export type FinalProjectLine = {
+  id: string
+  text: string
+  explanation?: string
+  lessonRefs?: string[]
+}
+
+export type FinalProjectBlank = {
+  id: string
+  mode: BlankInputMode
+  answer: string
+  instruction?: string
+  explanation?: string
+  lessonRefs?: string[]
+  expectedEffect?: ExpectedEffect | null
+}
+
 export type Exercise = {
   title: string
   type: 'practice' | 'predict' | 'debug' | 'apply' | 'independent' | 'challenge'
@@ -129,6 +146,8 @@ export type Exercise = {
   codeFiles?: CodeViewerFile[]
   lineExplanations?: LineExplanation[]
   editableFiles?: string[]
+  lines?: FinalProjectLine[]
+  blanks?: FinalProjectBlank[]
 }
 
 export type Challenge = {

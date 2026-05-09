@@ -21,6 +21,9 @@
   --orange-dim: #FFFBEB;
   --purple: #7C3AED;
   --purple-dim: #F5F3FF;
+  --white: #ffffff;
+  --code-fg: #cdd6f4;
+  --code-purple: #cba6f7;
   --mono: 'IBM Plex Mono', monospace;
   --sans: 'DM Sans', sans-serif;
 }

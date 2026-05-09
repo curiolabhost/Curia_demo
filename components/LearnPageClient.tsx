@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
 import { LessonWorkspace } from './LessonWorkspace'
@@ -16,6 +17,8 @@ type LearnPageClientProps = {
   prevLessonId?: string
   nextLessonId?: string
   session: string
+  editMode?: boolean
+  editActions?: EditActions
 }
 
 export function LearnPageClient({
@@ -25,6 +28,8 @@ export function LearnPageClient({
   prevLessonId,
   nextLessonId,
   session,
+  editMode = false,
+  editActions,
 }: LearnPageClientProps) {
   const [navOpen, setNavOpen] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
@@ -146,6 +151,8 @@ export function LearnPageClient({
               selectedLineIndex={selectedLineIndex}
               selectedBlankIndex={selectedBlankIndex}
               allLessons={lessons}
+              editMode={editMode}
+              editActions={editActions}
             />
           ) : (
             <Sidebar
@@ -174,6 +181,8 @@ export function LearnPageClient({
               setSelectedLineIndex(li)
               setSelectedBlankIndex(bi)
             }}
+            editMode={editMode}
+            editActions={editActions}
           />
         ) : (
           <div className="right-panel">

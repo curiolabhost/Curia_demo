@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import { loadCode } from '@/lib/storage'
 import { runInSandbox, type CheckResult, type LogEntry } from '@/lib/sandbox'
@@ -43,6 +44,8 @@ type RightPanelProps = {
     lineIndex: number | null,
     blankIndex: number | null,
   ) => void
+  editMode?: boolean
+  editActions?: EditActions
 }
 
 function isInsideEditor(target: EventTarget | null): boolean {
@@ -72,6 +75,8 @@ export function RightPanel({
   onExerciseIndexChange,
   onActiveBankIndexChange,
   onLineSelect,
+  editMode = false,
+  editActions,
 }: RightPanelProps) {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>('exercises')
@@ -121,6 +126,15 @@ export function RightPanel({
     (activeChallenge?.checks?.length ?? 0) > 0 &&
     checkResults.length > 0 &&
     checkResults.every((r) => r.passed)
+
+  // In edit mode, sync the rendered lesson to the live lesson on every
+  // change (the lesson identity changes on each edit but the id stays
+  // the same, so the cross-fade effect below would not pick it up).
+  useEffect(() => {
+    if (!editMode) return
+    if (lesson === renderedLesson) return
+    setRenderedLesson(lesson)
+  }, [editMode, lesson, renderedLesson])
 
   // Cross-fade on lesson change
   useEffect(() => {
@@ -672,6 +686,9 @@ export function RightPanel({
                   lesson={renderedLesson}
                   onActiveBankIndexChange={onActiveBankIndexChange}
                   onLineSelect={onLineSelect}
+                  editMode={editMode}
+                  editActions={editActions}
+                  blockIdx={renderedExerciseIndex}
                 />
               ) : (
                 (() => {

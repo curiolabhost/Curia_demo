@@ -14,128 +14,181 @@
       "type": "practice",
       "duration": "4 min",
       "format": "final-project",
-      "lessonRefs": ["s2-l1", "s2-l0"],
+      "lessonRefs": [
+        "s2-l1",
+        "s2-l0"
+      ],
       "tasks": [
         "This block sets up every variable and DOM reference the game needs.",
         "Click any line to learn what it does. Click a blank to see what to fill in."
       ],
       "hint": "const is for variables that never get reassigned. getElementById finds one element by id. querySelectorAll finds many elements by CSS selector.",
-      "codeWithBlanks": [
-        "___BLANK___ grid          = document.getElementById('grid');",
-        "___BLANK___ startBtn      = ___BLANK___('start-btn');",
-        "___BLANK___ statusMessage = document.getElementById(___BLANK___);",
-        "const cells         = document.querySelectorAll('.cell');",
-        "",
-        "let sequence       = ___BLANK___;",
-        "let playerClicks   = [];",
-        "let isInputAllowed = ___BLANK___;",
-        "let level          = 1;"
-      ],
-      "correctOrder": [
-        "const",
-        "const",
-        "document.getElementById",
-        "const",
-        "'status-message'",
-        "[]",
-        "false"
-      ],
-      "blankInputMode": [
-        "wordbank",
-        "wordbank",
-        "wordbank",
-        "type",
-        "type",
-        "wordbank",
-        "type"
-      ],
       "tokenBank": [
-        { "id": "t1", "label": "const" },
-        { "id": "t2", "label": "document.getElementById" },
-        { "id": "t3", "label": "[]" },
-        { "id": "t4", "label": "'grid'" },
-        { "id": "t5", "label": "let" },
-        { "id": "t6", "label": "document.querySelectorAll" },
-        { "id": "t7", "label": "var" }
-      ],
-      "lineExplanations": [
         {
-          "lineIndex": 0,
-          "blankIndex": 0,
-          "instruction": "This line creates a constant variable. Drag the keyword that declares a variable that will never be reassigned.",
-          "explanation": "const is used when you know the variable will always point to the same thing. grid will always refer to the same HTML element so const is the right choice over let.",
-          "lessonRefs": ["s2-l1"]
+          "id": "t1",
+          "label": "const"
         },
         {
-          "lineIndex": 1,
-          "blankIndex": 1,
-          "instruction": "This line also creates a constant. Drag the same keyword you used on line 1.",
-          "explanation": "Every DOM reference in this program uses const because we grab each element once at the start and never replace it. The variable name changes but the pattern is identical.",
-          "lessonRefs": ["s2-l1"]
+          "id": "t2",
+          "label": "document.getElementById"
         },
         {
-          "lineIndex": 1,
-          "blankIndex": 2,
-          "instruction": "Drag the method that searches the page for a single element by its id string.",
-          "explanation": "document.getElementById is the standard way to find one specific element. You pass in the id exactly as it appears in the HTML. It returns the element itself so you can change it later.",
-          "lessonRefs": ["s2-l1"]
+          "id": "t3",
+          "label": "[]"
         },
         {
-          "lineIndex": 2,
-          "blankIndex": 3,
-          "instruction": "Type the keyword that declares a variable that will not be reassigned.",
-          "explanation": "You typed it this time instead of dragging it. The keyword is the same as lines 1 and 2. Recognizing the pattern is the point.",
-          "lessonRefs": ["s2-l1"]
+          "id": "t4",
+          "label": "'grid'"
         },
         {
-          "lineIndex": 2,
-          "blankIndex": 4,
-          "instruction": "Type the id string of the status message element. Open the index.html tab to find it.",
-          "explanation": "The id is written directly in the HTML as id='status-message'. You pass it as a string with quotes. The string must match exactly including the hyphen.",
-          "lessonRefs": ["s2-l1"]
+          "id": "t5",
+          "label": "let"
         },
         {
-          "lineIndex": 3,
-          "blankIndex": null,
-          "explanation": "querySelectorAll works like getElementById but returns ALL elements that match a CSS selector, not just one. A CSS class selector starts with a dot. So '.cell' finds every element with class='cell' on the page. This gives us all 16 grid squares at once as a list we can loop through.",
-          "lessonRefs": ["s2-l1"]
+          "id": "t6",
+          "label": "document.querySelectorAll"
         },
         {
-          "lineIndex": 5,
-          "blankIndex": 5,
-          "instruction": "sequence will hold the list of cell indexes for each round. It starts empty. Drag the value that represents an empty list.",
-          "explanation": "An empty array [] is the right starting value because startRound will fill it with a fresh random set of indexes at the beginning of every round. Starting empty means no leftover data from a previous round.",
-          "lessonRefs": ["s2-l1", "s2-l0"]
-        },
-        {
-          "lineIndex": 6,
-          "blankIndex": null,
-          "explanation": "playerClicks tracks which cells the player has clicked so far this round. It also starts as an empty array. startRound resets it to [] at the beginning of each round so old clicks do not carry over.",
-          "lessonRefs": ["s2-l1"]
-        },
-        {
-          "lineIndex": 7,
-          "blankIndex": 6,
-          "instruction": "isInputAllowed controls whether player clicks do anything. At the start the game is not running yet. Type the boolean that means clicking is blocked.",
-          "explanation": "false means clicking is turned off. The game turns it on after the display sequence finishes by setting isInputAllowed = true. Without this gate the player could click cells before the pattern is shown.",
-          "lessonRefs": ["s2-l1", "s2-l0"]
-        },
-        {
-          "lineIndex": 8,
-          "blankIndex": null,
-          "explanation": "level tracks which round the player is on. It starts at 1. Each time the player completes a round correctly checkResult adds 1 to level. The number also determines how many cells appear in the sequence that round.",
-          "lessonRefs": ["s2-l1"]
+          "id": "t7",
+          "label": "var"
         }
       ],
       "checks": [],
-      "expectedEffects": []
+      "lines": [
+        {
+          "id": "ln_0_0",
+          "text": "<<bk_0_0>> grid          = document.getElementById('grid');"
+        },
+        {
+          "id": "ln_0_1",
+          "text": "<<bk_0_1>> startBtn      = <<bk_0_2>>('start-btn');"
+        },
+        {
+          "id": "ln_0_2",
+          "text": "<<bk_0_3>> statusMessage = document.getElementById(<<bk_0_4>>);"
+        },
+        {
+          "id": "ln_0_3",
+          "text": "const cells         = document.querySelectorAll('.cell');",
+          "explanation": "querySelectorAll works like getElementById but returns ALL elements that match a CSS selector, not just one. A CSS class selector starts with a dot. So '.cell' finds every element with class='cell' on the page. This gives us all 16 grid squares at once as a list we can loop through.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "ln_0_4",
+          "text": ""
+        },
+        {
+          "id": "ln_0_5",
+          "text": "let sequence       = <<bk_0_5>>;"
+        },
+        {
+          "id": "ln_0_6",
+          "text": "let playerClicks   = [];",
+          "explanation": "playerClicks tracks which cells the player has clicked so far this round. It also starts as an empty array. startRound resets it to [] at the beginning of each round so old clicks do not carry over.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "ln_0_7",
+          "text": "let isInputAllowed = <<bk_0_6>>;"
+        },
+        {
+          "id": "ln_0_8",
+          "text": "let level          = 1;",
+          "explanation": "level tracks which round the player is on. It starts at 1. Each time the player completes a round correctly checkResult adds 1 to level. The number also determines how many cells appear in the sequence that round.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_0_0",
+          "mode": "wordbank",
+          "answer": "const",
+          "instruction": "This line creates a constant variable. Drag the keyword that declares a variable that will never be reassigned.",
+          "explanation": "const is used when you know the variable will always point to the same thing. grid will always refer to the same HTML element so const is the right choice over let.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_1",
+          "mode": "wordbank",
+          "answer": "const",
+          "instruction": "This line also creates a constant. Drag the same keyword you used on line 1.",
+          "explanation": "Every DOM reference in this program uses const because we grab each element once at the start and never replace it. The variable name changes but the pattern is identical.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_2",
+          "mode": "wordbank",
+          "answer": "document.getElementById",
+          "instruction": "Drag the method that searches the page for a single element by its id string.",
+          "explanation": "document.getElementById is the standard way to find one specific element. You pass in the id exactly as it appears in the HTML. It returns the element itself so you can change it later.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_3",
+          "mode": "type",
+          "answer": "const",
+          "instruction": "Type the keyword that declares a variable that will not be reassigned.",
+          "explanation": "You typed it this time instead of dragging it. The keyword is the same as lines 1 and 2. Recognizing the pattern is the point.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_4",
+          "mode": "type",
+          "answer": "'status-message'",
+          "instruction": "Type the id string of the status message element. Open the index.html tab to find it.",
+          "explanation": "The id is written directly in the HTML as id='status-message'. You pass it as a string with quotes. The string must match exactly including the hyphen.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_5",
+          "mode": "wordbank",
+          "answer": "[]",
+          "instruction": "sequence will hold the list of cell indexes for each round. It starts empty. Drag the value that represents an empty list.",
+          "explanation": "An empty array [] is the right starting value because startRound will fill it with a fresh random set of indexes at the beginning of every round. Starting empty means no leftover data from a previous round.",
+          "lessonRefs": [
+            "s2-l1",
+            "s2-l0"
+          ]
+        },
+        {
+          "id": "bk_0_6",
+          "mode": "type",
+          "answer": "false",
+          "instruction": "isInputAllowed controls whether player clicks do anything. At the start the game is not running yet. Type the boolean that means clicking is blocked.",
+          "explanation": "false means clicking is turned off. The game turns it on after the display sequence finishes by setting isInputAllowed = true. Without this gate the player could click cells before the pattern is shown.",
+          "lessonRefs": [
+            "s2-l1",
+            "s2-l0"
+          ]
+        }
+      ]
     },
     {
       "title": "Helper functions",
       "type": "practice",
       "duration": "5 min",
       "format": "final-project",
-      "lessonRefs": ["s3-l1", "s4-l2", "s4-l3"],
+      "lessonRefs": [
+        "s3-l1",
+        "s4-l2",
+        "s4-l3"
+      ],
       "tasks": [
         "These three helpers are used by the rest of the game.",
         "pickCells chooses a random set of cell indexes for the round.",
@@ -144,54 +197,141 @@
       ],
       "hint": "picked is an array that gets filled by the loop. The parameter name must match what is used inside the function body.",
       "codePrefix": "const grid          = document.getElementById('grid');\nconst startBtn      = document.getElementById('start-btn');\nconst statusMessage = document.getElementById('status-message');\nconst cells         = document.querySelectorAll('.cell');\n\nlet sequence       = [];\nlet playerClicks   = [];\nlet isInputAllowed = false;\nlet level          = 1;\nlet bestLevel      = 0;\n",
-      "codeWithBlanks": [
-        "function pickCells(n) {",
-        "  let allIndexes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];",
-        "  let picked = ___BLANK___;",
-        "",
-        "  for (let i = 0; i < n; i++) {",
-        "    let pos = Math.floor(Math.random() * allIndexes.length);",
-        "    picked.push(allIndexes[pos]);",
-        "    allIndexes.splice(pos, 1);",
-        "  }",
-        "  return picked;",
-        "}",
-        "",
-        "function setStatus(___BLANK___) {",
-        "  statusMessage.textContent = message;",
-        "}",
-        "",
-        "function updateLevelDisplay() {",
-        "  currentLevel.textContent = ___BLANK___;",
-        "}"
-      ],
       "tokenBank": [
-        { "id": "t1", "label": "[]" },
-        { "id": "t2", "label": "message" },
-        { "id": "t3", "label": "level" },
-        { "id": "t4", "label": "0" },
-        { "id": "t5", "label": "text" },
-        { "id": "t6", "label": "n" },
-        { "id": "t7", "label": "sequence" }
-      ],
-      "correctOrder": ["[]", "message", "level"],
-      "blankInputMode": ["type", "type", "freeline"],
-      "blankInstructions": [
-        "picked will collect the randomly chosen cell indexes. Type the value that represents an empty list in JavaScript.",
-        "setStatus takes one input. The function body refers to it as 'message'. Type the parameter name that matches.",
-        "Type the full line. updateLevelDisplay should set the textContent of the currentLevel element to the current level number."
-      ],
-      "blankExplanations": [
-        "The for loop pushes items into picked one at a time. Before the loop runs, picked needs to be empty so nothing carries over from a previous call.",
-        "A function parameter is a name you choose. Whatever name you put here must match every place it is used inside the function body. The body uses 'message', so the parameter must be 'message'.",
-        "currentLevel is the DOM element that shows the level on screen. Setting its textContent property to the level variable makes the display update whenever the function is called."
+        {
+          "id": "t1",
+          "label": "[]"
+        },
+        {
+          "id": "t2",
+          "label": "message"
+        },
+        {
+          "id": "t3",
+          "label": "level"
+        },
+        {
+          "id": "t4",
+          "label": "0"
+        },
+        {
+          "id": "t5",
+          "label": "text"
+        },
+        {
+          "id": "t6",
+          "label": "n"
+        },
+        {
+          "id": "t7",
+          "label": "sequence"
+        }
       ],
       "checks": [],
-      "expectedEffects": [
+      "lines": [
         {
-          "type": "domAssignment",
-          "elementId": "current-level",
-          "property": "textContent"
+          "id": "ln_1_0",
+          "text": "function pickCells(n) {"
+        },
+        {
+          "id": "ln_1_1",
+          "text": "  let allIndexes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];"
+        },
+        {
+          "id": "ln_1_2",
+          "text": "  let picked = <<bk_1_0>>;"
+        },
+        {
+          "id": "ln_1_3",
+          "text": ""
+        },
+        {
+          "id": "ln_1_4",
+          "text": "  for (let i = 0; i < n; i++) {"
+        },
+        {
+          "id": "ln_1_5",
+          "text": "    let pos = Math.floor(Math.random() * allIndexes.length);"
+        },
+        {
+          "id": "ln_1_6",
+          "text": "    picked.push(allIndexes[pos]);"
+        },
+        {
+          "id": "ln_1_7",
+          "text": "    allIndexes.splice(pos, 1);"
+        },
+        {
+          "id": "ln_1_8",
+          "text": "  }"
+        },
+        {
+          "id": "ln_1_9",
+          "text": "  return picked;"
+        },
+        {
+          "id": "ln_1_10",
+          "text": "}"
+        },
+        {
+          "id": "ln_1_11",
+          "text": ""
+        },
+        {
+          "id": "ln_1_12",
+          "text": "function setStatus(<<bk_1_1>>) {"
+        },
+        {
+          "id": "ln_1_13",
+          "text": "  statusMessage.textContent = message;"
+        },
+        {
+          "id": "ln_1_14",
+          "text": "}"
+        },
+        {
+          "id": "ln_1_15",
+          "text": ""
+        },
+        {
+          "id": "ln_1_16",
+          "text": "function updateLevelDisplay() {"
+        },
+        {
+          "id": "ln_1_17",
+          "text": "  currentLevel.textContent = <<bk_1_2>>;"
+        },
+        {
+          "id": "ln_1_18",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_1_0",
+          "mode": "type",
+          "answer": "[]",
+          "instruction": "picked will collect the randomly chosen cell indexes. Type the value that represents an empty list in JavaScript.",
+          "explanation": "The for loop pushes items into picked one at a time. Before the loop runs, picked needs to be empty so nothing carries over from a previous call."
+        },
+        {
+          "id": "bk_1_1",
+          "mode": "type",
+          "answer": "message",
+          "instruction": "setStatus takes one input. The function body refers to it as 'message'. Type the parameter name that matches.",
+          "explanation": "A function parameter is a name you choose. Whatever name you put here must match every place it is used inside the function body. The body uses 'message', so the parameter must be 'message'."
+        },
+        {
+          "id": "bk_1_2",
+          "mode": "freeline",
+          "answer": "level",
+          "instruction": "Type the full line. updateLevelDisplay should set the textContent of the currentLevel element to the current level number.",
+          "explanation": "currentLevel is the DOM element that shows the level on screen. Setting its textContent property to the level variable makes the display update whenever the function is called.",
+          "expectedEffect": {
+            "type": "domAssignment",
+            "elementId": "current-level",
+            "property": "textContent"
+          }
         }
       ]
     },
@@ -200,69 +340,184 @@
       "type": "practice",
       "duration": "6 min",
       "format": "final-project",
-      "lessonRefs": ["s5-l2", "s4-l2", "s5-l1"],
+      "lessonRefs": [
+        "s5-l2",
+        "s4-l2",
+        "s5-l1"
+      ],
       "tasks": [
         "startRound shows the player a sequence of cells one at a time, then lets them try to repeat it.",
         "Pick the right delay between cells, the class that disables clicks during the display, and the value that re-enables input afterward."
       ],
       "hint": "Check the CSS for the class that disables pointer events on cells.",
       "codePrefix": "const grid          = document.getElementById('grid');\nconst startBtn      = document.getElementById('start-btn');\nconst statusMessage = document.getElementById('status-message');\nconst cells         = document.querySelectorAll('.cell');\n\nlet sequence       = [];\nlet playerClicks   = [];\nlet isInputAllowed = false;\nlet level          = 1;\nlet bestLevel      = 0;\n\nfunction pickCells(n) {\n  let allIndexes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];\n  let picked = [];\n  for (let i = 0; i < n; i++) {\n    let pos = Math.floor(Math.random() * allIndexes.length);\n    picked.push(allIndexes[pos]);\n    allIndexes.splice(pos, 1);\n  }\n  return picked;\n}\n\nfunction setStatus(message) {\n  statusMessage.textContent = message;\n}\n\nfunction updateLevelDisplay() {\n  currentLevel.textContent = level;\n}\n",
-      "codeWithBlanks": [
-        "const DISPLAY_SPEED = ___BLANK___;",
-        "const LIT_DURATION  = 400;",
-        "",
-        "function startRound() {",
-        "  playerClicks = [];",
-        "  isInputAllowed = false;",
-        "  grid.classList.add(___BLANK___);",
-        "",
-        "  sequence = pickCells(level);",
-        "  updateLevelDisplay();",
-        "  setStatus('Watch carefully...');",
-        "",
-        "  for (let i = 0; i < sequence.length; i++) {",
-        "    setTimeout(function() {",
-        "      let cell = cells[sequence[i]];",
-        "      cell.classList.add('lit');",
-        "      setTimeout(function() {",
-        "        cell.classList.remove('lit');",
-        "      }, LIT_DURATION);",
-        "    }, (i + 1) * DISPLAY_SPEED);",
-        "  }",
-        "",
-        "  setTimeout(function() {",
-        "    isInputAllowed = ___BLANK___;",
-        "    grid.classList.remove('disabled');",
-        "    setStatus('Your turn!');",
-        "  }, (sequence.length + 1) * DISPLAY_SPEED);",
-        "}"
-      ],
       "tokenBank": [
-        { "id": "t1", "label": "700" },
-        { "id": "t2", "label": "'disabled'" },
-        { "id": "t3", "label": "true" },
-        { "id": "t4", "label": "1000" },
-        { "id": "t5", "label": "'active'" },
-        { "id": "t6", "label": "false" }
-      ],
-      "correctOrder": ["700", "'disabled'", "true"],
-      "blankInputMode": ["type", "type", "freeline"],
-      "blankInstructions": [
-        "Type the number of milliseconds between each cell lighting up. 700 means each cell appears 0.7 seconds after the previous one.",
-        "During the display phase, the grid needs to block all player clicks. Type the CSS class name (as a string) that makes the grid unclickable.",
-        "Type the full line. After the display finishes, the player needs to be able to click. Set isInputAllowed to the value that means clicking is allowed."
-      ],
-      "blankExplanations": [
-        "DISPLAY_SPEED is used in the formula (i + 1) * DISPLAY_SPEED inside the for loop. Each cell in the sequence gets a progressively later setTimeout so they light up one after another rather than all at once.",
-        "Open the style.css tab. Find the .grid.disabled rule. It sets pointer-events: none on every cell inside the grid. Adding this class name to the grid element switches that rule on.",
-        "isInputAllowed is the gate that handleClick checks before doing anything. Setting it to true here is what opens the gate after the display sequence finishes. Without this line the player could never click."
+        {
+          "id": "t1",
+          "label": "700"
+        },
+        {
+          "id": "t2",
+          "label": "'disabled'"
+        },
+        {
+          "id": "t3",
+          "label": "true"
+        },
+        {
+          "id": "t4",
+          "label": "1000"
+        },
+        {
+          "id": "t5",
+          "label": "'active'"
+        },
+        {
+          "id": "t6",
+          "label": "false"
+        }
       ],
       "checks": [],
-      "expectedEffects": [
+      "lines": [
         {
-          "type": "variableValue",
-          "name": "isInputAllowed",
-          "expected": true
+          "id": "ln_2_0",
+          "text": "const DISPLAY_SPEED = <<bk_2_0>>;"
+        },
+        {
+          "id": "ln_2_1",
+          "text": "const LIT_DURATION  = 400;"
+        },
+        {
+          "id": "ln_2_2",
+          "text": ""
+        },
+        {
+          "id": "ln_2_3",
+          "text": "function startRound() {"
+        },
+        {
+          "id": "ln_2_4",
+          "text": "  playerClicks = [];"
+        },
+        {
+          "id": "ln_2_5",
+          "text": "  isInputAllowed = false;"
+        },
+        {
+          "id": "ln_2_6",
+          "text": "  grid.classList.add(<<bk_2_1>>);"
+        },
+        {
+          "id": "ln_2_7",
+          "text": ""
+        },
+        {
+          "id": "ln_2_8",
+          "text": "  sequence = pickCells(level);"
+        },
+        {
+          "id": "ln_2_9",
+          "text": "  updateLevelDisplay();"
+        },
+        {
+          "id": "ln_2_10",
+          "text": "  setStatus('Watch carefully...');"
+        },
+        {
+          "id": "ln_2_11",
+          "text": ""
+        },
+        {
+          "id": "ln_2_12",
+          "text": "  for (let i = 0; i < sequence.length; i++) {"
+        },
+        {
+          "id": "ln_2_13",
+          "text": "    setTimeout(function() {"
+        },
+        {
+          "id": "ln_2_14",
+          "text": "      let cell = cells[sequence[i]];"
+        },
+        {
+          "id": "ln_2_15",
+          "text": "      cell.classList.add('lit');"
+        },
+        {
+          "id": "ln_2_16",
+          "text": "      setTimeout(function() {"
+        },
+        {
+          "id": "ln_2_17",
+          "text": "        cell.classList.remove('lit');"
+        },
+        {
+          "id": "ln_2_18",
+          "text": "      }, LIT_DURATION);"
+        },
+        {
+          "id": "ln_2_19",
+          "text": "    }, (i + 1) * DISPLAY_SPEED);"
+        },
+        {
+          "id": "ln_2_20",
+          "text": "  }"
+        },
+        {
+          "id": "ln_2_21",
+          "text": ""
+        },
+        {
+          "id": "ln_2_22",
+          "text": "  setTimeout(function() {"
+        },
+        {
+          "id": "ln_2_23",
+          "text": "    isInputAllowed = <<bk_2_2>>;"
+        },
+        {
+          "id": "ln_2_24",
+          "text": "    grid.classList.remove('disabled');"
+        },
+        {
+          "id": "ln_2_25",
+          "text": "    setStatus('Your turn!');"
+        },
+        {
+          "id": "ln_2_26",
+          "text": "  }, (sequence.length + 1) * DISPLAY_SPEED);"
+        },
+        {
+          "id": "ln_2_27",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_2_0",
+          "mode": "type",
+          "answer": "700",
+          "instruction": "Type the number of milliseconds between each cell lighting up. 700 means each cell appears 0.7 seconds after the previous one.",
+          "explanation": "DISPLAY_SPEED is used in the formula (i + 1) * DISPLAY_SPEED inside the for loop. Each cell in the sequence gets a progressively later setTimeout so they light up one after another rather than all at once."
+        },
+        {
+          "id": "bk_2_1",
+          "mode": "type",
+          "answer": "'disabled'",
+          "instruction": "During the display phase, the grid needs to block all player clicks. Type the CSS class name (as a string) that makes the grid unclickable.",
+          "explanation": "Open the style.css tab. Find the .grid.disabled rule. It sets pointer-events: none on every cell inside the grid. Adding this class name to the grid element switches that rule on."
+        },
+        {
+          "id": "bk_2_2",
+          "mode": "freeline",
+          "answer": "true",
+          "instruction": "Type the full line. After the display finishes, the player needs to be able to click. Set isInputAllowed to the value that means clicking is allowed.",
+          "explanation": "isInputAllowed is the gate that handleClick checks before doing anything. Setting it to true here is what opens the gate after the display sequence finishes. Without this line the player could never click.",
+          "expectedEffect": {
+            "type": "variableValue",
+            "name": "isInputAllowed",
+            "expected": true
+          }
         }
       ]
     },
@@ -271,7 +526,11 @@
       "type": "practice",
       "duration": "6 min",
       "format": "final-project",
-      "lessonRefs": ["s2-l7", "s3-l2", "s5-l1"],
+      "lessonRefs": [
+        "s2-l7",
+        "s3-l2",
+        "s5-l1"
+      ],
       "tasks": [
         "handleClick runs every time the player clicks a cell.",
         "It checks whether the click was correct and either advances the round or ends the game.",
@@ -279,69 +538,198 @@
       ],
       "hint": "The ! operator flips a boolean. sequence.length is the target the player needs to reach.",
       "codePrefix": "const grid          = document.getElementById('grid');\nconst startBtn      = document.getElementById('start-btn');\nconst statusMessage = document.getElementById('status-message');\nconst cells         = document.querySelectorAll('.cell');\n\nlet sequence       = [];\nlet playerClicks   = [];\nlet isInputAllowed = false;\nlet level          = 1;\nlet bestLevel      = 0;\n\nfunction pickCells(n) {\n  let allIndexes = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];\n  let picked = [];\n  for (let i = 0; i < n; i++) {\n    let pos = Math.floor(Math.random() * allIndexes.length);\n    picked.push(allIndexes[pos]);\n    allIndexes.splice(pos, 1);\n  }\n  return picked;\n}\n\nfunction setStatus(message) {\n  statusMessage.textContent = message;\n}\n\nfunction updateLevelDisplay() {\n  currentLevel.textContent = level;\n}\n\nconst DISPLAY_SPEED = 700;\nconst LIT_DURATION  = 400;\n\nfunction startRound() {\n  playerClicks = [];\n  isInputAllowed = false;\n  grid.classList.add('disabled');\n  sequence = pickCells(level);\n  updateLevelDisplay();\n  setStatus('Watch carefully...');\n  for (let i = 0; i < sequence.length; i++) {\n    setTimeout(function() {\n      let cell = cells[sequence[i]];\n      cell.classList.add('lit');\n      setTimeout(function() {\n        cell.classList.remove('lit');\n      }, LIT_DURATION);\n    }, (i + 1) * DISPLAY_SPEED);\n  }\n  setTimeout(function() {\n    isInputAllowed = true;\n    grid.classList.remove('disabled');\n    setStatus('Your turn!');\n  }, (sequence.length + 1) * DISPLAY_SPEED);\n}\n\ncells.forEach(function(cell) {\n  cell.addEventListener('click', function() {\n    const index = Number(this.dataset.index);\n    handleClick(index, this);\n  });\n});\n\nstartBtn.addEventListener('click', function() {\n  startBtn.style.display = 'none';\n  level = 1;\n  startRound();\n});\n",
-      "codeWithBlanks": [
-        "function handleClick(index, cellEl) {",
-        "  if (___BLANK___) { return; }",
-        "",
-        "  let currentStep    = playerClicks.length;",
-        "  let expectedIndex  = sequence[currentStep];",
-        "",
-        "  if (index === expectedIndex) {",
-        "    cellEl.classList.add('clicked');",
-        "    setTimeout(function() {",
-        "      cellEl.classList.remove('clicked');",
-        "    }, 250);",
-        "",
-        "    playerClicks.push(index);",
-        "",
-        "    if (playerClicks.length === ___BLANK___) {",
-        "      isInputAllowed = false;",
-        "      setStatus('Nice one!');",
-        "      setTimeout(checkResult, 800);",
-        "    }",
-        "  } else {",
-        "    isInputAllowed = false;",
-        "    setTimeout(showGameOver, 600);",
-        "  }",
-        "}",
-        "",
-        "function checkResult() {",
-        "  level = level + 1;",
-        "  setTimeout(startRound, 800);",
-        "}",
-        "",
-        "function showGameOver() {",
-        "  finalLevel.textContent = ___BLANK___;",
-        "  gameOverScreen.style.display = 'flex';",
-        "}"
-      ],
       "codeSuffix": "const currentLevel   = document.getElementById('current-level');\nconst finalLevel     = document.getElementById('final-level');\nconst gameOverScreen = document.getElementById('game-over-screen');\nconst restartBtn     = document.getElementById('restart-btn');\n\nfunction resetGame() {\n  gameOverScreen.style.display = 'none';\n  level = 1;\n  startRound();\n}\n\nrestartBtn.addEventListener('click', resetGame);",
       "tokenBank": [
-        { "id": "t1", "label": "!isInputAllowed" },
-        { "id": "t2", "label": "sequence.length" },
-        { "id": "t3", "label": "level" },
-        { "id": "t4", "label": "isInputAllowed" },
-        { "id": "t5", "label": "playerClicks.length" },
-        { "id": "t6", "label": "level - 1" }
-      ],
-      "correctOrder": ["!isInputAllowed", "sequence.length", "level"],
-      "blankInputMode": ["type", "type", "freeline"],
-      "blankInstructions": [
-        "handleClick should do nothing if the player is not supposed to be clicking yet. Type the expression that is true when input is NOT allowed.",
-        "The round is complete when the player has clicked exactly as many times as there are items to click. Type the expression that gives the total number of items in the sequence.",
-        "Type the full line. showGameOver needs to display the level the player reached. Set the textContent of finalLevel to the variable that holds the current level."
-      ],
-      "blankExplanations": [
-        "isInputAllowed is true when clicking is open and false when it is blocked. To guard against clicks during the display phase, we need the opposite of isInputAllowed. The ! operator in JavaScript flips a boolean to its opposite.",
-        "sequence is the array of cell indexes for this round. Its length property gives you exactly how many cells were shown. When playerClicks.length reaches that same number, every correct click has been made.",
-        "finalLevel is the DOM element inside the game over overlay that shows which level the player reached. Setting its textContent to the level variable displays the right number before the overlay appears."
+        {
+          "id": "t1",
+          "label": "!isInputAllowed"
+        },
+        {
+          "id": "t2",
+          "label": "sequence.length"
+        },
+        {
+          "id": "t3",
+          "label": "level"
+        },
+        {
+          "id": "t4",
+          "label": "isInputAllowed"
+        },
+        {
+          "id": "t5",
+          "label": "playerClicks.length"
+        },
+        {
+          "id": "t6",
+          "label": "level - 1"
+        }
       ],
       "checks": [],
-      "expectedEffects": [
+      "lines": [
         {
-          "type": "domAssignment",
-          "elementId": "final-level",
-          "property": "textContent"
+          "id": "ln_3_0",
+          "text": "function handleClick(index, cellEl) {"
+        },
+        {
+          "id": "ln_3_1",
+          "text": "  if (<<bk_3_0>>) { return; }"
+        },
+        {
+          "id": "ln_3_2",
+          "text": ""
+        },
+        {
+          "id": "ln_3_3",
+          "text": "  let currentStep    = playerClicks.length;"
+        },
+        {
+          "id": "ln_3_4",
+          "text": "  let expectedIndex  = sequence[currentStep];"
+        },
+        {
+          "id": "ln_3_5",
+          "text": ""
+        },
+        {
+          "id": "ln_3_6",
+          "text": "  if (index === expectedIndex) {"
+        },
+        {
+          "id": "ln_3_7",
+          "text": "    cellEl.classList.add('clicked');"
+        },
+        {
+          "id": "ln_3_8",
+          "text": "    setTimeout(function() {"
+        },
+        {
+          "id": "ln_3_9",
+          "text": "      cellEl.classList.remove('clicked');"
+        },
+        {
+          "id": "ln_3_10",
+          "text": "    }, 250);"
+        },
+        {
+          "id": "ln_3_11",
+          "text": ""
+        },
+        {
+          "id": "ln_3_12",
+          "text": "    playerClicks.push(index);"
+        },
+        {
+          "id": "ln_3_13",
+          "text": ""
+        },
+        {
+          "id": "ln_3_14",
+          "text": "    if (playerClicks.length === <<bk_3_1>>) {"
+        },
+        {
+          "id": "ln_3_15",
+          "text": "      isInputAllowed = false;"
+        },
+        {
+          "id": "ln_3_16",
+          "text": "      setStatus('Nice one!');"
+        },
+        {
+          "id": "ln_3_17",
+          "text": "      setTimeout(checkResult, 800);"
+        },
+        {
+          "id": "ln_3_18",
+          "text": "    }"
+        },
+        {
+          "id": "ln_3_19",
+          "text": "  } else {"
+        },
+        {
+          "id": "ln_3_20",
+          "text": "    isInputAllowed = false;"
+        },
+        {
+          "id": "ln_3_21",
+          "text": "    setTimeout(showGameOver, 600);"
+        },
+        {
+          "id": "ln_3_22",
+          "text": "  }"
+        },
+        {
+          "id": "ln_3_23",
+          "text": "}"
+        },
+        {
+          "id": "ln_3_24",
+          "text": ""
+        },
+        {
+          "id": "ln_3_25",
+          "text": "function checkResult() {"
+        },
+        {
+          "id": "ln_3_26",
+          "text": "  level = level + 1;"
+        },
+        {
+          "id": "ln_3_27",
+          "text": "  setTimeout(startRound, 800);"
+        },
+        {
+          "id": "ln_3_28",
+          "text": "}"
+        },
+        {
+          "id": "ln_3_29",
+          "text": ""
+        },
+        {
+          "id": "ln_3_30",
+          "text": "function showGameOver() {"
+        },
+        {
+          "id": "ln_3_31",
+          "text": "  finalLevel.textContent = <<bk_3_2>>;"
+        },
+        {
+          "id": "ln_3_32",
+          "text": "  gameOverScreen.style.display = 'flex';"
+        },
+        {
+          "id": "ln_3_33",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_3_0",
+          "mode": "type",
+          "answer": "!isInputAllowed",
+          "instruction": "handleClick should do nothing if the player is not supposed to be clicking yet. Type the expression that is true when input is NOT allowed.",
+          "explanation": "isInputAllowed is true when clicking is open and false when it is blocked. To guard against clicks during the display phase, we need the opposite of isInputAllowed. The ! operator in JavaScript flips a boolean to its opposite."
+        },
+        {
+          "id": "bk_3_1",
+          "mode": "type",
+          "answer": "sequence.length",
+          "instruction": "The round is complete when the player has clicked exactly as many times as there are items to click. Type the expression that gives the total number of items in the sequence.",
+          "explanation": "sequence is the array of cell indexes for this round. Its length property gives you exactly how many cells were shown. When playerClicks.length reaches that same number, every correct click has been made."
+        },
+        {
+          "id": "bk_3_2",
+          "mode": "freeline",
+          "answer": "level",
+          "instruction": "Type the full line. showGameOver needs to display the level the player reached. Set the textContent of finalLevel to the variable that holds the current level.",
+          "explanation": "finalLevel is the DOM element inside the game over overlay that shows which level the player reached. Setting its textContent to the level variable displays the right number before the overlay appears.",
+          "expectedEffect": {
+            "type": "domAssignment",
+            "elementId": "final-level",
+            "property": "textContent"
+          }
         }
       ]
     }

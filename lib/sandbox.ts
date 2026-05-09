@@ -22,7 +22,7 @@ function getOrCreateIframe(): HTMLIFrameElement {
   if (!iframe) {
     iframe = document.createElement('iframe')
     iframe.id = SANDBOX_ID
-    iframe.setAttribute('sandbox', 'allow-scripts')
+    iframe.setAttribute('sandbox', 'allow-scripts allow-modals')
     iframe.style.cssText = 'display:none;position:absolute;'
     document.body.appendChild(iframe)
   }

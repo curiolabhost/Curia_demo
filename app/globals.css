@@ -1691,17 +1691,13 @@ body {
 .fp-block-label { font-family:var(--mono); font-size:9px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:60px; }
 .fp-done .fp-block-label { color:var(--green); }
 .fp-active .fp-block-label { color:var(--accent); }
-.fp-instructions { flex:1; overflow-y:auto; padding:16px 20px 12px; min-height:0; }
-.fp-preview-section { flex-shrink:0; height:240px; border-top:1px solid var(--border); display:flex; flex-direction:column; position:relative; }
-.fp-preview-resize-handle { position:absolute; top:-3px; left:0; right:0; height:7px; cursor:ns-resize; background:transparent; z-index:5; }
-.fp-preview-resize-handle::after { content:''; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); width:36px; height:3px; border-radius:2px; background:var(--border); opacity:0; transition:opacity 0.15s ease, background 0.15s ease; }
-.fp-preview-resize-handle:hover::after, .fp-preview-resize-handle:active::after { opacity:1; background:var(--accent); }
+.fp-instructions { overflow-y:auto; padding:16px 20px 12px; min-height:0; }
+.fp-preview-section { display:flex; flex-direction:column; border-top:1px solid var(--border); overflow:hidden; }
 .fp-preview-bar { height:32px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 12px; gap:6px; flex-shrink:0; }
 .fp-preview-dot { width:8px; height:8px; border-radius:50%; }
 .fp-preview-label { font-family:var(--mono); font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; margin-left:4px; }
 .fp-preview-refresh { margin-left:auto; background:none; border:none; color:var(--text3); cursor:pointer; padding:2px; display:flex; align-items:center; }
 .fp-preview-refresh:hover { color:var(--text); }
-.fp-preview-iframe { flex:1; min-height:0; padding:8px; }
 
 /* ---------- Final project panel (right side) ---------- */
 .fp-panel { display:flex; flex-direction:column; height:100%; overflow:hidden; }
@@ -2008,19 +2004,6 @@ body {
 }
 
 /* ---------- Final project preview expand ---------- */
-
-.fp-preview-section {
-  transition: flex 0.2s ease;
-}
-
-.fp-preview-section.expanded {
-  flex: 1;
-  height: auto;
-}
-
-.fp-preview-section.expanded .fp-preview-resize-handle {
-  display: none;
-}
 
 .fp-instructions {
   transition: max-height 0.2s ease,
@@ -2402,4 +2385,53 @@ body {
 
 .prism-editor .token.italic {
   font-style: italic;
+}
+
+/* ---------- react-split gutter styling ---------- */
+
+.fp-split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fp-split > .gutter {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  cursor: ns-resize;
+  transition: background 0.15s ease;
+}
+.fp-split > .gutter:hover {
+  background: var(--surface2);
+}
+.fp-split > .gutter::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border2);
+  transition: background 0.15s ease;
+}
+.fp-split > .gutter:hover::after {
+  background: var(--accent);
+}
+
+/* Hide gutter when preview is expanded */
+.fp-split > .gutter.gutter-vertical:has(
+  + div .fp-preview-section
+) {
+  display: none;
+}
+
+/* Simpler expand hide, controlled by class */
+.fp-split.preview-expanded > .gutter {
+  display: none;
 }

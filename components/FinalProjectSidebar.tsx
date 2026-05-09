@@ -1,11 +1,9 @@
 'use client'
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import Split from 'react-split'
 import type { BlankInputMode, Exercise, Lesson } from '@/lib/lessons'
 import { PreviewIframe } from './PreviewIframe'
-
-const PREVIEW_MIN_HEIGHT = 240
-const PREVIEW_MAX_RESERVED_TOP = 200
 
 type FinalProjectSidebarProps = {
   lesson: Lesson
@@ -419,57 +417,18 @@ export function FinalProjectSidebar({
   const doneCount = allDone ? totalBlocks : safeActiveIndex
   const [refreshKey, setRefreshKey] = useState(0)
   const [previewExpanded, setPreviewExpanded] = useState(false)
-  const [previewHeight, setPreviewHeight] = useState<number>(PREVIEW_MIN_HEIGHT)
-  const sidebarRef = useRef<HTMLElement | null>(null)
-  const dragStateRef = useRef<{ startY: number; startHeight: number } | null>(
-    null,
-  )
-
-  const computeMaxHeight = () => {
-    const sidebarH = sidebarRef.current?.clientHeight ?? 0
-    const max = sidebarH - PREVIEW_MAX_RESERVED_TOP
-    return Math.max(PREVIEW_MIN_HEIGHT, max)
-  }
+  const [isDragging, setIsDragging] = useState(false)
+  const [splitSizes, setSplitSizes] = useState<[number, number]>([62, 38])
+  const splitRef = useRef<any>(null)
 
   useEffect(() => {
-    const onResize = () => {
-      setPreviewHeight((h) => Math.min(h, computeMaxHeight()))
+    if (!splitRef.current?.split) return
+    if (previewExpanded) {
+      splitRef.current.split.setSizes([0, 100])
+    } else {
+      splitRef.current.split.setSizes(splitSizes)
     }
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
-  const handleResizeMouseDown = (event: React.MouseEvent) => {
-    event.preventDefault()
-    if (previewExpanded) return
-    dragStateRef.current = {
-      startY: event.clientY,
-      startHeight: previewHeight,
-    }
-
-    const onMove = (e: MouseEvent) => {
-      const state = dragStateRef.current
-      if (!state) return
-      const dy = e.clientY - state.startY
-      const next = state.startHeight - dy
-      const max = computeMaxHeight()
-      const clamped = Math.max(PREVIEW_MIN_HEIGHT, Math.min(max, next))
-      setPreviewHeight(clamped)
-    }
-
-    const onUp = () => {
-      dragStateRef.current = null
-      document.removeEventListener('mousemove', onMove)
-      document.removeEventListener('mouseup', onUp)
-      document.body.style.userSelect = ''
-      document.body.style.cursor = ''
-    }
-
-    document.addEventListener('mousemove', onMove)
-    document.addEventListener('mouseup', onUp)
-    document.body.style.userSelect = 'none'
-    document.body.style.cursor = 'ns-resize'
-  }
+  }, [previewExpanded])
 
   const assembledUpTo = allDone ? totalBlocks : safeActiveIndex
   const assembledJs = useMemo(
@@ -561,7 +520,7 @@ export function FinalProjectSidebar({
   }
 
   return (
-    <aside className="fp-sidebar" ref={sidebarRef}>
+    <aside className="fp-sidebar">
       <div className="fp-sidebar-header">
         <span
           style={{
@@ -639,7 +598,30 @@ export function FinalProjectSidebar({
         })}
       </div>
 
-      <div className={`fp-instructions${previewExpanded ? ' hidden' : ''}`}>
+      <Split
+        ref={splitRef}
+        direction="vertical"
+        sizes={splitSizes}
+        minSize={[180, 240]}
+        gutterSize={6}
+        snapOffset={0}
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={(sizes: number[]) => {
+          setIsDragging(false)
+          setSplitSizes([sizes[0], sizes[1]])
+        }}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+        className={`fp-split${previewExpanded ? ' preview-expanded' : ''}`}
+      >
+      <div
+        className={`fp-instructions${previewExpanded ? ' hidden' : ''}`}
+        style={{ overflow: 'auto', minHeight: 0 }}
+      >
         {allDone ? (
           <div className="fp-celebration">
             <div className="fp-celebration-icon" aria-hidden>
@@ -889,17 +871,13 @@ export function FinalProjectSidebar({
       </div>
 
       <div
-        className={`fp-preview-section${previewExpanded ? ' expanded' : ''}`}
-        style={previewExpanded ? undefined : { height: previewHeight }}
+        className="fp-preview-section"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
       >
-        <div
-          className="fp-preview-resize-handle"
-          onMouseDown={handleResizeMouseDown}
-          role="separator"
-          aria-orientation="horizontal"
-          aria-label="Resize live preview"
-          title="Drag to resize"
-        />
         <div className="fp-preview-bar">
           <span
             className="fp-preview-dot"
@@ -954,7 +932,24 @@ export function FinalProjectSidebar({
             </button>
           </div>
         </div>
-        <div className="fp-preview-iframe">
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            position: 'relative',
+            padding: '8px',
+          }}
+        >
+          {isDragging && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 10,
+                cursor: 'ns-resize',
+              }}
+            />
+          )}
           <PreviewIframe
             htmlTemplate={htmlTemplate}
             cssTemplate={cssTemplate}
@@ -963,6 +958,7 @@ export function FinalProjectSidebar({
           />
         </div>
       </div>
+      </Split>
     </aside>
   )
 }

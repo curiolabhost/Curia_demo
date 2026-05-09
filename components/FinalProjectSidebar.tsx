@@ -1,8 +1,11 @@
 'use client'
 
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import type { BlankInputMode, Exercise, Lesson } from '@/lib/lessons'
 import { PreviewIframe } from './PreviewIframe'
+
+const PREVIEW_MIN_HEIGHT = 240
+const PREVIEW_MAX_RESERVED_TOP = 200
 
 type FinalProjectSidebarProps = {
   lesson: Lesson
@@ -416,6 +419,57 @@ export function FinalProjectSidebar({
   const doneCount = allDone ? totalBlocks : safeActiveIndex
   const [refreshKey, setRefreshKey] = useState(0)
   const [previewExpanded, setPreviewExpanded] = useState(false)
+  const [previewHeight, setPreviewHeight] = useState<number>(PREVIEW_MIN_HEIGHT)
+  const sidebarRef = useRef<HTMLElement | null>(null)
+  const dragStateRef = useRef<{ startY: number; startHeight: number } | null>(
+    null,
+  )
+
+  const computeMaxHeight = () => {
+    const sidebarH = sidebarRef.current?.clientHeight ?? 0
+    const max = sidebarH - PREVIEW_MAX_RESERVED_TOP
+    return Math.max(PREVIEW_MIN_HEIGHT, max)
+  }
+
+  useEffect(() => {
+    const onResize = () => {
+      setPreviewHeight((h) => Math.min(h, computeMaxHeight()))
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const handleResizeMouseDown = (event: React.MouseEvent) => {
+    event.preventDefault()
+    if (previewExpanded) return
+    dragStateRef.current = {
+      startY: event.clientY,
+      startHeight: previewHeight,
+    }
+
+    const onMove = (e: MouseEvent) => {
+      const state = dragStateRef.current
+      if (!state) return
+      const dy = e.clientY - state.startY
+      const next = state.startHeight - dy
+      const max = computeMaxHeight()
+      const clamped = Math.max(PREVIEW_MIN_HEIGHT, Math.min(max, next))
+      setPreviewHeight(clamped)
+    }
+
+    const onUp = () => {
+      dragStateRef.current = null
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
+    }
+
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    document.body.style.userSelect = 'none'
+    document.body.style.cursor = 'ns-resize'
+  }
 
   const assembledUpTo = allDone ? totalBlocks : safeActiveIndex
   const assembledJs = useMemo(
@@ -507,7 +561,7 @@ export function FinalProjectSidebar({
   }
 
   return (
-    <aside className="fp-sidebar">
+    <aside className="fp-sidebar" ref={sidebarRef}>
       <div className="fp-sidebar-header">
         <span
           style={{
@@ -836,7 +890,16 @@ export function FinalProjectSidebar({
 
       <div
         className={`fp-preview-section${previewExpanded ? ' expanded' : ''}`}
+        style={previewExpanded ? undefined : { height: previewHeight }}
       >
+        <div
+          className="fp-preview-resize-handle"
+          onMouseDown={handleResizeMouseDown}
+          role="separator"
+          aria-orientation="horizontal"
+          aria-label="Resize live preview"
+          title="Drag to resize"
+        />
         <div className="fp-preview-bar">
           <span
             className="fp-preview-dot"

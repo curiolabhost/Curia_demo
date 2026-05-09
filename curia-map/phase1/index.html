@@ -292,9 +292,9 @@
 
         // 5b. Render village sprites for slot objects.
         // Each slot has a `door` property ("front", "left", "right") that selects
-        // which village PNG to use. Sprites anchor at bottom-center so the door
-        // pixel sits at the slot's (x, y). Added to worldContainer AFTER tiles,
-        // so villages render on top of terrain but below the debug overlay.
+        // a pool of village PNG variants. Sprites anchor at bottom-center so the
+        // door pixel sits at the slot's (x, y). Added to worldContainer AFTER
+        // tiles, so villages render on top of terrain but below the debug overlay.
         setStatus('Loading village sprites...');
         const villageContainer = new PIXI.Container();
         villageContainer.label = 'Villages';
@@ -305,49 +305,89 @@
           return p ? p.value : null;
         };
 
-        // Cache: "door-variant" -> Texture | null (null = load failed, don't retry)
-        const villageTextureCache = new Map();
-        // Slot ids that successfully rendered a village; used in step 6 to skip
-        // the blue debug dot for those slots.
-        const slotsWithVillage = new Set();
+        const isSlotLayer = (l) => {
+          const ln = l.name.toLowerCase();
+          return ln.includes('slot') && !ln.includes('path');
+        };
+        const slotLayers = mapData.layers.filter(l =>
+          l.type === 'objectgroup' && l.visible !== false && isSlotLayer(l)
+        );
 
-        const loadVillageTexture = async (door, variant) => {
-          const key = `${door}-${variant}`;
-          if (villageTextureCache.has(key)) return villageTextureCache.get(key);
-          const path = `tiles/villages/village-${door}-${variant}.png`;
+        // Discover which door directions the map actually uses, so we only
+        // attempt loads for those.
+        const usedDoors = new Set();
+        for (const layer of slotLayers) {
+          for (const obj of layer.objects) {
+            const door = getProp(obj, 'door');
+            if (door) usedDoors.add(door);
+          }
+        }
+
+        // Try variants 1..MAX per door in parallel. Missing variants fail
+        // silently — Pixi/the browser will log a 404 but we don't add them
+        // to the pool.
+        const VARIANT_MAX = 10;
+        const loadVariant = async (door, n) => {
+          const path = `tiles/villages/village-${door}-${n}.png`;
           try {
             const tex = await PIXI.Assets.load(path);
             tex.source.scaleMode = 'nearest';
-            villageTextureCache.set(key, tex);
             return tex;
           } catch (err) {
-            console.warn(`Failed to load village texture: ${path}`);
-            villageTextureCache.set(key, null);
             return null;
           }
         };
+        const doorPools = new Map(); // door -> Texture[]
+        await Promise.all([...usedDoors].map(async (door) => {
+          const variants = await Promise.all(
+            Array.from({ length: VARIANT_MAX }, (_, i) => loadVariant(door, i + 1))
+          );
+          doorPools.set(door, variants.filter(t => t !== null));
+        }));
 
+        const poolSummary = [...usedDoors].map(door => {
+          const n = (doorPools.get(door) || []).length;
+          return `${n} ${door} variant${n === 1 ? '' : 's'}`;
+        }).join(', ');
+        console.log(`Loaded village variants: ${poolSummary || '(none)'}`);
+
+        // Deterministic variant picker keyed by slot identity. Knuth multiplicative
+        // hash for ints; simple djb2-ish hash for string fallback. >>> 0 forces
+        // unsigned so `% pool.length` is always non-negative.
+        const slotHash = (key) => {
+          if (typeof key === 'number') return (key * 2654435761) >>> 0;
+          const s = String(key || '');
+          let h = 0;
+          for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+          return h >>> 0;
+        };
+
+        // Slot ids that successfully rendered a village; used in step 6 to skip
+        // the blue debug dot for those slots.
+        const slotsWithVillage = new Set();
         let villageCount = 0;
-        for (const layer of mapData.layers) {
-          if (layer.type !== 'objectgroup') continue;
-          if (layer.visible === false) continue;
-          const ln = layer.name.toLowerCase();
-          // Same matcher as the debug-marker pass below.
-          if (!ln.includes('slot') || ln.includes('path')) continue;
 
-          await Promise.all(layer.objects.map(async (obj) => {
+        for (const layer of slotLayers) {
+          for (const obj of layer.objects) {
             const door = getProp(obj, 'door');
-            if (!door) return; // no door -> falls through to blue dot
-            const tex = await loadVillageTexture(door, 1);
-            if (!tex) return;  // load failed -> falls through to blue dot
+            if (!door) continue; // no door -> falls through to blue dot
+            const pool = doorPools.get(door);
+            if (!pool || pool.length === 0) continue; // no variants -> blue dot
+
+            const idx = getProp(obj, 'slotIndex');
+            const key = idx != null ? idx : obj.name;
+            const tex = pool.length === 1
+              ? pool[0]
+              : pool[slotHash(key) % pool.length];
+
             const sprite = new PIXI.Sprite(tex);
             sprite.anchor.set(0.5, 1);
-            sprite.x = obj.x;
-            sprite.y = obj.y;
+            sprite.x = obj.x + 8;
+            sprite.y = obj.y + 40;
             villageContainer.addChild(sprite);
             slotsWithVillage.add(obj.id);
             villageCount++;
-          }));
+          }
         }
         console.log(`Rendered ${villageCount} village sprites`);
 

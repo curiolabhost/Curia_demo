@@ -5,6 +5,7 @@ import type { Lesson } from '@/lib/lessons'
 import { getLessonsBySession } from '@/lib/lessons'
 import type { ItemStatus, LessonProgress } from '@/lib/progress'
 import { getProgress } from '@/lib/progress'
+import { MapView } from './map/MapView'
 
 type HomeViewProps = {
   allLessons: Lesson[]
@@ -37,26 +38,6 @@ function LockIcon({ size = 12 }: { size?: number }) {
     >
       <path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  )
-}
-
-function MapIcon({ size = 32 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M9 4l-6 2v14l6-2 6 2 6-2V4l-6 2-6-2z" />
-      <path d="M9 4v14" />
-      <path d="M15 6v14" />
     </svg>
   )
 }
@@ -184,14 +165,8 @@ export function HomeView({
 
       <div className="home-content">
         {activeTab === 'map' ? (
-          <div className="home-map-placeholder">
-            <span className="home-map-placeholder-icon">
-              <MapIcon size={32} />
-            </span>
-            <span className="home-map-placeholder-text">Game map coming soon</span>
-            <span className="home-map-placeholder-sub">
-              The interactive island map is being built.
-            </span>
+          <div className="home-map-host">
+            <MapView currentLessonId={activeLessonId} onNavigate={onNavigate} />
           </div>
         ) : (
           <div style={{ padding: '0 0 40px' }}>

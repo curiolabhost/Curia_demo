@@ -153,6 +153,7 @@ export type Lesson = {
   id: string
   session: string
   title: string
+  description?: string
   content: ContentPage[]
   exercises: Exercise[]
   challenges?: Challenge[]

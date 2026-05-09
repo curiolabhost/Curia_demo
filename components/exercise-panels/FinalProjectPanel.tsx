@@ -9,6 +9,7 @@ import type {
   Lesson,
 } from '@/lib/lessons'
 import { runInProjectSandbox } from '@/lib/projectSandbox'
+import { PrismEditor } from '@/components/PrismEditor'
 
 type FinalProjectPanelProps = {
   exercise: Exercise
@@ -305,7 +306,6 @@ export function FinalProjectPanel({
   const [completedTypedValues, setCompletedTypedValues] = useState<
     Record<number, string[]>
   >({})
-  const [dropTokenIds, setDropTokenIds] = useState<Record<string, string>>({})
   const [blankStates, setBlankStates] = useState<Record<string, BlankStatus>>(
     {},
   )
@@ -350,7 +350,6 @@ export function FinalProjectPanel({
 
   useEffect(() => {
     setDropValues({})
-    setDropTokenIds({})
     setBlankStates({})
     setAnswerState('idle')
     setDraggingTokenId(null)
@@ -388,8 +387,6 @@ export function FinalProjectPanel({
     }
   }, [])
 
-  const usedTokenIds = new Set(Object.values(dropTokenIds))
-
   const isBlankFilled = (i: number) => {
     const m = modeOf(i)
     if (m === 'wordbank') return dropValues[`b${i}`] !== undefined
@@ -414,37 +411,12 @@ export function FinalProjectPanel({
     })
   }
 
-  const placeToken = (blankId: string, tokenId: string, label: string) => {
+  const placeToken = (blankId: string, label: string) => {
     if (answerState === 'correct') return
     if (blankStates[blankId] === 'correct') return
     const blankIdx = Number(blankId.slice(1))
     if (modeOf(blankIdx) !== 'wordbank') return
-    if (usedTokenIds.has(tokenId)) {
-      const existingBlank = Object.entries(dropTokenIds).find(
-        ([, v]) => v === tokenId,
-      )?.[0]
-      if (existingBlank && existingBlank !== blankId) {
-        const nextDropValues = { ...dropValues }
-        delete nextDropValues[existingBlank]
-        nextDropValues[blankId] = label
-        setDropValues(nextDropValues)
-        setDropTokenIds((prev) => {
-          const next = { ...prev }
-          delete next[existingBlank]
-          next[blankId] = tokenId
-          return next
-        })
-        if (answerState === 'wrong') {
-          setAnswerState('idle')
-          setBlankStates({})
-        }
-        advanceActiveBankIndex(blankIdx)
-      }
-      return
-    }
-    const nextDropValues = { ...dropValues, [blankId]: label }
-    setDropValues(nextDropValues)
-    setDropTokenIds((prev) => ({ ...prev, [blankId]: tokenId }))
+    setDropValues((prev) => ({ ...prev, [blankId]: label }))
     if (answerState === 'wrong') {
       setAnswerState('idle')
       setBlankStates({})
@@ -457,11 +429,6 @@ export function FinalProjectPanel({
     if (blankStates[blankId] === 'correct') return
     if (dropValues[blankId] === undefined) return
     setDropValues((prev) => {
-      const next = { ...prev }
-      delete next[blankId]
-      return next
-    })
-    setDropTokenIds((prev) => {
       const next = { ...prev }
       delete next[blankId]
       return next
@@ -642,16 +609,6 @@ export function FinalProjectPanel({
           }
           return next
         })
-        setDropTokenIds((prev) => {
-          const next = { ...prev }
-          for (let i = 0; i < blankCount; i += 1) {
-            const id = `b${i}`
-            if (newStates[id] === 'wrong' && modeOf(i) === 'wordbank') {
-              delete next[id]
-            }
-          }
-          return next
-        })
         setTypedValues((prev) => {
           const next = [...prev]
           for (let i = 0; i < blankCount; i += 1) {
@@ -737,7 +694,7 @@ export function FinalProjectPanel({
           e.preventDefault()
           const tokenId = e.dataTransfer.getData('text/plain')
           const tok = tokens.find((t) => t.id === tokenId)
-          if (tok) placeToken(id, tok.id, tok.label)
+          if (tok) placeToken(id, tok.label)
           setHoverBlankId(null)
           setDraggingTokenId(null)
           if (lineIdx !== undefined) handleLineClick(lineIdx, blankIndex)
@@ -804,6 +761,8 @@ export function FinalProjectPanel({
             }
           }
         }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => e.preventDefault()}
         onClick={(e) => e.stopPropagation()}
         onFocus={() => {
           if (lineIdx !== undefined) {
@@ -850,6 +809,8 @@ export function FinalProjectPanel({
             if (allFilled) handleCheck()
           }
         }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => e.preventDefault()}
         onClick={(e) => e.stopPropagation()}
         onFocus={() => {
           if (lineIdx !== undefined) {
@@ -1050,45 +1011,6 @@ export function FinalProjectPanel({
             </CodeLine>
           )
         })}
-        {state === 'active' && activeLineIndex >= 0
-          ? (() => {
-              const startBlankCount = blanksLines
-                .slice(0, activeLineIndex)
-                .reduce((acc, ln) => acc + countBlanks([ln]), 0)
-              const blanksOnLine = countBlanks([blanksLines[activeLineIndex]])
-              const indices = Array.from(
-                { length: blanksOnLine },
-                (_, k) => startBlankCount + k,
-              )
-              const hasType = indices.some((bi) => modeOf(bi) === 'type')
-              if (!hasType) return null
-              return (
-                <div className="fp-hint-chips" key="hints">
-                  {tokens.map((token) => (
-                    <button
-                      key={token.id}
-                      type="button"
-                      className="fp-hint-chip"
-                      onClick={() => {
-                        const target = indices.find(
-                          (bi) =>
-                            modeOf(bi) === 'type' &&
-                            blankStates[`b${bi}`] !== 'correct',
-                        )
-                        if (target !== undefined) {
-                          setTypedAt(target, token.label)
-                          const el = typedInputRefs.current[target]
-                          if (el) el.focus()
-                        }
-                      }}
-                    >
-                      {token.label}
-                    </button>
-                  ))}
-                </div>
-              )
-            })()
-          : null}
         {suffixLines.map((line, i) => {
           const num = currentLineNumber
           currentLineNumber += 1
@@ -1105,9 +1027,6 @@ export function FinalProjectPanel({
   const codeBlocks = allExercises.map((block, idx) => renderBlock(block, idx))
 
   const isCorrect = answerState === 'correct'
-
-  const activeMode = modeOf(activeBankIndex)
-  const showTokens = activeMode === 'wordbank'
 
   return (
     <div className="fp-panel">
@@ -1173,9 +1092,7 @@ export function FinalProjectPanel({
           ) : (
             <div className="fp-word-bank">
               <div className="fp-wb-label-row">
-                <span className="fp-wb-label">
-                  {showTokens ? 'Word bank' : 'Type your answer'}
-                </span>
+                <span className="fp-wb-label">Word bank</span>
                 {isCorrect ? (
                   <button
                     type="button"
@@ -1200,32 +1117,32 @@ export function FinalProjectPanel({
                   </button>
                 )}
               </div>
-              {showTokens ? (
-                <div className="fp-token-bank">
-                  {tokens.map((token) => {
-                    const used = usedTokenIds.has(token.id)
-                    const dragging = draggingTokenId === token.id
-                    let cls = 'fp-token'
-                    if (used) cls += ' fp-token-used'
-                    if (dragging) cls += ' fp-token-dragging'
-                    return (
-                      <div
-                        key={token.id}
-                        className={cls}
-                        draggable={!used && !isCorrect}
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData('text/plain', token.id)
-                          e.dataTransfer.effectAllowed = 'move'
-                          setDraggingTokenId(token.id)
-                        }}
-                        onDragEnd={() => setDraggingTokenId(null)}
-                      >
-                        {token.label}
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : null}
+              <div className="fp-token-bank">
+                {tokens.map((token) => {
+                  const dragging = draggingTokenId === token.id
+                  let cls = 'fp-token'
+                  if (dragging) cls += ' fp-token-dragging'
+                  return (
+                    <div
+                      key={token.id}
+                      className={cls}
+                      draggable={!isCorrect}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', token.id)
+                        e.dataTransfer.effectAllowed = 'move'
+                        setDraggingTokenId(token.id)
+                      }}
+                      onDragEnd={() => setDraggingTokenId(null)}
+                      onClick={() => {
+                        if (modeOf(activeBankIndex) !== 'wordbank') return
+                        placeToken(`b${activeBankIndex}`, token.label)
+                      }}
+                    >
+                      {token.label}
+                    </div>
+                  )
+                })}
+              </div>
               {answerState === 'wrong'
                 ? (() => {
                     const msg =
@@ -1246,22 +1163,25 @@ export function FinalProjectPanel({
           )}
         </>
       ) : (
-        <>
-          <div className="fp-file-banner">
-            This file is pre-written. You can edit it if you want to experiment.
-          </div>
-          <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
-            <textarea
-              className="fp-file-editor"
-              value={activeFile === 'html' ? editedHtml : editedCss}
-              onChange={(e) => {
-                if (activeFile === 'html') setEditedHtml(e.target.value)
-                else setEditedCss(e.target.value)
-              }}
-              spellCheck={false}
+        <div style={{ flex: 1, minHeight: 0, height: '100%', display: 'flex' }}>
+          {activeFile === 'html' ? (
+            <PrismEditor
+              code={editedHtml}
+              language="html"
+              onChange={(val) => setEditedHtml(val)}
+              readOnly={!allDone}
+              readOnlyMessage="Complete all script.js blocks to edit this file"
             />
-          </div>
-        </>
+          ) : (
+            <PrismEditor
+              code={editedCss}
+              language="css"
+              onChange={(val) => setEditedCss(val)}
+              readOnly={!allDone}
+              readOnlyMessage="Complete all script.js blocks to edit this file"
+            />
+          )}
+        </div>
       )}
     </div>
   )

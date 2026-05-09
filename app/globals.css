@@ -1431,28 +1431,37 @@ body {
   min-height: 0;
 }
 
-.home-map-placeholder {
+.home-map-host {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.map-canvas-wrapper {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.map-loading,
+.map-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
-  gap: 12px;
+  gap: 8px;
   color: var(--text3);
   text-align: center;
   padding: 40px;
 }
 
-.home-map-placeholder-icon {
-  color: var(--border2);
+.map-empty-title {
+  font-size: 14px;
+  color: var(--text2);
 }
 
-.home-map-placeholder-text {
-  font-size: 13px;
-  color: var(--text3);
-}
-
-.home-map-placeholder-sub {
+.map-empty-sub {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--text3);
@@ -1683,7 +1692,10 @@ body {
 .fp-done .fp-block-label { color:var(--green); }
 .fp-active .fp-block-label { color:var(--accent); }
 .fp-instructions { flex:1; overflow-y:auto; padding:16px 20px 12px; min-height:0; }
-.fp-preview-section { flex-shrink:0; height:240px; border-top:1px solid var(--border); display:flex; flex-direction:column; }
+.fp-preview-section { flex-shrink:0; height:240px; border-top:1px solid var(--border); display:flex; flex-direction:column; position:relative; }
+.fp-preview-resize-handle { position:absolute; top:-3px; left:0; right:0; height:7px; cursor:ns-resize; background:transparent; z-index:5; }
+.fp-preview-resize-handle::after { content:''; position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); width:36px; height:3px; border-radius:2px; background:var(--border); opacity:0; transition:opacity 0.15s ease, background 0.15s ease; }
+.fp-preview-resize-handle:hover::after, .fp-preview-resize-handle:active::after { opacity:1; background:var(--accent); }
 .fp-preview-bar { height:32px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 12px; gap:6px; flex-shrink:0; }
 .fp-preview-dot { width:8px; height:8px; border-radius:50%; }
 .fp-preview-label { font-family:var(--mono); font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; margin-left:4px; }
@@ -1998,12 +2010,16 @@ body {
 /* ---------- Final project preview expand ---------- */
 
 .fp-preview-section {
-  transition: flex 0.2s ease, height 0.2s ease;
+  transition: flex 0.2s ease;
 }
 
 .fp-preview-section.expanded {
   flex: 1;
   height: auto;
+}
+
+.fp-preview-section.expanded .fp-preview-resize-handle {
+  display: none;
 }
 
 .fp-instructions {
@@ -2081,4 +2097,309 @@ body {
   letter-spacing: 0.08em;
   color: var(--text3);
   margin-bottom: 6px;
+}
+
+/* ---------- Lesson panel (map village click) ---------- */
+
+.lesson-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  background: #ffffff;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 20px;
+  z-index: 10;
+  animation: lesson-panel-slide-in 250ms ease-out;
+}
+
+.lesson-panel.closing {
+  animation: lesson-panel-slide-out 200ms ease-in forwards;
+}
+
+@keyframes lesson-panel-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes lesson-panel-slide-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+.lesson-panel-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: 0;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.lesson-panel-close:hover {
+  color: var(--text);
+  background: var(--surface2);
+}
+
+.lesson-panel-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0 -8px;
+  padding: 0 8px;
+}
+
+.lesson-panel-title {
+  margin: 0 32px 0 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.lesson-panel-desc {
+  margin: 10px 0 0;
+  font-size: 0.9375rem;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.lesson-panel-section-header {
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.lesson-panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lesson-panel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.lesson-panel-row:hover {
+  background: var(--surface2);
+}
+
+.lesson-panel-row-num {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface2);
+  color: var(--text2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lesson-panel-row:hover .lesson-panel-row-num {
+  background: #ffffff;
+}
+
+.lesson-panel-row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.lesson-panel-row-meta {
+  color: var(--text3);
+}
+
+.lesson-panel-open {
+  margin-top: 16px;
+  flex: 0 0 auto;
+  width: 100%;
+  background: var(--accent);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lesson-panel-open:hover {
+  filter: brightness(1.05);
+}
+
+.lesson-panel-open:focus-visible,
+.lesson-panel-close:focus-visible,
+.lesson-panel-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Prism editor ---------- */
+
+.prism-editor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #1e1e2e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+}
+
+.prism-editor pre {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+  word-wrap: normal;
+  background: transparent;
+  color: #cdd6f4;
+  pointer-events: none;
+  tab-size: 2;
+  border: none;
+  border-radius: 0;
+}
+
+.prism-editor textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+  word-wrap: normal;
+  background: transparent;
+  color: transparent;
+  caret-color: #cdd6f4;
+  border: none;
+  outline: none;
+  resize: none;
+  tab-size: 2;
+  z-index: 1;
+}
+
+.prism-editor textarea:disabled,
+.prism-editor textarea[readonly] {
+  cursor: default;
+  user-select: text;
+}
+
+.prism-editor-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: rgba(203,166,247,0.12);
+  border-bottom: 1px solid rgba(203,166,247,0.2);
+  color: #cba6f7;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 16px;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Prism token colors - scoped to .prism-editor */
+
+.prism-editor .token.comment,
+.prism-editor .token.prolog,
+.prism-editor .token.doctype,
+.prism-editor .token.cdata {
+  color: #6c7086;
+  font-style: italic;
+}
+
+.prism-editor .token.tag,
+.prism-editor .token.keyword {
+  color: #cba6f7;
+}
+
+.prism-editor .token.attr-name,
+.prism-editor .token.property {
+  color: #89b4fa;
+}
+
+.prism-editor .token.attr-value,
+.prism-editor .token.string {
+  color: #a6e3a1;
+}
+
+.prism-editor .token.punctuation,
+.prism-editor .token.operator {
+  color: #89dceb;
+}
+
+.prism-editor .token.number,
+.prism-editor .token.boolean,
+.prism-editor .token.unit {
+  color: #fab387;
+}
+
+.prism-editor .token.selector,
+.prism-editor .token.class-name,
+.prism-editor .token.function {
+  color: #89b4fa;
+}
+
+.prism-editor .token.atrule {
+  color: #cba6f7;
+}
+
+.prism-editor .token.important,
+.prism-editor .token.bold {
+  font-weight: bold;
+}
+
+.prism-editor .token.italic {
+  font-style: italic;
 }

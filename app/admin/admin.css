@@ -476,6 +476,78 @@
   color: var(--code-purple);
 }
 
+/* Edit toolbar above file tabs in FinalProjectPanel. */
+.admin-edit-toolbar {
+  width: 100%;
+  background: var(--accent-dim);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-toolbar-blank-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.admin-toolbar-blank-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text3);
+  cursor: not-allowed;
+  line-height: 1.2;
+}
+.admin-toolbar-blank-btn.enabled {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--white);
+  cursor: pointer;
+}
+.admin-toolbar-blank-btn.enabled:hover {
+  filter: brightness(1.05);
+}
+
+.admin-toolbar-blank-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  min-width: 132px;
+  z-index: 1102;
+  padding: 4px;
+}
+.admin-toolbar-blank-menu button {
+  font-family: var(--sans);
+  font-size: 12px;
+  text-align: left;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text);
+}
+.admin-toolbar-blank-menu button:hover {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.fp-code-line.admin-active-line {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
 /* Floating blank detail panel. */
 .admin-blank-panel-backdrop {
   position: fixed;

@@ -75,6 +75,7 @@ type Action =
       segmentPosition: number
       mode: BlankInputMode
     }
+  | { type: 'blanks.add'; blockIdx: number; blank: FinalProjectBlank }
   | { type: 'blanks.remove'; blockIdx: number; blankId: string }
   | {
       type: 'blanks.update'
@@ -335,6 +336,12 @@ function reducer(state: State, action: Action): State {
         return { ...block, lines, blanks }
       })
     }
+    case 'blanks.add': {
+      return updateBlock(state, action.blockIdx, (block) => {
+        const blanks = (block.blanks ?? []).concat(action.blank)
+        return { ...block, blanks }
+      })
+    }
     case 'blanks.remove': {
       return updateBlock(state, action.blockIdx, (block) => {
         const lines = block.lines.map((l) => {
@@ -472,6 +479,7 @@ export type EditActions = {
       segmentPosition: number,
       mode: BlankInputMode,
     ) => void
+    add: (blockIdx: number, blank: FinalProjectBlank) => void
     remove: (blockIdx: number, blankId: string) => void
     update: (
       blockIdx: number,
@@ -547,6 +555,7 @@ export function useLessonDraft(initialLesson: Lesson): UseLessonDraftReturn {
             segmentPosition,
             mode,
           }),
+        add: (blockIdx, blank) => dispatch({ type: 'blanks.add', blockIdx, blank }),
         remove: (blockIdx, blankId) =>
           dispatch({ type: 'blanks.remove', blockIdx, blankId }),
         update: (blockIdx, blankId, partial) =>

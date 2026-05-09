@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { BlankDetailPanel } from '@/components/admin/BlankDetailPanel'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
+import { mintBlankId } from '@/lib/admin/id'
 import type {
   BlankInputMode,
   Exercise,
@@ -31,17 +32,18 @@ type FinalProjectPanelProps = {
   blockIdx?: number
 }
 
-type AdminBlankPickerState = {
-  blockIdx: number
-  lineIdx: number
-  segmentPos: number
-  anchorRect: { left: number; top: number; bottom: number; right: number }
-} | null
-
 type AdminBlankPanelState = {
   blockIdx: number
   blankId: string
   anchorRect: { left: number; top: number; bottom: number; right: number }
+} | null
+
+type AdminActiveLine = { blockIdx: number; lineIdx: number } | null
+type AdminActiveSelection = {
+  segmentIdx: number
+  start: number
+  end: number
+  selectedText: string
 } | null
 
 type AnswerState = 'idle' | 'checking' | 'correct' | 'wrong'
@@ -316,54 +318,62 @@ function CodeLine({
 }
 
 type AdminTextSegmentProps = {
+  blockIdx: number
+  lineIdx: number
+  segmentIdx: number
   value: string
   onCommit: (next: string) => void
+  onSelectionChange: (
+    location: { blockIdx: number; lineIdx: number },
+    selection: AdminActiveSelection,
+  ) => void
+  onLineFocus: (location: { blockIdx: number; lineIdx: number }) => void
+  onLineBlur: () => void
 }
 
-function AdminTextSegment({ value, onCommit }: AdminTextSegmentProps) {
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState(value)
-  useEffect(() => {
-    if (!editing) setDraft(value)
-  }, [value, editing])
-
-  if (editing) {
-    return (
-      <input
-        className="admin-line-text-input"
-        autoFocus
-        value={draft}
-        spellCheck={false}
-        size={Math.max(2, draft.length + 1)}
-        onChange={(e) => setDraft(e.target.value)}
-        onClick={(e) => e.stopPropagation()}
-        onBlur={() => {
-          setEditing(false)
-          if (draft !== value) onCommit(draft)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault()
-            ;(e.currentTarget as HTMLInputElement).blur()
-          } else if (e.key === 'Escape') {
-            setDraft(value)
-            setEditing(false)
-          }
-        }}
-      />
-    )
+function AdminTextSegment({
+  blockIdx,
+  lineIdx,
+  segmentIdx,
+  value,
+  onCommit,
+  onSelectionChange,
+  onLineFocus,
+  onLineBlur,
+}: AdminTextSegmentProps) {
+  const reportSelection = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const el = e.currentTarget
+    const s = el.selectionStart ?? 0
+    const en = el.selectionEnd ?? 0
+    if (s !== en) {
+      onSelectionChange(
+        { blockIdx, lineIdx },
+        {
+          segmentIdx,
+          start: s,
+          end: en,
+          selectedText: el.value.slice(s, en),
+        },
+      )
+    } else {
+      onSelectionChange({ blockIdx, lineIdx }, null)
+    }
   }
 
   return (
-    <span
-      className="admin-line-text-segment"
-      onClick={(e) => {
-        e.stopPropagation()
-        setEditing(true)
-      }}
-    >
-      <HighlightedText value={value.length > 0 ? value : ' '} />
-    </span>
+    <input
+      className="admin-line-text-input"
+      value={value}
+      spellCheck={false}
+      size={Math.max(2, value.length + 1)}
+      onChange={(e) => onCommit(e.target.value)}
+      onClick={(e) => e.stopPropagation()}
+      onMouseUp={reportSelection}
+      onSelect={reportSelection}
+      onKeyUp={reportSelection}
+      onFocus={() => onLineFocus({ blockIdx, lineIdx })}
+      onBlur={onLineBlur}
+    />
   )
 }
 
@@ -381,8 +391,11 @@ export function FinalProjectPanel({
   editActions,
   blockIdx,
 }: FinalProjectPanelProps) {
-  const [blankPicker, setBlankPicker] = useState<AdminBlankPickerState>(null)
   const [blankPanel, setBlankPanel] = useState<AdminBlankPanelState>(null)
+  const [activeLine, setActiveLine] = useState<AdminActiveLine>(null)
+  const [activeSelection, setActiveSelection] =
+    useState<AdminActiveSelection>(null)
+  const [blankTypeMenuOpen, setBlankTypeMenuOpen] = useState(false)
   const editingBlockIdx = blockIdx ?? activeIndex
   const [activeFile, setActiveFile] = useState<FinalProjectFile>('script')
   const [dropValues, setDropValues] = useState<Record<string, string>>({})
@@ -696,6 +709,83 @@ export function FinalProjectPanel({
       [activeIndex]: { ...typedValues },
     }))
     onComplete(true)
+  }
+
+  const handleAdminLineFocus = (loc: { blockIdx: number; lineIdx: number }) => {
+    setActiveLine(loc)
+    setActiveSelection(null)
+    setBlankTypeMenuOpen(false)
+  }
+
+  const handleAdminLineBlur = () => {
+    setActiveLine(null)
+    setActiveSelection(null)
+    setBlankTypeMenuOpen(false)
+  }
+
+  const handleAdminSelectionChange = (
+    loc: { blockIdx: number; lineIdx: number },
+    sel: AdminActiveSelection,
+  ) => {
+    setActiveLine(loc)
+    setActiveSelection(sel)
+    if (sel === null) setBlankTypeMenuOpen(false)
+  }
+
+  const insertBlankFromSelection = (mode: BlankInputMode) => {
+    if (!editActions || !activeLine || !activeSelection) return
+    const block = allExercises[activeLine.blockIdx]
+    if (!block) return
+    const blockLines = block.lines ?? []
+    const line = blockLines[activeLine.lineIdx]
+    if (!line) return
+
+    const parsed = parseLineSegments(line.text)
+    const target = parsed[activeSelection.segmentIdx]
+    if (!target || target.kind !== 'text') return
+
+    const { start, end, selectedText } = activeSelection
+    const before = target.value.slice(0, start)
+    const after = target.value.slice(end)
+
+    const existingIds = new Set<string>()
+    for (const b of block.blanks ?? []) existingIds.add(b.id)
+    const newId = mintBlankId(existingIds)
+
+    const replacement: Array<
+      | { kind: 'text'; value: string }
+      | { kind: 'blank'; blankId: string }
+    > = []
+    if (before.length > 0) replacement.push({ kind: 'text', value: before })
+    replacement.push({ kind: 'blank', blankId: newId })
+    if (after.length > 0) replacement.push({ kind: 'text', value: after })
+
+    const converted = parsed.map((s) =>
+      s.kind === 'text'
+        ? { kind: 'text' as const, value: s.value }
+        : { kind: 'blank' as const, blankId: s.id },
+    )
+    const newSegs = [
+      ...converted.slice(0, activeSelection.segmentIdx),
+      ...replacement,
+      ...converted.slice(activeSelection.segmentIdx + 1),
+    ]
+
+    editActions.lines.editSegments(
+      activeLine.blockIdx,
+      activeLine.lineIdx,
+      newSegs,
+    )
+    editActions.blanks.add(activeLine.blockIdx, {
+      id: newId,
+      mode,
+      answer: selectedText,
+      instruction: '',
+      explanation: '',
+    })
+
+    setActiveSelection(null)
+    setBlankTypeMenuOpen(false)
   }
 
   useEffect(() => {
@@ -1091,6 +1181,16 @@ export function FinalProjectPanel({
             } else if (!editMode && i === selectedLineIndex) {
               classes.push('line-selected')
             }
+            if (editMode) {
+              classes.push('admin-edit-line')
+              if (
+                activeLine &&
+                activeLine.blockIdx === idx &&
+                activeLine.lineIdx === i
+              ) {
+                classes.push('admin-active-line')
+              }
+            }
             const extraClass = classes.join(' ')
 
             const defaultBlankIdx =
@@ -1130,38 +1230,17 @@ export function FinalProjectPanel({
                   if (seg.kind === 'text') {
                     if (editMode) {
                       return (
-                        <Fragment key={j}>
-                          <AdminTextSegment
-                            value={seg.value}
-                            onCommit={(next) => editText(i, j, next)}
-                          />
-                          {editActions ? (
-                            <button
-                              type="button"
-                              className="admin-add-blank-btn"
-                              title="Insert blank after this text"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                const rect = (
-                                  e.currentTarget as HTMLButtonElement
-                                ).getBoundingClientRect()
-                                setBlankPicker({
-                                  blockIdx: idx,
-                                  lineIdx: i,
-                                  segmentPos: j + 1,
-                                  anchorRect: {
-                                    left: rect.left,
-                                    top: rect.top,
-                                    bottom: rect.bottom,
-                                    right: rect.right,
-                                  },
-                                })
-                              }}
-                            >
-                              + blank
-                            </button>
-                          ) : null}
-                        </Fragment>
+                        <AdminTextSegment
+                          key={j}
+                          blockIdx={idx}
+                          lineIdx={i}
+                          segmentIdx={j}
+                          value={seg.value}
+                          onCommit={(next) => editText(i, j, next)}
+                          onSelectionChange={handleAdminSelectionChange}
+                          onLineFocus={handleAdminLineFocus}
+                          onLineBlur={handleAdminLineBlur}
+                        />
                       )
                     }
                     return <HighlightedText key={j} value={seg.value} />
@@ -1225,8 +1304,83 @@ export function FinalProjectPanel({
   const isCorrect = answerState === 'correct'
   const activeBlank = blanks[activeBankIndex]
 
+  const selectionActive =
+    activeSelection !== null && activeSelection.selectedText.length > 0
+
   return (
     <div className="fp-panel">
+      {editMode ? (
+        <style>{`
+          .fp-code-line.admin-edit-line {
+            border-left: 2px solid transparent;
+            margin-left: -2px;
+            background: transparent;
+            box-shadow: none;
+            outline: none;
+          }
+          .fp-code-line.admin-edit-line:hover {
+            border-left-color: var(--border);
+            background: transparent;
+          }
+          .fp-code-line.admin-edit-line.admin-active-line {
+            border-left-color: var(--accent);
+            box-shadow: none;
+            background: transparent;
+          }
+          .fp-code-line.admin-edit-line .admin-line-text-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            border-radius: 0;
+            padding: 0;
+            min-width: 0;
+          }
+        `}</style>
+      ) : null}
+      {editMode ? (
+        <div className="admin-edit-toolbar">
+          <div className="admin-toolbar-blank-wrap">
+            <button
+              type="button"
+              className={`admin-toolbar-blank-btn${
+                selectionActive ? ' enabled' : ''
+              }`}
+              disabled={!selectionActive}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                if (selectionActive) setBlankTypeMenuOpen((v) => !v)
+              }}
+            >
+              + Blank
+            </button>
+            {blankTypeMenuOpen && selectionActive ? (
+              <div
+                className="admin-toolbar-blank-menu"
+                onMouseDown={(e) => e.preventDefault()}
+              >
+                <button
+                  type="button"
+                  onClick={() => insertBlankFromSelection('wordbank')}
+                >
+                  Word Bank
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertBlankFromSelection('type')}
+                >
+                  Type
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertBlankFromSelection('freeline')}
+                >
+                  Free Line
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       <div className="fp-file-tabs">
         <button
           type="button"
@@ -1419,42 +1573,6 @@ export function FinalProjectPanel({
           )}
         </div>
       )}
-
-      {editMode && editActions && blankPicker ? (
-        <>
-          <div
-            className="admin-blank-panel-backdrop"
-            onClick={() => setBlankPicker(null)}
-          />
-          <div
-            className="admin-blank-mode-picker"
-            style={{
-              position: 'fixed',
-              left: blankPicker.anchorRect.left,
-              top: blankPicker.anchorRect.bottom + 4,
-              zIndex: 1101,
-            }}
-          >
-            {(['wordbank', 'type', 'freeline'] as BlankInputMode[]).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => {
-                  editActions.blanks.insert(
-                    blankPicker.blockIdx,
-                    blankPicker.lineIdx,
-                    blankPicker.segmentPos,
-                    m,
-                  )
-                  setBlankPicker(null)
-                }}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-        </>
-      ) : null}
 
       {editMode && editActions && blankPanel
         ? (() => {

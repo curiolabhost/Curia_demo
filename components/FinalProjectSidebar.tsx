@@ -940,16 +940,15 @@ export function FinalProjectSidebar({
             padding: '8px',
           }}
         >
-          {isDragging && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: 10,
-                cursor: 'ns-resize',
-              }}
-            />
-          )}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 10,
+              cursor: 'ns-resize',
+              pointerEvents: isDragging ? 'auto' : 'none',
+            }}
+          />
           <PreviewIframe
             htmlTemplate={htmlTemplate}
             cssTemplate={cssTemplate}

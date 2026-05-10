@@ -6,9 +6,10 @@ import type { FillBlankToken } from './lessons'
 export type WordBankFiller = {
   filled: (string | null)[]
   filledTokenIds: (string | null)[]
-  usedTokenIds: Set<string>
   handleTokenClick: (tokenId: string, label: string) => void
   handleBlankClick: (blankIndex: number) => void
+  placeAt: (targetIndex: number, tokenId: string, label: string) => void
+  clearBlank: (index: number) => void
   allFilled: boolean
   reset: () => void
 }
@@ -33,12 +34,7 @@ export function useWordBankFiller(
     setFilledTokenIds(Array(blankCount).fill(null))
   }, [blankCount])
 
-  const usedTokenIds = new Set(
-    filledTokenIds.filter((id): id is string => id !== null),
-  )
-
   const handleTokenClick = (tokenId: string, label: string) => {
-    if (usedTokenIds.has(tokenId)) return
     const nextEmpty = filled.findIndex((v) => v === null)
     if (nextEmpty === -1) return
     const nextFilled = [...filled]
@@ -64,6 +60,23 @@ export function useWordBankFiller(
     })
   }
 
+  const placeAt = (targetIndex: number, tokenId: string, label: string) => {
+    if (
+      filled[targetIndex] === label &&
+      filledTokenIds[targetIndex] === tokenId
+    ) {
+      return
+    }
+    const nextFilled = [...filled]
+    const nextIds = [...filledTokenIds]
+    nextFilled[targetIndex] = label
+    nextIds[targetIndex] = tokenId
+    setFilled(nextFilled)
+    setFilledTokenIds(nextIds)
+  }
+
+  const clearBlank = (index: number) => handleBlankClick(index)
+
   const allFilled = filled.every((v) => v !== null)
 
   const reset = () => {
@@ -74,9 +87,10 @@ export function useWordBankFiller(
   return {
     filled,
     filledTokenIds,
-    usedTokenIds,
     handleTokenClick,
     handleBlankClick,
+    placeAt,
+    clearBlank,
     allFilled,
     reset,
   }

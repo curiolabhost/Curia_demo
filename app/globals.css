@@ -1098,12 +1098,39 @@ body {
   border: 1px solid var(--border2);
   border-radius: 4px;
   padding: 4px 10px;
-  cursor: pointer;
+  cursor: grab;
   color: var(--text2);
   transition: all 120ms ease;
+  user-select: none;
 }
 .fb-token:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
-.fb-token.used  { opacity: 0.3; pointer-events: none; }
+.fb-token:active { cursor: grabbing; }
+.fb-token.dragging {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: grabbing;
+}
+
+.fb-blank.drag-over {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.fb-filled-chip {
+  cursor: grab;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+.fb-filled-chip:active { cursor: grabbing; }
+
+.fb-token-bank {
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.fb-token-bank.drag-over {
+  background: var(--accent-dim);
+}
 
 @keyframes shake {
   0%   { transform: translateX(0); }

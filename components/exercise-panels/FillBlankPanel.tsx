@@ -11,6 +11,11 @@ type FillBlankPanelProps = {
 
 type AnswerState = 'idle' | 'correct' | 'wrong'
 
+type DragSource =
+  | { kind: 'token'; tokenId: string; label: string }
+  | { kind: 'blank'; blankIndex: number; tokenId: string; label: string }
+  | null
+
 const BLANK_TOKEN = '___BLANK___'
 
 type Segment =
@@ -56,16 +61,22 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
   const blankCount = correctOrder.length
 
   const filler = useWordBankFiller(lines, correctOrder, tokens)
-  const { filled, usedTokenIds, allFilled, reset } = filler
+  const { filled, filledTokenIds, allFilled, reset } = filler
 
   const [answerState, setAnswerState] = useState<AnswerState>('idle')
   const [wrongFlags, setWrongFlags] = useState<boolean[]>(() => Array(blankCount).fill(false))
+  const [draggingSource, setDraggingSource] = useState<DragSource>(null)
+  const [hoverBlankIndex, setHoverBlankIndex] = useState<number | null>(null)
+  const [hoverBank, setHoverBank] = useState(false)
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     reset()
     setAnswerState('idle')
     setWrongFlags(Array(blankCount).fill(false))
+    setDraggingSource(null)
+    setHoverBlankIndex(null)
+    setHoverBank(false)
     if (resetTimerRef.current) {
       clearTimeout(resetTimerRef.current)
       resetTimerRef.current = null
@@ -79,29 +90,28 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
     }
   }, [])
 
-  const handleTokenClick = (tokenId: string, label: string) => {
-    if (answerState === 'correct') return
-    filler.handleTokenClick(tokenId, label)
+  const clearWrongState = () => {
     if (answerState === 'wrong') {
       setAnswerState('idle')
       setWrongFlags(Array(blankCount).fill(false))
+      if (resetTimerRef.current) {
+        clearTimeout(resetTimerRef.current)
+        resetTimerRef.current = null
+      }
     }
   }
 
-  const isCorrectLocked = (index: number) =>
-    answerState === 'idle' &&
-    filled[index] !== null &&
-    filled[index] === correctOrder[index]
+  const handleTokenClick = (tokenId: string, label: string) => {
+    if (answerState === 'correct') return
+    filler.handleTokenClick(tokenId, label)
+    clearWrongState()
+  }
 
   const handleBlankClick = (index: number) => {
     if (answerState === 'correct') return
     if (filled[index] === null) return
-    if (isCorrectLocked(index)) return
     filler.handleBlankClick(index)
-    if (answerState === 'wrong') {
-      setAnswerState('idle')
-      setWrongFlags(Array(blankCount).fill(false))
-    }
+    clearWrongState()
   }
 
   const handleCheck = () => {
@@ -125,6 +135,49 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
     }
   }
 
+  const handleBlankDrop = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    setHoverBlankIndex(null)
+    setDraggingSource(null)
+    if (answerState === 'correct') return
+    const raw = e.dataTransfer.getData('text/plain')
+    if (!raw) return
+    let source: DragSource
+    try {
+      source = JSON.parse(raw) as DragSource
+    } catch {
+      return
+    }
+    if (!source) return
+    if (source.kind === 'token') {
+      filler.placeAt(index, source.tokenId, source.label)
+    } else if (source.kind === 'blank') {
+      if (source.blankIndex === index) return
+      filler.placeAt(index, source.tokenId, source.label)
+      filler.clearBlank(source.blankIndex)
+    }
+    clearWrongState()
+  }
+
+  const handleBankDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setHoverBank(false)
+    setDraggingSource(null)
+    if (answerState === 'correct') return
+    const raw = e.dataTransfer.getData('text/plain')
+    if (!raw) return
+    let source: DragSource
+    try {
+      source = JSON.parse(raw) as DragSource
+    } catch {
+      return
+    }
+    if (source && source.kind === 'blank') {
+      filler.clearBlank(source.blankIndex)
+    }
+    clearWrongState()
+  }
+
   const blankClass = (index: number) => {
     const classes = ['fb-blank']
     if (answerState === 'correct') {
@@ -136,6 +189,7 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
       if (filled[index] === correctOrder[index]) classes.push('filled', 'correct')
       else classes.push('filled')
     }
+    if (hoverBlankIndex === index) classes.push('drag-over')
     return classes.join(' ')
   }
 
@@ -152,14 +206,53 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
                 return <Fragment key={segIdx}>{segment.value}</Fragment>
               }
               const value = filled[segment.index]
+              const tokenId = filledTokenIds[segment.index]
               return (
                 <span
                   key={segIdx}
                   className={blankClass(segment.index)}
                   onClick={() => handleBlankClick(segment.index)}
                   role="button"
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    setHoverBlankIndex(segment.index)
+                  }}
+                  onDragLeave={() => {
+                    setHoverBlankIndex((prev) =>
+                      prev === segment.index ? null : prev,
+                    )
+                  }}
+                  onDrop={(e) => handleBlankDrop(e, segment.index)}
                 >
-                  {value ?? ''}
+                  {value !== null && tokenId !== null ? (
+                    <span
+                      className="fb-filled-chip"
+                      draggable={answerState !== 'correct'}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData(
+                          'text/plain',
+                          JSON.stringify({
+                            kind: 'blank',
+                            blankIndex: segment.index,
+                            tokenId,
+                            label: value,
+                          }),
+                        )
+                        e.dataTransfer.effectAllowed = 'move'
+                        setDraggingSource({
+                          kind: 'blank',
+                          blankIndex: segment.index,
+                          tokenId,
+                          label: value,
+                        })
+                      }}
+                      onDragEnd={() => setDraggingSource(null)}
+                    >
+                      {value}
+                    </span>
+                  ) : (
+                    ''
+                  )}
                 </span>
               )
             })}
@@ -168,18 +261,53 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
       </div>
 
       <div className="fb-token-label">Token bank</div>
-      <div className="fb-token-bank">
+      <div
+        className={`fb-token-bank${hoverBank ? ' drag-over' : ''}`}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setHoverBank(true)
+        }}
+        onDragLeave={() => setHoverBank(false)}
+        onDrop={handleBankDrop}
+      >
         {tokens.map((token) => {
-          const used = usedTokenIds.has(token.id)
+          const isDragging =
+            draggingSource?.kind === 'token' &&
+            draggingSource.tokenId === token.id
           return (
-            <button
+            <div
               key={token.id}
-              type="button"
-              className={`fb-token${used ? ' used' : ''}`}
+              role="button"
+              tabIndex={0}
+              className={`fb-token${isDragging ? ' dragging' : ''}`}
               onClick={() => handleTokenClick(token.id, token.label)}
+              onKeyDown={(e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                  e.preventDefault()
+                  handleTokenClick(token.id, token.label)
+                }
+              }}
+              draggable={answerState !== 'correct'}
+              onDragStart={(e) => {
+                e.dataTransfer.setData(
+                  'text/plain',
+                  JSON.stringify({
+                    kind: 'token',
+                    tokenId: token.id,
+                    label: token.label,
+                  }),
+                )
+                e.dataTransfer.effectAllowed = 'move'
+                setDraggingSource({
+                  kind: 'token',
+                  tokenId: token.id,
+                  label: token.label,
+                })
+              }}
+              onDragEnd={() => setDraggingSource(null)}
             >
               {token.label}
-            </button>
+            </div>
           )
         })}
       </div>
@@ -195,7 +323,7 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
       ) : null}
 
       {answerState === 'wrong' ? (
-        <div className="panel-feedback wrong">Not quite — try again</div>
+        <div className="panel-feedback wrong">Not quite, try again</div>
       ) : null}
 
       {answerState === 'correct' ? (

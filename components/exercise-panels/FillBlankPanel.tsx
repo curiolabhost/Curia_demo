@@ -1,8 +1,20 @@
 'use client'
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
+import { useDevice } from '@/context/DeviceContext'
 import type { Exercise } from '@/lib/lessons'
-import { useWordBankFiller } from '@/lib/useWordBankFiller'
+import { useWordBankFiller, type WordBankFiller } from '@/lib/useWordBankFiller'
 
 type FillBlankPanelProps = {
   exercise: Exercise
@@ -69,6 +81,8 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
   const [hoverBlankIndex, setHoverBlankIndex] = useState<number | null>(null)
   const [hoverBank, setHoverBank] = useState(false)
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const device = useDevice()
 
   useEffect(() => {
     reset()
@@ -191,6 +205,23 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
     }
     if (hoverBlankIndex === index) classes.push('drag-over')
     return classes.join(' ')
+  }
+
+  if (device === 'tablet') {
+    return (
+      <FillBlankTablet
+        exercise={exercise}
+        parsedLines={parsedLines}
+        filler={filler}
+        answerState={answerState}
+        wrongFlags={wrongFlags}
+        onTokenClick={handleTokenClick}
+        onBlankClick={handleBlankClick}
+        onCheck={handleCheck}
+        clearWrongState={clearWrongState}
+        onComplete={onComplete}
+      />
+    )
   }
 
   return (
@@ -318,6 +349,316 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
           className="panel-check-btn"
           onClick={handleCheck}
         >
+          Check answer
+        </button>
+      ) : null}
+
+      {answerState === 'wrong' ? (
+        <div className="panel-feedback wrong">Not quite, try again</div>
+      ) : null}
+
+      {answerState === 'correct' ? (
+        <>
+          <div className="panel-feedback correct">✓ Correct!</div>
+          {exercise.explanation ? (
+            <div className="panel-explanation">{exercise.explanation}</div>
+          ) : null}
+          <button
+            type="button"
+            className="panel-next-btn"
+            onClick={() => onComplete(true)}
+          >
+            Next
+          </button>
+        </>
+      ) : null}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Tablet drag layer — dnd-kit variant. Mirrors the desktop HTML5 interactions
+// in FillBlankPanel above. Used when device === 'tablet'.
+// ---------------------------------------------------------------------------
+
+type DragData =
+  | { kind: 'token'; tokenId: string; label: string }
+  | { kind: 'blank'; blankIndex: number; tokenId: string; label: string }
+
+const DROP_BLANK_PREFIX = 'fb-blank:'
+const DROP_BANK_ID = 'fb-bank'
+
+type DraggableTokenProps = {
+  token: { id: string; label: string }
+  disabled: boolean
+  isActive: boolean
+  onClick: () => void
+}
+
+function DraggableToken({ token, disabled, isActive, onClick }: DraggableTokenProps) {
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: `fb-token:${token.id}`,
+    data: { kind: 'token', tokenId: token.id, label: token.label } satisfies DragData,
+    disabled,
+  })
+  const cls = `fb-token${isActive ? ' dragging' : ''}`
+  return (
+    <div
+      ref={setNodeRef}
+      className={cls}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault()
+          onClick()
+        }
+      }}
+      {...listeners}
+      {...attributes}
+    >
+      {token.label}
+    </div>
+  )
+}
+
+type DraggableChipProps = {
+  blankIndex: number
+  tokenId: string
+  label: string
+  disabled: boolean
+  isActive: boolean
+}
+
+function DraggableChip({
+  blankIndex,
+  tokenId,
+  label,
+  disabled,
+  isActive,
+}: DraggableChipProps) {
+  const { attributes, listeners, setNodeRef } = useDraggable({
+    id: `fb-chip:${blankIndex}`,
+    data: {
+      kind: 'blank',
+      blankIndex,
+      tokenId,
+      label,
+    } satisfies DragData,
+    disabled,
+  })
+  const cls = `fb-filled-chip${isActive ? ' dragging' : ''}`
+  return (
+    <span ref={setNodeRef} className={cls} {...listeners} {...attributes}>
+      {label}
+    </span>
+  )
+}
+
+type DroppableBlankProps = {
+  index: number
+  baseClassName: string
+  onClick: () => void
+  children: React.ReactNode
+}
+
+function DroppableBlank({
+  index,
+  baseClassName,
+  onClick,
+  children,
+}: DroppableBlankProps) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `${DROP_BLANK_PREFIX}${index}`,
+  })
+  const cls = isOver ? `${baseClassName} drag-over` : baseClassName
+  return (
+    <span ref={setNodeRef} className={cls} onClick={onClick} role="button">
+      {children}
+    </span>
+  )
+}
+
+type DroppableBankProps = {
+  children: React.ReactNode
+}
+
+function DroppableBank({ children }: DroppableBankProps) {
+  const { isOver, setNodeRef } = useDroppable({ id: DROP_BANK_ID })
+  const cls = `fb-token-bank${isOver ? ' drag-over' : ''}`
+  return (
+    <div ref={setNodeRef} className={cls}>
+      {children}
+    </div>
+  )
+}
+
+type FillBlankTabletProps = {
+  exercise: Exercise
+  parsedLines: Segment[][]
+  filler: WordBankFiller
+  answerState: AnswerState
+  wrongFlags: boolean[]
+  onTokenClick: (tokenId: string, label: string) => void
+  onBlankClick: (index: number) => void
+  onCheck: () => void
+  clearWrongState: () => void
+  onComplete: (correct: boolean) => void
+}
+
+export function FillBlankTablet({
+  exercise,
+  parsedLines,
+  filler,
+  answerState,
+  wrongFlags,
+  onTokenClick,
+  onBlankClick,
+  onCheck,
+  clearWrongState,
+  onComplete,
+}: FillBlankTabletProps) {
+  const tokens = exercise.tokenBank ?? []
+  const correctOrder = exercise.correctOrder ?? []
+  const { filled, filledTokenIds, allFilled, placeAt, clearBlank } = filler
+
+  const [activeDrag, setActiveDrag] = useState<DragData | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  )
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const data = event.active.data.current as DragData | undefined
+    setActiveDrag(data ?? null)
+  }
+
+  const handleDragCancel = () => setActiveDrag(null)
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const data = event.active.data.current as DragData | undefined
+    const overId = event.over ? String(event.over.id) : null
+    setActiveDrag(null)
+    if (!data) return
+    if (answerState === 'correct') return
+    if (overId === null) return
+
+    if (overId.startsWith(DROP_BLANK_PREFIX)) {
+      const targetIndex = Number(overId.slice(DROP_BLANK_PREFIX.length))
+      if (Number.isNaN(targetIndex)) return
+      if (data.kind === 'token') {
+        placeAt(targetIndex, data.tokenId, data.label)
+        clearWrongState()
+      } else if (data.kind === 'blank') {
+        if (data.blankIndex === targetIndex) return
+        placeAt(targetIndex, data.tokenId, data.label)
+        clearBlank(data.blankIndex)
+        clearWrongState()
+      }
+      return
+    }
+
+    if (overId === DROP_BANK_ID) {
+      if (data.kind === 'blank') {
+        clearBlank(data.blankIndex)
+        clearWrongState()
+      }
+    }
+  }
+
+  // Same as desktop's blankClass minus the `drag-over` flag — dnd-kit's
+  // useDroppable.isOver supplies that piece in DroppableBlank.
+  const baseBlankClass = (index: number) => {
+    const classes = ['fb-blank']
+    if (answerState === 'correct') {
+      if (filled[index] !== null) classes.push('filled', 'correct')
+    } else if (answerState === 'wrong') {
+      if (wrongFlags[index]) classes.push('filled', 'wrong')
+      else if (filled[index] !== null) classes.push('filled', 'correct')
+    } else if (filled[index] !== null) {
+      if (filled[index] === correctOrder[index]) classes.push('filled', 'correct')
+      else classes.push('filled')
+    }
+    return classes.join(' ')
+  }
+
+  return (
+    <div className="panel-container">
+      <h2 className="panel-heading">{exercise.title}</h2>
+      <p className="panel-instruction">{exercise.tasks[0] ?? ''}</p>
+
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
+        <div className="fb-code-block">
+          {parsedLines.map((segments, lineIdx) => (
+            <div key={lineIdx}>
+              {segments.map((segment, segIdx) => {
+                if (segment.kind === 'text') {
+                  return <Fragment key={segIdx}>{segment.value}</Fragment>
+                }
+                const value = filled[segment.index]
+                const tokenId = filledTokenIds[segment.index]
+                const chipActive =
+                  activeDrag?.kind === 'blank' &&
+                  activeDrag.blankIndex === segment.index
+                return (
+                  <DroppableBlank
+                    key={segIdx}
+                    index={segment.index}
+                    baseClassName={baseBlankClass(segment.index)}
+                    onClick={() => onBlankClick(segment.index)}
+                  >
+                    {value !== null && tokenId !== null ? (
+                      <DraggableChip
+                        blankIndex={segment.index}
+                        tokenId={tokenId}
+                        label={value}
+                        disabled={answerState === 'correct'}
+                        isActive={chipActive}
+                      />
+                    ) : (
+                      ''
+                    )}
+                  </DroppableBlank>
+                )
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div className="fb-token-label">Token bank</div>
+        <DroppableBank>
+          {tokens.map((token) => {
+            const tokenActive =
+              activeDrag?.kind === 'token' && activeDrag.tokenId === token.id
+            return (
+              <DraggableToken
+                key={token.id}
+                token={token}
+                disabled={answerState === 'correct'}
+                isActive={tokenActive}
+                onClick={() => onTokenClick(token.id, token.label)}
+              />
+            )
+          })}
+        </DroppableBank>
+
+        <DragOverlay>
+          {activeDrag ? (
+            activeDrag.kind === 'token' ? (
+              <div className="fb-token">{activeDrag.label}</div>
+            ) : (
+              <span className="fb-filled-chip">{activeDrag.label}</span>
+            )
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+
+      {answerState !== 'correct' && allFilled ? (
+        <button type="button" className="panel-check-btn" onClick={onCheck}>
           Check answer
         </button>
       ) : null}

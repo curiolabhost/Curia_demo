@@ -118,6 +118,7 @@ export function LearnPageClient({
         completedCount={0}
         totalCount={lessons.length}
         onMenuClick={() => setNavOpen((v) => !v)}
+        device={device}
       />
       <NavOverlay
         lessons={lessons}

@@ -24,7 +24,7 @@ export function TopBar({ session, completedCount, totalCount, onMenuClick, devic
       <span className="logo">
         code<span className="logo-accent">lab</span>
       </span>
-      {process.env.NODE_ENV !== 'production' && device ? (
+      {device ? (
         <span style={{
           background: 'transparent',
           color: 'var(--green)',

@@ -35,8 +35,7 @@ export function LearnPageClient({
 }: LearnPageClientProps) {
   const [navOpen, setNavOpen] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
-  const { mode, setMode, splitAllowed, expandLeft, expandRight, resetLayout } =
-    useLayoutMode()
+  const { mode, setMode, splitAllowed, resetLayout } = useLayoutMode()
 
   const handleToggleLeft = useCallback(() => {
     if (mode === 'expanded-left') {
@@ -211,7 +210,6 @@ export function LearnPageClient({
             totalPages={totalPages}
             layoutMode={mode}
             onResetLayout={resetLayout}
-            onExpandRight={expandRight}
             onToggleRight={handleToggleRight}
             initialExerciseIndex={initialExerciseIndex}
             onExerciseIndexChange={setActiveExerciseIndex}

@@ -39,7 +39,6 @@ type RightPanelProps = {
   totalPages: number
   layoutMode: LayoutMode
   onResetLayout: () => void
-  onExpandRight: () => void
   onToggleRight: () => void
   initialExerciseIndex?: number
   onExerciseIndexChange?: (index: number) => void
@@ -75,7 +74,6 @@ export function RightPanel({
   totalPages,
   layoutMode,
   onResetLayout,
-  onExpandRight,
   onToggleRight,
   initialExerciseIndex,
   onExerciseIndexChange,

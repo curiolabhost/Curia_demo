@@ -13,7 +13,6 @@ type LessonWorkspaceProps = {
   totalPages: number
   layoutMode: LayoutMode
   onResetLayout: () => void
-  onExpandRight: () => void
   onToggleRight: () => void
   initialExerciseIndex?: number
   onExerciseIndexChange?: (index: number) => void
@@ -36,7 +35,6 @@ export function LessonWorkspace({
   totalPages,
   layoutMode,
   onResetLayout,
-  onExpandRight,
   onToggleRight,
   initialExerciseIndex,
   onExerciseIndexChange,
@@ -56,7 +54,6 @@ export function LessonWorkspace({
       totalPages={totalPages}
       layoutMode={layoutMode}
       onResetLayout={onResetLayout}
-      onExpandRight={onExpandRight}
       onToggleRight={onToggleRight}
       initialExerciseIndex={initialExerciseIndex}
       onExerciseIndexChange={onExerciseIndexChange}

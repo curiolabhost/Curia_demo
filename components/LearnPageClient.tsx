@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDevice } from '@/context/DeviceContext'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
+import { useLayoutMode } from '@/lib/useLayoutMode'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
 import { LessonWorkspace } from './LessonWorkspace'
 import { NavOverlay } from './NavOverlay'
@@ -34,7 +35,24 @@ export function LearnPageClient({
 }: LearnPageClientProps) {
   const [navOpen, setNavOpen] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
-  const [homeExpanded, setHomeExpanded] = useState(false)
+  const { mode, setMode, splitAllowed, expandLeft, expandRight, resetLayout } =
+    useLayoutMode()
+
+  const handleToggleLeft = useCallback(() => {
+    if (mode === 'expanded-left') {
+      setMode(splitAllowed ? 'split' : 'expanded-right')
+    } else {
+      setMode('expanded-left')
+    }
+  }, [mode, splitAllowed, setMode])
+
+  const handleToggleRight = useCallback(() => {
+    if (mode === 'expanded-right') {
+      setMode(splitAllowed ? 'split' : 'expanded-left')
+    } else {
+      setMode('expanded-right')
+    }
+  }, [mode, splitAllowed, setMode])
 
   const searchParams = useSearchParams()
   const exParam = searchParams?.get('ex')
@@ -143,7 +161,10 @@ export function LearnPageClient({
       <div
         className="app-main"
         style={{
-          gridTemplateColumns: homeExpanded ? '0% 1fr' : '50% 1fr',
+          gridTemplateColumns:
+            mode === 'expanded-left'  ? '1fr 0%' :
+            mode === 'expanded-right' ? '0% 1fr' :
+            '50% 1fr',
           transition: 'grid-template-columns 0.25s ease',
         }}
       >
@@ -174,6 +195,8 @@ export function LearnPageClient({
               pageIndex={pageIndex}
               setPageIndex={setPageIndex}
               totalPages={totalPages}
+              layoutMode={mode}
+              onToggleLeft={handleToggleLeft}
             />
           )}
         </div>
@@ -186,8 +209,10 @@ export function LearnPageClient({
             pageIndex={pageIndex}
             setPageIndex={setPageIndex}
             totalPages={totalPages}
-            homeExpanded={homeExpanded}
-            setHomeExpanded={setHomeExpanded}
+            layoutMode={mode}
+            onResetLayout={resetLayout}
+            onExpandRight={expandRight}
+            onToggleRight={handleToggleRight}
             initialExerciseIndex={initialExerciseIndex}
             onExerciseIndexChange={setActiveExerciseIndex}
             onActiveBankIndexChange={setActiveBankIndex}

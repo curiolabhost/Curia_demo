@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { Lesson } from '@/lib/lessons'
+import type { LayoutMode } from '@/lib/useLayoutMode'
+import { CollapseIcon, ExpandIcon } from './icons'
 import { LessonContent } from './LessonContent'
 
 type SidebarProps = {
@@ -9,6 +11,8 @@ type SidebarProps = {
   pageIndex: number
   setPageIndex: (index: number) => void
   totalPages: number
+  layoutMode: LayoutMode
+  onToggleLeft: () => void
 }
 
 const FADE_MS = 150
@@ -19,6 +23,8 @@ export function Sidebar({
   pageIndex,
   setPageIndex,
   totalPages,
+  layoutMode,
+  onToggleLeft,
 }: SidebarProps) {
   const [renderedLesson, setRenderedLesson] = useState<Lesson | undefined>(lesson)
   const [contentFading, setContentFading] = useState(false)
@@ -104,6 +110,30 @@ export function Sidebar({
                 {'→'}
               </button>
             </div>
+            <span
+              style={{
+                width: '1px',
+                height: '16px',
+                background: 'var(--border2)',
+                margin: '0 4px',
+                display: 'inline-block',
+                alignSelf: 'center',
+                flexShrink: 0,
+              }}
+              aria-hidden
+            />
+            <button
+              type="button"
+              className="exercise-nav-button"
+              onClick={onToggleLeft}
+              aria-label={
+                layoutMode === 'expanded-left' ? 'Collapse lesson panel' : 'Expand lesson panel'
+              }
+              title={layoutMode === 'expanded-left' ? 'Collapse' : 'Expand'}
+              style={{ flexShrink: 0 }}
+            >
+              {layoutMode === 'expanded-left' ? <CollapseIcon /> : <ExpandIcon />}
+            </button>
           </div>
         </div>
       ) : null}

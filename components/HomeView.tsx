@@ -11,8 +11,6 @@ type HomeViewProps = {
   allLessons: Lesson[]
   activeLessonId: string
   activeExerciseIndex: number
-  homeExpanded: boolean
-  setHomeExpanded: (v: boolean) => void
   onNavigate: (lessonId: string, exerciseIndex: number) => void
   onClose: () => void
 }
@@ -42,46 +40,6 @@ function LockIcon({ size = 12 }: { size?: number }) {
   )
 }
 
-function ExpandIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-      <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-      <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-      <path d="M3 16v3a2 2 0 0 0 2 2h3" />
-    </svg>
-  )
-}
-
-function CollapseIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M4 14h6m0 0v6m0-6l-7 7" />
-      <path d="M20 10h-6m0 0V4m0 6l7-7" />
-    </svg>
-  )
-}
-
 function chipExerciseClass(status: ItemStatus): string {
   return `list-chip ${status}${status !== 'locked' ? ' clickable' : ''}`
 }
@@ -94,8 +52,6 @@ function chipChallengeClass(status: ItemStatus): string {
 export function HomeView({
   allLessons,
   activeLessonId,
-  homeExpanded,
-  setHomeExpanded,
   onNavigate,
 }: HomeViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('list')
@@ -135,15 +91,6 @@ export function HomeView({
           </div>
           <span className="home-progress-label">{percent}% complete</span>
         </div>
-        <button
-          type="button"
-          className="home-expand-btn"
-          onClick={() => setHomeExpanded(!homeExpanded)}
-          aria-label={homeExpanded ? 'Collapse home view' : 'Expand home view'}
-          title={homeExpanded ? 'Collapse' : 'Expand'}
-        >
-          {homeExpanded ? <CollapseIcon /> : <ExpandIcon />}
-        </button>
       </div>
 
       <div className="home-tab-bar">

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
+import type { LayoutMode } from '@/lib/useLayoutMode'
 import { loadCode } from '@/lib/storage'
 import { runInSandbox, type CheckResult, type LogEntry } from '@/lib/sandbox'
 import { BottomBar } from './BottomBar'
@@ -11,6 +12,7 @@ import { ChallengePrompt } from './ChallengePrompt'
 import { CodeEditor, type CodeEditorHandle } from './CodeEditor'
 import { ExercisePrompt } from './ExercisePrompt'
 import { HomeView } from './HomeView'
+import { CollapseIcon, ExpandIcon } from './icons'
 import { OutputConsole } from './OutputConsole'
 import {
   FinalProjectPanel,
@@ -35,8 +37,10 @@ type RightPanelProps = {
   pageIndex: number
   setPageIndex: (index: number) => void
   totalPages: number
-  homeExpanded: boolean
-  setHomeExpanded: (v: boolean) => void
+  layoutMode: LayoutMode
+  onResetLayout: () => void
+  onExpandRight: () => void
+  onToggleRight: () => void
   initialExerciseIndex?: number
   onExerciseIndexChange?: (index: number) => void
   onActiveBankIndexChange?: (index: number) => void
@@ -69,8 +73,10 @@ export function RightPanel({
   pageIndex,
   setPageIndex,
   totalPages,
-  homeExpanded,
-  setHomeExpanded,
+  layoutMode,
+  onResetLayout,
+  onExpandRight,
+  onToggleRight,
   initialExerciseIndex,
   onExerciseIndexChange,
   onActiveBankIndexChange,
@@ -548,29 +554,29 @@ export function RightPanel({
     setShowHome((v) => {
       const next = !v
       if (!next) {
-        setHomeExpanded(false)
+        onResetLayout()
       }
       return next
     })
-  }, [setHomeExpanded])
+  }, [onResetLayout])
 
   const handleHomeNavigate = useCallback(
     (lessonId: string, exIndex: number) => {
       setShowHome(false)
-      setHomeExpanded(false)
+      onResetLayout()
       if (lessonId === lesson.id) {
         setExerciseIndex(exIndex)
       } else {
         router.push(`/learn/${lessonId}?ex=${exIndex}`)
       }
     },
-    [lesson.id, router, setHomeExpanded],
+    [lesson.id, router, onResetLayout],
   )
 
   const handleHomeClose = useCallback(() => {
     setShowHome(false)
-    setHomeExpanded(false)
-  }, [setHomeExpanded])
+    onResetLayout()
+  }, [onResetLayout])
 
   const rightPanelStyle: React.CSSProperties | undefined = showHome
     ? { gridTemplateRows: 'auto 1fr' }
@@ -581,7 +587,7 @@ export function RightPanel({
   const handleModeButtonClick = (next: Mode) => {
     if (showHome) {
       setShowHome(false)
-      setHomeExpanded(false)
+      onResetLayout()
     }
     handleModeSwitch(next)
   }
@@ -626,6 +632,20 @@ export function RightPanel({
       >
         Challenges
       </button>
+      <span style={{ flex: 1 }} aria-hidden />
+      <button
+        type="button"
+        className="home-mode-btn"
+        onClick={onToggleRight}
+        aria-label={
+          layoutMode === 'expanded-right'
+            ? 'Collapse exercise panel'
+            : 'Expand exercise panel'
+        }
+        title={layoutMode === 'expanded-right' ? 'Collapse' : 'Expand'}
+      >
+        {layoutMode === 'expanded-right' ? <CollapseIcon /> : <ExpandIcon />}
+      </button>
     </div>
   )
 
@@ -638,8 +658,6 @@ export function RightPanel({
             allLessons={allLessons}
             activeLessonId={lesson.id}
             activeExerciseIndex={exerciseIndex}
-            homeExpanded={homeExpanded}
-            setHomeExpanded={setHomeExpanded}
             onNavigate={handleHomeNavigate}
             onClose={handleHomeClose}
           />

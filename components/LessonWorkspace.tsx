@@ -1,5 +1,6 @@
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
+import type { LayoutMode } from '@/lib/useLayoutMode'
 import { RightPanel } from './RightPanel'
 
 type LessonWorkspaceProps = {
@@ -10,8 +11,10 @@ type LessonWorkspaceProps = {
   pageIndex: number
   setPageIndex: (index: number) => void
   totalPages: number
-  homeExpanded: boolean
-  setHomeExpanded: (v: boolean) => void
+  layoutMode: LayoutMode
+  onResetLayout: () => void
+  onExpandRight: () => void
+  onToggleRight: () => void
   initialExerciseIndex?: number
   onExerciseIndexChange?: (index: number) => void
   onActiveBankIndexChange?: (index: number) => void
@@ -31,8 +34,10 @@ export function LessonWorkspace({
   pageIndex,
   setPageIndex,
   totalPages,
-  homeExpanded,
-  setHomeExpanded,
+  layoutMode,
+  onResetLayout,
+  onExpandRight,
+  onToggleRight,
   initialExerciseIndex,
   onExerciseIndexChange,
   onActiveBankIndexChange,
@@ -49,8 +54,10 @@ export function LessonWorkspace({
       pageIndex={pageIndex}
       setPageIndex={setPageIndex}
       totalPages={totalPages}
-      homeExpanded={homeExpanded}
-      setHomeExpanded={setHomeExpanded}
+      layoutMode={layoutMode}
+      onResetLayout={onResetLayout}
+      onExpandRight={onExpandRight}
+      onToggleRight={onToggleRight}
       initialExerciseIndex={initialExerciseIndex}
       onExerciseIndexChange={onExerciseIndexChange}
       onActiveBankIndexChange={onActiveBankIndexChange}

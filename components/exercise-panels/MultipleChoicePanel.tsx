@@ -20,7 +20,6 @@ export function MultipleChoicePanel({ exercise, onComplete }: MultipleChoicePane
   }, [exercise])
 
   const options = exercise.options ?? []
-  const question = exercise.tasks[0] ?? ''
 
   const handleSelect = (id: string) => {
     if (answerState === 'correct') return
@@ -47,9 +46,6 @@ export function MultipleChoicePanel({ exercise, onComplete }: MultipleChoicePane
 
   return (
     <div className="panel-container">
-      <h2 className="panel-heading">{exercise.title}</h2>
-      <p className="panel-instruction">{question}</p>
-
       <div className="mc-grid">
         {options.map((option) => (
           <button

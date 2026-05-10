@@ -96,11 +96,6 @@ export function CodeViewerPanel({ exercise }: Props) {
 
   return (
     <div className="panel-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 0 }}>
-      <h2 className="panel-heading" style={{ marginBottom: 4 }}>{exercise.title}</h2>
-      {exercise.tasks[0] ? (
-        <p className="panel-instruction" style={{ marginBottom: 10 }}>{exercise.tasks[0]}</p>
-      ) : null}
-
       <div style={{ display: 'flex', gap: 2, borderBottom: '1px solid var(--border)' }}>
         {files.map((file, i) => {
           const tabEditable = exercise.editableFiles?.includes(file.filename) ?? false

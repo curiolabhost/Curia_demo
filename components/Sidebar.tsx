@@ -78,65 +78,60 @@ export function Sidebar({
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '16px 20px',
+            height: '36px',
+            padding: '0 8px',
             background: 'var(--surface)',
             borderBottom: '1px solid var(--border)',
+            gap: '4px',
+            flexShrink: 0,
           }}
         >
-          <span className="exercise-counter">
-            {totalPages > 1 ? `Page ${pageIndex + 1} of ${totalPages}` : ''}
-          </span>
-          <div className="exercise-nav-buttons">
-            <div className="exercise-nav-button-cell">
-              <button
-                type="button"
-                className="exercise-nav-button"
-                onClick={() => setPageIndex(pageIndex - 1)}
-                disabled={isFirst || totalPages <= 1}
-                aria-label="Previous page"
-              >
-                {'←'}
-              </button>
-            </div>
-            <div className="exercise-nav-button-cell">
-              <button
-                type="button"
-                className="exercise-nav-button"
-                onClick={() => setPageIndex(pageIndex + 1)}
-                disabled={isLast || totalPages <= 1}
-                aria-label="Next page"
-              >
-                {'→'}
-              </button>
-            </div>
-            <span
-              style={{
-                width: '1px',
-                height: '16px',
-                background: 'var(--border2)',
-                margin: '0 4px',
-                display: 'inline-block',
-                alignSelf: 'center',
-                flexShrink: 0,
-              }}
-              aria-hidden
-            />
-            <button
-              type="button"
-              className="exercise-nav-button"
-              onClick={onToggleLeft}
-              aria-label={
-                layoutMode === 'expanded-left' ? 'Collapse lesson panel' : 'Expand lesson panel'
-              }
-              title={layoutMode === 'expanded-left' ? 'Collapse' : 'Expand'}
-              style={{ flexShrink: 0 }}
-            >
-              {layoutMode === 'expanded-left' ? <CollapseIcon /> : <ExpandIcon />}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="exercise-nav-button"
+            onClick={() => setPageIndex(pageIndex - 1)}
+            disabled={isFirst || totalPages <= 1}
+            aria-label="Previous page"
+            style={{ marginLeft: 'auto' }}
+          >
+            {'←'}
+          </button>
+          <button
+            type="button"
+            className="exercise-nav-button"
+            onClick={() => setPageIndex(pageIndex + 1)}
+            disabled={isLast || totalPages <= 1}
+            aria-label="Next page"
+          >
+            {'→'}
+          </button>
+          <button
+            type="button"
+            className="exercise-nav-button"
+            onClick={onToggleLeft}
+            aria-label={
+              layoutMode === 'expanded-left' ? 'Collapse lesson panel' : 'Expand lesson panel'
+            }
+            title={layoutMode === 'expanded-left' ? 'Collapse' : 'Expand'}
+            style={{ flexShrink: 0 }}
+          >
+            {layoutMode === 'expanded-left' ? <CollapseIcon /> : <ExpandIcon />}
+          </button>
         </div>
       ) : null}
+      {totalPages > 1 && (
+        <div
+          style={{
+            padding: '25px 12px 0',
+            fontFamily: 'var(--mono)',
+            fontSize: '11px',
+            color: 'var(--text3)',
+            flexShrink: 0,
+          }}
+        >
+          Page {pageIndex + 1} of {totalPages}
+        </div>
+      )}
       <div
         className={`sidebar-content${contentFading ? ' fading' : ''}`}
         style={{

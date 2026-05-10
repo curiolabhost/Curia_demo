@@ -6,7 +6,6 @@ import type { Challenge } from '@/lib/lessons'
 type ChallengePromptProps = {
   challenges: Challenge[]
   activeIndex: number
-  onNavigate: (index: number) => void
   hintVisible: boolean
   solved: boolean
   isFading?: boolean
@@ -21,7 +20,6 @@ const DIFFICULTY_STYLE: Record<Challenge['difficulty'], string> = {
 export function ChallengePrompt({
   challenges,
   activeIndex,
-  onNavigate,
   hintVisible,
   solved,
   isFading = false,
@@ -60,43 +58,20 @@ export function ChallengePrompt({
     )
   }
 
-  const total = challenges.length
-  const isFirst = activeIndex === 0
-  const isLast = activeIndex === total - 1
-
   return (
     <section
       className={`exercise-prompt${isFading ? ' fading' : ''}`}
       ref={scrollRef}
     >
-      <div className="exercise-nav">
-        <span className="exercise-counter">
-          Challenge {activeIndex + 1} of {total}
-        </span>
-        <div className="exercise-nav-buttons">
-          <div className="exercise-nav-button-cell">
-            <button
-              type="button"
-              className="exercise-nav-button"
-              onClick={() => onNavigate(activeIndex - 1)}
-              disabled={isFirst}
-              aria-label="Previous challenge"
-            >
-              {'←'}
-            </button>
-          </div>
-          <div className="exercise-nav-button-cell">
-            <button
-              type="button"
-              className="exercise-nav-button"
-              onClick={() => onNavigate(activeIndex + 1)}
-              disabled={isLast}
-              aria-label="Next challenge"
-            >
-              {'→'}
-            </button>
-          </div>
-        </div>
+      <div
+        style={{
+          fontFamily: 'var(--mono)',
+          fontSize: '11px',
+          color: 'var(--text3)',
+          padding: '10px 0 6px',
+        }}
+      >
+        Challenge {activeIndex + 1} of {challenges.length}
       </div>
 
       <div className="prompt-header">

@@ -226,9 +226,6 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
 
   return (
     <div className="panel-container">
-      <h2 className="panel-heading">{exercise.title}</h2>
-      <p className="panel-instruction">{exercise.tasks[0] ?? ''}</p>
-
       <div className="fb-code-block">
         {parsedLines.map((segments, lineIdx) => (
           <div key={lineIdx}>
@@ -583,9 +580,6 @@ export function FillBlankTablet({
 
   return (
     <div className="panel-container">
-      <h2 className="panel-heading">{exercise.title}</h2>
-      <p className="panel-instruction">{exercise.tasks[0] ?? ''}</p>
-
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}

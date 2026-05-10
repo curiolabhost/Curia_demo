@@ -203,9 +203,6 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
 
   return (
     <div className="panel-container">
-      <h2 className="panel-heading">{exercise.title}</h2>
-      <p className="panel-instruction">{exercise.tasks[0] ?? ''}</p>
-
       <div className="fbt-code-block">
         {parsed.lines.map((segments, lineIdx) => (
           <div key={lineIdx}>

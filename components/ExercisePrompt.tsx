@@ -6,7 +6,6 @@ import type { Exercise } from '@/lib/lessons'
 type ExercisePromptProps = {
   exercises: Exercise[]
   activeIndex: number
-  onNavigate: (index: number) => void
   hintVisible: boolean
   isFading?: boolean
 }
@@ -23,7 +22,6 @@ const TYPE_TOOLTIPS: Record<Exercise['type'], string> = {
 export function ExercisePrompt({
   exercises,
   activeIndex,
-  onNavigate,
   hintVisible,
   isFading = false,
 }: ExercisePromptProps) {
@@ -64,42 +62,21 @@ export function ExercisePrompt({
 
   const { type, title, duration, tasks, hint } = exercise
   const total = exercises.length
-  const isFirst = activeIndex === 0
-  const isLast = activeIndex === total - 1
 
   return (
     <section
       className={`exercise-prompt${isFading ? ' fading' : ''}`}
       ref={scrollRef}
     >
-      <div className="exercise-nav">
-        <span className="exercise-counter">
-          Exercise {activeIndex + 1} of {total}
-        </span>
-        <div className="exercise-nav-buttons">
-          <div className="exercise-nav-button-cell">
-            <button
-              type="button"
-              className="exercise-nav-button"
-              onClick={() => onNavigate(activeIndex - 1)}
-              disabled={isFirst}
-              aria-label="Previous exercise"
-            >
-              {'←'}
-            </button>
-          </div>
-          <div className="exercise-nav-button-cell">
-            <button
-              type="button"
-              className="exercise-nav-button"
-              onClick={() => onNavigate(activeIndex + 1)}
-              disabled={isLast}
-              aria-label="Next exercise"
-            >
-              {'→'}
-            </button>
-          </div>
-        </div>
+      <div
+        style={{
+          fontFamily: 'var(--mono)',
+          fontSize: '11px',
+          color: 'var(--text3)',
+          padding: '10px 0 25px',
+        }}
+      >
+        Exercise {activeIndex + 1} of {total}
       </div>
 
       <div className="prompt-header">

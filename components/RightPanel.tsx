@@ -631,6 +631,46 @@ export function RightPanel({
         Challenges
       </button>
       <span style={{ flex: 1 }} aria-hidden />
+      {!showHome && !isFinalProject ? (
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          <button
+            type="button"
+            className="exercise-nav-button"
+            onClick={() =>
+              mode === 'exercises'
+                ? goPrevExercise()
+                : handleChallengeNavigate(challengeIndex - 1)
+            }
+            disabled={
+              mode === 'exercises'
+                ? renderedExerciseIndex === 0
+                : challengeIndex === 0
+            }
+            aria-label="Previous"
+            style={{ width: '26px', height: '26px' }}
+          >
+            {'←'}
+          </button>
+          <button
+            type="button"
+            className="exercise-nav-button"
+            onClick={() =>
+              mode === 'exercises'
+                ? goNextExercise()
+                : handleChallengeNavigate(challengeIndex + 1)
+            }
+            disabled={
+              mode === 'exercises'
+                ? renderedExerciseIndex >= totalExercises - 1
+                : challengeIndex >= totalChallenges - 1
+            }
+            aria-label="Next"
+            style={{ width: '26px', height: '26px' }}
+          >
+            {'→'}
+          </button>
+        </div>
+      ) : null}
       <button
         type="button"
         className="home-mode-btn"
@@ -670,7 +710,6 @@ export function RightPanel({
                 <ExercisePrompt
                   exercises={renderedLesson.exercises}
                   activeIndex={renderedExerciseIndex}
-                  onNavigate={setExerciseIndex}
                   hintVisible={hintVisible}
                   isFading={isFading}
                 />
@@ -683,7 +722,6 @@ export function RightPanel({
               <ChallengePrompt
                 challenges={challenges}
                 activeIndex={challengeIndex}
-                onNavigate={handleChallengeNavigate}
                 hintVisible={hintVisible}
                 solved={solved}
                 isFading={isFading}
@@ -692,7 +730,10 @@ export function RightPanel({
           </div>
 
           {isPanelFormat && panelExercise ? (
-            <div className={`panel-region${isFading ? ' fading' : ''}`}>
+            <div
+              className={`panel-region${isFading ? ' fading' : ''}`}
+              style={{ height: '100%' }}
+            >
               {isFinalProject ? (
                 <FinalProjectPanel
                   exercise={panelExercise}

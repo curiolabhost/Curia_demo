@@ -194,8 +194,6 @@ export function DragReorderPanel({ exercise, onComplete }: PanelProps) {
 
   return (
     <div className="panel-container">
-      <h2 className="panel-heading">{exercise.title}</h2>
-      <p className="panel-instruction">{exercise.tasks[0] ?? ''}</p>
       <p style={{ color: 'var(--text3)', fontSize: 12, marginTop: -12, marginBottom: 16 }}>
         Drag the lines into the correct order.
       </p>

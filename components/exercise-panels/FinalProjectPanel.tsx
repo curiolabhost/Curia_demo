@@ -1,6 +1,18 @@
 'use client'
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
+import { useDevice } from '@/context/DeviceContext'
 import { BlankDetailPanel } from '@/components/admin/BlankDetailPanel'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import { mintBlankId } from '@/lib/admin/id'
@@ -444,6 +456,8 @@ export function FinalProjectPanel({
 
   const [typedValues, setTypedValues] = useState<Record<string, string>>({})
   const typedInputRefs = useRef<Record<string, HTMLInputElement | null>>({})
+
+  const device = useDevice()
 
   useEffect(() => {
     setDropValues({})
@@ -1370,6 +1384,41 @@ export function FinalProjectPanel({
   const selectionActive =
     activeSelection !== null && activeSelection.selectedText.length > 0
 
+  if (device === 'tablet' && !editMode) {
+    return (
+      <FinalProjectTablet
+        exercise={exercise}
+        allExercises={allExercises}
+        activeIndex={activeIndex}
+        lesson={lesson}
+        onComplete={onComplete}
+        activeFile={activeFile}
+        setActiveFile={setActiveFile}
+        editedHtml={editedHtml}
+        editedCss={editedCss}
+        setEditedHtml={setEditedHtml}
+        setEditedCss={setEditedCss}
+        dropValues={dropValues}
+        blankStates={blankStates}
+        answerState={answerState}
+        activeBankIndex={activeBankIndex}
+        selectedLineIndex={selectedLineIndex}
+        feedbackMessage={feedbackMessage}
+        allFilled={allFilled}
+        completedDropValues={completedDropValues}
+        completedTypedValues={completedTypedValues}
+        placeToken={placeToken}
+        clearBlank={clearBlank}
+        handleLineClick={handleLineClick}
+        handleCheck={handleCheck}
+        handleNext={handleNext}
+        renderTypeInput={renderTypeInput}
+        renderFreelineInput={renderFreelineInput}
+        renderCompletedLineSegments={renderCompletedLineSegments}
+      />
+    )
+  }
+
   return (
     <div className="fp-panel">
       {editMode ? (
@@ -1655,6 +1704,541 @@ export function FinalProjectPanel({
             )
           })()
         : null}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Tablet drag layer — dnd-kit variant. Mirrors the script.js drag interaction
+// in FinalProjectPanel above. Used when device === 'tablet' and editMode is
+// false (admin/edit features remain desktop-only).
+// ---------------------------------------------------------------------------
+
+type FpDragData = {
+  tokenId: string
+  label: string
+}
+
+const FP_DROP_PREFIX = 'fp-drop:'
+
+type FpDraggableTokenProps = {
+  token: { id: string; label: string }
+  disabled: boolean
+  onClick: () => void
+}
+
+function FpDraggableToken({ token, disabled, onClick }: FpDraggableTokenProps) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `fp-token:${token.id}`,
+    data: { tokenId: token.id, label: token.label } satisfies FpDragData,
+    disabled,
+  })
+  let cls = 'fp-token'
+  if (disabled) cls += ' fp-token-used'
+  if (isDragging) cls += ' fp-token-dragging'
+  return (
+    <div
+      ref={setNodeRef}
+      className={cls}
+      onClick={onClick}
+      {...listeners}
+      {...attributes}
+    >
+      {token.label}
+    </div>
+  )
+}
+
+type FpDroppableZoneProps = {
+  blankId: string
+  filled: string | undefined
+  status: BlankStatus | undefined
+  answerState: AnswerState
+  onClick: () => void
+}
+
+function FpDroppableZone({
+  blankId,
+  filled,
+  status,
+  answerState,
+  onClick,
+}: FpDroppableZoneProps) {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `${FP_DROP_PREFIX}${blankId}`,
+  })
+  let cls = 'fp-drop-zone'
+  if (status === 'correct' || (filled && answerState === 'correct')) {
+    cls += ' fp-dz-correct'
+  } else if (status === 'wrong') {
+    cls += ' fp-dz-wrong'
+  } else if (isOver) {
+    cls += ' fp-dz-over'
+  } else if (filled !== undefined) {
+    cls += ' fp-dz-filled'
+  } else {
+    cls += ' fp-dz-empty'
+  }
+  return (
+    <span
+      ref={setNodeRef}
+      className={cls}
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick()
+      }}
+      role="button"
+    >
+      {filled !== undefined ? filled : <span className="fp-dz-hint">?</span>}
+    </span>
+  )
+}
+
+type FinalProjectTabletProps = {
+  exercise: Exercise
+  allExercises: Exercise[]
+  activeIndex: number
+  lesson: Lesson
+  onComplete: (correct: boolean) => void
+  activeFile: FinalProjectFile
+  setActiveFile: (f: FinalProjectFile) => void
+  dropValues: Record<string, string>
+  completedDropValues: Record<number, Record<string, string>>
+  completedTypedValues: Record<number, Record<string, string>>
+  blankStates: Record<string, BlankStatus>
+  answerState: AnswerState
+  activeBankIndex: number
+  selectedLineIndex: number | null
+  editedHtml: string
+  setEditedHtml: (s: string) => void
+  editedCss: string
+  setEditedCss: (s: string) => void
+  feedbackMessage: string
+  allFilled: boolean
+  placeToken: (blankId: string, label: string) => void
+  clearBlank: (blankId: string) => void
+  handleLineClick: (
+    blockIdx: number,
+    lineIdx: number,
+    blankIdInBlock: string | null,
+  ) => void
+  handleCheck: () => void
+  handleNext: () => void
+  renderTypeInput: (
+    blankId: string,
+    lineIdx: number | undefined,
+    blockIdx: number,
+  ) => React.ReactNode
+  renderFreelineInput: (
+    blankId: string,
+    lineIdx: number | undefined,
+    blockIdx: number,
+  ) => React.ReactNode
+  renderCompletedLineSegments: (
+    text: string,
+    blockBlanksById: Map<string, FinalProjectBlank>,
+    savedDrops: Record<string, string>,
+    savedTyped: Record<string, string>,
+  ) => React.ReactNode
+}
+
+export function FinalProjectTablet({
+  exercise,
+  allExercises,
+  activeIndex,
+  lesson,
+  onComplete: _onComplete,
+  activeFile,
+  setActiveFile,
+  dropValues,
+  completedDropValues,
+  completedTypedValues,
+  blankStates,
+  answerState,
+  activeBankIndex,
+  selectedLineIndex,
+  editedHtml,
+  setEditedHtml,
+  editedCss,
+  setEditedCss,
+  feedbackMessage,
+  allFilled,
+  placeToken,
+  clearBlank,
+  handleLineClick,
+  handleCheck,
+  handleNext,
+  renderTypeInput,
+  renderFreelineInput,
+  renderCompletedLineSegments,
+}: FinalProjectTabletProps) {
+  const lines = exercise.lines ?? []
+  const blanks = exercise.blanks ?? []
+  const tokens = exercise.tokenBank ?? []
+  const blankCount = blanks.length
+  const activeBlank = blanks[activeBankIndex]
+  const isCorrect = answerState === 'correct'
+  const allDone = activeIndex >= allExercises.length
+
+  const [activeDrag, setActiveDrag] = useState<FpDragData | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  )
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const data = event.active.data.current as FpDragData | undefined
+    setActiveDrag(data ?? null)
+  }
+
+  const handleDragCancel = () => setActiveDrag(null)
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const data = event.active.data.current as FpDragData | undefined
+    const overId = event.over ? String(event.over.id) : null
+    setActiveDrag(null)
+    if (!data) return
+    if (answerState === 'correct') return
+    if (!overId || !overId.startsWith(FP_DROP_PREFIX)) return
+    const blankId = overId.slice(FP_DROP_PREFIX.length)
+    placeToken(blankId, data.label)
+    const lineIdx = lines.findIndex((l) =>
+      extractBlankIds(l.text).includes(blankId),
+    )
+    if (lineIdx >= 0) {
+      handleLineClick(activeIndex, lineIdx, blankId)
+    }
+  }
+
+  let currentLineNumber = 1
+  const renderBlock = (block: Exercise, idx: number) => {
+    const studentState: 'done' | 'active' | 'locked' =
+      idx < activeIndex ? 'done' : idx === activeIndex ? 'active' : 'locked'
+    const cls = `fp-code-block ${
+      studentState === 'done'
+        ? 'fp-cb-done'
+        : studentState === 'active'
+          ? 'fp-cb-active'
+          : 'fp-cb-locked'
+    }`
+    const blockLines: FinalProjectLine[] = block.lines ?? []
+    const blockBlanks: FinalProjectBlank[] = block.blanks ?? []
+    const blockBlanksById = buildBlankMap(blockBlanks)
+    const suffixLines = splitToLines(block.codeSuffix ?? '')
+    const savedDrops = completedDropValues[idx] ?? {}
+    const savedTyped = completedTypedValues[idx] ?? {}
+
+    if (studentState === 'locked') {
+      return (
+        <div key={`${block.title}-${idx}`} className={cls}>
+          <BlockHeader index={idx} title={block.title} state={studentState} />
+          {blockLines.map((_line, i) => {
+            const num = currentLineNumber
+            currentLineNumber += 1
+            const width =
+              LOCKED_PLACEHOLDER_WIDTHS[i % LOCKED_PLACEHOLDER_WIDTHS.length]
+            return (
+              <CodeLine key={`b-${i}`} lineNumber={num}>
+                <span
+                  className="fp-locked-placeholder"
+                  style={{ width }}
+                  aria-hidden
+                />
+              </CodeLine>
+            )
+          })}
+        </div>
+      )
+    }
+
+    let activeLineIndex = -1
+    if (studentState === 'active') {
+      const activeBlankId = blanks[activeBankIndex]?.id
+      if (activeBlankId) {
+        activeLineIndex = blockLines.findIndex((l) =>
+          extractBlankIds(l.text).includes(activeBlankId),
+        )
+      }
+    }
+
+    return (
+      <div key={`${block.title}-${idx}`} className={cls}>
+        <BlockHeader index={idx} title={block.title} state={studentState} />
+        {blockLines.map((line, i) => {
+          const num = currentLineNumber
+          currentLineNumber += 1
+          const idsOnLine = extractBlankIds(line.text)
+          const freelineBlankId = idsOnLine.find((id) => {
+            const blank = blockBlanksById.get(id)
+            return blank?.mode === 'freeline'
+          })
+
+          if (studentState === 'done') {
+            if (freelineBlankId !== undefined) {
+              const typedAns = savedTyped[freelineBlankId] ?? ''
+              return (
+                <CodeLine key={`b-${i}`} lineNumber={num}>
+                  <HighlightedText value={typedAns} />
+                </CodeLine>
+              )
+            }
+            return (
+              <CodeLine key={`b-${i}`} lineNumber={num}>
+                {renderCompletedLineSegments(
+                  line.text,
+                  blockBlanksById,
+                  savedDrops,
+                  savedTyped,
+                )}
+              </CodeLine>
+            )
+          }
+
+          const classes: string[] = ['clickable']
+          if (i === activeLineIndex) {
+            classes.push('fp-active-line')
+          } else if (i === selectedLineIndex) {
+            classes.push('line-selected')
+          }
+          const extraClass = classes.join(' ')
+          const defaultBlankId = idsOnLine.length === 1 ? idsOnLine[0] : null
+          const handleClickLine = () =>
+            handleLineClick(idx, i, defaultBlankId)
+
+          if (freelineBlankId !== undefined) {
+            return (
+              <CodeLine
+                key={`b-${i}`}
+                lineNumber={num}
+                extraClass={extraClass}
+                onClick={handleClickLine}
+              >
+                {renderFreelineInput(freelineBlankId, i, idx)}
+              </CodeLine>
+            )
+          }
+
+          const segments = parseLineSegments(line.text)
+          return (
+            <CodeLine
+              key={`b-${i}`}
+              lineNumber={num}
+              extraClass={extraClass}
+              onClick={handleClickLine}
+            >
+              {segments.map((seg, j) => {
+                if (seg.kind === 'text') {
+                  return <HighlightedText key={j} value={seg.value} />
+                }
+                const m: BlankInputMode =
+                  blockBlanksById.get(seg.id)?.mode ?? 'wordbank'
+                if (m === 'type') {
+                  return (
+                    <Fragment key={j}>
+                      {renderTypeInput(seg.id, i, idx)}
+                    </Fragment>
+                  )
+                }
+                if (m === 'freeline') {
+                  return (
+                    <Fragment key={j}>
+                      {renderFreelineInput(seg.id, i, idx)}
+                    </Fragment>
+                  )
+                }
+                const filled = dropValues[seg.id]
+                const status = blankStates[seg.id]
+                return (
+                  <FpDroppableZone
+                    key={j}
+                    blankId={seg.id}
+                    filled={filled}
+                    status={status}
+                    answerState={answerState}
+                    onClick={() => {
+                      handleLineClick(idx, i, seg.id)
+                      clearBlank(seg.id)
+                    }}
+                  />
+                )
+              })}
+            </CodeLine>
+          )
+        })}
+        {suffixLines.map((line, i) => {
+          const num = currentLineNumber
+          currentLineNumber += 1
+          return (
+            <CodeLine key={`s-${i}`} lineNumber={num}>
+              <HighlightedText value={line} dim />
+            </CodeLine>
+          )
+        })}
+      </div>
+    )
+  }
+
+  const codeBlocks = allExercises.map((block, idx) => renderBlock(block, idx))
+
+  // Suppress unused-locals: blankCount/lesson are forwarded via props for
+  // future use (e.g. parity with desktop sandbox calls); keep stable interface.
+  void blankCount
+  void lesson
+
+  return (
+    <div className="fp-panel">
+      <div className="fp-file-tabs">
+        <button
+          type="button"
+          className={`fp-file-tab${activeFile === 'script' ? ' active' : ''}`}
+          onClick={() => setActiveFile('script')}
+        >
+          script.js
+        </button>
+        <button
+          type="button"
+          className={`fp-file-tab${activeFile === 'html' ? ' active' : ''}`}
+          onClick={() => setActiveFile('html')}
+        >
+          index.html
+        </button>
+        <button
+          type="button"
+          className={`fp-file-tab${activeFile === 'css' ? ' active' : ''}`}
+          onClick={() => setActiveFile('css')}
+        >
+          style.css
+        </button>
+      </div>
+
+      {activeFile === 'script' ? (
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <div className="fp-code-display">{codeBlocks}</div>
+          {allDone ? (
+            <div
+              className="fp-word-bank"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                padding: '20px',
+                textAlign: 'center',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: 'var(--mono)',
+                  fontSize: '13px',
+                  color: '#a6e3a1',
+                }}
+              >
+                You built it! The full program is running in the preview.
+              </div>
+              <div
+                style={{
+                  fontFamily: 'var(--mono)',
+                  fontSize: '11px',
+                  color: '#a6e3a1',
+                }}
+              >
+                Feel free to edit any line and see what changes.
+              </div>
+            </div>
+          ) : (
+            <div className="fp-word-bank">
+              <div className="fp-wb-label-row">
+                <span className="fp-wb-label">Word bank</span>
+                {isCorrect ? (
+                  <button
+                    type="button"
+                    className="fp-wb-next-btn"
+                    onClick={handleNext}
+                  >
+                    Next block →
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="fp-wb-check-btn"
+                    onClick={handleCheck}
+                    disabled={!allFilled || answerState === 'checking'}
+                    style={
+                      !allFilled || answerState === 'checking'
+                        ? { opacity: 0.4, cursor: 'default' }
+                        : undefined
+                    }
+                  >
+                    {answerState === 'checking' ? 'Checking...' : 'Check block'}
+                  </button>
+                )}
+              </div>
+              <div className="fp-token-bank">
+                {tokens.map((token) => (
+                  <FpDraggableToken
+                    key={token.id}
+                    token={token}
+                    disabled={isCorrect}
+                    onClick={() => {
+                      if (!activeBlank) return
+                      if (activeBlank.mode !== 'wordbank') return
+                      placeToken(activeBlank.id, token.label)
+                    }}
+                  />
+                ))}
+              </div>
+              {answerState === 'wrong'
+                ? (() => {
+                    const msg =
+                      feedbackMessage || 'Some blanks are wrong. Try again.'
+                    const isError =
+                      !feedbackMessage ||
+                      msg.startsWith('Your code has an error:')
+                    const variant = isError ? 'fp-fb-err' : 'fp-fb-hint'
+                    return (
+                      <div className={`fp-feedback ${variant}`}>{msg}</div>
+                    )
+                  })()
+                : null}
+              {answerState === 'correct' ? (
+                <div className="fp-feedback fp-fb-ok">Block complete!</div>
+              ) : null}
+            </div>
+          )}
+
+          <DragOverlay>
+            {activeDrag ? (
+              <div className="fp-token">{activeDrag.label}</div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      ) : (
+        <div style={{ flex: 1, minHeight: 0, height: '100%', display: 'flex' }}>
+          {activeFile === 'html' ? (
+            <PrismEditor
+              code={editedHtml}
+              language="html"
+              onChange={(val) => setEditedHtml(val)}
+              readOnly={!allDone}
+              readOnlyMessage="Complete all script.js blocks to edit this file"
+            />
+          ) : (
+            <PrismEditor
+              code={editedCss}
+              language="css"
+              onChange={(val) => setEditedCss(val)}
+              readOnly={!allDone}
+              readOnlyMessage="Complete all script.js blocks to edit this file"
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }

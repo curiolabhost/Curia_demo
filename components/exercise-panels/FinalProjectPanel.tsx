@@ -1390,8 +1390,6 @@ export function FinalProjectPanel({
         exercise={exercise}
         allExercises={allExercises}
         activeIndex={activeIndex}
-        lesson={lesson}
-        onComplete={onComplete}
         activeFile={activeFile}
         setActiveFile={setActiveFile}
         editedHtml={editedHtml}
@@ -1798,8 +1796,6 @@ type FinalProjectTabletProps = {
   exercise: Exercise
   allExercises: Exercise[]
   activeIndex: number
-  lesson: Lesson
-  onComplete: (correct: boolean) => void
   activeFile: FinalProjectFile
   setActiveFile: (f: FinalProjectFile) => void
   dropValues: Record<string, string>
@@ -1846,8 +1842,6 @@ export function FinalProjectTablet({
   exercise,
   allExercises,
   activeIndex,
-  lesson,
-  onComplete: _onComplete,
   activeFile,
   setActiveFile,
   dropValues,
@@ -1875,7 +1869,6 @@ export function FinalProjectTablet({
   const lines = exercise.lines ?? []
   const blanks = exercise.blanks ?? []
   const tokens = exercise.tokenBank ?? []
-  const blankCount = blanks.length
   const activeBlank = blanks[activeBankIndex]
   const isCorrect = answerState === 'correct'
   const allDone = activeIndex >= allExercises.length
@@ -2079,11 +2072,6 @@ export function FinalProjectTablet({
   }
 
   const codeBlocks = allExercises.map((block, idx) => renderBlock(block, idx))
-
-  // Suppress unused-locals: blankCount/lesson are forwarded via props for
-  // future use (e.g. parity with desktop sandbox calls); keep stable interface.
-  void blankCount
-  void lesson
 
   return (
     <div className="fp-panel">

@@ -80,19 +80,6 @@ export function HomeView({
 
   return (
     <div className="home-view">
-      <div className="home-header">
-        <span className="home-header-title">Learning Map</span>
-        <div className="home-progress-pill">
-          <div className="home-progress-bar-bg">
-            <div
-              className="home-progress-bar-fill"
-              style={{ width: `${percent}%` }}
-            />
-          </div>
-          <span className="home-progress-label">{percent}% complete</span>
-        </div>
-      </div>
-
       <div className="home-tab-bar">
         <button
           type="button"
@@ -108,6 +95,21 @@ export function HomeView({
         >
           Map
         </button>
+        <div
+          className="home-progress-bar-bg"
+          style={{ marginLeft: 'auto', alignSelf: 'center' }}
+        >
+          <div
+            className="home-progress-bar-fill"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+        <span
+          className="home-progress-label"
+          style={{ marginLeft: 8, alignSelf: 'center' }}
+        >
+          {percent}% complete
+        </span>
       </div>
 
       <div className="home-content">

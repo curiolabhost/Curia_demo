@@ -1,9 +1,10 @@
 import * as PIXI from 'pixi.js'
 import type { TiledMap } from './types'
 
-// Tiled encodes tile flip/rotation in the high bits of each gid. We strip them
-// to get the actual tile id; rotation is not applied in this version.
-const FLIP_FLAGS = 0xe0000000
+const FLIPPED_HORIZONTALLY_FLAG = 0x80000000
+const FLIPPED_VERTICALLY_FLAG = 0x40000000
+const FLIPPED_DIAGONALLY_FLAG = 0x20000000
+const GID_MASK = 0x1fffffff
 
 export function renderTileLayers(
   map: TiledMap,
@@ -29,17 +30,50 @@ export function renderTileLayers(
     }
 
     for (let i = 0; i < layer.data.length; i++) {
-      const rawGid = layer.data[i]
+      const rawGid = layer.data[i] >>> 0
       if (rawGid === 0) continue
-      const gid = rawGid & ~FLIP_FLAGS
+
+      const flippedH = (rawGid & FLIPPED_HORIZONTALLY_FLAG) !== 0
+      const flippedV = (rawGid & FLIPPED_VERTICALLY_FLAG) !== 0
+      const flippedD = (rawGid & FLIPPED_DIAGONALLY_FLAG) !== 0
+      const gid = rawGid & GID_MASK
+
       const texture = gidToTexture.get(gid)
       if (!texture) continue
 
       const col = i % mapW
       const row = Math.floor(i / mapW)
       const sprite = new PIXI.Sprite(texture)
-      sprite.x = col * tileW
-      sprite.y = row * tileH
+
+      if (flippedH || flippedV || flippedD) {
+        sprite.anchor.set(0.5, 0.5)
+        sprite.x = col * tileW + tileW / 2
+        sprite.y = row * tileH + tileH / 2
+
+        if (flippedD && flippedH && flippedV) {
+          // anti-diagonal flip
+          sprite.rotation = Math.PI / 2
+          sprite.scale.x = -1
+        } else if (flippedD && flippedH) {
+          sprite.rotation = Math.PI / 2
+        } else if (flippedD && flippedV) {
+          sprite.rotation = -Math.PI / 2
+        } else if (flippedD) {
+          // main-diagonal flip
+          sprite.rotation = Math.PI / 2
+          sprite.scale.y = -1
+        } else if (flippedH && flippedV) {
+          sprite.rotation = Math.PI
+        } else if (flippedH) {
+          sprite.scale.x = -1
+        } else if (flippedV) {
+          sprite.scale.y = -1
+        }
+      } else {
+        sprite.x = col * tileW
+        sprite.y = row * tileH
+      }
+
       layerContainer.addChild(sprite)
     }
 

@@ -1,4 +1,4 @@
-import medium1 from './islands/medium-1.json'
+import medium1 from './islands/medium/medium-1.json'
 import type { TiledMap } from '@/lib/map/types'
 
 const TEMPLATES = {

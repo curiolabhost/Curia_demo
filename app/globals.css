@@ -1342,36 +1342,6 @@ body {
   overflow: hidden;
 }
 
-.home-header {
-  height: 48px;
-  flex-shrink: 0;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 12px;
-}
-
-.home-header-title {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.home-progress-pill {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 12px;
-  background: var(--surface);
-}
-
 .home-progress-bar-bg {
   width: 64px;
   height: 4px;
@@ -1393,25 +1363,6 @@ body {
   font-size: 11px;
   color: var(--text3);
   white-space: nowrap;
-}
-
-.home-expand-btn {
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--border2);
-  border-radius: 4px;
-  background: none;
-  color: var(--text3);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  flex-shrink: 0;
-}
-.home-expand-btn:hover {
-  background: var(--surface2);
-  color: var(--text);
 }
 
 .home-tab-bar {

@@ -4,16 +4,15 @@ export type LayoutMode = 'split' | 'expanded-left' | 'expanded-right'
 
 const SPLIT_THRESHOLD = 1024
 
-function getInitialMode(): LayoutMode {
-  if (typeof window === 'undefined') return 'split'
-  return window.innerWidth >= SPLIT_THRESHOLD ? 'split' : 'expanded-left'
-}
-
 export function useLayoutMode() {
-  const [mode, setMode] = useState<LayoutMode>(getInitialMode)
-  const [splitAllowed, setSplitAllowed] = useState<boolean>(
-    () => typeof window !== 'undefined' && window.innerWidth >= SPLIT_THRESHOLD
-  )
+  const [mode, setMode] = useState<LayoutMode>('split')
+  const [splitAllowed, setSplitAllowed] = useState<boolean>(true)
+
+  useEffect(() => {
+    const wide = window.innerWidth >= SPLIT_THRESHOLD
+    setSplitAllowed(wide)
+    if (!wide) setMode('expanded-left')
+  }, [])
 
   useEffect(() => {
     function handleResize() {

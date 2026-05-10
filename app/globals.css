@@ -66,9 +66,8 @@ body {
 }
 
 .app-main {
-  display: grid;
-  grid-template-columns: 50% 1fr;
-  grid-template-rows: 1fr;
+  display: flex;
+  flex-direction: row;
   overflow: hidden;
   min-height: 0;
   height: 100%;

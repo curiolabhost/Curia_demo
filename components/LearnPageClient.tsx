@@ -157,20 +157,18 @@ export function LearnPageClient({
       >
         <span className="nav-edge-toggle-icon">{navOpen ? '‹' : '›'}</span>
       </button>
-      <div
-        className="app-main"
-        style={{
-          gridTemplateColumns:
-            mode === 'expanded-left'  ? '1fr 0%' :
-            mode === 'expanded-right' ? '0% 1fr' :
-            '50% 1fr',
-          transition: 'grid-template-columns 0.25s ease',
-        }}
-      >
+      <div className="app-main">
         <div
           style={{
+            width:
+              mode === 'expanded-left'  ? '100%' :
+              mode === 'expanded-right' ? '0%' :
+              '50%',
+            transition: splitAllowed
+              ? 'width 0.25s ease'
+              : 'none',
+            flexShrink: 0,
             overflow: 'hidden',
-            transition: 'all 0.25s ease',
             minHeight: 0,
             height: '100%',
             display: 'flex',
@@ -199,33 +197,43 @@ export function LearnPageClient({
             />
           )}
         </div>
-        {activeLesson ? (
-          <LessonWorkspace
-            lesson={activeLesson}
-            allLessons={lessons}
-            prevLessonId={prevLessonId}
-            nextLessonId={nextLessonId}
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-            totalPages={totalPages}
-            layoutMode={mode}
-            onResetLayout={resetLayout}
-            onToggleRight={handleToggleRight}
-            initialExerciseIndex={initialExerciseIndex}
-            onExerciseIndexChange={setActiveExerciseIndex}
-            onActiveBankIndexChange={setActiveBankIndex}
-            onLineSelect={(li, bi) => {
-              setSelectedLineIndex(li)
-              setSelectedBlankIndex(bi)
-            }}
-            editMode={editMode}
-            editActions={editActions}
-          />
-        ) : (
-          <div className="right-panel">
-            <div style={{ padding: 24, color: 'var(--text2)' }}>Lesson not found.</div>
-          </div>
-        )}
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            minHeight: 0,
+            overflow: 'hidden',
+            transition: splitAllowed ? 'width 0.25s ease' : 'none',
+          }}
+        >
+          {activeLesson ? (
+            <LessonWorkspace
+              lesson={activeLesson}
+              allLessons={lessons}
+              prevLessonId={prevLessonId}
+              nextLessonId={nextLessonId}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              totalPages={totalPages}
+              layoutMode={mode}
+              onResetLayout={resetLayout}
+              onToggleRight={handleToggleRight}
+              initialExerciseIndex={initialExerciseIndex}
+              onExerciseIndexChange={setActiveExerciseIndex}
+              onActiveBankIndexChange={setActiveBankIndex}
+              onLineSelect={(li, bi) => {
+                setSelectedLineIndex(li)
+                setSelectedBlankIndex(bi)
+              }}
+              editMode={editMode}
+              editActions={editActions}
+            />
+          ) : (
+            <div className="right-panel">
+              <div style={{ padding: 24, color: 'var(--text2)' }}>Lesson not found.</div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

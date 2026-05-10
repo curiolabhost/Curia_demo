@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react'
 import { LearnPageClient } from '@/components/LearnPageClient'
-import { AdminSaveBar } from '@/components/admin/AdminSaveBar'
 import { AdminTopBar } from '@/components/admin/AdminTopBar'
 import {
   draftToLesson,
@@ -31,7 +30,13 @@ export function AdminEditClient({
 
   return (
     <>
-      <AdminTopBar lessonId={lessonId} dirty={dirty} />
+      <AdminTopBar
+        lessonId={lessonId}
+        dirty={dirty}
+        saveState={saveState}
+        saveError={saveError}
+        onSave={() => save(lessonId)}
+      />
       <div className="admin-shell">
         <LearnPageClient
           lessons={allLessons}
@@ -42,12 +47,6 @@ export function AdminEditClient({
           editActions={actions}
         />
       </div>
-      <AdminSaveBar
-        dirty={dirty}
-        saveState={saveState}
-        saveError={saveError}
-        onSave={() => save(lessonId)}
-      />
     </>
   )
 }

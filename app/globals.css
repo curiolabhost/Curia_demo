@@ -58,18 +58,20 @@ body {
 /* ---------- Layout grid ---------- */
 
 .app-shell {
+  position: fixed;
+  inset: 0;
   display: grid;
   grid-template-rows: 48px 1fr;
-  height: 100vh;
-  width: 100vw;
   overflow: hidden;
 }
 
 .app-main {
   display: grid;
   grid-template-columns: 50% 1fr;
+  grid-template-rows: 1fr;
   overflow: hidden;
   min-height: 0;
+  height: 100%;
 }
 
 .right-panel {
@@ -1694,8 +1696,8 @@ body {
 .fp-block-label { font-family:var(--mono); font-size:9px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:60px; }
 .fp-done .fp-block-label { color:var(--green); }
 .fp-active .fp-block-label { color:var(--accent); }
-.fp-instructions { overflow-y:auto; padding:16px 20px 12px; min-height:0; }
-.fp-preview-section { display:flex; flex-direction:column; border-top:1px solid var(--border); overflow:hidden; }
+.fp-instructions { overflow-y:auto; padding:16px 20px 12px; min-height:0; height:100%; }
+.fp-preview-section { display:flex; flex-direction:column; border-top:1px solid var(--border); overflow:hidden; height:100%; min-height:0; }
 .fp-preview-bar { height:32px; background:var(--surface2); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 12px; gap:6px; flex-shrink:0; }
 .fp-preview-dot { width:8px; height:8px; border-radius:50%; }
 .fp-preview-label { font-family:var(--mono); font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em; margin-left:4px; }
@@ -2007,24 +2009,6 @@ body {
 }
 
 /* ---------- Final project preview expand ---------- */
-
-.fp-instructions {
-  transition: max-height 0.2s ease,
-              opacity 0.2s ease,
-              padding 0.2s ease;
-}
-
-.fp-instructions.hidden {
-  max-height: 0;
-  opacity: 0;
-  padding: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.fp-block-nav.hidden {
-  display: none;
-}
 
 .fp-preview-btn {
   width: 22px;
@@ -2395,8 +2379,13 @@ body {
 .fp-split {
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.fp-split > .fp-instructions,
+.fp-split > .fp-preview-section {
+  box-sizing: border-box;
+  min-height: 0;
 }
 
 .fp-split > .gutter {
@@ -2425,16 +2414,4 @@ body {
 }
 .fp-split > .gutter:hover::after {
   background: var(--accent);
-}
-
-/* Hide gutter when preview is expanded */
-.fp-split > .gutter.gutter-vertical:has(
-  + div .fp-preview-section
-) {
-  display: none;
-}
-
-/* Simpler expand hide, controlled by class */
-.fp-split.preview-expanded > .gutter {
-  display: none;
 }

@@ -426,6 +426,10 @@ export function FinalProjectPanel({
   )
   const [feedbackMessage, setFeedbackMessage] = useState<string>('')
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingSelectionRef = useRef<{
+    lineIdx: number
+    blankIdx: number | null
+  } | null>(null)
 
   const allDone = activeIndex >= allExercises.length
 
@@ -447,11 +451,19 @@ export function FinalProjectPanel({
     setAnswerState('idle')
     setDraggingTokenId(null)
     setHoverBlankId(null)
-    setActiveBankIndex(0)
-    setSelectedLineIndex(null)
-    setSelectedBlankIndex(null)
     setTypedValues({})
     setFeedbackMessage('')
+    const pending = pendingSelectionRef.current
+    pendingSelectionRef.current = null
+    if (pending) {
+      setSelectedLineIndex(pending.lineIdx)
+      setSelectedBlankIndex(pending.blankIdx)
+      setActiveBankIndex(pending.blankIdx ?? 0)
+    } else {
+      setActiveBankIndex(0)
+      setSelectedLineIndex(null)
+      setSelectedBlankIndex(null)
+    }
     if (resetTimerRef.current) {
       clearTimeout(resetTimerRef.current)
       resetTimerRef.current = null
@@ -466,11 +478,35 @@ export function FinalProjectPanel({
     onLineSelect?.(selectedLineIndex, selectedBlankIndex)
   }, [selectedLineIndex, selectedBlankIndex, onLineSelect])
 
-  const handleLineClick = (lineIdx: number, blankIdx: number | null) => {
+  const handleLineClick = (
+    blockIdx: number,
+    lineIdx: number,
+    blankIdInBlock: string | null,
+  ) => {
+    const targetBlock = allExercises[blockIdx]
+    const targetBlanks = targetBlock?.blanks ?? []
+    const blankIdxInTarget =
+      blankIdInBlock !== null
+        ? targetBlanks.findIndex((b) => b.id === blankIdInBlock)
+        : -1
+    const resolvedBlankIdx = blankIdxInTarget >= 0 ? blankIdxInTarget : null
+
+    if (blockIdx !== activeIndex) {
+      pendingSelectionRef.current = {
+        lineIdx,
+        blankIdx: resolvedBlankIdx,
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('fp:goto-block', { detail: { index: blockIdx } }),
+        )
+      }
+      return
+    }
     setSelectedLineIndex(lineIdx)
-    setSelectedBlankIndex(blankIdx)
-    if (blankIdx !== null) {
-      setActiveBankIndex(blankIdx)
+    setSelectedBlankIndex(resolvedBlankIdx)
+    if (resolvedBlankIdx !== null) {
+      setActiveBankIndex(resolvedBlankIdx)
     }
   }
 
@@ -805,7 +841,11 @@ export function FinalProjectPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dropValues, typedValues, blankStates, answerState, allFilled])
 
-  const renderDropZone = (blankId: string, lineIdx?: number) => {
+  const renderDropZone = (
+    blankId: string,
+    lineIdx: number | undefined,
+    blockIdx: number,
+  ) => {
     const filled = dropValues[blankId]
     const status = blankStates[blankId]
     const isHover = hoverBlankId === blankId
@@ -821,7 +861,6 @@ export function FinalProjectPanel({
     } else {
       cls += ' fp-dz-empty'
     }
-    const blankIdx = blanks.findIndex((b) => b.id === blankId)
     return (
       <span
         key={`dz-${blankId}`}
@@ -840,11 +879,11 @@ export function FinalProjectPanel({
           if (tok) placeToken(blankId, tok.label)
           setHoverBlankId(null)
           setDraggingTokenId(null)
-          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIdx)
+          if (lineIdx !== undefined) handleLineClick(blockIdx, lineIdx, blankId)
         }}
         onClick={(e) => {
           e.stopPropagation()
-          if (lineIdx !== undefined) handleLineClick(lineIdx, blankIdx)
+          if (lineIdx !== undefined) handleLineClick(blockIdx, lineIdx, blankId)
           clearBlank(blankId)
         }}
         role="button"
@@ -858,7 +897,11 @@ export function FinalProjectPanel({
     )
   }
 
-  const renderTypeInput = (blankId: string, lineIdx?: number) => {
+  const renderTypeInput = (
+    blankId: string,
+    lineIdx: number | undefined,
+    blockIdx: number,
+  ) => {
     const status = blankStates[blankId]
     const value = typedValues[blankId] ?? ''
     let cls = 'fp-type-input'
@@ -911,7 +954,7 @@ export function FinalProjectPanel({
         onClick={(e) => e.stopPropagation()}
         onFocus={() => {
           if (lineIdx !== undefined) {
-            handleLineClick(lineIdx, blankIdx)
+            handleLineClick(blockIdx, lineIdx, blankId)
           } else if (blankIdx >= 0) {
             setActiveBankIndex(blankIdx)
           }
@@ -920,7 +963,11 @@ export function FinalProjectPanel({
     )
   }
 
-  const renderFreelineInput = (blankId: string, lineIdx?: number) => {
+  const renderFreelineInput = (
+    blankId: string,
+    lineIdx: number | undefined,
+    blockIdx: number,
+  ) => {
     const status = blankStates[blankId]
     const value = typedValues[blankId] ?? ''
     let cls = 'fp-freeline-input'
@@ -959,7 +1006,7 @@ export function FinalProjectPanel({
         onClick={(e) => e.stopPropagation()}
         onFocus={() => {
           if (lineIdx !== undefined) {
-            handleLineClick(lineIdx, blankIdx)
+            handleLineClick(blockIdx, lineIdx, blankId)
           } else if (blankIdx >= 0) {
             setActiveBankIndex(blankIdx)
           }
@@ -1054,6 +1101,13 @@ export function FinalProjectPanel({
 
     const renderAdminGutter = (lineIdx: number): React.ReactNode => {
       if (!editMode || !editActions) return null
+      const lineForGutter = blockLines[lineIdx]
+      const idsOnGutterLine = lineForGutter
+        ? extractBlankIds(lineForGutter.text)
+        : []
+      const firstBlankIdInBlock = idsOnGutterLine.find((id) =>
+        blockBlanks.some((b) => b.id === id),
+      )
       return (
         <span className="admin-line-gutter" onClick={(e) => e.stopPropagation()}>
           <button
@@ -1081,6 +1135,17 @@ export function FinalProjectPanel({
             onClick={() => editActions.lines.delete(idx, lineIdx)}
           >
             ×
+          </button>
+          <button
+            type="button"
+            className="admin-icon-btn"
+            title="Open line explanation"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleLineClick(idx, lineIdx, firstBlankIdInBlock ?? null)
+            }}
+          >
+            →
           </button>
         </span>
       )
@@ -1193,13 +1258,10 @@ export function FinalProjectPanel({
             }
             const extraClass = classes.join(' ')
 
-            const defaultBlankIdx =
-              idsOnLine.length === 1
-                ? blanks.findIndex((b) => b.id === idsOnLine[0])
-                : null
+            const defaultBlankId = idsOnLine.length === 1 ? idsOnLine[0] : null
             const handleClickLine = editMode
               ? undefined
-              : () => handleLineClick(i, defaultBlankIdx ?? null)
+              : () => handleLineClick(idx, i, defaultBlankId)
 
             const adminGutter = renderAdminGutter(i)
 
@@ -1212,7 +1274,7 @@ export function FinalProjectPanel({
                   onClick={handleClickLine}
                   adminGutter={adminGutter}
                 >
-                  {renderFreelineInput(freelineBlankId, i)}
+                  {renderFreelineInput(freelineBlankId, i, idx)}
                 </CodeLine>
               )
             }
@@ -1245,18 +1307,19 @@ export function FinalProjectPanel({
                     }
                     return <HighlightedText key={j} value={seg.value} />
                   }
-                  const m = modeOf(seg.id)
+                  const m: BlankInputMode =
+                    blockBlanksById.get(seg.id)?.mode ?? 'wordbank'
                   let chip: React.ReactNode
-                  if (m === 'type') chip = renderTypeInput(seg.id, i)
+                  if (m === 'type') chip = renderTypeInput(seg.id, i, idx)
                   else if (m === 'freeline') {
                     chip = editMode ? (
                       <span className="fp-drop-zone fp-dz-empty">
                         <span className="fp-dz-hint">freeline</span>
                       </span>
                     ) : (
-                      renderFreelineInput(seg.id, i)
+                      renderFreelineInput(seg.id, i, idx)
                     )
-                  } else chip = renderDropZone(seg.id, i)
+                  } else chip = renderDropZone(seg.id, i, idx)
                   if (!editMode) return <Fragment key={j}>{chip}</Fragment>
                   return (
                     <span key={j} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>

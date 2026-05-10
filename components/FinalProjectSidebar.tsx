@@ -2,6 +2,21 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import Split from 'react-split'
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable'
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
+import { CSS } from '@dnd-kit/utilities'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type {
   BlankInputMode,
@@ -108,6 +123,43 @@ function InlineTextEdit({
           setEditing(false)
         }
       }}
+    />
+  )
+}
+
+type AutoGrowTextareaProps = {
+  value: string
+  onChange: (next: string) => void
+  className?: string
+  placeholder?: string
+  minRows?: number
+}
+
+function AutoGrowTextarea({
+  value,
+  onChange,
+  className,
+  placeholder,
+  minRows = 3,
+}: AutoGrowTextareaProps) {
+  const ref = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [value])
+
+  return (
+    <textarea
+      ref={ref}
+      className={className}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      rows={minRows}
+      placeholder={placeholder}
+      spellCheck={false}
     />
   )
 }
@@ -587,6 +639,94 @@ function CheckIcon({ size = 11 }: { size?: number }) {
   )
 }
 
+type SortableBlockTabProps = {
+  id: string
+  block: Exercise
+  idx: number
+  isDone: boolean
+  isActive: boolean
+  isFocused: boolean
+  onTabClick: (idx: number) => void
+  onDelete: (idx: number) => void
+}
+
+function SortableBlockTab({
+  id,
+  block,
+  idx,
+  isDone,
+  isActive,
+  isFocused,
+  onTabClick,
+  onDelete,
+}: SortableBlockTabProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+
+  const wrapperStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    display: 'inline-flex',
+    alignItems: 'center',
+    flexShrink: 0,
+    cursor: isDragging ? 'grabbing' : 'grab',
+    opacity: isDragging ? 0.85 : 1,
+    boxShadow: isDragging
+      ? '0 4px 12px rgba(0, 0, 0, 0.22)'
+      : undefined,
+    background: isDragging ? 'var(--surface)' : undefined,
+    borderRadius: isDragging ? '6px' : undefined,
+    zIndex: isDragging ? 2 : undefined,
+    position: 'relative',
+    touchAction: 'none',
+  }
+
+  const cls = `fp-block-dot ${
+    isDone ? 'fp-done' : isActive ? 'fp-active' : 'fp-admin-inactive'
+  }`
+
+  return (
+    <div ref={setNodeRef} style={wrapperStyle} {...attributes} {...listeners}>
+      <button
+        type="button"
+        className={cls}
+        onClick={() => onTabClick(idx)}
+        aria-current={isActive ? 'step' : undefined}
+        title={block.title}
+        style={isDragging ? { cursor: 'grabbing' } : undefined}
+      >
+        <span className="fp-block-num">
+          {isDone ? <CheckIcon size={10} /> : idx + 1}
+        </span>
+        <span className="fp-block-label">{truncate(block.title)}</span>
+      </button>
+      <span
+        className="admin-block-actions"
+        style={{ display: isFocused ? 'inline-flex' : 'none' }}
+      >
+        <button
+          type="button"
+          className="admin-icon-btn danger"
+          title="Delete block"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete(idx)
+          }}
+        >
+          ×
+        </button>
+      </span>
+    </div>
+  )
+}
+
 export function FinalProjectSidebar({
   lesson,
   activeBlockIndex,
@@ -608,19 +748,71 @@ export function FinalProjectSidebar({
   const [refreshKey, setRefreshKey] = useState(0)
   const [previewExpanded, setPreviewExpanded] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
-  const [splitSizes, setSplitSizes] = useState<[number, number]>([62, 38])
   const splitRef = useRef<
     (Split & { split: { setSizes: (sizes: number[]) => void } }) | null
   >(null)
+  const [focusedBlockTab, setFocusedBlockTab] = useState<number | null>(null)
+  const blockNavRef = useRef<HTMLDivElement>(null)
+  const blockIdMapRef = useRef<WeakMap<Exercise, string>>(new WeakMap())
+  const blockIdCounterRef = useRef(0)
+  const getBlockSortableId = (block: Exercise): string => {
+    let id = blockIdMapRef.current.get(block)
+    if (!id) {
+      blockIdCounterRef.current += 1
+      id = `block-sortable-${blockIdCounterRef.current}`
+      blockIdMapRef.current.set(block, id)
+    }
+    return id
+  }
+  const sortableIds = useMemo(
+    () => blocks.map((b) => getBlockSortableId(b)),
+    [blocks],
+  )
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  )
 
   useEffect(() => {
-    if (!splitRef.current?.split) return
-    if (previewExpanded) {
-      splitRef.current.split.setSizes([0, 100])
-    } else {
-      splitRef.current.split.setSizes(splitSizes)
+    if (!editMode) {
+      if (focusedBlockTab !== null) setFocusedBlockTab(null)
+      return
     }
-  }, [previewExpanded])
+    const handleDocMouseDown = (e: MouseEvent) => {
+      const nav = blockNavRef.current
+      if (nav && !nav.contains(e.target as Node)) {
+        setFocusedBlockTab(null)
+      }
+    }
+    document.addEventListener('mousedown', handleDocMouseDown)
+    return () => document.removeEventListener('mousedown', handleDocMouseDown)
+  }, [editMode, focusedBlockTab])
+
+  const handleEditTabClick = (idx: number) => {
+    setFocusedBlockTab(idx)
+    if (typeof window === 'undefined') return
+    window.dispatchEvent(
+      new CustomEvent('fp:goto-block', { detail: { index: idx } }),
+    )
+  }
+
+  const handleDeleteBlock = (idx: number) => {
+    if (!editActions) return
+    if (typeof window !== 'undefined') {
+      if (!window.confirm('Delete this block? This cannot be undone.')) return
+    }
+    editActions.blocks.delete(idx)
+    setFocusedBlockTab(null)
+  }
+
+  const handleBlockDragEnd = (event: DragEndEvent) => {
+    if (!editActions) return
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const from = sortableIds.indexOf(String(active.id))
+    const to = sortableIds.indexOf(String(over.id))
+    if (from === -1 || to === -1) return
+    editActions.blocks.move(from, to)
+  }
 
   const assembledUpTo = allDone ? totalBlocks : safeActiveIndex
   const assembledJs = useMemo(
@@ -682,10 +874,20 @@ export function FinalProjectSidebar({
     .map((id) => allLessons.find((l) => l.id === id))
     .filter((l): l is Lesson => Boolean(l))
 
-  const hasInstructionContent = Boolean(
+  const hasBlankView = Boolean(activeEntry && entryBlankIdx !== null)
+  const hasWholeLineView = Boolean(
     activeEntry &&
-      (activeEntry.instruction || activeEntry.explanation),
+      entryBlankIdx === null &&
+      entryLineIdx >= 0 &&
+      entryLineIdx < activeBlockLines.length &&
+      (editMode || (activeEntry.explanation && activeEntry.explanation.length > 0)),
   )
+  const showsDetailView = hasBlankView || hasWholeLineView
+  const wholeLine =
+    hasWholeLineView && entryLineIdx >= 0
+      ? activeBlockLines[entryLineIdx]
+      : null
+  const wholeLineLessonRefs = wholeLine?.lessonRefs ?? []
 
   const handleDotClick = (index: number) => {
     if (index >= safeActiveIndex && !allDone) return
@@ -718,6 +920,89 @@ export function FinalProjectSidebar({
     const url = URL.createObjectURL(blob)
     window.open(url, '_blank')
   }
+
+  const previewContent = (
+    <>
+      <div className="fp-preview-bar">
+        <span
+          className="fp-preview-dot"
+          style={{ background: '#ff5f57' }}
+          aria-hidden
+        />
+        <span
+          className="fp-preview-dot"
+          style={{ background: '#febc2e' }}
+          aria-hidden
+        />
+        <span
+          className="fp-preview-dot"
+          style={{ background: '#28c840' }}
+          aria-hidden
+        />
+        <span className="fp-preview-label">Live Preview</span>
+        <div
+          style={{
+            marginLeft: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}
+        >
+          <button
+            type="button"
+            className="fp-preview-btn"
+            onClick={() => setPreviewExpanded((v) => !v)}
+            aria-label={previewExpanded ? 'Collapse preview' : 'Expand preview'}
+            title={previewExpanded ? 'Collapse preview' : 'Expand preview'}
+          >
+            {previewExpanded ? <CollapseIcon /> : <ExpandIcon />}
+          </button>
+          <button
+            type="button"
+            className="fp-preview-btn"
+            onClick={handleOpenInNewTab}
+            aria-label="Open in new tab"
+            title="Open in new tab"
+          >
+            <NewTabIcon />
+          </button>
+          <button
+            type="button"
+            className="fp-preview-refresh"
+            onClick={handleRefresh}
+            aria-label="Refresh preview"
+            title="Refresh preview"
+          >
+            <RefreshIcon />
+          </button>
+        </div>
+      </div>
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          position: 'relative',
+          padding: '8px',
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 10,
+            cursor: 'ns-resize',
+            pointerEvents: isDragging ? 'auto' : 'none',
+          }}
+        />
+        <PreviewIframe
+          htmlTemplate={htmlTemplate}
+          cssTemplate={cssTemplate}
+          assembledJs={assembledJs}
+          refreshKey={refreshKey}
+        />
+      </div>
+    </>
+  )
 
   return (
     <aside className="fp-sidebar">
@@ -768,101 +1053,68 @@ export function FinalProjectSidebar({
       </div>
 
       <div
-        className={`fp-block-nav${previewExpanded ? ' hidden' : ''}`}
+        ref={blockNavRef}
+        className="fp-block-nav"
         role="tablist"
         aria-label="Final project blocks"
       >
-        {blocks.map((block, idx) => {
-          const isDone = allDone || idx < safeActiveIndex
-          const isActive = !allDone && idx === safeActiveIndex
-          const isLocked = editMode ? false : !allDone && idx > safeActiveIndex
-          const cls = `fp-block-dot ${
-            isDone ? 'fp-done' : isActive ? 'fp-active' : 'fp-locked'
-          }`
-          const dotButton = (
-            <button
-              type="button"
-              className={cls}
-              onClick={() => {
-                if (editMode) {
-                  if (typeof window === 'undefined') return
-                  window.dispatchEvent(
-                    new CustomEvent('fp:goto-block', { detail: { index: idx } }),
-                  )
-                  return
-                }
-                handleDotClick(idx)
-              }}
-              disabled={isLocked}
-              aria-current={isActive ? 'step' : undefined}
-              title={block.title}
+        {editMode && editActions ? (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToHorizontalAxis]}
+            onDragEnd={handleBlockDragEnd}
+          >
+            <SortableContext
+              items={sortableIds}
+              strategy={horizontalListSortingStrategy}
             >
-              <span className="fp-block-num">
-                {isDone ? <CheckIcon size={10} /> : idx + 1}
-              </span>
-              <span className="fp-block-label">{truncate(block.title)}</span>
-            </button>
-          )
-          if (!editMode || !editActions) {
-            return <Fragment key={`${block.title}-${idx}`}>{dotButton}</Fragment>
-          }
-          const hasContent =
-            (block.lines?.length ?? 0) > 0 ||
-            (block.blanks?.length ?? 0) > 0 ||
-            (block.tokenBank?.length ?? 0) > 0 ||
-            (block.tasks?.length ?? 0) > 0
-          return (
-            <div
-              key={`${block.title}-${idx}`}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                flexShrink: 0,
-              }}
-            >
-              {dotButton}
-              <span className="admin-block-actions">
+              {blocks.map((block, idx) => {
+                const isDone = allDone || idx < safeActiveIndex
+                const isActive = !allDone && idx === safeActiveIndex
+                return (
+                  <SortableBlockTab
+                    key={getBlockSortableId(block)}
+                    id={getBlockSortableId(block)}
+                    block={block}
+                    idx={idx}
+                    isDone={isDone}
+                    isActive={isActive}
+                    isFocused={focusedBlockTab === idx}
+                    onTabClick={handleEditTabClick}
+                    onDelete={handleDeleteBlock}
+                  />
+                )
+              })}
+            </SortableContext>
+          </DndContext>
+        ) : (
+          blocks.map((block, idx) => {
+            const isDone = allDone || idx < safeActiveIndex
+            const isActive = !allDone && idx === safeActiveIndex
+            const isLocked = !allDone && idx > safeActiveIndex
+            const cls = `fp-block-dot ${
+              isDone ? 'fp-done' : isActive ? 'fp-active' : 'fp-locked'
+            }`
+            return (
+              <Fragment key={`${block.title}-${idx}`}>
                 <button
                   type="button"
-                  className="admin-icon-btn"
-                  title="Move block up"
-                  onClick={() => editActions.blocks.move(idx, idx - 1)}
-                  disabled={idx === 0}
+                  className={cls}
+                  onClick={() => handleDotClick(idx)}
+                  disabled={isLocked}
+                  aria-current={isActive ? 'step' : undefined}
+                  title={block.title}
                 >
-                  ↑
+                  <span className="fp-block-num">
+                    {isDone ? <CheckIcon size={10} /> : idx + 1}
+                  </span>
+                  <span className="fp-block-label">{truncate(block.title)}</span>
                 </button>
-                <button
-                  type="button"
-                  className="admin-icon-btn"
-                  title="Move block down"
-                  onClick={() => editActions.blocks.move(idx, idx + 1)}
-                  disabled={idx === blocks.length - 1}
-                >
-                  ↓
-                </button>
-                <button
-                  type="button"
-                  className="admin-icon-btn danger"
-                  title="Delete block"
-                  onClick={() => {
-                    if (
-                      hasContent &&
-                      typeof window !== 'undefined' &&
-                      !window.confirm(
-                        `Delete block "${block.title}"? It has content that will be lost.`,
-                      )
-                    ) {
-                      return
-                    }
-                    editActions.blocks.delete(idx)
-                  }}
-                >
-                  ×
-                </button>
-              </span>
-            </div>
-          )
-        })}
+              </Fragment>
+            )
+          })
+        )}
         {editMode && editActions ? (
           <button
             type="button"
@@ -875,28 +1127,38 @@ export function FinalProjectSidebar({
         ) : null}
       </div>
 
+      {previewExpanded ? (
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            className="fp-preview-section"
+            style={{ flex: 1, minHeight: 0 }}
+          >
+            {previewContent}
+          </div>
+        </div>
+      ) : (
       <Split
         ref={splitRef}
         direction="vertical"
-        sizes={splitSizes}
-        minSize={[180, 240]}
+        sizes={[65, 35]}
+        minSize={[200, 120]}
         gutterSize={6}
         snapOffset={0}
         onDragStart={() => setIsDragging(true)}
-        onDragEnd={(sizes: number[]) => {
-          setIsDragging(false)
-          setSplitSizes([sizes[0], sizes[1]])
-        }}
-        style={{
-          flex: 1,
-          minHeight: 0,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-        className={`fp-split${previewExpanded ? ' preview-expanded' : ''}`}
+        onDragEnd={() => setIsDragging(false)}
+        className="fp-split"
+        style={{ flex: 1, minHeight: 0, height: '100%' }}
       >
       <div
-        className={`fp-instructions${previewExpanded ? ' hidden' : ''}`}
+        className="fp-instructions"
         style={{ overflow: 'auto', minHeight: 0 }}
       >
         {allDone ? (
@@ -967,49 +1229,90 @@ export function FinalProjectSidebar({
               )}
             </div>
 
-            {hasInstructionContent ? (
+            {hasBlankView ? (
               <>
-                {entryBlankIdx !== null ? (
-                  <>
-                    <div className="fp-line-instruction-label">
-                      You are working on:
-                    </div>
-                    <div className="fp-line-code-preview">
-                      {currentMode === 'freeline' ? (
-                        <>
-                          <div
-                            style={{
-                              color: '#45475a',
-                              fontFamily: 'var(--mono)',
-                              fontSize: '11px',
-                            }}
-                          >
-                            {entryLineIdx >= 0 ? entryLineIdx + 1 : 1}
-                          </div>
-                          <span className="fp-freeline-slot" />
-                        </>
-                      ) : (
-                        renderLineWithBlankBoxes(
-                          activeLineText,
-                          activeBlockBlanksById,
-                        )
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="fp-line-label">This line does:</div>
-                    <div className="fp-no-blank-snippet">
-                      <HighlightedSnippet value={activeLineText} />
-                    </div>
-                  </>
-                )}
+                <div className="fp-line-instruction-label">
+                  You are working on:
+                </div>
+                <div className="fp-line-code-preview">
+                  {currentMode === 'freeline' ? (
+                    <>
+                      <div
+                        style={{
+                          color: '#45475a',
+                          fontFamily: 'var(--mono)',
+                          fontSize: '11px',
+                        }}
+                      >
+                        {entryLineIdx >= 0 ? entryLineIdx + 1 : 1}
+                      </div>
+                      <span className="fp-freeline-slot" />
+                    </>
+                  ) : (
+                    renderLineWithBlankBoxes(
+                      activeLineText,
+                      activeBlockBlanksById,
+                    )
+                  )}
+                </div>
 
-                {activeEntry?.instruction ? (
+                {editMode && editActions && activeBlank ? (
+                  <AutoGrowTextarea
+                    className="fp-instruction-card admin-inline-instruction-card"
+                    value={activeBlank.instruction ?? ''}
+                    placeholder="Instruction shown to the student"
+                    minRows={3}
+                    onChange={(next) =>
+                      editActions.blanks.update(safeActiveIndex, activeBlank.id, {
+                        instruction: next.length > 0 ? next : undefined,
+                      })
+                    }
+                  />
+                ) : activeEntry?.instruction ? (
                   <div className="fp-instruction-card">{currentInstruction}</div>
                 ) : null}
-                {currentExplanation ? (
+                {editMode && editActions && activeBlank ? (
+                  <AutoGrowTextarea
+                    className="fp-explanation admin-inline-explanation"
+                    value={activeBlank.explanation ?? ''}
+                    placeholder="Explanation"
+                    minRows={3}
+                    onChange={(next) =>
+                      editActions.blanks.update(safeActiveIndex, activeBlank.id, {
+                        explanation: next.length > 0 ? next : undefined,
+                      })
+                    }
+                  />
+                ) : currentExplanation ? (
                   <div className="fp-explanation">{currentExplanation}</div>
+                ) : null}
+                {editMode && editActions && activeBlank ? (
+                  <input
+                    className="admin-blank-refs-input"
+                    value={(activeBlank.lessonRefs ?? []).join(', ')}
+                    placeholder="Lesson refs (comma-separated)"
+                    spellCheck={false}
+                    onChange={(e) => {
+                      const refs = e.target.value
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter((s) => s.length > 0)
+                      editActions.blanks.update(safeActiveIndex, activeBlank.id, {
+                        lessonRefs: refs.length > 0 ? refs : undefined,
+                      })
+                    }}
+                  />
+                ) : null}
+                {editMode && editActions && activeBlank ? (
+                  <button
+                    type="button"
+                    className="admin-blank-delete-btn-inline"
+                    onClick={() => {
+                      editActions.blanks.remove(safeActiveIndex, activeBlank.id)
+                    }}
+                  >
+                    Delete blank
+                  </button>
                 ) : null}
 
                 {entryBlankIdx !== null ? (
@@ -1063,6 +1366,51 @@ export function FinalProjectSidebar({
                       )
                     })}
                   </div>
+                ) : null}
+              </>
+            ) : hasWholeLineView ? (
+              <>
+                <div className="fp-line-instruction-label">
+                  This line does:
+                </div>
+                <div className="fp-line-code-preview">
+                  <HighlightedSnippet value={activeLineText} />
+                </div>
+                {editMode && editActions ? (
+                  <AutoGrowTextarea
+                    className="fp-explanation admin-inline-explanation"
+                    value={currentExplanation}
+                    placeholder="Explain what this line does..."
+                    minRows={3}
+                    onChange={(next) =>
+                      editActions.lines.editExplanation(
+                        safeActiveIndex,
+                        entryLineIdx,
+                        next,
+                      )
+                    }
+                  />
+                ) : currentExplanation ? (
+                  <div className="fp-explanation">{currentExplanation}</div>
+                ) : null}
+                {editMode && editActions ? (
+                  <input
+                    className="admin-blank-refs-input"
+                    value={wholeLineLessonRefs.join(', ')}
+                    placeholder="Lesson refs (comma-separated)"
+                    spellCheck={false}
+                    onChange={(e) => {
+                      const refs = e.target.value
+                        .split(',')
+                        .map((s) => s.trim())
+                        .filter((s) => s.length > 0)
+                      editActions.lines.editLessonRefs(
+                        safeActiveIndex,
+                        entryLineIdx,
+                        refs,
+                      )
+                    }}
+                  />
                 ) : null}
               </>
             ) : editMode && editActions ? (
@@ -1122,7 +1470,7 @@ export function FinalProjectSidebar({
               </ol>
             )}
 
-            {editMode && editActions && hasInstructionContent ? (
+            {editMode && editActions && showsDetailView ? (
               <div style={{ marginTop: 16 }}>
                 <div
                   style={{
@@ -1160,7 +1508,8 @@ export function FinalProjectSidebar({
               </div>
             ) : null}
 
-            {refLessons.length > 0 ? (
+            {refLessons.length > 0 &&
+            !(editMode && editActions && showsDetailView) ? (
               <>
                 <div
                   style={{
@@ -1214,86 +1563,10 @@ export function FinalProjectSidebar({
           overflow: 'hidden',
         }}
       >
-        <div className="fp-preview-bar">
-          <span
-            className="fp-preview-dot"
-            style={{ background: '#ff5f57' }}
-            aria-hidden
-          />
-          <span
-            className="fp-preview-dot"
-            style={{ background: '#febc2e' }}
-            aria-hidden
-          />
-          <span
-            className="fp-preview-dot"
-            style={{ background: '#28c840' }}
-            aria-hidden
-          />
-          <span className="fp-preview-label">Live Preview</span>
-          <div
-            style={{
-              marginLeft: 'auto',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-            }}
-          >
-            <button
-              type="button"
-              className="fp-preview-btn"
-              onClick={() => setPreviewExpanded((v) => !v)}
-              aria-label={previewExpanded ? 'Collapse preview' : 'Expand preview'}
-              title={previewExpanded ? 'Collapse preview' : 'Expand preview'}
-            >
-              {previewExpanded ? <CollapseIcon /> : <ExpandIcon />}
-            </button>
-            <button
-              type="button"
-              className="fp-preview-btn"
-              onClick={handleOpenInNewTab}
-              aria-label="Open in new tab"
-              title="Open in new tab"
-            >
-              <NewTabIcon />
-            </button>
-            <button
-              type="button"
-              className="fp-preview-refresh"
-              onClick={handleRefresh}
-              aria-label="Refresh preview"
-              title="Refresh preview"
-            >
-              <RefreshIcon />
-            </button>
-          </div>
-        </div>
-        <div
-          style={{
-            flex: 1,
-            minHeight: 0,
-            position: 'relative',
-            padding: '8px',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 10,
-              cursor: 'ns-resize',
-              pointerEvents: isDragging ? 'auto' : 'none',
-            }}
-          />
-          <PreviewIframe
-            htmlTemplate={htmlTemplate}
-            cssTemplate={cssTemplate}
-            assembledJs={assembledJs}
-            refreshKey={refreshKey}
-          />
-        </div>
+        {previewContent}
       </div>
       </Split>
+      )}
     </aside>
   )
 }

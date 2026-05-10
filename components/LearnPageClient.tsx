@@ -139,8 +139,9 @@ export function LearnPageClient({
             overflow: 'hidden',
             transition: 'all 0.25s ease',
             minHeight: 0,
-            display: 'grid',
-            gridTemplateRows: '1fr',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           {isFinalProject && activeLesson ? (

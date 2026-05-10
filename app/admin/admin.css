@@ -77,51 +77,47 @@
   height: calc(100vh - 36px);
 }
 
-/* Save bar floats at bottom right. */
-.admin-save-bar {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  z-index: 1000;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
-  display: flex;
+/* Inline save button + status inside the admin top bar. */
+.admin-top-bar-save {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  font-family: var(--mono);
-  font-size: 11px;
+  gap: 8px;
+  margin-left: 12px;
 }
 
-.admin-save-btn {
+.admin-top-bar-save-btn {
   background: var(--admin-accent);
   color: var(--white);
   border: none;
-  border-radius: 5px;
-  padding: 6px 14px;
+  border-radius: 4px;
+  padding: 4px 12px;
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
+  line-height: 1.2;
 }
-.admin-save-btn:hover {
+.admin-top-bar-save-btn:hover {
   filter: brightness(1.05);
 }
-.admin-save-btn:disabled {
+.admin-top-bar-save-btn:disabled {
   opacity: 0.4;
   cursor: default;
 }
 
-.admin-save-status {
-  color: var(--text3);
+.admin-top-bar-save-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--admin-bar-fg);
+  opacity: 0.85;
 }
-.admin-save-status.ok {
+.admin-top-bar-save-status.ok {
   color: var(--green);
+  opacity: 1;
 }
-.admin-save-status.err {
+.admin-top-bar-save-status.err {
   color: var(--red);
+  opacity: 1;
 }
 
 /* In-place editable surfaces. */
@@ -166,6 +162,20 @@
   box-sizing: border-box;
   font-family: var(--sans);
   resize: vertical;
+}
+
+/* Admin block tabs: not-yet-active blocks are clickable (unlike student fp-locked). */
+.fp-block-dot.fp-admin-inactive {
+  opacity: 0.55;
+  cursor: pointer;
+}
+.fp-block-dot.fp-admin-inactive:hover {
+  opacity: 0.85;
+}
+.fp-admin-inactive .fp-block-num {
+  background: var(--surface2);
+  color: var(--text3);
+  border: 1px solid var(--border2);
 }
 
 /* Block tab admin actions. */
@@ -722,4 +732,73 @@
   resize: vertical;
   min-height: 40px;
   box-sizing: border-box;
+}
+
+/* Inline-editable blank fields in FinalProjectSidebar. */
+.admin-inline-instruction-card {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  resize: none;
+  outline: none;
+  overflow: hidden;
+}
+.admin-inline-instruction-card:focus {
+  border-color: var(--admin-accent);
+}
+
+.admin-inline-explanation {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text2);
+  resize: none;
+  overflow: hidden;
+}
+
+.admin-blank-refs-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  outline: none;
+}
+.admin-blank-refs-input:focus {
+  border-color: var(--admin-accent);
+}
+
+.admin-blank-delete-btn-inline {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--red);
+  font-family: var(--sans);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.admin-blank-delete-btn-inline:hover {
+  opacity: 0.75;
 }

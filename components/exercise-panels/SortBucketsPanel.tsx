@@ -4,8 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import {
   DndContext,
   DragOverlay,
+  PointerSensor,
   useDraggable,
   useDroppable,
+  useSensor,
+  useSensors,
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core'
@@ -108,6 +111,10 @@ export function SortBucketsPanel({ exercise, onComplete }: PanelProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
+
   useEffect(() => {
     const initPlacements: Record<string, string | null> = {}
     const initStates: Record<string, ItemState> = {}
@@ -205,7 +212,11 @@ export function SortBucketsPanel({ exercise, onComplete }: PanelProps) {
       <h2 className="panel-heading">{exercise.title}</h2>
       <p className="panel-instruction">{exercise.tasks[0] ?? ''}</p>
 
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
         <div className="sb-board">
           <Tray isEmpty={trayItems.length === 0}>
             {trayItems.map((item) => (

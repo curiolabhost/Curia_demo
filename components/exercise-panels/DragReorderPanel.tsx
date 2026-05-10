@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   DndContext,
+  PointerSensor,
   closestCenter,
+  useSensor,
+  useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core'
 import {
@@ -91,6 +94,10 @@ export function DragReorderPanel({ exercise, onComplete }: PanelProps) {
 
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const checkRef = useRef<() => void>(() => {})
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   useEffect(() => {
     setItems(shuffle(correctOrder))
@@ -193,7 +200,11 @@ export function DragReorderPanel({ exercise, onComplete }: PanelProps) {
         Drag the lines into the correct order.
       </p>
 
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
         <SortableContext items={items} strategy={verticalListSortingStrategy}>
           <div className="dr-list">
             {items.map((id) => (

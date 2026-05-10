@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { useDevice } from '@/context/DeviceContext'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
@@ -50,6 +51,17 @@ export function LearnPageClient({
   const [selectedBlankIndex, setSelectedBlankIndex] = useState<number | null>(
     null,
   )
+
+  const device = useDevice()
+  if (typeof window !== 'undefined') console.log('[Curia] device:', device)
+
+  useEffect(() => {
+    fetch('/api/log-device', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device }),
+    }).catch(() => {})
+  }, [device])
 
   useEffect(() => {
     setNavOpen(false)

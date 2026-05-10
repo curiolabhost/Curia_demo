@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Sans, IBM_Plex_Mono, DM_Serif_Display } from 'next/font/google'
+import { DeviceProvider } from '@/context/DeviceContext'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -36,7 +37,9 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} ${ibmPlexMono.variable} ${dmSerifDisplay.variable}`}
       >
-        {children}
+        <DeviceProvider>
+          {children}
+        </DeviceProvider>
       </body>
     </html>
   )

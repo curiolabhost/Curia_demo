@@ -26,7 +26,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       firstName: string
       lastName: string
       role: string
-      impersonating?: { studentUserId: string; membershipId: string; classroomId: string }
+      impersonating?: {
+        studentUserId: string
+        membershipId: string
+        classroomId: string
+        studentFirstName: string
+        studentLastName: string
+      }
     } = {
       ok: true,
       userId: user.id,
@@ -36,7 +42,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       role: user.role,
     }
     if (session.impersonating) {
-      body.impersonating = { ...session.impersonating }
+      const student = await prisma.user.findUnique({
+        where: { id: session.impersonating.studentUserId },
+        select: { firstName: true, lastName: true },
+      })
+      body.impersonating = {
+        studentUserId: session.impersonating.studentUserId,
+        membershipId: session.impersonating.membershipId,
+        classroomId: session.impersonating.classroomId,
+        studentFirstName: student?.firstName ?? '',
+        studentLastName: student?.lastName ?? '',
+      }
     }
     return NextResponse.json(body, { status: 200 })
   } catch {

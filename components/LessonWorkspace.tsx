@@ -23,6 +23,7 @@ type LessonWorkspaceProps = {
   ) => void
   editMode?: boolean
   editActions?: EditActions
+  isReadOnly?: boolean
 }
 
 export function LessonWorkspace({

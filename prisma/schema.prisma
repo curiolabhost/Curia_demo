@@ -43,6 +43,8 @@ model StudentMembership {
   userId      String?
   classroomId String
   studentKey  String
+  firstName   String?
+  lastName    String?
   joinedAt    DateTime?
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)

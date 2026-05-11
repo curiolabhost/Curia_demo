@@ -1,16 +1,23 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useDevice } from '@/context/DeviceContext'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import { useLayoutMode } from '@/lib/useLayoutMode'
+import { ImpersonationBanner } from './admin/ImpersonationBanner'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
 import { LessonWorkspace } from './LessonWorkspace'
 import { NavOverlay } from './NavOverlay'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
+
+type ImpersonationState = {
+  studentFirstName: string
+  studentLastName: string
+  classroomId: string
+}
 
 type LearnPageClientProps = {
   lessons: Lesson[]
@@ -36,6 +43,39 @@ export function LearnPageClient({
   const [navOpen, setNavOpen] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
   const { mode, setMode, splitAllowed, resetLayout } = useLayoutMode()
+  const router = useRouter()
+  const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/auth/me')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (cancelled || !data || !data.impersonating) return
+        setImpersonationState({
+          studentFirstName: data.impersonating.studentFirstName,
+          studentLastName: data.impersonating.studentLastName,
+          classroomId: data.impersonating.classroomId,
+        })
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleExitImpersonation = useCallback(() => {
+    fetch('/api/admin/impersonate/exit', { method: 'POST' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const target = data && typeof data.redirectTo === 'string' ? data.redirectTo : '/admin'
+        setImpersonationState(null)
+        router.push(target)
+      })
+      .catch(() => {})
+  }, [router])
+
+  const isReadOnly = impersonationState !== null
 
   const handleToggleLeft = useCallback(() => {
     if (mode === 'expanded-left') {
@@ -129,7 +169,15 @@ export function LearnPageClient({
   }, [navOpen])
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" style={{ paddingTop: impersonationState ? 36 : 0 }}>
+      {impersonationState ? (
+        <ImpersonationBanner
+          studentFirstName={impersonationState.studentFirstName}
+          studentLastName={impersonationState.studentLastName}
+          classroomId={impersonationState.classroomId}
+          onExit={handleExitImpersonation}
+        />
+      ) : null}
       <TopBar
         session={session}
         completedCount={0}
@@ -227,6 +275,7 @@ export function LearnPageClient({
               }}
               editMode={editMode}
               editActions={editActions}
+              isReadOnly={isReadOnly}
             />
           ) : (
             <div className="right-panel">

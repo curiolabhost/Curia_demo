@@ -44,6 +44,7 @@ export type ContentBlock =
   | { kind: 'video'; src: string; caption?: string }
   | { kind: 'diagram'; variant: string }
   | { kind: 'embed'; src: string; height?: number; caption?: string }
+  | { kind: 'interactive'; component: string }
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }

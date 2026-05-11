@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react'
+import dynamic from 'next/dynamic'
 import type { ContentBlock, ContentPage, Lesson } from '@/lib/lessons'
+
+const interactiveComponents: Record<string, React.ComponentType> = {
+  LanguageToggle: dynamic(() => import('@/components/interactive/LanguageToggle')),
+}
 
 type SynToken = { kind: string; value: string }
 
@@ -347,7 +352,7 @@ function Block({ block }: { block: ContentBlock }) {
           {block.label}
         </div>
         <div style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.6 }}>
-          {block.text}
+          {renderInline(block.text)}
         </div>
       </div>
     )
@@ -450,6 +455,12 @@ function Block({ block }: { block: ContentBlock }) {
   if (block.kind === 'diagram') {
     if (block.variant === 'percent-operator') return <DiagramPercentOperator />
     return null
+  }
+
+  if (block.kind === 'interactive') {
+    const Component = interactiveComponents[block.component]
+    if (!Component) return null
+    return <Component />
   }
 
   if (block.kind === 'table') {

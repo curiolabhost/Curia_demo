@@ -127,43 +127,44 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "The greeting is missing a space",
-      "description": "The greeting prints 'HelloAlex' instead of 'Hello Alex'. One character is missing. Find and fix it.",
-      "buggyCode": "let name = 'Alex';\nlet greeting = 'Hello' + name;\nconsole.log(greeting);",
-      "starterCode": "let name = 'Alex';\nlet greeting = 'Hello' + name;\nconsole.log(greeting);",
-      "hint": "Strings join exactly as written — there's no automatic space.",
+      "title": "The broken calculator",
+      "description": "A student built a score calculator. They stored the starting score as '200' because they copied it from a text box. When they add 50 for a correct answer, the score shows '20050' instead of 250. Explain why this happens and rewrite the code so the math works correctly.",
+      "buggyCode": "let score = '200';\nlet correct = 50;\nlet total = score + correct;\nconsole.log('Your score:', total);",
+      "starterCode": "let score = '200';\nlet correct = 50;\nlet total = score + correct;\nconsole.log('Your score:', total);",
+      "hint": "Text boxes always give you a string, even if the value looks like a number. Check how score is declared.",
       "checks": [
-        { "type": "console", "includes": "Hello Alex", "label": "prints 'Hello Alex' with a space" }
+        { "type": "variable", "name": "total", "expected": 250, "label": "total equals 250" }
       ],
-      "explanation": "When you join strings with +, JavaScript doesn't add spaces for you. You have to add them yourself: 'Hello ' + name or 'Hello' + ' ' + name."
+      "explanation": "score is '200' in quotes — a string, not a number. So '200' + 50 joins as text and gives '20050'. Fix: remove the quotes (let score = 200) or convert it with Number(score) before adding."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
-      "title": "The score displays wrong",
-      "description": "The score should show 150 (100 + 50) but it's showing '10050'. Why? Fix it.",
-      "buggyCode": "let baseScore = '100';\nlet bonus = 50;\nlet total = baseScore + bonus;\nconsole.log('Total score:', total);",
-      "starterCode": "let baseScore = '100';\nlet bonus = 50;\nlet total = baseScore + bonus;\nconsole.log('Total score:', total);",
-      "hint": "Look at how baseScore is declared. What type is it?",
+      "title": "The name badge machine",
+      "description": "A school event needs name badges. Each badge should say \"Hi, my name is [first] [last] and I am from [city].\" You have three variables: firstName, lastName, city. But the machine is printing \"Hi, my name is JordanLeeAtlanta\" — no spaces, no punctuation. Find what's wrong and fix it.",
+      "buggyCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
+      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
+      "hint": "Strings join exactly as written — JavaScript won't add spaces or punctuation for you.",
       "checks": [
-        { "type": "variable", "name": "total", "expected": 150, "label": "total equals 150" }
+        { "type": "console", "includes": "Hi, my name is Jordan Lee and I am from Atlanta.", "label": "prints the correct badge message" }
       ],
-      "explanation": "baseScore is declared as '100' in quotes — that makes it a string, not a number. When you add a string to a number, JavaScript joins them as text: '100' + 50 = '10050'. Fix: remove the quotes so baseScore is 100, not '100'."
+      "explanation": "The + sign joins strings with nothing in between unless you add it yourself. Fix: add spaces and the missing phrase — 'Hi, my name is ' + firstName + ' ' + lastName + ' and I am from ' + city + '.'"
     },
     {
       "id": "c3",
       "level": 3,
       "difficulty": "tricky",
-      "title": "The intro sentence uses the wrong variable names",
-      "description": "The intro should say 'Hi, I am Sam and I am 14 years old.' but it prints something weird. Find all the bugs.",
-      "buggyCode": "let playerName = 'Sam';\nlet playerAge = 14;\nlet intro = `Hi, I am ${name} and I am ${age} years old.`;\nconsole.log(intro);",
-      "starterCode": "let playerName = 'Sam';\nlet playerAge = 14;\nlet intro = `Hi, I am ${name} and I am ${age} years old.`;\nconsole.log(intro);",
-      "hint": "Look carefully at the variable names declared on lines 1 and 2. Then look at what's inside the ${}.",
+      "title": "The mystery output",
+      "description": "Before running this code, predict both outputs. Then explain in one sentence why the two lines give different results even though they use the same three variables.",
+      "buggyCode": "let a = '10';\nlet b = 20;\nlet c = 30;\nconsole.log(a + b + c);\nconsole.log(b + c + a);",
+      "starterCode": "let a = '10';\nlet b = 20;\nlet c = 30;\nconsole.log(a + b + c);\nconsole.log(b + c + a);",
+      "hint": "JavaScript reads left to right. What happens the moment it hits a string?",
       "checks": [
-        { "type": "console", "includes": "Hi, I am Sam and I am 14 years old.", "label": "prints the correct intro sentence" }
+        { "type": "console", "includes": "102030", "label": "first log prints 102030" },
+        { "type": "console", "includes": "5010", "label": "second log prints 5010" }
       ],
-      "explanation": "The variables are called playerName and playerAge, but the template literal uses ${name} and ${age} — those don't exist. Fix: change ${name} to ${playerName} and ${age} to ${playerAge}."
+      "explanation": "JavaScript evaluates left to right. In a + b + c, the first + sees a string on the left so it joins — '10' + 20 = '1020', then '1020' + 30 = '102030'. In b + c + a, the first + sees two numbers so it adds — 20 + 30 = 50, then 50 + '10' = '5010'. Same variables, different order, different result."
     }
   ]
 }

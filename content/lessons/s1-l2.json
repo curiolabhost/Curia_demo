@@ -12,25 +12,16 @@
           "kind": "image",
           "src": "/assets/lessons/s1-l2/three-languages-cards.svg",
           "alt": "Three cards showing HTML structures the page, CSS styles it, and JavaScript makes it interactive",
-          "caption": "Three languages, three jobs. Each one does only its part."
+          "caption": "Three languages, three jobs. Each one does only its part in the Simon-Says game."
         },
+        { "kind": "p", "text": "**See it in action below!**" },
+
+        { "kind": "interactive", "component": "LanguageToggle" },
         {
           "kind": "callout",
           "variant": "info",
           "label": "HOW THEY CONNECT",
-          "text": "JavaScript finds an HTML element, then adds or removes a CSS class. That class change is what makes a square light up — JS doesn't draw anything, it just tells CSS when to apply."
-        },
-        {
-          "kind": "image",
-          "src": "/assets/lessons/s1-l2/js-html-css-flow.svg",
-          "alt": "Diagram showing JS adding a class to an HTML element which triggers a CSS style change",
-          "caption": "JS triggers the change. CSS does the actual styling."
-        },
-        {
-          "kind": "callout",
-          "variant": "warn",
-          "label": "KEY RULE",
-          "text": "JS never writes colours directly. It only adds and removes class names. CSS is always in charge of what things look like."
+          "text": "**HTML** puts things on the page. **CSS** makes them look right. **JavaScript** makes them do things."
         }
       ]
     }

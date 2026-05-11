@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  username     String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  studentMemberships StudentMembership[]
+  adminMemberships   AdminMembership[]
+}
+
+model Classroom {
+  id           String   @id @default(cuid())
+  name         String
+  classroomKey String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  studentMemberships StudentMembership[]
+  adminMemberships   AdminMembership[]
+}
+
+model StudentMembership {
+  id          String    @id @default(cuid())
+  userId      String?
+  classroomId String
+  studentKey  String
+  joinedAt    DateTime?
+
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  lessonProgress       LessonProgress[]
+  exerciseProgress     ExerciseProgress[]
+  finalProjectProgress FinalProjectProgress[]
+  codeEditorState      CodeEditorState[]
+
+  @@unique([userId, classroomId])
+  @@unique([classroomId, studentKey])
+}
+
+model AdminMembership {
+  id          String    @id @default(cuid())
+  userId      String?
+  classroomId String
+  adminKey    String
+  isOwner     Boolean   @default(false)
+  joinedAt    DateTime?
+
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classroomId])
+  @@unique([classroomId, adminKey])
+}
+
+model LessonProgress {
+  id                 String    @id @default(cuid())
+  membershipId       String
+  lessonId           String
+  lastExerciseIndex  Int       @default(0)
+  lastChallengeIndex Int       @default(0)
+  lastMode           String    @default("exercises")
+  completedAt        DateTime?
+  updatedAt          DateTime  @updatedAt
+
+  membership StudentMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([membershipId, lessonId])
+}
+
+model ExerciseProgress {
+  id            String    @id @default(cuid())
+  membershipId  String
+  lessonId      String
+  exerciseIndex Int
+  format        String
+  answerState   Json
+  completed     Boolean   @default(false)
+  completedAt   DateTime?
+  updatedAt     DateTime  @updatedAt
+
+  membership StudentMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([membershipId, lessonId, exerciseIndex])
+}
+
+model FinalProjectProgress {
+  id               String    @id @default(cuid())
+  membershipId     String
+  lessonId         String
+  activeBlockIndex Int       @default(0)
+  blocks           Json      @default("{}")
+  editedHtml       String?   @db.Text
+  editedCss        String?   @db.Text
+  completedAt      DateTime?
+  updatedAt        DateTime  @updatedAt
+
+  membership StudentMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([membershipId, lessonId])
+}
+
+model CodeEditorState {
+  id            String    @id @default(cuid())
+  membershipId  String
+  lessonId      String
+  exerciseIndex Int
+  code          String    @db.Text
+  completed     Boolean   @default(false)
+  completedAt   DateTime?
+  updatedAt     DateTime  @updatedAt
+
+  membership StudentMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([membershipId, lessonId, exerciseIndex])
+}

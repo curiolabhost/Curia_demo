@@ -205,7 +205,7 @@ function Block({ block }: { block: ContentBlock }) {
     return (
       <p
         style={{
-          fontSize: 14,
+          fontSize: 16,
           color: 'var(--text2)',
           lineHeight: 1.7,
           marginBottom: 12,
@@ -221,7 +221,7 @@ function Block({ block }: { block: ContentBlock }) {
     return (
       <h2
         style={{
-          fontSize: 15,
+          fontSize: 17,
           fontWeight: 600,
           color: 'var(--text)',
           margin: '18px 0 8px 0',
@@ -245,7 +245,7 @@ function Block({ block }: { block: ContentBlock }) {
           <li
             key={i}
             style={{
-              fontSize: 14,
+              fontSize: 16,
               color: 'var(--text2)',
               lineHeight: 1.7,
               marginBottom: 4,
@@ -283,7 +283,7 @@ function Block({ block }: { block: ContentBlock }) {
         </div>
         <div
           style={{
-            fontSize: 13,
+            fontSize: 14,
             color: 'var(--text2)',
             background: 'var(--bg)',
             padding: '8px 12px',
@@ -306,7 +306,7 @@ function Block({ block }: { block: ContentBlock }) {
           padding: '14px 16px',
           margin: '12px 0',
           fontFamily: 'var(--mono)',
-          fontSize: 12,
+          fontSize: 14,
           lineHeight: 1.6,
           overflowX: 'auto',
           color: 'var(--text)',
@@ -346,7 +346,7 @@ function Block({ block }: { block: ContentBlock }) {
         >
           {block.label}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.6 }}>
           {block.text}
         </div>
       </div>
@@ -571,7 +571,7 @@ export function LessonContent({
               style={{
                 display: 'flex',
                 gap: 8,
-                fontSize: 13,
+                fontSize: 15,
                 color: 'var(--text2)',
                 lineHeight: 1.5,
                 marginBottom: 6,

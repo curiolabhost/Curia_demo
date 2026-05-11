@@ -215,9 +215,12 @@ body {
   flex: 1;
   overflow-y: auto;
   color: var(--text3);
-  font-size: 14px;
+  font-size: 16px;
   padding: 24px;
   min-height: 0;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* ---------- Nav overlay ---------- */

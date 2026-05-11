@@ -68,7 +68,7 @@ export function ChallengePrompt({
           fontFamily: 'var(--mono)',
           fontSize: '11px',
           color: 'var(--text3)',
-          padding: '10px 0 6px',
+          padding: '10px 0 25px',
         }}
       >
         Challenge {activeIndex + 1} of {challenges.length}

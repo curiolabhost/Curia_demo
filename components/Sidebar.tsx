@@ -122,7 +122,7 @@ export function Sidebar({
       {totalPages > 1 && (
         <div
           style={{
-            padding: '25px 12px 0',
+            padding: '25px 12px 0 24px',
             fontFamily: 'var(--mono)',
             fontSize: '11px',
             color: 'var(--text3)',

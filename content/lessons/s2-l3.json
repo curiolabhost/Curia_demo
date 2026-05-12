@@ -6,18 +6,18 @@
     {
       "heading": "Strings — text in a variable (instead of numbers)",
       "blocks": [
-         { "kind": "image", "src": "/assets/lessons/s2-l3/strings_javascript_matched_style.svg", "alt": "Visual explainer of strings in JavaScript — showing text, numbers, and symbols all wrapped in quotes", "caption": "Anything inside quotes is a string — letters, numbers, symbols, even emojis. The quotes are what makes it text." },
+         { "kind": "image", "src": "/assets/lessons/s2-l3/strings_javascript_matched_style.svg", "alt": "Visual explainer of strings in JavaScript — showing text, numbers, and symbols all wrapped in quotes", "caption": "Anything inside quotes is a string: letters, numbers, symbols, even emojis. The quotes are what makes it text." },
 
-        { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there — letters, numbers, symbols, spaces, emojis — if it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
+        { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there: letters, numbers, symbols, spaces, emojis. If it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
         { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
-        { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property — it tells you how many characters are inside." },
-        { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up — watch for it." }
+        { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property. It tells you how many characters are inside." },
+        { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up, so watch for it." }
       ]
     },
     {
       "heading": "Template literals",
       "blocks": [
-        { "kind": "p", "text": "Think of Template Literals as a fill-in-the-blank sentence. `${VariableName}` marks the gaps where variables get dropped in — wrap the whole sentence in backtick (`) quotes." },
+        { "kind": "p", "text": "Think of Template Literals as a fill-in-the-blank sentence. `${VariableName}` marks the gaps where variables get dropped in. Wrap the whole sentence in backtick (`) quotes." },
         { "kind": "image", "src": "/assets/lessons/s2-l3/template-literals.svg", "alt": "A template literal using backticks with ${name} and ${age} dropped directly into the sentence" },
 
         {
@@ -41,7 +41,7 @@
       "heading": "The (+) sign has two jobs",
       "blocks": [
         { "kind": "p", "text": "The `+` sign does different things depending on what's on each side of it. With two numbers it adds. With a string on either side, it joins the values together as text. JavaScript checks the types first, then decides which job to do." },
-        { "kind": "image", "src": "/assets/lessons/s2-l3/plus-sign-final.svg", "alt": "Two examples side by side: 5 + 5 with both values labeled as numbers giving 10, and '5' + 5 with the string highlighted differently giving '55'", "caption": "Same + sign, different result — the types on each side decide whether it adds or joins." },
+        { "kind": "image", "src": "/assets/lessons/s2-l3/plus-sign-final.svg", "alt": "Two examples side by side: 5 + 5 with both values labeled as numbers giving 10, and '5' + 5 with the string highlighted differently giving '55'", "caption": "Same + sign, different result. The types on each side decide whether it adds or joins." },
 
 
         { "kind": "code", "lines": [
@@ -80,10 +80,10 @@
         "Declare variables: name (your name), age (your age), city (your city).",
         "Using template literals (backticks), build a sentence: 'Hi! I'm [name], I'm [age] years old, and I live in [city].'",
         "Log it.",
-        "Now change your city and log it again — the sentence updates automatically.",
+        "Now change your city and log it again. The sentence updates automatically.",
         "Challenge: add a 4th variable for your favorite food and include it in the sentence."
       ],
-      "hint": "Template literals use the backtick key — it's in the top-left of your keyboard, same key as ~",
+      "hint": "Template literals use the backtick key, found in the top-left of your keyboard, same key as ~",
       "starterCode": "let name = 'Alex';\nlet age = 13;\nlet city = 'Atlanta';\n\n// Build your sentence with a template literal\nlet intro = ``;\n\nconsole.log(intro);\n",
       "checks": [
         { "type": "variable", "name": "intro", "expected": null, "label": "a variable called 'intro' exists" },
@@ -109,7 +109,7 @@
       "duration": "7 min",
       "tasks": [
         "Declare firstName, lastName, and a lucky number.",
-        "Build a username by combining the first 3 characters aren't available yet — just use the full firstName + lastName + luckyNumber.",
+        "Build a username by combining the first 3 characters aren't available yet. Just use the full firstName + lastName + luckyNumber.",
         "Log: 'Your username is: ' + username",
         "Log the length of the username.",
         "Challenge: using a template literal, build a welcome message: 'Welcome, [username]! Your username is [length] characters long.'"
@@ -135,21 +135,21 @@
       "checks": [
         { "type": "variable", "name": "total", "expected": 250, "label": "total equals 250" }
       ],
-      "explanation": "score is '200' in quotes — a string, not a number. So '200' + 50 joins as text and gives '20050'. Fix: remove the quotes (let score = 200) or convert it with Number(score) before adding."
+      "explanation": "score is '200' in quotes, making it a string, not a number. So '200' + 50 joins as text and gives '20050'. Fix: remove the quotes (let score = 200) or convert it with Number(score) before adding."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
       "title": "The name badge machine",
-      "description": "A school event needs name badges. Each badge should say \"Hi, my name is [first] [last] and I am from [city].\" You have three variables: firstName, lastName, city. But the machine is printing \"Hi, my name is JordanLeeAtlanta\" — no spaces, no punctuation. Find what's wrong and fix it.",
+      "description": "A school event needs name badges. Each badge should say \"Hi, my name is [first] [last] and I am from [city].\" You have three variables: firstName, lastName, city. But the machine is printing \"Hi, my name is JordanLeeAtlanta\", with no spaces or punctuation. Find what's wrong and fix it.",
       "buggyCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
       "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
-      "hint": "Strings join exactly as written — JavaScript won't add spaces or punctuation for you.",
+      "hint": "Strings join exactly as written. JavaScript won't add spaces or punctuation for you.",
       "checks": [
         { "type": "console", "includes": "Hi, my name is Jordan Lee and I am from Atlanta.", "label": "prints the correct badge message" }
       ],
-      "explanation": "The + sign joins strings with nothing in between unless you add it yourself. Fix: add spaces and the missing phrase — 'Hi, my name is ' + firstName + ' ' + lastName + ' and I am from ' + city + '.'"
+      "explanation": "The + sign joins strings with nothing in between unless you add it yourself. Fix: add spaces and the missing phrase: 'Hi, my name is ' + firstName + ' ' + lastName + ' and I am from ' + city + '.'"
     },
     {
       "id": "c3",
@@ -164,7 +164,7 @@
         { "type": "console", "includes": "102030", "label": "first log prints 102030" },
         { "type": "console", "includes": "5010", "label": "second log prints 5010" }
       ],
-      "explanation": "JavaScript evaluates left to right. In a + b + c, the first + sees a string on the left so it joins — '10' + 20 = '1020', then '1020' + 30 = '102030'. In b + c + a, the first + sees two numbers so it adds — 20 + 30 = 50, then 50 + '10' = '5010'. Same variables, different order, different result."
+      "explanation": "JavaScript evaluates left to right. In a + b + c, the first + sees a string on the left so it joins: '10' + 20 = '1020', then '1020' + 30 = '102030'. In b + c + a, the first + sees two numbers so it adds: 20 + 30 = 50, then 50 + '10' = '5010'. Same variables, different order, different result."
     }
   ]
 }

@@ -469,7 +469,7 @@
       "type": "practice",
       "format": "fill-blank",
       "duration": "2 min",
-      "tasks": ["Every part of line 2 is missing. Drop all four tokens in the right order."],
+      "tasks": ["Decrease health by 10 points. Drop all four tokens in the right order."], 
       "hint": "A shortcut expression has: variable name, shortcut operator, number, semicolon is already there.",
       "compactBlanks": true,
       "codeWithBlanks": [

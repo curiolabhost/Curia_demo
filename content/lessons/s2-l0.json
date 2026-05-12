@@ -7,7 +7,7 @@
       "heading": "First, before anything...",
       "blocks": [
         { "kind": "p", "text": "Before we write real programs, you need two tools: a way to save information, and a way to see it. That's it. Everything in JavaScript is built on top of those two things." },
-        { "id": "image1", "kind": "image", "src": "/assets/lessons/s1-l0/let-consolelog-visual-v7.svg", "alt": "Variables in JavaScript" },
+        { "id": "image1", "kind": "image", "src": "/assets/lessons/s2-l0/let-consolelog-visual-v7.svg", "alt": "Variables in JavaScript" },
         { "kind": "concept", "code": "let count = 1", "desc": "Create a box called 'count' and put the number 1 inside it. The word 'let' means you're making a new box for the first time." },
         { "kind": "concept", "code": "console.log(count)", "desc": "Look inside the box called 'count' and print whatever is in there. This is how you prove your code is working." }
       ]

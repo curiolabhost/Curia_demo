@@ -24,16 +24,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return jsonError(400, 'missing_fields')
   }
   const body = raw as Record<string, unknown>
-  if (typeof body.classroomKey !== 'string' || typeof body.studentKey !== 'string') {
+  if (typeof body.joinCode !== 'string' || typeof body.studentKey !== 'string') {
     return jsonError(400, 'missing_fields')
   }
-  const classroomKey = body.classroomKey.trim()
+  const joinCode = body.joinCode.trim()
   const studentKey = body.studentKey.trim()
-  if (!classroomKey || !studentKey) return jsonError(400, 'missing_fields')
+  if (!joinCode || !studentKey) return jsonError(400, 'missing_fields')
 
   try {
     const classroom = await prisma.classroom.findUnique({
-      where: { classroomKey },
+      where: { joinCode },
       select: { id: true, name: true },
     })
     if (!classroom) return jsonError(404, 'classroom_not_found')

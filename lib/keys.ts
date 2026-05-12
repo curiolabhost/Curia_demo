@@ -38,7 +38,7 @@ export function generateKey(prefix?: string): string {
   return prefix ? `${prefix}-${body}` : body
 }
 
-export function generateClassroomKey(): string {
+export function generateJoinCode(): string {
   return generateKey('cls')
 }
 

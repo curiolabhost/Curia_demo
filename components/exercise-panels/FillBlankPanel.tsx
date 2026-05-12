@@ -226,7 +226,7 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
 
   return (
     <div className="panel-container">
-      <div className="fb-code-block">
+      <div className={`fb-code-block${exercise.compactBlanks ? ' fb-compact' : ''}`}>
         {parsedLines.map((segments, lineIdx) => (
           <div key={lineIdx}>
             {segments.map((segment, segIdx) => {
@@ -586,7 +586,7 @@ export function FillBlankTablet({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="fb-code-block">
+        <div className={`fb-code-block${exercise.compactBlanks ? ' fb-compact' : ''}`}>
           {parsedLines.map((segments, lineIdx) => (
             <div key={lineIdx}>
               {segments.map((segment, segIdx) => {

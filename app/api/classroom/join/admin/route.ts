@@ -26,16 +26,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
   const body = raw as Record<string, unknown>
   if (
-    typeof body.classroomKey !== 'string' ||
+    typeof body.joinCode !== 'string' ||
     typeof body.adminKey !== 'string' ||
     typeof body.password !== 'string'
   ) {
     return jsonError(400, 'missing_fields')
   }
-  const classroomKey = body.classroomKey.trim()
+  const joinCode = body.joinCode.trim()
   const adminKey = body.adminKey.trim()
   const password = body.password
-  if (!classroomKey || !adminKey || !password) {
+  if (!joinCode || !adminKey || !password) {
     return jsonError(400, 'missing_fields')
   }
 
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (!passwordOk) return jsonError(401, 'invalid_password')
 
     const classroom = await prisma.classroom.findUnique({
-      where: { classroomKey },
+      where: { joinCode },
       select: { id: true, name: true },
     })
     if (!classroom) return jsonError(404, 'classroom_not_found')

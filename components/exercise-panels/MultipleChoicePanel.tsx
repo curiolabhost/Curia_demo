@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Exercise } from '@/lib/lessons'
+import { SyntaxLine } from '@/lib/syntaxLine'
 
 type MultipleChoicePanelProps = {
   exercise: Exercise
@@ -46,6 +47,15 @@ export function MultipleChoicePanel({ exercise, onComplete }: MultipleChoicePane
 
   return (
     <div className="panel-container">
+      {exercise.codeSnippet ? (
+        <pre className="mc-code-snippet">
+          {exercise.codeSnippet.split('\n').map((line, i) => (
+            <div key={i}>
+              <SyntaxLine line={line} />
+            </div>
+          ))}
+        </pre>
+      ) : null}
       <div className="mc-grid">
         {options.map((option) => (
           <button

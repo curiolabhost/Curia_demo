@@ -44,6 +44,7 @@ export type ContentBlock =
   | { kind: 'video'; src: string; caption?: string }
   | { kind: 'diagram'; variant: string }
   | { kind: 'embed'; src: string; height?: number; caption?: string }
+  | { kind: 'interactive'; component: string }
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }
@@ -127,11 +128,14 @@ export type Exercise = {
   format?: ExerciseFormat
   options?: MultipleChoiceOption[]
   correctOptionId?: string
+  codeSnippet?: string
   codeWithBlanks?: string[]
   tokenBank?: FillBlankToken[]
   correctOrder?: string[]
   blankPlaceholders?: string[]
   blankWidths?: number[]
+  hintBank?: { id: string; label: string }[]
+  compactBlanks?: boolean
   blankInstructions?: string[]
   blankExplanations?: string[]
   codeLines?: string[]

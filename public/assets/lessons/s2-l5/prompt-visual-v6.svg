@@ -13,7 +13,8 @@
 <text x="208" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#FAC775">prompt</text>
 <text x="260" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#C2C0B6">(</text>
 <text x="270" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#9FE1CB">'What is your name?'</text>
-<text x="452" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#C2C0B6">)</text>
+<text x="434" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#C2C0B6">)</text>
+<text x="444" y="58" font-family="'IBM Plex Mono', monospace" font-size="13" fill="#C2C0B6">;</text>
 
 <!-- down arrow -->
 <line x1="290" y1="74" x2="290" y2="94" stroke="#888780" stroke-width="1.5"/>

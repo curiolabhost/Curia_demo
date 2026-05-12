@@ -28,24 +28,27 @@ model User {
 }
 
 model Classroom {
-  id           String   @id @default(cuid())
-  name         String
-  classroomKey String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  subject     String?
+  joinCode    String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   studentMemberships StudentMembership[]
   adminMemberships   AdminMembership[]
 }
 
 model StudentMembership {
-  id          String    @id @default(cuid())
-  userId      String?
-  classroomId String
-  studentKey  String
-  firstName   String?
-  lastName    String?
-  joinedAt    DateTime?
+  id           String    @id @default(cuid())
+  userId       String?
+  classroomId  String
+  studentKey   String
+  firstName    String?
+  lastName     String?
+  lastLessonId String?
+  joinedAt     DateTime?
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)

@@ -44,6 +44,36 @@
       ]
     },
     {
+      "heading": "What goes inside a variable?",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "Variables can hold different kinds of values. Right now there are three kinds to know about."
+        },
+        {
+          "kind": "concept",
+          "code": "let score = 42;",
+          "desc": "A number. No quotes. Used for anything you might do math with."
+        },
+        {
+          "kind": "concept",
+          "code": "let playerName = 'Jordan';",
+          "desc": "A string. Always wrapped in quotes. Used for words and text."
+        },
+        {
+          "kind": "concept",
+          "code": "let isWinning = true;",
+          "desc": "A boolean. Only ever true or false. No quotes. Used for yes/no situations."
+        },
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "Quotes matter",
+          "text": "42 is a number. '42' is a string that looks like a number but isn't. true is a boolean. 'true' is a string. The quotes make all the difference."
+        }
+      ]
+    },
+    {
       "heading": "Syntax the spelling rules of JavaScript",
       "blocks": [
         {
@@ -53,7 +83,7 @@
         {
           "kind": "image",
           "src": "/assets/lessons/s2-l1/variable-syntax.svg",
-          "alt": "Five syntax rules shown as annotated code examples: semicolons at line ends, case-sensitive names, quotes around text, no spaces in names, and let used only once per variable. An error tip box lists the three most common mistakes.",
+          "alt": "Five syntax rules shown as annotated code examples: semicolons at line ends, case-sensitive names, quotes around text, no spaces in names, and let used only once per variable.",
           "caption": "When you see an error, check these five rules first one of them is almost always the cause."
         }
       ]
@@ -100,9 +130,9 @@
           "kind": "code",
           "lines": [
             "let score = 0; // score is 0",
-            "score = score + 5; // take 0, add 5 \u2192 score is now 5",
-            "score = score * 2; // take 5, multiply by 2 \u2192 score is now 10",
-            "score = score - 3; // take 10, subtract 3 \u2192 score is now 7",
+            "score = score + 5; // take 0, add 5 → score is now 5",
+            "score = score * 2; // take 5, multiply by 2 → score is now 10",
+            "score = score - 3; // take 10, subtract 3 → score is now 7",
             "console.log(score); // prints: 7"
           ]
         },
@@ -160,7 +190,7 @@
             "console.log(lives); // 3",
             "",
             "score = score + 10; // only score changes",
-            "console.log(score); // 10 playerName and lives unchanged"
+            "console.log(score); // 10 — playerName and lives unchanged"
           ]
         }
       ]
@@ -181,7 +211,24 @@
         { "id": "d", "label": "Adds two numbers together" }
       ],
       "correctOptionId": "b",
-      "explanation": "'let' tells JavaScript to create a new container with that name. You only use it the first time — after that, just use the name by itself.",
+      "explanation": "'let' tells JavaScript to create a new container with that name. You only use it the first time after that, just use the name by itself.",
+      "checks": []
+    },
+    {
+      "title": "Spot the correct declaration",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Which of these correctly declares a variable called lives and sets it to 3?"],
+      "hint": "A declaration needs let, a name, an equals sign, and a value. All four parts.",
+      "options": [
+        { "id": "a", "code": "lives = 3;" },
+        { "id": "b", "code": "let = lives 3;" },
+        { "id": "c", "code": "let lives = 3;" },
+        { "id": "d", "code": "let lives 3;" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "A variable declaration always follows this pattern: let, then the name, then =, then the value. All four parts are required.",
       "checks": []
     },
     {
@@ -189,7 +236,7 @@
       "type": "practice",
       "format": "fill-blank",
       "duration": "2 min",
-      "tasks": ["Fill in the blanks to declare a variable called score and set it to 10."],
+      "tasks": ["Drop the correct words into the blanks to declare a variable called score set to 10."],
       "hint": "Every variable needs let, a name, an equals sign, and a value.",
       "codeWithBlanks": [
         "___BLANK___ score = ___BLANK___;"
@@ -205,12 +252,63 @@
       "checks": []
     },
     {
-      "title": "Type the missing keyword",
+      "title": "Drop every part of the declaration",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Declare a variable called lives and set it to 3."],
+      "hint": "A variable declaration has four parts: keyword, name, equals sign, value.",
+      "compactBlanks": true,
+      "codeWithBlanks": [
+        "___BLANK___ ___BLANK___ ___BLANK___ ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "=" },
+        { "id": "t2", "label": "var" },
+        { "id": "t3", "label": "3" },
+        { "id": "t4", "label": "let" },
+        { "id": "t5", "label": "lives" },
+        { "id": "t6", "label": "0" }
+      ],
+      "correctOrder": ["let", "lives", "=", "3"],
+      "explanation": "let lives = 3; has four parts: the keyword let, the name lives, the equals sign =, and the value 3. All four are required.",
+      "checks": []
+    },
+    {
+      "title": "Declare a different variable",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Fill in the blanks to declare a variable called speed and set it to 5."],
+      "hint": "Same pattern as before: let, name, =, value.",
+      "codeWithBlanks": [
+        "___BLANK___ speed = ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "let" },
+        { "id": "t2", "label": "5" },
+        { "id": "t3", "label": "const" },
+        { "id": "t4", "label": "speed" },
+        { "id": "t5", "label": "50" },
+        { "id": "t6", "label": "var" }
+      ],
+      "correctOrder": ["let", "5"],
+      "explanation": "The pattern is always: let name = value; 'const' and 'var' are real JavaScript keywords but we use 'let' for now.",
+      "checks": []
+    },
+    {
+      "title": "Type the keyword and value",
       "type": "practice",
       "format": "fill-blank-typed",
       "duration": "2 min",
-      "tasks": ["Type the missing parts to complete this variable declaration."],
-      "hint": "Every variable starts with let. The value goes after the equals sign.",
+      "tasks": ["Declare age to be 14."],
+      "hint": "The keyword that creates a new variable is three letters. The value is a number, no quotes.",
+      "hintBank": [
+        { "id": "h1", "label": "var" },
+        { "id": "h2", "label": "let" },
+        { "id": "h3", "label": "14" },
+        { "id": "h4", "label": "0" }
+      ],
       "codeWithBlanks": [
         "___BLANK___ age = ___BLANK___;"
       ],
@@ -220,34 +318,74 @@
         {
           "type": "variable",
           "name": "age",
-          "expected": null,
-          "label": "a variable called 'age' exists"
+          "expected": 14,
+          "label": "age equals 14"
         }
       ],
-      "explanation": "Every variable declaration needs let, a name, an equals sign, and a value."
+      "explanation": "'let' creates the variable. 14 is the value stored inside it. Both are required."
     },
     {
       "title": "Sort the values by type",
       "type": "practice",
       "format": "sort-buckets",
       "duration": "3 min",
-      "tasks": ["Drag each value into the correct type bucket."],
-      "hint": "Text in quotes is a string. Plain numbers are numbers. true and false are booleans.",
+      "tasks": ["Drag each value into the correct bucket: String, Number, or Boolean."],
+      "hint": "Text in quotes is a string. Plain numbers are numbers. true and false without quotes are booleans.",
       "buckets": [
-        { "id": "string",  "label": "String" },
-        { "id": "number",  "label": "Number" },
+        { "id": "string", "label": "String" },
+        { "id": "number", "label": "Number" },
         { "id": "boolean", "label": "Boolean" }
       ],
       "bucketItems": [
-        { "id": "i1", "label": "'hello'",  "correctBucketId": "string" },
-        { "id": "i2", "label": "42",       "correctBucketId": "number" },
-        { "id": "i3", "label": "true",     "correctBucketId": "boolean" },
-        { "id": "i4", "label": "'false'",  "correctBucketId": "string" },
-        { "id": "i5", "label": "3.14",     "correctBucketId": "number" },
-        { "id": "i6", "label": "false",    "correctBucketId": "boolean" }
+        { "id": "i1", "label": "'hello'", "correctBucketId": "string" },
+        { "id": "i2", "label": "42", "correctBucketId": "number" },
+        { "id": "i3", "label": "true", "correctBucketId": "boolean" },
+        { "id": "i4", "label": "'false'", "correctBucketId": "string" },
+        { "id": "i5", "label": "3.14", "correctBucketId": "number" },
+        { "id": "i6", "label": "false", "correctBucketId": "boolean" }
       ],
       "checks": [],
-      "explanation": "'false' in quotes is a string — it just looks like a boolean. Only true and false without quotes are real booleans."
+      "explanation": "'false' in quotes is a string it just looks like a boolean. Only true and false without quotes are real booleans."
+    },
+    {
+      "title": "What does this print?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Read the code carefully. What number does console.log print?"],
+      "hint": "Follow the code top to bottom. What is score equal to by line 3?",
+      "codeSnippet": "let score = 5;\nscore = 20;\nconsole.log(score);",
+      "options": [
+        { "id": "a", "label": "5" },
+        { "id": "b", "label": "20" },
+        { "id": "c", "label": "25" },
+        { "id": "d", "label": "0" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "score starts at 5, then gets replaced by 20. The old value is gone. The console prints whatever is in the variable at that moment, which is 20.",
+      "checks": []
+    },
+    {
+      "title": "Drop the reassignment",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["score already exists on line 1. Drop the right tokens to change it to 99 on line 2. No 'let' this time."],
+      "hint": "You only use 'let' the very first time. After that just write the name.",
+      "codeWithBlanks": [
+        "let score = 10;",
+        "___BLANK___ = ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "score" },
+        { "id": "t2", "label": "99" },
+        { "id": "t3", "label": "let score" },
+        { "id": "t4", "label": "let" },
+        { "id": "t5", "label": "10" }
+      ],
+      "correctOrder": ["score", "99"],
+      "explanation": "Reassignment uses just the variable name with no 'let'. The name on the left, equals sign, new value on the right.",
+      "checks": []
     },
     {
       "title": "Put the code in order",
@@ -277,6 +415,113 @@
       "explanation": "Variables must be declared with let before you can assign values or log them. Order always matters in JavaScript."
     },
     {
+      "title": "What does this print? (two steps)",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Follow the code step by step. What does the console print?"],
+      "hint": "Read the right side of line 2 first: score + 5. What is score at that point?",
+      "codeSnippet": "let score = 10;\nscore = score + 5;\nconsole.log(score);",
+      "options": [
+        { "id": "a", "label": "10" },
+        { "id": "b", "label": "5" },
+        { "id": "c", "label": "15" },
+        { "id": "d", "label": "105" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "score starts at 10. Then score + 5 = 15, and that gets stored back into score. So the console prints 15.",
+      "checks": []
+    },
+    {
+      "title": "Drop the self-update",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Fill in both blanks to add 3 to lives using lives itself."],
+      "hint": "The variable name goes on both sides of the equals sign. Right side runs first.",
+      "codeWithBlanks": [
+        "let lives = 2;",
+        "lives = ___BLANK___ + ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "lives" },
+        { "id": "t2", "label": "3" },
+        { "id": "t3", "label": "2" },
+        { "id": "t4", "label": "score" }
+      ],
+      "correctOrder": ["lives", "3"],
+      "explanation": "lives = lives + 3 reads the current value of lives (2), adds 3, and stores the result (5) back. The variable name appears on both sides.",
+      "checks": []
+    },
+    {
+      "title": "Type the full self-update",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Add 5 to coins using coins itself."],
+      "hint": "The variable name goes on the right side too. Read the right side first, then store the result.",
+      "hintBank": [
+        { "id": "h1", "label": "-" },
+        { "id": "h2", "label": "coins" },
+        { "id": "h3", "label": "5" },
+        { "id": "h4", "label": "+" },
+        { "id": "h5", "label": "10" }
+      ],
+      "codeWithBlanks": [
+        "let coins = 10;",
+        "coins = ___BLANK___ ___BLANK___ ___BLANK___;"
+      ],
+      "blankPlaceholders": ["variable", "operator", "amount"],
+      "blankWidths": [7, 3, 3],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "coins",
+          "expected": 15,
+          "label": "coins equals 15"
+        }
+      ],
+      "explanation": "coins = coins + 5 reads the current value (10), adds 5, and stores 15 back into coins. Right side always evaluates before the left side stores."
+    },
+    {
+      "title": "What does this print? (three variables)",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Three variables exist. Only one changes. What does the last line print?"],
+      "hint": "Only score changes. Does that affect lives?",
+      "codeSnippet": "let score = 0;\nlet lives = 3;\nlet playerName = 'Sam';\nscore = score + 10;\nconsole.log(lives);",
+      "options": [
+        { "id": "a", "label": "10" },
+        { "id": "b", "label": "0" },
+        { "id": "c", "label": "3" },
+        { "id": "d", "label": "Sam" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "score changed but lives was never touched. Each variable is its own container. Changing one never affects the others.",
+      "checks": []
+    },
+    {
+      "title": "Declare your birth month",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "3 min",
+      "tasks": ["Declare a variable that stores your birth month as a number."],
+      "hint": "January is 1, December is 12. A variable needs a keyword, a name, an equals sign, and a value.",
+      "codeWithBlanks": [
+        "___BLANK___ ___BLANK___ ___BLANK___ ___BLANK___;"
+      ],
+      "blankPlaceholders": ["keyword", "name", "equals", "value"],
+      "blankWidths": [5, 12, 3, 4],
+      "checks": [
+        {
+          "type": "noError",
+          "label": "code runs without errors"
+        }
+      ],
+      "explanation": "A complete variable declaration has four parts: let, a name you choose, =, and a value. Your birth month is a number so no quotes needed."
+    },
+    {
       "title": "Run your first variable",
       "type": "practice",
       "duration": "3 min",
@@ -295,26 +540,6 @@
           "expected": null,
           "label": "a variable called 'score' exists"
         },
-        {
-          "type": "console",
-          "includes": "",
-          "label": "something is printed to the console"
-        }
-      ]
-    },
-    {
-      "title": "Print something to the console",
-      "type": "practice",
-      "duration": "3 min",
-      "tasks": [
-        "Type this exactly on line 1: console.log('Hello!');",
-        "Hit Run. You should see Hello! appear in the console.",
-        "Now change the word Hello! to your own name and run it again.",
-        "Add a second console.log on the next line with any message you want."
-      ],
-      "hint": "console.log('Hello!'); writes whatever is inside the quotes to the console. Don't forget the semicolon at the end.",
-      "starterCode": "// Type your console.log on the line below\n\n\n// Add a second one here\n\n",
-      "checks": [
         {
           "type": "console",
           "includes": "",
@@ -349,40 +574,6 @@
       ]
     },
     {
-      "title": "Fill in your info",
-      "type": "practice",
-      "duration": "4 min",
-      "tasks": [
-        "Three variables are already set up. Right now they have placeholder values.",
-        "Replace 'YOUR NAME' with your actual name (keep the quotes).",
-        "Replace 0 for age with your real age.",
-        "Replace 'YOUR CITY' with where you live (keep the quotes).",
-        "Hit Run you should see your own info printed in the console!"
-      ],
-      "hint": "Keep the quotes around text values. Only the number (age) doesn't need quotes.",
-      "starterCode": "let name = 'YOUR NAME';\nlet age = 0;\nlet city = 'YOUR CITY';\n\nconsole.log(name);\nconsole.log(age);\nconsole.log(city);",
-      "checks": [
-        {
-          "type": "variable",
-          "name": "name",
-          "expected": null,
-          "label": "a variable called 'name' exists"
-        },
-        {
-          "type": "variable",
-          "name": "age",
-          "expected": null,
-          "label": "a variable called 'age' exists"
-        },
-        {
-          "type": "variable",
-          "name": "city",
-          "expected": null,
-          "label": "a variable called 'city' exists"
-        }
-      ]
-    },
-    {
       "title": "Change the value",
       "type": "practice",
       "duration": "4 min",
@@ -413,7 +604,7 @@
       "type": "practice",
       "duration": "5 min",
       "tasks": [
-        "You start with 12 cookies. Each step below changes how many you have.",
+        "You start with 12 cookies. Each step changes how many you have.",
         "Step 1 is already done you ate 4 cookies.",
         "Write Step 2: you found 6 more cookies. Add 6 to cookies.",
         "Write Step 3: you shared them equally with a friend. Divide cookies by 2.",
@@ -454,39 +645,6 @@
           "type": "console",
           "includes": "",
           "label": "something is printed to the console"
-        }
-      ]
-    },
-    {
-      "title": "Build a profile card",
-      "type": "practice",
-      "duration": "6 min",
-      "tasks": [
-        "Declare 3 variables from scratch: your name, your age, and your favorite thing.",
-        "Then build a sentence that uses all three and log it.",
-        "Example output: 'Hi! I am Alex, I am 13 years old, and I love skateboarding.'",
-        "Use + to join everything together into one sentence.",
-        "Run it and make sure your sentence appears in the console."
-      ],
-      "hint": "Example: let sentence = 'Hi! I am ' + name + ', I am ' + age + ' years old, and I love ' + favoriteThing + '.'",
-      "starterCode": "// Your three variables\n\n\n\n// Build your sentence and log it",
-      "checks": [
-        {
-          "type": "variable",
-          "name": "name",
-          "expected": null,
-          "label": "a variable called 'name' exists"
-        },
-        {
-          "type": "variable",
-          "name": "age",
-          "expected": null,
-          "label": "a variable called 'age' exists"
-        },
-        {
-          "type": "console",
-          "includes": "",
-          "label": "a sentence is printed to the console"
         }
       ]
     }
@@ -546,7 +704,7 @@
           "label": "score equals 30"
         }
       ],
-      "explanation": "You can only use 'let' once per variable the first time you create it. Using 'let' twice on 'score' causes an error. Line 2 should just be: score = 5; (no let). After the fix: 10 is ignored, score starts as 5, then 5 * 3 = 15. To get 30 we need score to start at 10, so remove the second let: score = 10, then score = 10 * 3 = 30."
+      "explanation": "You can only use 'let' once per variable. Using it twice on 'score' causes an error. Remove the second 'let' so line 2 becomes: score = 5; — but then 5 * 3 = 15, not 30. The second bug is that line 2 should not exist at all. Remove it entirely. Then score = 10, and 10 * 3 = 30."
     }
   ]
 }

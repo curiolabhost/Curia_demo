@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
-import { generateAdminKey, generateClassroomKey } from '@/lib/keys'
+import { generateAdminKey, generateJoinCode } from '@/lib/keys'
 
 export const runtime = 'nodejs'
 
@@ -35,13 +35,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const classroomKey = generateClassroomKey()
+    const joinCode = generateJoinCode()
     const adminKey = generateAdminKey()
 
     const classroom = await prisma.classroom.create({
       data: {
         name,
-        classroomKey,
+        joinCode,
         adminMemberships: {
           create: {
             userId: session.userId,
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           },
         },
       },
-      select: { id: true, name: true, classroomKey: true },
+      select: { id: true, name: true, joinCode: true },
     })
 
     return NextResponse.json(
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         ok: true,
         classroomId: classroom.id,
         name: classroom.name,
-        classroomKey: classroom.classroomKey,
+        joinCode: classroom.joinCode,
         adminKey,
       },
       { status: 201 }

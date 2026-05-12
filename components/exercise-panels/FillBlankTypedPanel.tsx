@@ -232,6 +232,19 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
         ))}
       </div>
 
+      {exercise.hintBank && exercise.hintBank.length > 0 && (
+        <div className="fbt-hint-bank">
+          <div className="fb-token-label">TYPE BANK</div>
+          <div className="fb-token-bank">
+            {exercise.hintBank.map((token) => (
+              <span key={token.id} className="fb-token fbt-hint-chip">
+                {token.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {answerState !== 'correct' ? (
         <button
           type="button"

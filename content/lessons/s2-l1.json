@@ -524,128 +524,27 @@
     {
       "title": "Run your first variable",
       "type": "practice",
-      "format": "multiple-choice",
-      "duration": "2 min",
-      "tasks": ["Follow the code step by step. What does the console print?"],
-      "hint": "Read the right side of line 2 first: score + 5. What is score at that point?",
-      "codeSnippet": "let score = 10;\nscore = score + 5;\nconsole.log(score);",
-      "options": [
-        { "id": "a", "label": "10" },
-        { "id": "b", "label": "5" },
-        { "id": "c", "label": "15" },
-        { "id": "d", "label": "105" }
+      "duration": "3 min",
+      "tasks": [
+        "The code is already written just hit Run and look at the console.",
+        "See the number 0 printed? That came from the variable score.",
+        "Now change 0 to your age on line 1. Hit Run again.",
+        "You should see your age printed instead. That's it you just used a variable!"
       ],
-      "correctOptionId": "c",
-      "explanation": "score starts at 10. Then score + 5 = 15, and that gets stored back into score. So the console prints 15.",
-      "checks": []
-    },
-    {
-      "title": "Drop the self-update",
-      "type": "practice",
-      "format": "fill-blank",
-      "duration": "2 min",
-      "tasks": ["Fill in both blanks to add 3 to lives using lives itself."],
-      "hint": "The variable name goes on both sides of the equals sign. Right side runs first.",
-      "codeWithBlanks": [
-        "let lives = 2;",
-        "lives = ___BLANK___ + ___BLANK___;"
-      ],
-      "tokenBank": [
-        { "id": "t1", "label": "lives" },
-        { "id": "t2", "label": "3" },
-        { "id": "t3", "label": "2" },
-        { "id": "t4", "label": "score" }
-      ],
-      "correctOrder": ["lives", "3"],
-      "explanation": "lives = lives + 3 reads the current value of lives (2), adds 3, and stores the result (5) back. The variable name appears on both sides.",
-      "checks": []
-    },
-    {
-      "title": "Type the full self-update",
-      "type": "practice",
-      "format": "fill-blank-typed",
-      "duration": "2 min",
-      "tasks": ["Add 5 to coins using coins itself."],
-      "hint": "The variable name goes on the right side too. Read the right side first, then store the result.",
-      "hintBank": [
-        { "id": "h1", "label": "-" },
-        { "id": "h2", "label": "coins" },
-        { "id": "h3", "label": "5" },
-        { "id": "h4", "label": "+" },
-        { "id": "h5", "label": "10" }
-      ],
-      "codeWithBlanks": [
-        "let coins = 10;",
-        "coins = ___BLANK___ ___BLANK___ ___BLANK___;"
-      ],
-      "blankPlaceholders": ["variable", "operator", "amount"],
-      "blankWidths": [7, 3, 3],
+      "hint": "Just change the number after the = sign on line 1. Don't change anything else.",
+      "starterCode": "let score = 0;\n\nconsole.log(score);",
       "checks": [
         {
           "type": "variable",
-          "name": "coins",
-          "expected": 15,
-          "label": "coins equals 15"
-        }
-      ],
-      "explanation": "coins = coins + 5 reads the current value (10), adds 5, and stores 15 back into coins. Right side always evaluates before the left side stores."
-    },
-    {
-      "title": "What does this print? (three variables)",
-      "type": "practice",
-      "format": "multiple-choice",
-      "duration": "2 min",
-      "tasks": ["Three variables exist. Only one changes. What does the last line print?"],
-      "hint": "Only score changes. Does that affect lives?",
-      "codeSnippet": "let score = 0;\nlet lives = 3;\nlet playerName = 'Sam';\nscore = score + 10;\nconsole.log(lives);",
-      "options": [
-        { "id": "a", "label": "10" },
-        { "id": "b", "label": "0" },
-        { "id": "c", "label": "3" },
-        { "id": "d", "label": "Sam" }
-      ],
-      "correctOptionId": "c",
-      "explanation": "score changed but lives was never touched. Each variable is its own container. Changing one never affects the others.",
-      "checks": []
-    },
-    {
-      "title": "Declare your birth month",
-      "type": "practice",
-      "format": "fill-blank-typed",
-      "duration": "3 min",
-      "tasks": ["Declare a variable that stores your birth month as a number."],
-      "hint": "January is 1, December is 12. A variable needs a keyword, a name, an equals sign, and a value.",
-      "codeWithBlanks": [
-        "___BLANK___ ___BLANK___ ___BLANK___ ___BLANK___;"
-      ],
-      "blankPlaceholders": ["keyword", "name", "equals", "value"],
-      "blankWidths": [5, 12, 3, 4],
-      "checks": [
+          "name": "score",
+          "expected": null,
+          "label": "a variable called 'score' exists"
+        },
         {
-          "type": "noError",
-          "label": "code runs without errors"
+          "type": "console",
+          "includes": "",
+          "label": "something is printed to the console"
         }
-      ],
-      "explanation": "A complete variable declaration has four parts: let, a name you choose, =, and a value. Your birth month is a number so no quotes needed."
-    },
-{
-  "title": "Run your first variable",
-  "type": "practice",
-  "format": "code-editor",
-  "duration": "3 min",
-  "tasks": [
-    "Hit Run and look at the console.",
-    "See the number 0? That came from the variable score.",
-    "Change 0 to your age on line 1. Hit Run again.",
-    "You should see your age printed. You just used a variable!"
-  ],
-  "contextCode": "let score = 0;\n\nconsole.log(score);",
-  "steps": [
-    {
-      "text": "Hit Run and look at the console.",
-      "completesOn": "run",
-      "checks": [
-        { "type": "consoleNonEmpty", "label": "something printed" }
       ]
     },
     {

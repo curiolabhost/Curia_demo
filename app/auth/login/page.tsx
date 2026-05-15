@@ -8,7 +8,23 @@ type Role = 'student' | 'instructor'
 type Tab = 'signin' | 'register'
 
 function redirectPathForApiRole(apiRole: string): string {
-  return apiRole === 'ADMIN' ? '/admin' : '/learn'
+  return apiRole === 'ADMIN' ? '/instructor/home' : '/student/home'
+}
+
+const REGISTER_ERROR_MESSAGES: Record<string, string> = {
+  missing_fields: 'Please fill in all required fields.',
+  invalid_role: 'Invalid role selected.',
+  invalid_username: 'Username must be 3-20 characters: letters, numbers, or underscores.',
+  invalid_password: 'Password must be at least 8 characters.',
+  username_taken: 'That username is already taken.',
+  server_error: 'Something went wrong. Please try again.',
+  register_failed: 'Could not create account. Please try again.',
+  network_error: 'Network error. Please check your connection.',
+}
+
+function registerErrorMessage(code: string | null | undefined): string {
+  if (!code) return REGISTER_ERROR_MESSAGES.register_failed
+  return REGISTER_ERROR_MESSAGES[code] ?? REGISTER_ERROR_MESSAGES.register_failed
 }
 
 function LoginInner() {
@@ -99,10 +115,10 @@ function LoginInner() {
       }
 
       console.log('[register] error', data.error)
-      setErrorMsg(data.error ?? 'register_failed')
+      setErrorMsg(registerErrorMessage(data.error))
     } catch (err) {
       console.log('[register] error', err)
-      setErrorMsg('network_error')
+      setErrorMsg(registerErrorMessage('network_error'))
     } finally {
       setSubmitting(false)
     }

@@ -122,14 +122,18 @@ function DiagramPercentOperator() {
   )
 }
 
-function Block({ block }: { block: ContentBlock }) {
+type Variant = 'default' | 'slide'
+
+function Block({ block, variant = 'default' }: { block: ContentBlock; variant?: Variant }) {
+  const isSlide = variant === 'slide'
+
   if (block.kind === 'p') {
     return (
       <p
         style={{
-          fontSize: 16,
+          fontSize: isSlide ? 17 : 16,
           color: 'var(--text2)',
-          lineHeight: 1.7,
+          lineHeight: isSlide ? 1.8 : 1.7,
           marginBottom: 12,
           marginTop: 0,
         }}
@@ -143,7 +147,7 @@ function Block({ block }: { block: ContentBlock }) {
     return (
       <h2
         style={{
-          fontSize: 17,
+          fontSize: isSlide ? 20 : 17,
           fontWeight: 600,
           color: 'var(--text)',
           margin: '18px 0 8px 0',
@@ -167,9 +171,9 @@ function Block({ block }: { block: ContentBlock }) {
           <li
             key={i}
             style={{
-              fontSize: 16,
+              fontSize: isSlide ? 17 : 16,
               color: 'var(--text2)',
-              lineHeight: 1.7,
+              lineHeight: isSlide ? 1.8 : 1.7,
               marginBottom: 4,
             }}
           >
@@ -228,7 +232,7 @@ function Block({ block }: { block: ContentBlock }) {
           padding: '14px 16px',
           margin: '12px 0',
           fontFamily: 'var(--mono)',
-          fontSize: 14,
+          fontSize: isSlide ? 15 : 14,
           lineHeight: 1.6,
           overflowX: 'auto',
           color: 'var(--text)',
@@ -450,20 +454,23 @@ export function LessonContent({
   page,
   isLastPage,
   lesson,
+  variant = 'default',
 }: {
   page: ContentPage
   isLastPage: boolean
   lesson: Lesson
+  variant?: Variant
 }) {
+  const isSlide = variant === 'slide'
   return (
     <div>
       {page.heading ? (
         <h1
           style={{
-            fontSize: 18,
+            fontSize: isSlide ? 26 : 18,
             fontWeight: 600,
             color: 'var(--text)',
-            margin: '0 0 14px 0',
+            margin: isSlide ? '0 0 28px 0' : '0 0 14px 0',
             lineHeight: 1.4,
           }}
         >
@@ -471,7 +478,7 @@ export function LessonContent({
         </h1>
       ) : null}
       {page.blocks.map((block, i) => (
-        <Block key={i} block={block} />
+        <Block key={i} block={block} variant={variant} />
       ))}
       {isLastPage && lesson.customize && lesson.customize.length > 0 ? (
         <div

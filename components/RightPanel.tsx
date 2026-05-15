@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import type { LayoutMode } from '@/lib/useLayoutMode'
+import { postExerciseProgress, postLessonProgress } from '@/lib/progressClient'
 import { loadCode } from '@/lib/storage'
 import { runInSandbox, type CheckResult, type LogEntry } from '@/lib/sandbox'
 import { BottomBar } from './BottomBar'
@@ -15,6 +16,7 @@ import { HomeView } from './HomeView'
 import { CollapseIcon, ExpandIcon } from './icons'
 import { OutputConsole } from './OutputConsole'
 import {
+  CodeEditorPanel,
   FinalProjectPanel,
   getPanelFormat,
   panelRegistry,
@@ -49,6 +51,7 @@ type RightPanelProps = {
   ) => void
   editMode?: boolean
   editActions?: EditActions
+  classroomId?: string | null
 }
 
 function isInsideEditor(target: EventTarget | null): boolean {
@@ -81,6 +84,7 @@ export function RightPanel({
   onLineSelect,
   editMode = false,
   editActions,
+  classroomId = null,
 }: RightPanelProps) {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>('exercises')
@@ -93,6 +97,10 @@ export function RightPanel({
   const [isRunning, setIsRunning] = useState(false)
   const [statusMsg, setStatusMsg] = useState('Ready')
   const [statusType, setStatusType] = useState<StatusType>('default')
+  const [stepPromptState, setStepPromptState] = useState<{
+    currentStepIndex: number
+    completedSteps: Set<number>
+  } | null>(null)
 
   const [renderedLesson, setRenderedLesson] = useState<Lesson>(lesson)
   const [renderedExerciseIndex, setRenderedExerciseIndex] = useState(initialExerciseIndex ?? 0)
@@ -155,6 +163,7 @@ export function RightPanel({
       setHintVisible(false)
       setEntries([])
       setCheckResults([])
+      setStepPromptState(null)
       setStatusMsg('Ready')
       setStatusType('default')
       setIsRunning(false)
@@ -189,6 +198,7 @@ export function RightPanel({
       setHintVisible(false)
       setEntries([])
       setCheckResults([])
+      setStepPromptState(null)
       setStatusMsg('Ready')
       setStatusType('default')
       setIsRunning(false)
@@ -243,6 +253,7 @@ export function RightPanel({
     setHintVisible(false)
     setEntries([])
     setCheckResults([])
+    setStepPromptState(null)
     setStatusMsg('Ready')
     setStatusType('default')
     runEntriesRef.current = []
@@ -420,8 +431,7 @@ export function RightPanel({
           lessonExercises[0].format === 'final-project'
         const kbExercise =
           activeExercise ?? (isFpLesson ? lessonExercises[lessonExercises.length - 1] : undefined)
-        const activeFmt = kbExercise ? getPanelFormat(kbExercise) : 'code-editor'
-        const inPanelFormat = mode === 'exercises' && !!kbExercise && activeFmt !== 'code-editor'
+        const inPanelFormat = mode === 'exercises' && !!kbExercise
         if (inPanelFormat) {
           document.dispatchEvent(new CustomEvent('panel:check-answer'))
         } else {
@@ -536,17 +546,45 @@ export function RightPanel({
   const hasActiveItem = mode === 'challenges' ? !!activeChallenge : !!activeExercise
 
   const activeFormat = panelExercise ? getPanelFormat(panelExercise) : 'code-editor'
-  const isPanelFormat = mode === 'exercises' && !!panelExercise && activeFormat !== 'code-editor'
+  const isPanelFormat = mode === 'exercises' && !!panelExercise
   const isFinalProject = isPanelFormat && activeFormat === 'final-project'
+  const isCodeEditor = isPanelFormat && activeFormat === 'code-editor'
 
   const handlePanelComplete = useCallback((correct: boolean) => {
     if (!correct) return
+    const lessonId = renderedLesson.id
+    const completedIndex = renderedExerciseIndex
+    const completedFormat = activeExercise?.format ?? 'code-editor'
+    let nextIndex = completedIndex
     if (isFinalProjectLesson) {
+      nextIndex = Math.min(completedIndex + 1, totalExercises)
       setExerciseIndex((i) => Math.min(i + 1, totalExercises))
     } else {
+      nextIndex = Math.min(completedIndex + 1, totalExercises - 1)
       goNextExercise()
     }
-  }, [goNextExercise, isFinalProjectLesson, totalExercises])
+    if (classroomId) {
+      postExerciseProgress(classroomId, lessonId, completedIndex, {
+        format: completedFormat,
+        answerState: {},
+        completed: true,
+        completedAt: new Date().toISOString(),
+      }).catch(() => {})
+      postLessonProgress(classroomId, lessonId, {
+        lastExerciseIndex: nextIndex,
+        lastMode: mode,
+      }).catch(() => {})
+    }
+  }, [
+    goNextExercise,
+    isFinalProjectLesson,
+    totalExercises,
+    classroomId,
+    renderedLesson.id,
+    renderedExerciseIndex,
+    activeExercise,
+    mode,
+  ])
 
   const handleHomeToggle = useCallback(() => {
     setShowHome((v) => {
@@ -712,6 +750,8 @@ export function RightPanel({
                   activeIndex={renderedExerciseIndex}
                   hintVisible={hintVisible}
                   isFading={isFading}
+                  currentStepIndex={stepPromptState?.currentStepIndex}
+                  completedSteps={stepPromptState?.completedSteps}
                 />
               ) : (
                 <section className="exercise-prompt">
@@ -747,6 +787,20 @@ export function RightPanel({
                   editActions={editActions}
                   blockIdx={renderedExerciseIndex}
                 />
+              ) : isCodeEditor ? (
+                <CodeEditorPanel
+                  exercise={panelExercise}
+                  lessonId={renderedLesson.id}
+                  exerciseIndex={renderedExerciseIndex}
+                  onComplete={handlePanelComplete}
+                  classroomId={classroomId}
+                  onStepChange={(idx, done) =>
+                    setStepPromptState({
+                      currentStepIndex: idx,
+                      completedSteps: done,
+                    })
+                  }
+                />
               ) : (
                 (() => {
                   const PanelComponent = panelRegistry[activeFormat]
@@ -769,6 +823,7 @@ export function RightPanel({
                     exerciseIndex={editorExerciseIndex}
                     starterCode={editorStarterCode}
                     isFading={isFading}
+                    classroomId={classroomId}
                   />
                 ) : (
                   <div className="editor-pane" />

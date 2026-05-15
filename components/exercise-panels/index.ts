@@ -7,6 +7,7 @@ import { SortBucketsPanel } from './SortBucketsPanel'
 import { DragReorderPanel } from './DragReorderPanel'
 import { FinalProjectPanel } from './FinalProjectPanel'
 import { CodeViewerPanel } from './CodeViewerPanel'
+import { CodeEditorPanel } from './CodeEditorPanel'
 
 export { MultipleChoicePanel } from './MultipleChoicePanel'
 export { FillBlankPanel } from './FillBlankPanel'
@@ -15,6 +16,7 @@ export { SortBucketsPanel } from './SortBucketsPanel'
 export { DragReorderPanel } from './DragReorderPanel'
 export { FinalProjectPanel } from './FinalProjectPanel'
 export { CodeViewerPanel } from './CodeViewerPanel'
+export { CodeEditorPanel } from './CodeEditorPanel'
 
 export type PanelProps = {
   exercise: Exercise
@@ -46,4 +48,5 @@ export const panelRegistry: Partial<
   'drag-reorder': DragReorderPanel,
   'final-project': FinalProjectPanel as unknown as ComponentType<PanelProps>,
   'code-viewer': CodeViewerPanel,
+  'code-editor': CodeEditorPanel as unknown as ComponentType<PanelProps>,
 }

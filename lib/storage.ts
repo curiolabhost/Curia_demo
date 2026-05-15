@@ -19,3 +19,4 @@ export function loadCode(
   const value = window.localStorage.getItem(keyFor(lessonId, exerciseIndex))
   return value ?? fallback
 }
+

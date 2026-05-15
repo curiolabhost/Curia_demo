@@ -10,6 +10,7 @@ type StudentEntry = {
   lastName: string
   username: string | null
   userId: string | null
+  studentKey: string
   claimed: boolean
   joinedAt: string | null
 }
@@ -43,6 +44,7 @@ export async function GET(
         userId: true,
         firstName: true,
         lastName: true,
+        studentKey: true,
         joinedAt: true,
         user: { select: { firstName: true, lastName: true, username: true } },
       },
@@ -59,6 +61,7 @@ export async function GET(
         lastName,
         username,
         userId: m.userId,
+        studentKey: m.studentKey,
         claimed,
         joinedAt: m.joinedAt ? m.joinedAt.toISOString() : null,
       }

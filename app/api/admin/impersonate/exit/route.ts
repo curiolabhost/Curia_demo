@@ -14,7 +14,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const { session } = auth
 
   const redirectTo = session.impersonating
-    ? `/admin/classroom/${session.impersonating.classroomId}`
+    ? `/instructor/classroom/${session.impersonating.classroomId}`
     : '/admin'
 
   const newSession: SessionData = {

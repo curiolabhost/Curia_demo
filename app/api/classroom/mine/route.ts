@@ -10,6 +10,10 @@ type ClassroomEntry = {
   role: 'STUDENT' | 'ADMIN'
   isOwner?: boolean
   joinedAt: string
+  joinCode: string
+  subject: string | null
+  description: string | null
+  studentCount: number
 }
 
 function jsonError(status: number, error: string): NextResponse {
@@ -29,7 +33,16 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         where: { userId: session.userId, joinedAt: { not: null } },
         select: {
           joinedAt: true,
-          classroom: { select: { id: true, name: true } },
+          classroom: {
+            select: {
+              id: true,
+              name: true,
+              joinCode: true,
+              subject: true,
+              description: true,
+              _count: { select: { studentMemberships: true } },
+            },
+          },
         },
       })
       for (const m of memberships) {
@@ -39,6 +52,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
           name: m.classroom.name,
           role: 'STUDENT',
           joinedAt: m.joinedAt.toISOString(),
+          joinCode: m.classroom.joinCode,
+          subject: m.classroom.subject,
+          description: m.classroom.description,
+          studentCount: m.classroom._count.studentMemberships,
         })
       }
     } else {
@@ -47,7 +64,16 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         select: {
           isOwner: true,
           joinedAt: true,
-          classroom: { select: { id: true, name: true } },
+          classroom: {
+            select: {
+              id: true,
+              name: true,
+              joinCode: true,
+              subject: true,
+              description: true,
+              _count: { select: { studentMemberships: true } },
+            },
+          },
         },
       })
       for (const m of memberships) {
@@ -58,6 +84,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
           role: 'ADMIN',
           isOwner: m.isOwner,
           joinedAt: m.joinedAt.toISOString(),
+          joinCode: m.classroom.joinCode,
+          subject: m.classroom.subject,
+          description: m.classroom.description,
+          studentCount: m.classroom._count.studentMemberships,
         })
       }
     }

@@ -1,19 +1,24 @@
 'use client'
 
 import { Suspense, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import './login.css'
 
 type Role = 'student' | 'instructor'
 type Tab = 'signin' | 'register'
 
 function LoginInner() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const roleParam = searchParams.get('role')
   const initialRole: Role = roleParam === 'instructor' ? 'instructor' : 'student'
 
   const [role, setRole] = useState<Role>(initialRole)
   const [activeTab, setActiveTab] = useState<Tab>('signin')
+
+  const handleSubmit = () => {
+    router.push(role === 'student' ? '/student/home' : '/instructor/home')
+  }
 
   const otherRole: Role = role === 'student' ? 'instructor' : 'student'
   const switcherHref = `/auth/login?role=${otherRole}`
@@ -113,7 +118,7 @@ function LoginInner() {
                     placeholder={'••••••••'}
                   />
                 </div>
-                <button type="button" className="login-submit">
+                <button type="button" className="login-submit" onClick={handleSubmit}>
                   Sign in
                 </button>
               </div>
@@ -164,7 +169,7 @@ function LoginInner() {
                   </div>
                 )}
 
-                <button type="button" className="login-submit">
+                <button type="button" className="login-submit" onClick={handleSubmit}>
                   Create account
                 </button>
               </div>

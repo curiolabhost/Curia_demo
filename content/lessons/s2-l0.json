@@ -7,12 +7,15 @@
       "heading": "First, before anything...",
       "blocks": [
         { "kind": "p", "text": "Before we write real programs, you need two tools: a way to save information, and a way to see it. That's it. Everything in JavaScript is built on top of those two things." },
+        { "id": "image1", "kind": "image", "src": "/assets/lessons/s2-l0/let-consolelog-visual-v7.svg", "alt": "Variables in JavaScript" },
         { "kind": "concept", "code": "let count = 1", "desc": "Create a box called 'count' and put the number 1 inside it. The word 'let' means you're making a new box for the first time." },
         { "kind": "concept", "code": "console.log(count)", "desc": "Look inside the box called 'count' and print whatever is in there. This is how you prove your code is working." }
       ]
     },
     {
+      "heading": "Let's see an code example",
       "blocks": [
+        { "kind": "p", "text": "Here's a simple example of how to use variables and console.log:" },
         { "kind": "code", "lines": [
           "let count = 5;",
           "",
@@ -27,6 +30,42 @@
       ]
     }
   ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "Build your player card",
+      "description": "Create three variables for a player card: their name, their starting score, and their favorite colour. Log all three. Then change the score to 99 and log it again.",
+      "buggyCode": "// Your player card\n\n// Create your three variables here\nlet playerName = '';\nlet score = 0;\nlet favoriteColour = '';\n\n// Log all three below\n\n\n// Change your score to 99 and log it again\n",
+      "starterCode": "// Your player card\n\n// Create your three variables here\nlet playerName = '';\nlet score = 0;\nlet favoriteColour = '';\n\n// Log all three below\n\n\n// Change your score to 99 and log it again\n",
+      "hint": "Log each variable with console.log. To change score, write score = 99 — no 'let' this time.",
+      "checks": [
+        { "type": "variable", "name": "playerName", "expected": null, "label": "playerName exists" },
+        { "type": "variable", "name": "favoriteColour", "expected": null, "label": "favoriteColour exists" },
+        { "type": "variable", "name": "score", "expected": 99, "label": "score was changed to 99" },
+        { "type": "console", "includes": "99", "label": "logged the updated score" }
+      ],
+      "explanation": "Variables are declared once with 'let'. To update a value later, just write the name without 'let' — otherwise JavaScript thinks you're making a new variable. console.log prints whatever is inside the variable at that moment, so logging before and after the change shows both values."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The scoreboard",
+      "description": "A scoreboard needs to track a player's score as it changes. Start at 0, log it. Update to 50, log it. Update to 120, log it. Each log should show the current value at that moment.",
+      "buggyCode": "// The scoreboard\n\nlet score = 0;\n\n// Log score here\n\n\n// Update score to 50 and log it\n\n\n// Update score to 120 and log it\n",
+      "starterCode": "// The scoreboard\n\nlet score = 0;\n\n// Log score here\n\n\n// Update score to 50 and log it\n\n\n// Update score to 120 and log it\n",
+      "hint": "Use console.log(score) right after each change. To update score, write score = 50 — no 'let'.",
+      "checks": [
+        { "type": "variable", "name": "score", "expected": 120, "label": "score was updated to 120" },
+        { "type": "console", "includes": "0", "label": "logged the starting score" },
+        { "type": "console", "includes": "50", "label": "logged score after first update" },
+        { "type": "console", "includes": "120", "label": "logged score after second update" }
+      ],
+      "explanation": "You only use 'let' once — when the variable is first created. Every update after that is just score = newValue. console.log reads whatever is in the variable at that exact line, so the order matters: log before you change and you get the old value, log after and you get the new one."
+    }
+  ],
   "exercises": [
     {
       "title": "Make your first variables",
@@ -39,7 +78,7 @@
         "Run the code. Nothing will print yet — that comes next."
       ],
       "hint": "Every variable starts with the word 'let'. Don't forget the semicolon at the end of each line.",
-      "starterCode": "// Variable 1 — your age\nlet age = 0;\n\n// Variable 2 — number of pets\nlet pets = 0;\n\n// Variable 3 — number of books\nlet books = 0;\n",
+      "starterCode": "// Variable 1 — your age\nlet age = 0;\n\n// Variable 2 — declare a variable called pets and set it to how many pets you have\n\n// Variable 3 — declare a variable called books and set it to how many books you own\n",
       "checks": [
         { "type": "variable", "name": "age", "expected": null, "label": "a variable called 'age' exists" },
         { "type": "variable", "name": "pets", "expected": null, "label": "a variable called 'pets' exists" },

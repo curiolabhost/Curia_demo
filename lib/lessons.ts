@@ -44,11 +44,30 @@ export type ContentBlock =
   | { kind: 'video'; src: string; caption?: string }
   | { kind: 'diagram'; variant: string }
   | { kind: 'embed'; src: string; height?: number; caption?: string }
+  | { kind: 'interactive'; component: string }
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }
   | { type: 'call'; fn: string; args: unknown[]; assert: string; label?: string }
   | { type: 'console'; includes: string; label?: string }
+  | { type: 'consoleNonEmpty'; label?: string }
+  | { type: 'sourceIncludes'; pattern: string; flags?: string; label?: string }
+
+export type TaskStep = {
+  text: string
+  completesOn?: 'run' | 'auto'
+  checks?: Check[]
+  starterCode?: string
+  autoDelayMs?: number
+  focusLine?: number
+  focusRange?: [number, number]
+}
+
+export function normalizeStep(t: string | TaskStep): TaskStep {
+  return typeof t === 'string'
+    ? { text: t, completesOn: 'run' }
+    : { completesOn: 'run', autoDelayMs: 1200, ...t }
+}
 
 export type ExerciseFormat =
   | 'code-editor'
@@ -122,16 +141,21 @@ export type Exercise = {
   tasks: string[]
   hint?: string
   starterCode?: string
+  contextCode?: string
+  steps?: TaskStep[]
   carryFrom?: number
   checks?: Check[]
   format?: ExerciseFormat
   options?: MultipleChoiceOption[]
   correctOptionId?: string
+  codeSnippet?: string
   codeWithBlanks?: string[]
   tokenBank?: FillBlankToken[]
   correctOrder?: string[]
   blankPlaceholders?: string[]
   blankWidths?: number[]
+  hintBank?: { id: string; label: string }[]
+  compactBlanks?: boolean
   blankInstructions?: string[]
   blankExplanations?: string[]
   codeLines?: string[]

@@ -12,29 +12,152 @@
           "kind": "image",
           "src": "/assets/lessons/s1-l2/three-languages-cards.svg",
           "alt": "Three cards showing HTML structures the page, CSS styles it, and JavaScript makes it interactive",
-          "caption": "Three languages, three jobs. Each one does only its part."
+          "caption": "Three languages, three jobs. Each one does only its part in the Simon-Says game."
         },
+        { "kind": "p", "text": "**See it in action below!**" },
+        { "kind": "p", "text": "Click the buttons below to see how each language contributes to the game." },
+        { "kind": "interactive", "component": "LanguageToggle" },
         {
           "kind": "callout",
           "variant": "info",
           "label": "HOW THEY CONNECT",
-          "text": "JavaScript finds an HTML element, then adds or removes a CSS class. That class change is what makes a square light up — JS doesn't draw anything, it just tells CSS when to apply."
+          "text": "**HTML** puts things on the page. **CSS** makes them look right. **JavaScript** makes them do things."
+        }
+      ]
+    },
+    {
+      "heading": "The DOM — JavaScript's way of grabbing HTML",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "The DOM is the bridge between your HTML and your JavaScript. HTML builds the elements on the page. JavaScript uses the DOM to find them and change them."
         },
         {
           "kind": "image",
-          "src": "/assets/lessons/s1-l2/js-html-css-flow.svg",
-          "alt": "Diagram showing JS adding a class to an HTML element which triggers a CSS style change",
-          "caption": "JS triggers the change. CSS does the actual styling."
+          "src": "/assets/lessons/s1-l2/dom-simple-v2.svg",
+          "alt": "Three boxes showing HTML building an element, the DOM finding it, and JavaScript changing it",
+          "caption": "HTML builds it. The DOM finds it. JavaScript changes it."
+        },
+        {
+          "kind": "concept",
+          "code": "document.getElementById('score')",
+          "desc": "Find the HTML element whose id is 'score'. Store it in a variable so you can use it."
+        },
+        {
+          "kind": "concept",
+          "code": "box.textContent = 'Score: 10'",
+          "desc": "Change what's written inside the element. The page updates instantly."
         },
         {
           "kind": "callout",
           "variant": "warn",
-          "label": "KEY RULE",
-          "text": "JS never writes colours directly. It only adds and removes class names. CSS is always in charge of what things look like."
+          "label": "IDs must match exactly",
+          "text": "The id you pass to getElementById must match the id in your HTML exactly — same spelling, same capitalisation. One wrong character and JavaScript returns null."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "Simon Says connection",
+          "text": "When a square lights up in the game, JavaScript found that button using getElementById and added a class to it. That's the whole trick."
         }
       ]
     }
   ],
-  "exercises": [],
-  "challenges": []
+  "exercises": [
+    {
+      "title": "Find and change",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "The page has a <p> element with id='message'. Find it using getElementById.",
+        "Change its textContent to 'JavaScript changed this!'.",
+        "Log the element to the console — what do you see?",
+        "Now change the text a second time to something else. Does the first change disappear?"
+      ],
+      "hint": "Store the element in a variable first: let el = document.getElementById('message'). Then use el.textContent = '...'",
+      "starterCode": "// Find the element with id 'message'\n\n\n// Change its text\n\n\n// Log the element\nconsole.log();\n",
+      "checks": [
+        { "type": "dom", "id": "message", "property": "textContent", "expected": null, "label": "the message element's text was changed" }
+      ]
+    },
+    {
+      "title": "Light up a square",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "The page has a <div> with id='square'. Find it.",
+        "Add the class 'lit' to it using classList.add.",
+        "Check the page — the square should turn yellow.",
+        "Now remove the class using classList.remove('lit'). What happens?",
+        "Add it back. This is exactly what Simon Says does on every turn."
+      ],
+      "hint": "classList.add('lit') turns it on. classList.remove('lit') turns it off.",
+      "starterCode": "// Find the square\nlet square = document.getElementById('square');\n\n// Add the 'lit' class\n\n\n// Remove it\n\n\n// Add it back\n",
+      "checks": [
+        { "type": "dom", "id": "square", "property": "classList", "includes": "lit", "label": "the 'lit' class was added to the square" }
+      ]
+    },
+    {
+      "title": "Score display",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Create a variable called score and set it to 0.",
+        "Find the element with id='scoreDisplay'.",
+        "Set its textContent to show the score: 'Score: 0'.",
+        "Now update score to 10 and update the display to match.",
+        "Update score to 25 and update the display again."
+      ],
+      "hint": "Use a template literal to build the display string: `Score: ${score}`",
+      "starterCode": "let score = 0;\n\n// Find the score display element\nlet scoreDisplay = document.getElementById('scoreDisplay');\n\n// Set the initial text\n\n\n// Update score to 10 and update the display\n\n\n// Update score to 25 and update the display\n\n",
+      "checks": [
+        { "type": "variable", "name": "score", "expected": 25, "label": "score was updated to 25" },
+        { "type": "dom", "id": "scoreDisplay", "property": "textContent", "includes": "25", "label": "the display shows 25" }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The element isn't changing — why?",
+      "description": "This code should change the text of a paragraph but nothing happens on the page. Find the bug and fix it.",
+      "buggyCode": "let message = document.getElementById('massege');\nmessage.textContent = 'Hello from JavaScript!';",
+      "starterCode": "let message = document.getElementById('massege');\nmessage.textContent = 'Hello from JavaScript!';",
+      "hint": "Look very carefully at the id string inside getElementById. Then look at the HTML.",
+      "checks": [
+        { "type": "dom", "id": "message", "property": "textContent", "includes": "Hello", "label": "the message element's text was changed" }
+      ],
+      "explanation": "The id passed to getElementById is 'massege' — a typo. The actual id in the HTML is 'message'. JavaScript can't find 'massege', so it returns null, and calling .textContent on null crashes silently. Always double-check id strings match exactly."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The score display is showing the wrong thing",
+      "description": "The score display should show 'Score: 42' but it's showing 'Score: 0'. The score variable is correct. Find what's wrong.",
+      "buggyCode": "let score = 42;\nlet scoreDisplay = document.getElementById('scoreDisplay');\nscoreDisplay.textContent = `Score: ${0}`;",
+      "starterCode": "let score = 42;\nlet scoreDisplay = document.getElementById('scoreDisplay');\nscoreDisplay.textContent = `Score: ${0}`;",
+      "hint": "Look carefully at what's inside the ${}. Is it the variable or the number?",
+      "checks": [
+        { "type": "dom", "id": "scoreDisplay", "property": "textContent", "includes": "42", "label": "the display shows 42" }
+      ],
+      "explanation": "The template literal uses ${0} — the number 0 directly — instead of ${score} the variable. So it always shows 'Score: 0' no matter what score is set to. Fix: change ${0} to ${score}."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "The square won't light up",
+      "description": "This code should light up a square when the game starts but the square stays dark. There are two bugs. Find both.",
+      "buggyCode": "let square = document.getElementById('Square');\nsquare.classList.add('Lit');",
+      "starterCode": "let square = document.getElementById('Square');\nsquare.classList.add('Lit');",
+      "hint": "JavaScript and CSS are both case-sensitive. Check the id and the class name against what's in the HTML and stylesheet.",
+      "checks": [
+        { "type": "dom", "id": "square", "property": "classList", "includes": "lit", "label": "the 'lit' class was added correctly" }
+      ],
+      "explanation": "Two case-sensitivity bugs: getElementById('Square') should be getElementById('square') — the id in the HTML is lowercase. And classList.add('Lit') should be classList.add('lit') — the CSS class is lowercase. Both need to match exactly."
+    }
+  ]
 }

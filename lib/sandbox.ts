@@ -41,7 +41,13 @@ export function defaultCheckLabel(check: Check): string {
     const argsStr = check.args.map((a) => JSON.stringify(a)).join(', ')
     return `calling ${check.fn}(${argsStr}) satisfies: ${check.assert}`
   }
-  return `console output includes '${check.includes}'`
+  if (check.type === 'console') {
+    return `console output includes '${check.includes}'`
+  }
+  if (check.type === 'consoleNonEmpty') {
+    return 'something is printed to the console'
+  }
+  return 'code contains expected pattern'
 }
 
 function buildCheckRunners(checks: Check[]): string {
@@ -218,15 +224,25 @@ export function runInSandbox(
       .flatMap((e) => e.args)
       .join(' ')
     checks.forEach((check, index) => {
-      if (check.type !== 'console') return
-      const passed = allOutput.includes(check.includes)
-      onCheckResult({
-        id: index,
-        label: defaultCheckLabel(check),
-        passed,
-        actual: allOutput,
-        checkType: 'console',
-      })
+      if (check.type === 'console') {
+        const passed = allOutput.includes(check.includes)
+        onCheckResult({
+          id: index,
+          label: defaultCheckLabel(check),
+          passed,
+          actual: allOutput,
+          checkType: 'console',
+        })
+      } else if (check.type === 'consoleNonEmpty') {
+        const passed = allOutput.trim().length > 0
+        onCheckResult({
+          id: index,
+          label: check.label ?? 'something is printed to the console',
+          passed,
+          actual: allOutput || '(nothing)',
+          checkType: 'console',
+        })
+      }
     })
   }
 

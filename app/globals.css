@@ -295,7 +295,7 @@ body {
 /* ---------- Exercise prompt ---------- */
 
 .exercise-prompt {
-  padding: 16px 20px;
+  padding: 16px 23px;
   background: var(--surface);
   max-height: 260px;
   overflow-y: auto;
@@ -379,7 +379,7 @@ body {
 .type-challenge   { background: var(--green-dim);   color: var(--green); }
 
 .prompt-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text);
 }
@@ -398,17 +398,38 @@ body {
 .task-item {
   display: flex;
   gap: 10px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text2);
   line-height: 1.5;
   padding: 4px 0;
 }
 .task-step {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text3);
   min-width: 18px;
   padding-top: 3px;
+}
+.task-item.active {
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--accent-dim);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 0 -8px;
+  opacity: 1;
+}
+.task-item.active .task-step {
+  color: var(--accent);
+}
+.task-item.done {
+  color: var(--text3);
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+.task-item.upcoming {
+  color: var(--text3);
+  opacity: 0.4;
 }
 
 .hint-row {
@@ -869,7 +890,7 @@ body {
 /* ---------- Challenge prompt ---------- */
 
 .challenge-description {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text2);
   line-height: 1.6;
   margin: 0 0 10px;
@@ -879,7 +900,7 @@ body {
   background: var(--green-dim);
   border-radius: 4px;
   padding: 8px 12px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--green);
 }
 
@@ -923,6 +944,19 @@ body {
   gap: 12px;
 }
 
+.mc-code-snippet {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 0 0 35px 0;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+}
+
 .mc-card {
   background: var(--surface);
   border: 1.5px solid var(--border2);
@@ -951,14 +985,14 @@ body {
 }
 
 .mc-card-label {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text);
   line-height: 1.4;
 }
 .mc-card-code {
   margin-top: 8px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text2);
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -1069,6 +1103,10 @@ body {
   animation: shake 200ms ease;
 }
 
+.fb-compact .fb-blank {
+  min-width: 48px;
+}
+
 .fb-token-label {
   font-family: var(--mono);
   font-size: 10px;
@@ -1132,6 +1170,61 @@ body {
   100% { transform: translateX(0); }
 }
 
+/* ---------- code-editor panel ---------- */
+
+.code-editor-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.code-editor-panel > .editor-output {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Step focus decorations in Monaco editor */
+.step-focus-region {
+  background: rgba(59, 111, 232, 0.08) !important;
+}
+
+.step-focus-line {
+  background: rgba(255, 213, 79, 0.25) !important;
+}
+
+.cep-step-counter {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.step-next-btn {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 120ms ease, opacity 120ms ease;
+}
+
+.step-next-btn:enabled {
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.step-next-btn:disabled {
+  background: var(--border2);
+  color: var(--text3);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* ---------- fill-blank-typed panel ---------- */
 
 .fbt-code-block {
@@ -1188,6 +1281,22 @@ body {
 .fbt-input::placeholder {
   color: var(--text3);
   font-style: italic;
+}
+
+.fbt-hint-bank {
+  margin-bottom: 12px;
+}
+
+.fbt-hint-chip {
+  pointer-events: none !important;
+  cursor: default !important;
+  opacity: 0.75;
+}
+
+.fbt-hint-chip:hover {
+  background: var(--surface2) !important;
+  border-color: var(--border2) !important;
+  color: var(--text2) !important;
 }
 
 /* ---------- drag-reorder panel ---------- */

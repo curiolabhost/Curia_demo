@@ -8,6 +8,19 @@ type ExercisePromptProps = {
   activeIndex: number
   hintVisible: boolean
   isFading?: boolean
+  currentStepIndex?: number
+  completedSteps?: Set<number>
+}
+
+function taskState(
+  i: number,
+  currentStepIndex?: number,
+  completedSteps?: Set<number>,
+): '' | 'active' | 'done' | 'upcoming' {
+  if (currentStepIndex === undefined) return ''
+  if (completedSteps?.has(i)) return 'done'
+  if (i === currentStepIndex) return 'active'
+  return 'upcoming'
 }
 
 const TYPE_TOOLTIPS: Record<Exercise['type'], string> = {
@@ -24,6 +37,8 @@ export function ExercisePrompt({
   activeIndex,
   hintVisible,
   isFading = false,
+  currentStepIndex,
+  completedSteps,
 }: ExercisePromptProps) {
   const exercise = exercises[activeIndex]
   const scrollRef = useRef<HTMLElement | null>(null)
@@ -91,12 +106,16 @@ export function ExercisePrompt({
       </div>
 
       <ol className="task-list">
-        {tasks.map((task, i) => (
-          <li className="task-item" key={i}>
-            <span className="task-step">{String(i + 1).padStart(2, '0')}</span>
-            <span>{task}</span>
-          </li>
-        ))}
+        {tasks.map((task, i) => {
+          const state = taskState(i, currentStepIndex, completedSteps)
+          const className = state ? `task-item ${state}` : 'task-item'
+          return (
+            <li className={className} key={i}>
+              <span className="task-step">{String(i + 1).padStart(2, '0')}</span>
+              <span>{task}</span>
+            </li>
+          )
+        })}
       </ol>
 
       {hint ? (

@@ -7,6 +7,40 @@ import './login.css'
 type Role = 'student' | 'instructor'
 type Tab = 'signin' | 'register'
 
+type AuthOkResponse = {
+  ok: true
+  userId: string
+  role: 'STUDENT' | 'ADMIN'
+  firstName?: string
+}
+
+type AuthErrResponse = {
+  ok: false
+  error: string
+}
+
+function signinErrorMessage(code: string): string {
+  switch (code) {
+    case 'invalid_credentials':
+      return 'Incorrect username or password.'
+    case 'missing_fields':
+      return 'Please fill in all fields.'
+    default:
+      return 'Something went wrong. Please try again.'
+  }
+}
+
+function registerErrorMessage(code: string): string {
+  switch (code) {
+    case 'username_taken':
+      return 'That username is already taken.'
+    case 'missing_fields':
+      return 'Please fill in all fields.'
+    default:
+      return 'Something went wrong. Please try again.'
+  }
+}
+
 function LoginInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -16,8 +50,92 @@ function LoginInner() {
   const [role, setRole] = useState<Role>(initialRole)
   const [activeTab, setActiveTab] = useState<Tab>('signin')
 
+  const [signinUsername, setSigninUsername] = useState('')
+  const [signinPassword, setSigninPassword] = useState('')
+
+  const [regFirstName, setRegFirstName] = useState('')
+  const [regLastName, setRegLastName] = useState('')
+  const [regUsername, setRegUsername] = useState('')
+  const [regPassword, setRegPassword] = useState('')
+  const [regClassroomKey, setRegClassroomKey] = useState('')
+
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const routeForRole = (r: 'STUDENT' | 'ADMIN') =>
+    r === 'STUDENT' ? '/student/home' : '/instructor/home'
+
+  const handleSignin = async () => {
+    if (loading) return
+    setErrorMessage('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          username: signinUsername,
+          password: signinPassword,
+        }),
+      })
+      const data = (await res.json().catch(() => null)) as
+        | AuthOkResponse
+        | AuthErrResponse
+        | null
+      if (!res.ok || !data || data.ok === false) {
+        const err = data && data.ok === false ? data.error : ''
+        setErrorMessage(signinErrorMessage(err))
+        setLoading(false)
+        return
+      }
+      router.push(routeForRole(data.role))
+    } catch {
+      setErrorMessage(signinErrorMessage(''))
+      setLoading(false)
+    }
+  }
+
+  const handleRegister = async () => {
+    if (loading) return
+    setErrorMessage('')
+    setLoading(true)
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          firstName: regFirstName,
+          lastName: regLastName,
+          username: regUsername,
+          password: regPassword,
+          role: role === 'student' ? 'STUDENT' : 'ADMIN',
+        }),
+      })
+      const data = (await res.json().catch(() => null)) as
+        | AuthOkResponse
+        | AuthErrResponse
+        | null
+      if (!res.ok || !data || data.ok === false) {
+        const err = data && data.ok === false ? data.error : ''
+        setErrorMessage(registerErrorMessage(err))
+        setLoading(false)
+        return
+      }
+      router.push(routeForRole(data.role))
+    } catch {
+      setErrorMessage(registerErrorMessage(''))
+      setLoading(false)
+    }
+  }
+
   const handleSubmit = () => {
-    router.push(role === 'student' ? '/student/home' : '/instructor/home')
+    if (activeTab === 'signin') {
+      handleSignin()
+    } else {
+      handleRegister()
+    }
   }
 
   const otherRole: Role = role === 'student' ? 'instructor' : 'student'
@@ -34,6 +152,20 @@ function LoginInner() {
         : 'Set up your instructor account'
 
   const rolePillText = role === 'student' ? 'Joining as student' : 'Joining as instructor'
+
+  const submitLabel =
+    activeTab === 'signin'
+      ? loading
+        ? 'Signing in...'
+        : 'Sign in'
+      : loading
+        ? 'Creating account...'
+        : 'Create account'
+
+  const handleTabSwitch = (tab: Tab) => {
+    setActiveTab(tab)
+    setErrorMessage('')
+  }
 
   return (
     <div className="login-page grid-bg">
@@ -91,14 +223,14 @@ function LoginInner() {
               <button
                 type="button"
                 className={'login-tab' + (activeTab === 'signin' ? ' active' : '')}
-                onClick={() => setActiveTab('signin')}
+                onClick={() => handleTabSwitch('signin')}
               >
                 Sign in
               </button>
               <button
                 type="button"
                 className={'login-tab' + (activeTab === 'register' ? ' active' : '')}
-                onClick={() => setActiveTab('register')}
+                onClick={() => handleTabSwitch('register')}
               >
                 Create account
               </button>
@@ -108,7 +240,13 @@ function LoginInner() {
               <div className="tab-content">
                 <div className="login-field">
                   <label className="login-label">Username</label>
-                  <input className="login-input" type="text" placeholder="your-username" />
+                  <input
+                    className="login-input"
+                    type="text"
+                    placeholder="your-username"
+                    value={signinUsername}
+                    onChange={(e) => setSigninUsername(e.target.value)}
+                  />
                 </div>
                 <div className="login-field">
                   <label className="login-label">Password</label>
@@ -116,11 +254,29 @@ function LoginInner() {
                     className="login-input"
                     type="password"
                     placeholder={'••••••••'}
+                    value={signinPassword}
+                    onChange={(e) => setSigninPassword(e.target.value)}
                   />
                 </div>
-                <button type="button" className="login-submit" onClick={handleSubmit}>
-                  Sign in
+                <button
+                  type="button"
+                  className="login-submit"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                >
+                  {submitLabel}
                 </button>
+                {errorMessage ? (
+                  <div
+                    style={{
+                      fontSize: '13px',
+                      color: 'var(--red, #DC2626)',
+                      marginTop: '10px',
+                    }}
+                  >
+                    {errorMessage}
+                  </div>
+                ) : null}
               </div>
             ) : (
               <div className="tab-content">
@@ -131,6 +287,8 @@ function LoginInner() {
                       className="login-input"
                       type="text"
                       placeholder={role === 'student' ? 'Maya' : 'Jordan'}
+                      value={regFirstName}
+                      onChange={(e) => setRegFirstName(e.target.value)}
                     />
                   </div>
                   <div>
@@ -139,12 +297,20 @@ function LoginInner() {
                       className="login-input"
                       type="text"
                       placeholder={role === 'student' ? 'Anderson' : 'Whitfield'}
+                      value={regLastName}
+                      onChange={(e) => setRegLastName(e.target.value)}
                     />
                   </div>
                 </div>
                 <div className="login-field">
                   <label className="login-label">Username</label>
-                  <input className="login-input" type="text" placeholder="your-username" />
+                  <input
+                    className="login-input"
+                    type="text"
+                    placeholder="your-username"
+                    value={regUsername}
+                    onChange={(e) => setRegUsername(e.target.value)}
+                  />
                 </div>
                 <div className="login-field">
                   <label className="login-label">Password</label>
@@ -152,6 +318,8 @@ function LoginInner() {
                     className="login-input"
                     type="password"
                     placeholder={'••••••••'}
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
                   />
                 </div>
 
@@ -165,13 +333,31 @@ function LoginInner() {
                       className="login-input login-input-mono"
                       type="text"
                       placeholder="cls-azure-fox-291"
+                      value={regClassroomKey}
+                      onChange={(e) => setRegClassroomKey(e.target.value)}
                     />
                   </div>
                 )}
 
-                <button type="button" className="login-submit" onClick={handleSubmit}>
-                  Create account
+                <button
+                  type="button"
+                  className="login-submit"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                >
+                  {submitLabel}
                 </button>
+                {errorMessage ? (
+                  <div
+                    style={{
+                      fontSize: '13px',
+                      color: 'var(--red, #DC2626)',
+                      marginTop: '10px',
+                    }}
+                  >
+                    {errorMessage}
+                  </div>
+                ) : null}
               </div>
             )}
 

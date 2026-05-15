@@ -18,6 +18,7 @@ type CodeEditorPanelProps = {
   lessonId: string
   exerciseIndex: number
   onComplete: (correct: boolean) => void
+  classroomId?: string | null
   onStepChange?: (
     currentStepIndex: number,
     completedSteps: Set<number>,
@@ -29,6 +30,7 @@ export function CodeEditorPanel({
   lessonId,
   exerciseIndex,
   onComplete,
+  classroomId = null,
   onStepChange,
 }: CodeEditorPanelProps) {
   const normalizedSteps: TaskStep[] = useMemo(
@@ -209,6 +211,7 @@ export function CodeEditorPanel({
             allResults.every((r) => r.passed) &&
             !hasErrors
           ) {
+            editorRef.current?.markComplete()
             onComplete(true)
           }
         })
@@ -321,7 +324,10 @@ export function CodeEditorPanel({
     setCompletedSteps((prev) => new Set(prev).add(currentStepIndex))
     if (currentStepIndex + 1 >= normalizedSteps.length) {
       // Last step. Only complete the exercise if checks have validated.
-      if (exerciseValidated) onComplete(true)
+      if (exerciseValidated) {
+        editorRef.current?.markComplete()
+        onComplete(true)
+      }
       return
     }
     setCurrentStepIndex(currentStepIndex + 1)
@@ -362,6 +368,7 @@ export function CodeEditorPanel({
           exerciseIndex={exerciseIndex}
           starterCode={editorStarter}
           onReady={handleEditorReady}
+          classroomId={classroomId}
         />
         <OutputConsole
           entries={entries}

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (!passwordOk) return jsonError(401, 'invalid_password')
 
     const classroom = await prisma.classroom.findUnique({
-      where: { joinCode },
+      where: { classroomKey: joinCode },
       select: { id: true, name: true },
     })
     if (!classroom) return jsonError(404, 'classroom_not_found')

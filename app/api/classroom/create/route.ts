@@ -41,7 +41,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const classroom = await prisma.classroom.create({
       data: {
         name,
-        joinCode,
+        classroomKey: joinCode,
         adminMemberships: {
           create: {
             userId: session.userId,
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           },
         },
       },
-      select: { id: true, name: true, joinCode: true },
+      select: { id: true, name: true, classroomKey: true },
     })
 
     return NextResponse.json(
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         ok: true,
         classroomId: classroom.id,
         name: classroom.name,
-        joinCode: classroom.joinCode,
+        joinCode: classroom.classroomKey,
         adminKey,
       },
       { status: 201 }

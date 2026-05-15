@@ -24,6 +24,7 @@ type LessonWorkspaceProps = {
   editMode?: boolean
   editActions?: EditActions
   isReadOnly?: boolean
+  classroomId?: string | null
 }
 
 export function LessonWorkspace({
@@ -43,6 +44,7 @@ export function LessonWorkspace({
   onLineSelect,
   editMode = false,
   editActions,
+  classroomId = null,
 }: LessonWorkspaceProps) {
   return (
     <RightPanel
@@ -62,6 +64,7 @@ export function LessonWorkspace({
       onLineSelect={onLineSelect}
       editMode={editMode}
       editActions={editActions}
+      classroomId={classroomId}
     />
   )
 }

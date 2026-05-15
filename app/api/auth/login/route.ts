@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyPassword } from '@/lib/password'
-import { setSessionCookie } from '@/lib/session'
+import { setSessionCookie, type SessionData } from '@/lib/session'
 
 export const runtime = 'nodejs'
 
@@ -46,6 +46,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const ok = await verifyPassword(password, user.passwordHash)
     if (!ok) return jsonError(401, 'invalid_credentials')
 
+    const sessionData: SessionData = { userId: user.id, role: user.role }
+
+    if (user.role === 'STUDENT') {
+      const memberships = await prisma.studentMembership.findMany({
+        where: { userId: user.id, NOT: { userId: null } },
+        select: { id: true, classroomId: true },
+      })
+      if (memberships.length === 1) {
+        sessionData.activeClassroomId = memberships[0].classroomId
+        sessionData.activeMembershipId = memberships[0].id
+      }
+    }
+
     const response = NextResponse.json(
       {
         ok: true,
@@ -56,7 +69,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       },
       { status: 200 }
     )
-    return await setSessionCookie(response, { userId: user.id, role: user.role })
+    return await setSessionCookie(response, sessionData)
   } catch {
     return jsonError(500, 'server_error')
   }

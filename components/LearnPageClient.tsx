@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useDevice } from '@/context/DeviceContext'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
+import { useClassroomContext } from '@/lib/useClassroomContext'
 import { useLayoutMode } from '@/lib/useLayoutMode'
 import { ImpersonationBanner } from './admin/ImpersonationBanner'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
@@ -50,6 +51,8 @@ export function LearnPageClient({
     searchParams?.get('view') === 'slide' ? 'slideshow' : 'normal',
   )
   const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
+  const classroomContext = useClassroomContext()
+  const { classroomId, isReady: classroomReady, isImpersonating } = classroomContext
 
   useEffect(() => {
     let cancelled = false
@@ -206,6 +209,35 @@ export function LearnPageClient({
     )
   }
 
+  if (classroomReady && !classroomId && !isImpersonating) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--bg)',
+          color: 'var(--text3)',
+          fontFamily: 'inherit',
+          fontSize: 15,
+          textAlign: 'center',
+          padding: 24,
+        }}
+      >
+        <div>
+          <div style={{ marginBottom: 12 }}>Select a classroom to continue.</div>
+          <a
+            href="/student/home"
+            style={{ color: 'var(--text2)', textDecoration: 'underline' }}
+          >
+            Go to your classrooms
+          </a>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="app-shell" style={{ paddingTop: impersonationState ? 36 : 0 }}>
       {impersonationState ? (
@@ -325,6 +357,7 @@ export function LearnPageClient({
                   editMode={editMode}
                   editActions={editActions}
                   isReadOnly={isReadOnly}
+                  classroomId={classroomId}
                 />
               ) : (
                 <div className="right-panel">

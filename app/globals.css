@@ -410,6 +410,27 @@ body {
   min-width: 18px;
   padding-top: 3px;
 }
+.task-item.active {
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--accent-dim);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: 0 -8px;
+  opacity: 1;
+}
+.task-item.active .task-step {
+  color: var(--accent);
+}
+.task-item.done {
+  color: var(--text3);
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+.task-item.upcoming {
+  color: var(--text3);
+  opacity: 0.4;
+}
 
 .hint-row {
   display: none;
@@ -1147,6 +1168,61 @@ body {
   60%  { transform: translateX(-4px); }
   80%  { transform: translateX(4px); }
   100% { transform: translateX(0); }
+}
+
+/* ---------- code-editor panel ---------- */
+
+.code-editor-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.code-editor-panel > .editor-output {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Step focus decorations in Monaco editor */
+.step-focus-region {
+  background: rgba(59, 111, 232, 0.08) !important;
+}
+
+.step-focus-line {
+  background: rgba(255, 213, 79, 0.25) !important;
+}
+
+.cep-step-counter {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.step-next-btn {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 120ms ease, opacity 120ms ease;
+}
+
+.step-next-btn:enabled {
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.step-next-btn:disabled {
+  background: var(--border2);
+  color: var(--text3);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* ---------- fill-blank-typed panel ---------- */

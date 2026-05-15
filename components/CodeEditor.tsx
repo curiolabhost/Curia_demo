@@ -1,18 +1,28 @@
 'use client'
 
-import Editor, { type Monaco } from '@monaco-editor/react'
+import Editor, {
+  type Monaco,
+  type OnMount,
+} from '@monaco-editor/react'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { loadCode, saveCode } from '@/lib/storage'
+
+type EditorInstance = Parameters<OnMount>[0]
 
 type CodeEditorProps = {
   lessonId: string
   exerciseIndex: number
   starterCode: string
   isFading?: boolean
+  onReady?: () => void
 }
 
 export type CodeEditorHandle = {
   getValue: () => string
+  setFocusLines: (
+    focusLine?: number,
+    focusRange?: [number, number],
+  ) => void
 }
 
 const MONACO_FONT_FAMILY = "'IBM Plex Mono', monospace"
@@ -21,12 +31,15 @@ const SKELETON_WIDTHS = ['60%', '85%', '45%', '70%']
 
 export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
   function CodeEditor(
-    { lessonId, exerciseIndex, starterCode, isFading = false },
+    { lessonId, exerciseIndex, starterCode, isFading = false, onReady },
     ref,
   ) {
     const [value, setValue] = useState<string>(starterCode)
     const [isMonacoReady, setIsMonacoReady] = useState(false)
     const valueRef = useRef<string>(starterCode)
+    const editorInstanceRef = useRef<EditorInstance | null>(null)
+    const monacoRef = useRef<Monaco | null>(null)
+    const decorationsRef = useRef<string[]>([])
 
     useEffect(() => {
       const next = loadCode(lessonId, exerciseIndex, starterCode)
@@ -36,6 +49,34 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
 
     useImperativeHandle(ref, () => ({
       getValue: () => valueRef.current,
+      setFocusLines: (focusLine, focusRange) => {
+        const ed = editorInstanceRef.current
+        const monaco = monacoRef.current
+        if (!ed || !monaco) return
+        const newDecorations: Parameters<typeof ed.deltaDecorations>[1] = []
+        if (focusRange) {
+          newDecorations.push({
+            range: new monaco.Range(focusRange[0], 1, focusRange[1], 999),
+            options: {
+              isWholeLine: true,
+              className: 'step-focus-region',
+            },
+          })
+        }
+        if (focusLine) {
+          newDecorations.push({
+            range: new monaco.Range(focusLine, 1, focusLine, 999),
+            options: {
+              isWholeLine: true,
+              className: 'step-focus-line',
+            },
+          })
+        }
+        decorationsRef.current = ed.deltaDecorations(
+          decorationsRef.current,
+          newDecorations,
+        )
+      },
     }))
 
     const handleChange = (next: string | undefined) => {
@@ -53,7 +94,9 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
       }
     }
 
-    const handleMount = (_editor: unknown, monaco: Monaco) => {
+    const handleMount: OnMount = (mountedEditor, monaco) => {
+      editorInstanceRef.current = mountedEditor
+      monacoRef.current = monaco
       monaco.editor.defineTheme('codelab-light', {
         base: 'vs',
         inherit: true,
@@ -75,6 +118,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
       })
       monaco.editor.setTheme('codelab-light')
       setIsMonacoReady(true)
+      onReady?.()
     }
 
     return (

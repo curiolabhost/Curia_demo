@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 
 type PrismEditorProps = {
   code: string
-  language: 'html' | 'css'
+  language: 'html' | 'css' | 'javascript'
   onChange: (value: string) => void
   readOnly: boolean
   readOnlyMessage?: string
@@ -30,12 +30,21 @@ export function PrismEditor({
       await import('prismjs/components/prism-markup')
       // @ts-expect-error - side-effect imports for language components
       await import('prismjs/components/prism-css')
+      // @ts-expect-error - side-effect imports for language components
+      await import('prismjs/components/prism-javascript')
       if (cancelled) return
-      const grammar =
-        language === 'html'
-          ? Prism.languages.markup
-          : Prism.languages.css
-      const alias = language === 'html' ? 'markup' : 'css'
+      let grammar: import('prismjs').Grammar
+      let alias: string
+      if (language === 'html') {
+        grammar = Prism.languages.markup
+        alias = 'markup'
+      } else if (language === 'css') {
+        grammar = Prism.languages.css
+        alias = 'css'
+      } else {
+        grammar = Prism.languages.javascript
+        alias = 'javascript'
+      }
       setHighlighted(Prism.highlight(code, grammar, alias))
     })
     return () => {
@@ -78,13 +87,15 @@ export function PrismEditor({
     }
   }
 
-  const padTop = readOnly ? 36 : 16
+  const showBanner = readOnly && readOnlyMessage !== ''
+  const bannerText = readOnlyMessage ?? 'Complete all script.js blocks to edit this file'
+  const padTop = showBanner ? 36 : 16
 
   return (
     <div className="prism-editor">
-      {readOnly ? (
+      {showBanner ? (
         <div className="prism-editor-banner">
-          {readOnlyMessage ?? 'Complete all script.js blocks to edit this file'}
+          {bannerText}
         </div>
       ) : null}
       <pre

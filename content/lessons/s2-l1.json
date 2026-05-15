@@ -521,32 +521,51 @@
       ],
       "explanation": "A complete variable declaration has four parts: let, a name you choose, =, and a value. Your birth month is a number so no quotes needed."
     },
+{
+  "title": "Run your first variable",
+  "type": "practice",
+  "format": "code-editor",
+  "duration": "3 min",
+  "tasks": [
+    "Hit Run and look at the console.",
+    "See the number 0? That came from the variable score.",
+    "Change 0 to your age on line 1. Hit Run again.",
+    "You should see your age printed. You just used a variable!"
+  ],
+  "contextCode": "let score = 0;\n\nconsole.log(score);",
+  "steps": [
     {
-      "title": "Run your first variable",
-      "type": "practice",
-      "duration": "3 min",
-      "tasks": [
-        "The code is already written just hit Run and look at the console.",
-        "See the number 0 printed? That came from the variable score.",
-        "Now change 0 to your age on line 1. Hit Run again.",
-        "You should see your age printed instead. That's it you just used a variable!"
-      ],
-      "hint": "Just change the number after the = sign on line 1. Don't change anything else.",
-      "starterCode": "let score = 0;\n\nconsole.log(score);",
+      "text": "Hit Run and look at the console.",
+      "completesOn": "run",
       "checks": [
-        {
-          "type": "variable",
-          "name": "score",
-          "expected": null,
-          "label": "a variable called 'score' exists"
-        },
-        {
-          "type": "console",
-          "includes": "",
-          "label": "something is printed to the console"
-        }
+        { "type": "consoleNonEmpty", "label": "something printed" }
       ]
     },
+    {
+      "text": "See the number 0? That came from the variable score.",
+      "completesOn": "auto",
+      "autoDelayMs": 2000
+    },
+    {
+      "text": "Change 0 to your age on line 1. Hit Run again.",
+      "completesOn": "run",
+      "starterCode": "",
+      "checks": [
+        { "type": "variable", "name": "score", "expected": null, "label": "score exists" },
+        { "type": "consoleNonEmpty", "label": "something printed" }
+      ]
+    },
+    {
+      "text": "You should see your age printed. You just used a variable!",
+      "completesOn": "auto",
+      "autoDelayMs": 1500
+    }
+  ],
+  "checks": [
+    { "type": "variable", "name": "score", "expected": null, "label": "a variable called 'score' exists" },
+    { "type": "consoleNonEmpty", "label": "something printed" }
+  ]
+},
     {
       "title": "Log your variable",
       "type": "practice",

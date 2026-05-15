@@ -30,22 +30,27 @@ model User {
 model Classroom {
   id           String   @id @default(cuid())
   name         String
-  classroomKey String   @unique
+  description  String?
+  subject      String?
+  classroomKey String   @unique @map("joinCode")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   studentMemberships StudentMembership[]
   adminMemberships   AdminMembership[]
+  slidesDecks        SlidesDeck[]
+  liveSessions       LiveSession[]
 }
 
 model StudentMembership {
-  id          String    @id @default(cuid())
-  userId      String?
-  classroomId String
-  studentKey  String
-  firstName   String?
-  lastName    String?
-  joinedAt    DateTime?
+  id           String    @id @default(cuid())
+  userId       String?
+  classroomId  String
+  studentKey   String
+  firstName    String?
+  lastName     String?
+  lastLessonId String?
+  joinedAt     DateTime?
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
@@ -54,6 +59,7 @@ model StudentMembership {
   exerciseProgress     ExerciseProgress[]
   finalProjectProgress FinalProjectProgress[]
   codeEditorState      CodeEditorState[]
+  liveResponses        LiveResponse[]
 
   @@unique([userId, classroomId])
   @@unique([classroomId, studentKey])
@@ -69,6 +75,8 @@ model AdminMembership {
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  liveSessions LiveSession[]
 
   @@unique([userId, classroomId])
   @@unique([classroomId, adminKey])
@@ -134,4 +142,50 @@ model CodeEditorState {
   membership StudentMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
 
   @@unique([membershipId, lessonId, exerciseIndex])
+}
+
+model SlidesDeck {
+  id               String   @id @default(cuid())
+  classroomId      String
+  lessonId         String
+  instructorUserId String
+  slides           Json
+  updatedAt        DateTime @updatedAt
+
+  classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  @@unique([classroomId, lessonId, instructorUserId])
+}
+
+model LiveSession {
+  id                     String    @id @default(cuid())
+  classroomId            String
+  instructorMembershipId String
+  lessonId               String
+  currentSlideType       String?
+  currentSlideIndex      Int?
+  currentExerciseIndex   Int?
+  pollOpen               Boolean   @default(false)
+  status                 String
+  startedAt              DateTime  @default(now())
+  endedAt                DateTime?
+
+  classroom            Classroom       @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  instructorMembership AdminMembership @relation(fields: [instructorMembershipId], references: [id], onDelete: Cascade)
+  responses            LiveResponse[]
+}
+
+model LiveResponse {
+  id            String   @id @default(cuid())
+  liveSessionId String
+  membershipId  String
+  lessonId      String
+  exerciseIndex Int
+  isCorrect     Boolean
+  submittedAt   DateTime @default(now())
+
+  liveSession LiveSession       @relation(fields: [liveSessionId], references: [id], onDelete: Cascade)
+  membership  StudentMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([liveSessionId, membershipId, exerciseIndex])
 }

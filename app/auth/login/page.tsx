@@ -7,6 +7,10 @@ import './login.css'
 type Role = 'student' | 'instructor'
 type Tab = 'signin' | 'register'
 
+function redirectPathForApiRole(apiRole: string): string {
+  return apiRole === 'ADMIN' ? '/admin' : '/learn'
+}
+
 function LoginInner() {
   const searchParams = useSearchParams()
   const roleParam = searchParams.get('role')
@@ -14,6 +18,15 @@ function LoginInner() {
 
   const [role, setRole] = useState<Role>(initialRole)
   const [activeTab, setActiveTab] = useState<Tab>('signin')
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [classroomKey, setClassroomKey] = useState('')
+
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const otherRole: Role = role === 'student' ? 'instructor' : 'student'
   const switcherHref = `/auth/login?role=${otherRole}`
@@ -29,6 +42,71 @@ function LoginInner() {
         : 'Set up your instructor account'
 
   const rolePillText = role === 'student' ? 'Joining as student' : 'Joining as instructor'
+
+  async function handleSignIn() {
+    if (submitting) return
+    setErrorMsg(null)
+    setSubmitting(true)
+    try {
+      console.log('[login] attempting sign in', { username, role })
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      })
+      console.log('[login] response status', res.status)
+      const data = await res.json()
+      console.log('[login] response body', data)
+
+      if (res.ok && data.ok) {
+        const redirectPath = redirectPathForApiRole(data.role)
+        console.log('[login] redirecting to', redirectPath)
+        window.location.href = redirectPath
+        return
+      }
+
+      console.log('[login] error', data.error)
+      setErrorMsg(data.error ?? 'sign_in_failed')
+    } catch (err) {
+      console.log('[login] error', err)
+      setErrorMsg('network_error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handleRegister() {
+    if (submitting) return
+    setErrorMsg(null)
+    setSubmitting(true)
+    try {
+      const apiRole: 'STUDENT' | 'ADMIN' = role === 'instructor' ? 'ADMIN' : 'STUDENT'
+      console.log('[register] attempting register', { firstName, lastName, username, role })
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, username, password, role: apiRole }),
+      })
+      console.log('[register] response status', res.status)
+      const data = await res.json()
+      console.log('[register] response body', data)
+
+      if (res.ok && data.ok) {
+        const redirectPath = redirectPathForApiRole(data.role)
+        console.log('[register] redirecting to', redirectPath)
+        window.location.href = redirectPath
+        return
+      }
+
+      console.log('[register] error', data.error)
+      setErrorMsg(data.error ?? 'register_failed')
+    } catch (err) {
+      console.log('[register] error', err)
+      setErrorMsg('network_error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="login-page grid-bg">
@@ -103,7 +181,13 @@ function LoginInner() {
               <div className="tab-content">
                 <div className="login-field">
                   <label className="login-label">Username</label>
-                  <input className="login-input" type="text" placeholder="your-username" />
+                  <input
+                    className="login-input"
+                    type="text"
+                    placeholder="your-username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
                 </div>
                 <div className="login-field">
                   <label className="login-label">Password</label>
@@ -111,10 +195,18 @@ function LoginInner() {
                     className="login-input"
                     type="password"
                     placeholder={'••••••••'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <button type="button" className="login-submit">
-                  Sign in
+                {errorMsg && <div className="login-error">{errorMsg}</div>}
+                <button
+                  type="button"
+                  className="login-submit"
+                  onClick={handleSignIn}
+                  disabled={submitting}
+                >
+                  {submitting ? 'Signing in…' : 'Sign in'}
                 </button>
               </div>
             ) : (
@@ -126,6 +218,8 @@ function LoginInner() {
                       className="login-input"
                       type="text"
                       placeholder={role === 'student' ? 'Maya' : 'Jordan'}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
                     />
                   </div>
                   <div>
@@ -134,12 +228,20 @@ function LoginInner() {
                       className="login-input"
                       type="text"
                       placeholder={role === 'student' ? 'Anderson' : 'Whitfield'}
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                     />
                   </div>
                 </div>
                 <div className="login-field">
                   <label className="login-label">Username</label>
-                  <input className="login-input" type="text" placeholder="your-username" />
+                  <input
+                    className="login-input"
+                    type="text"
+                    placeholder="your-username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
                 </div>
                 <div className="login-field">
                   <label className="login-label">Password</label>
@@ -147,6 +249,8 @@ function LoginInner() {
                     className="login-input"
                     type="password"
                     placeholder={'••••••••'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
 
@@ -160,12 +264,20 @@ function LoginInner() {
                       className="login-input login-input-mono"
                       type="text"
                       placeholder="cls-azure-fox-291"
+                      value={classroomKey}
+                      onChange={(e) => setClassroomKey(e.target.value)}
                     />
                   </div>
                 )}
 
-                <button type="button" className="login-submit">
-                  Create account
+                {errorMsg && <div className="login-error">{errorMsg}</div>}
+                <button
+                  type="button"
+                  className="login-submit"
+                  onClick={handleRegister}
+                  disabled={submitting}
+                >
+                  {submitting ? 'Creating account…' : 'Create account'}
                 </button>
               </div>
             )}

@@ -81,6 +81,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return jsonError(400, 'invalid_password')
   }
 
+  console.log('[API register] body received', { firstName, lastName, username, role })
+
   try {
     const existing = await prisma.user.findUnique({ where: { username } })
     if (existing) {
@@ -94,13 +96,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       select: { id: true, firstName: true, role: true },
     })
 
+    console.log('[API register] user created', { userId: user.id, role: user.role })
+
     const response = NextResponse.json(
       { ok: true, userId: user.id, role: user.role, firstName: user.firstName },
       { status: 201 }
     )
     return await setSessionCookie(response, { userId: user.id, role: user.role })
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+  } catch (error) {
+    console.log('[API register] error', error)
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return jsonError(409, 'username_taken')
     }
     return jsonError(500, 'server_error')

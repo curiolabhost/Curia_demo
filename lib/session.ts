@@ -4,6 +4,8 @@ import type { NextResponse } from 'next/server'
 export type SessionData = {
   userId: string
   role: 'STUDENT' | 'ADMIN'
+  activeClassroomId?: string
+  activeMembershipId?: string
   impersonating?: {
     studentUserId: string
     membershipId: string
@@ -41,6 +43,17 @@ export async function decryptSession(token: string): Promise<SessionData | null>
     if (role !== 'STUDENT' && role !== 'ADMIN') return null
 
     const session: SessionData = { userId, role }
+
+    const activeClassroomId = payload.activeClassroomId
+    if (typeof activeClassroomId === 'string') {
+      session.activeClassroomId = activeClassroomId
+    }
+
+    const activeMembershipId = payload.activeMembershipId
+    if (typeof activeMembershipId === 'string') {
+      session.activeMembershipId = activeMembershipId
+    }
+
     const imp = payload.impersonating
     if (
       imp &&

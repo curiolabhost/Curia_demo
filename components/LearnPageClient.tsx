@@ -46,7 +46,13 @@ export function LearnPageClient({
   const [pageIndex, setPageIndex] = useState(0)
   const { mode, setMode, splitAllowed, resetLayout } = useLayoutMode()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const [viewMode, setViewMode] = useState<'normal' | 'slideshow'>(() =>
+    searchParams?.get('view') === 'slide' ? 'slideshow' : 'normal',
+  )
   const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
+  const classroomContext = useClassroomContext()
+  const { classroomId, isReady: classroomReady, isImpersonating } = classroomContext
 
   useEffect(() => {
     let cancelled = false
@@ -297,13 +303,28 @@ export function LearnPageClient({
                 display: 'flex',
                 flexDirection: 'column',
               }}
-              editMode={editMode}
-              editActions={editActions}
-              isReadOnly={isReadOnly}
-            />
-          ) : (
-            <div className="right-panel">
-              <div style={{ padding: 24, color: 'var(--text2)' }}>Lesson not found.</div>
+            >
+              {isFinalProject && activeLesson ? (
+                <FinalProjectSidebar
+                  lesson={activeLesson}
+                  activeBlockIndex={activeExerciseIndex}
+                  activeBankIndex={activeBankIndex}
+                  selectedLineIndex={selectedLineIndex}
+                  selectedBlankIndex={selectedBlankIndex}
+                  allLessons={lessons}
+                  editMode={editMode}
+                  editActions={editActions}
+                />
+              ) : (
+                <Sidebar
+                  lesson={activeLesson}
+                  pageIndex={pageIndex}
+                  setPageIndex={setPageIndex}
+                  totalPages={totalPages}
+                  layoutMode={mode}
+                  onToggleLeft={handleToggleLeft}
+                />
+              )}
             </div>
             <div
               style={{

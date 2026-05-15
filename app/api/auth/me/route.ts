@@ -26,6 +26,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       firstName: string
       lastName: string
       role: string
+      activeClassroomId?: string
+      activeMembershipId?: string
       impersonating?: {
         studentUserId: string
         membershipId: string
@@ -40,6 +42,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role,
+    }
+    if (session.activeClassroomId) {
+      body.activeClassroomId = session.activeClassroomId
+    }
+    if (session.activeMembershipId) {
+      body.activeMembershipId = session.activeMembershipId
     }
     if (session.impersonating) {
       const student = await prisma.user.findUnique({

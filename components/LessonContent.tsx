@@ -272,7 +272,7 @@ function Block({ block, variant = 'default' }: { block: ContentBlock; variant?: 
         >
           {block.label}
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: isSlide ? 16 : 14, color: 'var(--text2)', lineHeight: 1.6 }}>
           {renderInline(block.text)}
         </div>
       </div>

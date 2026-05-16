@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import type { LayoutMode } from '@/lib/useLayoutMode'
-import { postExerciseProgress, postLessonProgress } from '@/lib/progressClient'
+import { getCodeProgress, postExerciseProgress, postLessonProgress } from '@/lib/progressClient'
 import { loadCode } from '@/lib/storage'
 import { runInSandbox, type CheckResult, type LogEntry } from '@/lib/sandbox'
 import { BottomBar } from './BottomBar'
@@ -101,6 +101,7 @@ export function RightPanel({
     currentStepIndex: number
     completedSteps: Set<number>
   } | null>(null)
+  const [carryFromCode, setCarryFromCode] = useState<string | null>(null)
 
   const [renderedLesson, setRenderedLesson] = useState<Lesson>(lesson)
   const [renderedExerciseIndex, setRenderedExerciseIndex] = useState(initialExerciseIndex ?? 0)
@@ -236,6 +237,46 @@ export function RightPanel({
   useEffect(() => {
     onExerciseIndexChange?.(exerciseIndex)
   }, [exerciseIndex, onExerciseIndexChange])
+
+  useEffect(() => {
+    const carryIdx = activeExercise?.carryFrom
+    if (carryIdx === undefined) {
+      setCarryFromCode(null)
+      return
+    }
+    const fallback = activeExercise?.starterCode ?? ''
+    if (!classroomId) {
+      setCarryFromCode(loadCode(renderedLesson.id, carryIdx, fallback))
+      return
+    }
+    let cancelled = false
+    getCodeProgress(classroomId, renderedLesson.id, carryIdx)
+      .then((res) => {
+        if (cancelled) return
+        if (
+          res.ok &&
+          res.progress &&
+          typeof res.progress.code === 'string' &&
+          res.progress.code.length > 0
+        ) {
+          setCarryFromCode(res.progress.code)
+        } else {
+          setCarryFromCode(fallback)
+        }
+      })
+      .catch(() => {
+        if (cancelled) return
+        setCarryFromCode(fallback)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [
+    activeExercise?.carryFrom,
+    activeExercise?.starterCode,
+    classroomId,
+    renderedLesson.id,
+  ])
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -540,7 +581,7 @@ export function RightPanel({
     ? (activeChallenge?.starterCode ?? '')
     : activeExercise
       ? activeExercise.carryFrom !== undefined
-        ? loadCode(renderedLesson.id, activeExercise.carryFrom, activeExercise.starterCode ?? '')
+        ? (carryFromCode ?? activeExercise.starterCode ?? '')
         : (activeExercise.starterCode ?? '')
       : ''
   const hasActiveItem = mode === 'challenges' ? !!activeChallenge : !!activeExercise

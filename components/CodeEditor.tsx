@@ -6,7 +6,7 @@ import Editor, {
 } from '@monaco-editor/react'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { getCodeProgress, postCodeProgress } from '@/lib/progressClient'
-import { loadCode, saveCode } from '@/lib/storage'
+import { loadCode } from '@/lib/storage'
 
 type EditorInstance = Parameters<OnMount>[0]
 
@@ -89,7 +89,6 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
             const dbCode = res.progress.code
             setValue(dbCode)
             valueRef.current = dbCode
-            saveCode(lessonId, exerciseIndex, dbCode)
           }
         })
         .catch(() => {})
@@ -156,7 +155,6 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
       const nextValue = next ?? ''
       setValue(nextValue)
       valueRef.current = nextValue
-      saveCode(lessonId, exerciseIndex, nextValue)
       onSaveCode?.(nextValue)
       if (classroomId) {
         if (remoteDebounceRef.current) clearTimeout(remoteDebounceRef.current)
@@ -176,8 +174,16 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
     const handleReset = () => {
       setValue(starterCode)
       valueRef.current = starterCode
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem(`codelab__${lessonId}__ex${exerciseIndex}`)
+      if (remoteDebounceRef.current) {
+        clearTimeout(remoteDebounceRef.current)
+        remoteDebounceRef.current = null
+      }
+      if (classroomId) {
+        postCodeProgress(classroomId, lessonId, exerciseIndex, {
+          code: starterCode,
+          completed: false,
+          completedAt: null,
+        }).catch(() => {})
       }
     }
 

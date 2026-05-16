@@ -35,7 +35,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const joinCode = generateJoinCode()
+    const joinCode = generateJoinCode(name)
     const adminKey = generateAdminKey()
 
     const classroom = await prisma.classroom.create({

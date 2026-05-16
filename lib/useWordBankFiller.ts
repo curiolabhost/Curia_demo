@@ -10,6 +10,10 @@ export type WordBankFiller = {
   handleBlankClick: (blankIndex: number) => void
   placeAt: (targetIndex: number, tokenId: string, label: string) => void
   clearBlank: (index: number) => void
+  setAll: (
+    nextFilled: (string | null)[],
+    nextIds: (string | null)[],
+  ) => void
   allFilled: boolean
   reset: () => void
 }
@@ -77,6 +81,14 @@ export function useWordBankFiller(
 
   const clearBlank = (index: number) => handleBlankClick(index)
 
+  const setAll = (
+    nextFilled: (string | null)[],
+    nextIds: (string | null)[],
+  ) => {
+    setFilled(nextFilled)
+    setFilledTokenIds(nextIds)
+  }
+
   const allFilled = filled.every((v) => v !== null)
 
   const reset = () => {
@@ -91,6 +103,7 @@ export function useWordBankFiller(
     handleBlankClick,
     placeAt,
     clearBlank,
+    setAll,
     allFilled,
     reset,
   }

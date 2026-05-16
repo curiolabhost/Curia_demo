@@ -89,7 +89,11 @@ function Tray({ isEmpty, children }: TrayProps) {
   )
 }
 
-export function SortBucketsPanel({ exercise, onComplete }: PanelProps) {
+export function SortBucketsPanel({
+  exercise,
+  onComplete,
+  isAlreadyCompleted = false,
+}: PanelProps) {
   const buckets = exercise.buckets ?? []
   const items = exercise.bucketItems ?? []
 
@@ -131,6 +135,20 @@ export function SortBucketsPanel({ exercise, onComplete }: PanelProps) {
       resetTimerRef.current = null
     }
   }, [exercise])
+
+  useEffect(() => {
+    if (!isAlreadyCompleted) return
+    const nextPlacements: Record<string, string | null> = {}
+    const nextStates: Record<string, ItemState> = {}
+    items.forEach((item) => {
+      nextPlacements[item.id] = item.correctBucketId
+      nextStates[item.id] = 'correct'
+    })
+    setPlacements(nextPlacements)
+    setItemStates(nextStates)
+    setAnswerState('correct')
+    setActiveId(null)
+  }, [isAlreadyCompleted, exercise, items])
 
   useEffect(() => {
     return () => {

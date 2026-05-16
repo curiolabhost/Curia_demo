@@ -7,11 +7,16 @@ import { SyntaxLine } from '@/lib/syntaxLine'
 type MultipleChoicePanelProps = {
   exercise: Exercise
   onComplete: (correct: boolean) => void
+  isAlreadyCompleted?: boolean
 }
 
 type AnswerState = 'idle' | 'correct' | 'wrong'
 
-export function MultipleChoicePanel({ exercise, onComplete }: MultipleChoicePanelProps) {
+export function MultipleChoicePanel({
+  exercise,
+  onComplete,
+  isAlreadyCompleted = false,
+}: MultipleChoicePanelProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [answerState, setAnswerState] = useState<AnswerState>('idle')
 
@@ -19,6 +24,12 @@ export function MultipleChoicePanel({ exercise, onComplete }: MultipleChoicePane
     setSelectedId(null)
     setAnswerState('idle')
   }, [exercise])
+
+  useEffect(() => {
+    if (!isAlreadyCompleted) return
+    setSelectedId(exercise.correctOptionId ?? null)
+    setAnswerState('correct')
+  }, [isAlreadyCompleted, exercise])
 
   const options = exercise.options ?? []
 

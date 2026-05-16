@@ -9,6 +9,7 @@ import { useClassroomContext } from '@/lib/useClassroomContext'
 import { useLayoutMode } from '@/lib/useLayoutMode'
 import {
   getClassroomLessonsProgress,
+  getLessonProgress,
   type LessonProgressRow,
 } from '@/lib/progressClient'
 import { ImpersonationBanner } from './admin/ImpersonationBanner'
@@ -58,6 +59,8 @@ export function LearnPageClient({
   const classroomContext = useClassroomContext()
   const { classroomId, isReady: classroomReady, isImpersonating } = classroomContext
   const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
+  const [resumeIndex, setResumeIndex] = useState<number | null>(null)
+  const [resumeMode, setResumeMode] = useState<'exercises' | 'challenges' | null>(null)
 
   useEffect(() => {
     if (!classroomReady || !classroomId) return
@@ -70,6 +73,30 @@ export function LearnPageClient({
       cancelled = true
     }
   }, [classroomId, classroomReady])
+
+  useEffect(() => {
+    setResumeIndex(null)
+    setResumeMode(null)
+  }, [activeLessonId])
+
+  useEffect(() => {
+    if (!classroomReady || !classroomId) return
+    let cancelled = false
+    getLessonProgress(classroomId, activeLessonId).then((res) => {
+      if (cancelled) return
+      if (!res.ok || !res.progress) return
+      if (res.progress.lastExerciseIndex > 0) {
+        setResumeIndex(res.progress.lastExerciseIndex)
+      }
+      const m = res.progress.lastMode
+      if (m === 'exercises' || m === 'challenges') {
+        setResumeMode(m)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [classroomId, classroomReady, activeLessonId])
 
   const completedLessonIds = useMemo(
     () =>
@@ -153,7 +180,9 @@ export function LearnPageClient({
 
   const exParam = searchParams?.get('ex')
   const parsedEx = exParam !== null && exParam !== undefined ? Number(exParam) : NaN
-  const initialExerciseIndex = Number.isFinite(parsedEx) && parsedEx >= 0 ? Math.floor(parsedEx) : undefined
+  const urlInitialExerciseIndex =
+    Number.isFinite(parsedEx) && parsedEx >= 0 ? Math.floor(parsedEx) : undefined
+  const initialExerciseIndex = resumeIndex ?? urlInitialExerciseIndex
 
   const [activeExerciseIndex, setActiveExerciseIndex] = useState<number>(
     initialExerciseIndex ?? 0,
@@ -375,6 +404,7 @@ export function LearnPageClient({
                   onResetLayout={resetLayout}
                   onToggleRight={handleToggleRight}
                   initialExerciseIndex={initialExerciseIndex}
+                  initialMode={resumeMode ?? undefined}
                   onExerciseIndexChange={setActiveExerciseIndex}
                   onActiveBankIndexChange={setActiveBankIndex}
                   onLineSelect={(li, bi) => {

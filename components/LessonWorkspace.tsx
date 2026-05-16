@@ -15,6 +15,7 @@ type LessonWorkspaceProps = {
   onResetLayout: () => void
   onToggleRight: () => void
   initialExerciseIndex?: number
+  initialMode?: 'exercises' | 'challenges'
   onExerciseIndexChange?: (index: number) => void
   onActiveBankIndexChange?: (index: number) => void
   onLineSelect?: (
@@ -39,6 +40,7 @@ export function LessonWorkspace({
   onResetLayout,
   onToggleRight,
   initialExerciseIndex,
+  initialMode,
   onExerciseIndexChange,
   onActiveBankIndexChange,
   onLineSelect,
@@ -59,6 +61,7 @@ export function LessonWorkspace({
       onResetLayout={onResetLayout}
       onToggleRight={onToggleRight}
       initialExerciseIndex={initialExerciseIndex}
+      initialMode={initialMode}
       onExerciseIndexChange={onExerciseIndexChange}
       onActiveBankIndexChange={onActiveBankIndexChange}
       onLineSelect={onLineSelect}

@@ -67,7 +67,11 @@ function SortableLine({ id, code, state }: SortableLineProps) {
   )
 }
 
-export function DragReorderPanel({ exercise, onComplete }: PanelProps) {
+export function DragReorderPanel({
+  exercise,
+  onComplete,
+  isAlreadyCompleted = false,
+}: PanelProps) {
   const codeLines = useMemo(() => exercise.codeLines ?? [], [exercise])
   const checks = exercise.checks ?? []
 
@@ -113,6 +117,17 @@ export function DragReorderPanel({ exercise, onComplete }: PanelProps) {
       resetTimerRef.current = null
     }
   }, [exercise, correctOrder])
+
+  useEffect(() => {
+    if (!isAlreadyCompleted) return
+    setItems([...correctOrder])
+    const next: Record<string, LineState> = {}
+    correctOrder.forEach((id) => {
+      next[id] = 'correct'
+    })
+    setLineStates(next)
+    setAnswerState('correct')
+  }, [isAlreadyCompleted, exercise, correctOrder])
 
   useEffect(() => {
     return () => {

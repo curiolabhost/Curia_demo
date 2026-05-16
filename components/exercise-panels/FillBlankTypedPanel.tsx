@@ -37,7 +37,11 @@ function parseLine(line: string, startIndex: number): { segments: Segment[]; nex
   return { segments, nextIndex: blankIndex }
 }
 
-export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
+export function FillBlankTypedPanel({
+  exercise,
+  onComplete,
+  isAlreadyCompleted = false,
+}: PanelProps) {
   const lines = exercise.codeWithBlanks ?? []
   const placeholders = exercise.blankPlaceholders ?? []
   const widths = exercise.blankWidths ?? []
@@ -86,6 +90,12 @@ export function FillBlankTypedPanel({ exercise, onComplete }: PanelProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, blankCount])
+
+  useEffect(() => {
+    if (!isAlreadyCompleted) return
+    setBlankStates(Array(blankCount).fill('correct'))
+    setAnswerState('correct')
+  }, [isAlreadyCompleted, exercise, blankCount])
 
   useEffect(() => {
     return () => {

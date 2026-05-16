@@ -5,7 +5,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import type { LayoutMode } from '@/lib/useLayoutMode'
-import { getCodeProgress, postExerciseProgress, postLessonProgress } from '@/lib/progressClient'
+import {
+  getCodeProgress,
+  getExerciseProgress,
+  postExerciseProgress,
+  postLessonProgress,
+} from '@/lib/progressClient'
 import { loadCode } from '@/lib/storage'
 import { runInSandbox, type CheckResult, type LogEntry } from '@/lib/sandbox'
 import { BottomBar } from './BottomBar'
@@ -43,6 +48,7 @@ type RightPanelProps = {
   onResetLayout: () => void
   onToggleRight: () => void
   initialExerciseIndex?: number
+  initialMode?: Mode
   onExerciseIndexChange?: (index: number) => void
   onActiveBankIndexChange?: (index: number) => void
   onLineSelect?: (
@@ -79,6 +85,7 @@ export function RightPanel({
   onResetLayout,
   onToggleRight,
   initialExerciseIndex,
+  initialMode,
   onExerciseIndexChange,
   onActiveBankIndexChange,
   onLineSelect,
@@ -87,7 +94,7 @@ export function RightPanel({
   classroomId = null,
 }: RightPanelProps) {
   const router = useRouter()
-  const [mode, setMode] = useState<Mode>('exercises')
+  const [mode, setMode] = useState<Mode>(initialMode ?? 'exercises')
   const [showHome, setShowHome] = useState(false)
   const [exerciseIndex, setExerciseIndex] = useState(initialExerciseIndex ?? 0)
   const [challengeIndex, setChallengeIndex] = useState(0)
@@ -118,6 +125,10 @@ export function RightPanel({
   const hasChecksRef = useRef<boolean>(false)
   const lessonFadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const exerciseFadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const dbSeedAppliedRef = useRef(false)
+  const [completedExerciseIndices, setCompletedExerciseIndices] = useState<Set<number>>(
+    new Set(),
+  )
 
   const challenges = renderedLesson.challenges ?? []
   const activeExercise = renderedLesson.exercises[renderedExerciseIndex]
@@ -237,6 +248,58 @@ export function RightPanel({
   useEffect(() => {
     onExerciseIndexChange?.(exerciseIndex)
   }, [exerciseIndex, onExerciseIndexChange])
+
+  useEffect(() => {
+    dbSeedAppliedRef.current = false
+  }, [lesson.id])
+
+  useEffect(() => {
+    if (dbSeedAppliedRef.current) return
+    if (initialExerciseIndex === undefined && initialMode === undefined) return
+    if (lesson.id !== renderedLesson.id) return
+    dbSeedAppliedRef.current = true
+    if (initialExerciseIndex !== undefined && initialExerciseIndex !== exerciseIndex) {
+      setExerciseIndex(initialExerciseIndex)
+      setRenderedExerciseIndex(initialExerciseIndex)
+    }
+    if (initialMode !== undefined && initialMode !== mode) {
+      setMode(initialMode)
+    }
+  }, [
+    initialExerciseIndex,
+    initialMode,
+    lesson.id,
+    renderedLesson.id,
+    exerciseIndex,
+    mode,
+  ])
+
+  useEffect(() => {
+    if (!classroomId) {
+      setCompletedExerciseIndices(new Set())
+      return
+    }
+    let cancelled = false
+    const total = renderedLesson.exercises.length
+    const fetches = Array.from({ length: total }, (_, i) =>
+      getExerciseProgress(classroomId, renderedLesson.id, i),
+    )
+    Promise.all(fetches)
+      .then((results) => {
+        if (cancelled) return
+        const completed = new Set<number>()
+        results.forEach((res, idx) => {
+          if (res.ok && res.progress?.completed === true) {
+            completed.add(idx)
+          }
+        })
+        setCompletedExerciseIndices(completed)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [classroomId, renderedLesson.id, renderedLesson.exercises.length])
 
   useEffect(() => {
     const carryIdx = activeExercise?.carryFrom
@@ -596,6 +659,12 @@ export function RightPanel({
     const lessonId = renderedLesson.id
     const completedIndex = renderedExerciseIndex
     const completedFormat = activeExercise?.format ?? 'code-editor'
+    setCompletedExerciseIndices((prev) => {
+      if (prev.has(completedIndex)) return prev
+      const next = new Set<number>(prev)
+      next.add(completedIndex)
+      return next
+    })
     let nextIndex = completedIndex
     if (isFinalProjectLesson) {
       nextIndex = Math.min(completedIndex + 1, totalExercises)
@@ -851,6 +920,9 @@ export function RightPanel({
                     <PanelComponent
                       exercise={panelExercise}
                       onComplete={handlePanelComplete}
+                      isAlreadyCompleted={completedExerciseIndices.has(
+                        renderedExerciseIndex,
+                      )}
                     />
                   ) : null
                 })()

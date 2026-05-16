@@ -19,6 +19,7 @@ import { useWordBankFiller, type WordBankFiller } from '@/lib/useWordBankFiller'
 type FillBlankPanelProps = {
   exercise: Exercise
   onComplete: (correct: boolean) => void
+  isAlreadyCompleted?: boolean
 }
 
 type AnswerState = 'idle' | 'correct' | 'wrong'
@@ -54,7 +55,11 @@ function parseLine(line: string, startIndex: number): { segments: Segment[]; nex
   return { segments, nextIndex: blankIndex }
 }
 
-export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
+export function FillBlankPanel({
+  exercise,
+  onComplete,
+  isAlreadyCompleted = false,
+}: FillBlankPanelProps) {
   const lines = exercise.codeWithBlanks ?? []
   const tokens = exercise.tokenBank ?? []
   const correctOrder = exercise.correctOrder ?? []
@@ -97,6 +102,24 @@ export function FillBlankPanel({ exercise, onComplete }: FillBlankPanelProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, blankCount])
+
+  useEffect(() => {
+    if (!isAlreadyCompleted) return
+    const fills: (string | null)[] = new Array(blankCount).fill(null)
+    const ids: (string | null)[] = new Array(blankCount).fill(null)
+    for (let i = 0; i < blankCount; i += 1) {
+      const tokenId = correctOrder[i]
+      const tok = tokens.find((t) => t.id === tokenId)
+      if (tok) {
+        fills[i] = tok.label
+        ids[i] = tokenId
+      }
+    }
+    filler.setAll(fills, ids)
+    setAnswerState('correct')
+    setWrongFlags(Array(blankCount).fill(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAlreadyCompleted, exercise, blankCount])
 
   useEffect(() => {
     return () => {

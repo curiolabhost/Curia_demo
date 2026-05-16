@@ -48,10 +48,11 @@ export type ContentBlock =
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }
+  | { type: 'variableNotEquals'; name: string; value: unknown; label?: string }
   | { type: 'call'; fn: string; args: unknown[]; assert: string; label?: string }
   | { type: 'console'; includes: string; label?: string }
   | { type: 'consoleNonEmpty'; label?: string }
-  | { type: 'sourceIncludes'; pattern: string; flags?: string; label?: string }
+  | { type: 'sourceIncludes'; pattern: string; flags?: string; not?: boolean; label?: string }
 
 export type TaskStep = {
   text: string

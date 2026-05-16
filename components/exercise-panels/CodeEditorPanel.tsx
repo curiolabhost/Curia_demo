@@ -253,7 +253,8 @@ export function CodeEditorPanel({
         let passed = false
         try {
           const regex = new RegExp(c.pattern, c.flags ?? '')
-          passed = regex.test(code)
+          const matched = regex.test(code)
+          passed = c.not ? !matched : matched
         } catch {
           passed = false
         }

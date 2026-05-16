@@ -37,6 +37,9 @@ export function defaultCheckLabel(check: Check): string {
     }
     return `variable '${check.name}' equals ${JSON.stringify(check.expected)}`
   }
+  if (check.type === 'variableNotEquals') {
+    return check.label ?? `variable '${check.name}' was changed from ${JSON.stringify(check.value)}`
+  }
   if (check.type === 'call') {
     const argsStr = check.args.map((a) => JSON.stringify(a)).join(', ')
     return `calling ${check.fn}(${argsStr}) satisfies: ${check.assert}`
@@ -47,7 +50,9 @@ export function defaultCheckLabel(check: Check): string {
   if (check.type === 'consoleNonEmpty') {
     return 'something is printed to the console'
   }
-  return 'code contains expected pattern'
+  return check.label ?? (check.not
+    ? 'code does not contain unexpected pattern'
+    : 'code contains expected pattern')
 }
 
 function buildCheckRunners(checks: Check[]): string {
@@ -62,6 +67,24 @@ function buildCheckRunners(checks: Check[]): string {
         const expectedLit = JSON.stringify(check.expected)
         passedExpr = `__deepEqual(window[${nameLit}], ${expectedLit})`
       }
+      lines.push(`
+try {
+  var __actual_${index} = window[${nameLit}];
+  var __passed_${index} = ${passedExpr};
+  window.parent.postMessage({
+    type: '__check__', id: ${index}, passed: __passed_${index},
+    actual: __serialize(__actual_${index})
+  }, '*');
+} catch(e) {
+  window.parent.postMessage({
+    type: '__check__', id: ${index}, passed: false,
+    actual: 'Error: ' + (e && e.message ? e.message : String(e))
+  }, '*');
+}`)
+    } else if (check.type === 'variableNotEquals') {
+      const nameLit = JSON.stringify(check.name)
+      const expectedLit = JSON.stringify(check.value)
+      const passedExpr = `typeof window[${nameLit}] !== 'undefined' && !__deepEqual(window[${nameLit}], ${expectedLit})`
       lines.push(`
 try {
   var __actual_${index} = window[${nameLit}];
@@ -118,6 +141,7 @@ function buildCaptureCode(checks: Check[]): string {
   }
   for (const c of checks) {
     if (c.type === 'variable') add(c.name)
+    if (c.type === 'variableNotEquals') add(c.name)
     if (c.type === 'call') add(c.fn)
   }
   const lines: string[] = []
@@ -211,7 +235,7 @@ export function runInSandbox(
   const iframe = getOrCreateIframe()
 
   const iframeChecks = checks.filter(
-    (c) => c.type === 'variable' || c.type === 'call',
+    (c) => c.type === 'variable' || c.type === 'call' || c.type === 'variableNotEquals',
   )
   const expectedCheckCount = iframeChecks.length
   let receivedCheckCount = 0

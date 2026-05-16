@@ -1,10 +1,7 @@
-import type { Lesson } from './lessons'
+import type { Lesson } from '@/lib/lessons'
+import type { LessonProgressRow } from '@/lib/progressClient'
 
-export type ItemStatus =
-  | 'done'
-  | 'active'
-  | 'retry'
-  | 'locked'
+export type ItemStatus = 'done' | 'active' | 'retry' | 'locked'
 
 export type LessonProgress = {
   lessonId: string
@@ -13,51 +10,47 @@ export type LessonProgress = {
   lessonStatus: 'done' | 'active' | 'locked'
 }
 
-// TODO: replace with real persistence when tracking is built
-export function getProgress(lessons: Lesson[]): LessonProgress[] {
+export function deriveProgress(
+  lessons: Lesson[],
+  progressRows: LessonProgressRow[]
+): LessonProgress[] {
+  const rowMap = new Map<string, LessonProgressRow>()
+  for (const row of progressRows) {
+    rowMap.set(row.lessonId, row)
+  }
+
   return lessons.map((lesson) => {
-    const exerciseCount = lesson.exercises.length
+    const row = rowMap.get(lesson.id)
+    const exerciseCount = lesson.exercises?.length ?? 0
     const challengeCount = lesson.challenges?.length ?? 0
-    const sessionId = lesson.id.split('-')[0]
 
-    if (sessionId !== 's2') {
+    if (!row) {
       return {
         lessonId: lesson.id,
-        exerciseStatuses: Array<ItemStatus>(exerciseCount).fill('locked'),
-        challengeStatuses: Array<ItemStatus>(challengeCount).fill('locked'),
-        lessonStatus: 'locked',
-      }
-    }
-
-    if (lesson.id === 's2-l0' || lesson.id === 's2-l1') {
-      return {
-        lessonId: lesson.id,
-        exerciseStatuses: Array<ItemStatus>(exerciseCount).fill('done'),
-        challengeStatuses: Array<ItemStatus>(challengeCount).fill('done'),
-        lessonStatus: 'done',
-      }
-    }
-
-    if (lesson.id === 's2-l2') {
-      const exerciseStatuses: ItemStatus[] = []
-      for (let i = 0; i < exerciseCount; i++) {
-        if (i < 3) exerciseStatuses.push('done')
-        else if (i === 3) exerciseStatuses.push('active')
-        else exerciseStatuses.push('locked')
-      }
-      return {
-        lessonId: lesson.id,
-        exerciseStatuses,
-        challengeStatuses: Array<ItemStatus>(challengeCount).fill('locked'),
         lessonStatus: 'active',
+        exerciseStatuses: Array<ItemStatus>(exerciseCount).fill('active'),
+        challengeStatuses: Array<ItemStatus>(challengeCount).fill('active'),
       }
     }
+
+    const lessonStatus: 'done' | 'active' = row.completedAt ? 'done' : 'active'
+
+    const exerciseStatuses: ItemStatus[] = Array.from(
+      { length: exerciseCount },
+      (_, i) => {
+        if (row.completedAt) return 'done'
+        if (i < row.lastExerciseIndex) return 'done'
+        return 'active'
+      },
+    )
+
+    const challengeStatuses: ItemStatus[] = Array<ItemStatus>(challengeCount).fill('active')
 
     return {
       lessonId: lesson.id,
-      exerciseStatuses: Array<ItemStatus>(exerciseCount).fill('locked'),
-      challengeStatuses: Array<ItemStatus>(challengeCount).fill('locked'),
-      lessonStatus: 'locked',
+      lessonStatus,
+      exerciseStatuses,
+      challengeStatuses,
     }
   })
 }

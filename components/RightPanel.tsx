@@ -604,6 +604,7 @@ export function RightPanel({
       nextIndex = Math.min(completedIndex + 1, totalExercises - 1)
       goNextExercise()
     }
+    const isLastExercise = completedIndex === totalExercises - 1
     if (classroomId) {
       postExerciseProgress(classroomId, lessonId, completedIndex, {
         format: completedFormat,
@@ -614,6 +615,7 @@ export function RightPanel({
       postLessonProgress(classroomId, lessonId, {
         lastExerciseIndex: nextIndex,
         lastMode: mode,
+        ...(isLastExercise ? { completedAt: new Date().toISOString() } : {}),
       }).catch(() => {})
     }
   }, [

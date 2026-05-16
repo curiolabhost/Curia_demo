@@ -162,3 +162,28 @@ export async function postFinalProjectProgress(
   const ok = await postJson(url, data)
   return { ok }
 }
+
+export type LessonProgressRow = {
+  lessonId: string
+  lastExerciseIndex: number
+  lastChallengeIndex: number
+  lastMode: string
+  completedAt: string | null
+  updatedAt: string
+}
+
+export async function getClassroomLessonsProgress(classroomId: string): Promise<{
+  ok: boolean
+  lessons: LessonProgressRow[]
+}> {
+  try {
+    const res = await fetch(`/api/progress/${classroomId}/lessons`, {
+      credentials: 'same-origin',
+    })
+    if (!res.ok) return { ok: false, lessons: [] }
+    const data = await res.json()
+    return { ok: true, lessons: data.lessons ?? [] }
+  } catch {
+    return { ok: false, lessons: [] }
+  }
+}

@@ -1,12 +1,16 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDevice } from '@/context/DeviceContext'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import { useClassroomContext } from '@/lib/useClassroomContext'
 import { useLayoutMode } from '@/lib/useLayoutMode'
+import {
+  getClassroomLessonsProgress,
+  type LessonProgressRow,
+} from '@/lib/progressClient'
 import { ImpersonationBanner } from './admin/ImpersonationBanner'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
 import { LessonWorkspace } from './LessonWorkspace'
@@ -53,6 +57,29 @@ export function LearnPageClient({
   const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
   const classroomContext = useClassroomContext()
   const { classroomId, isReady: classroomReady, isImpersonating } = classroomContext
+  const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
+
+  useEffect(() => {
+    if (!classroomReady || !classroomId) return
+    let cancelled = false
+    getClassroomLessonsProgress(classroomId).then((res) => {
+      if (cancelled) return
+      if (res.ok) setProgressRows(res.lessons)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [classroomId, classroomReady])
+
+  const completedLessonIds = useMemo(
+    () =>
+      progressRows
+        .filter((r) => r.completedAt !== null)
+        .map((r) => r.lessonId),
+    [progressRows],
+  )
+  const completedCount = completedLessonIds.length
+  const totalCount = lessons.length
 
   useEffect(() => {
     let cancelled = false
@@ -250,8 +277,8 @@ export function LearnPageClient({
       ) : null}
       <TopBar
         session={session}
-        completedCount={0}
-        totalCount={lessons.length}
+        completedCount={completedCount}
+        totalCount={totalCount}
         onMenuClick={() => setNavOpen((v) => !v)}
         device={device}
         viewMode={activeLesson ? viewMode : undefined}
@@ -260,7 +287,7 @@ export function LearnPageClient({
       <NavOverlay
         lessons={lessons}
         activeLessonId={activeLessonId}
-        completedIds={[]}
+        completedIds={completedLessonIds}
         open={navOpen}
         onClose={() => setNavOpen(false)}
       />

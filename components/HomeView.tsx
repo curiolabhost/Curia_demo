@@ -1,10 +1,15 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Lesson } from '@/lib/lessons'
 import { getLessonsBySession } from '@/lib/lessons'
 import type { ItemStatus, LessonProgress } from '@/lib/progress'
-import { getProgress } from '@/lib/progress'
+import { deriveProgress } from '@/lib/progress'
+import {
+  getClassroomLessonsProgress,
+  type LessonProgressRow,
+} from '@/lib/progressClient'
+import { useClassroomContext } from '@/lib/useClassroomContext'
 import { MapView } from './map/MapView'
 
 type HomeViewProps = {
@@ -55,9 +60,32 @@ export function HomeView({
   onNavigate,
 }: HomeViewProps) {
   const [activeTab, setActiveTab] = useState<Tab>('list')
+  const { classroomId, isReady } = useClassroomContext()
+  const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
+  const [progressLoading, setProgressLoading] = useState(true)
+
+  useEffect(() => {
+    if (!isReady) return
+    if (!classroomId) {
+      setProgressLoading(false)
+      return
+    }
+    let cancelled = false
+    getClassroomLessonsProgress(classroomId).then((res) => {
+      if (cancelled) return
+      if (res.ok) setProgressRows(res.lessons)
+      setProgressLoading(false)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [classroomId, isReady])
 
   const sessionGroups = useMemo(() => getLessonsBySession(), [])
-  const progressData = useMemo(() => getProgress(allLessons), [allLessons])
+  const progressData = useMemo(
+    () => deriveProgress(allLessons, progressRows),
+    [allLessons, progressRows],
+  )
   const progressByLessonId = useMemo(() => {
     const map: Record<string, LessonProgress> = {}
     for (const p of progressData) map[p.lessonId] = p
@@ -113,6 +141,11 @@ export function HomeView({
       </div>
 
       <div className="home-content">
+        {progressLoading && classroomId ? (
+          <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--text3)' }}>
+            Loading progress...
+          </div>
+        ) : null}
         {activeTab === 'map' ? (
           <div className="home-map-host">
             <MapView currentLessonId={activeLessonId} onNavigate={onNavigate} />

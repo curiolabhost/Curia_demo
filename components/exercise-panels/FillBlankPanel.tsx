@@ -19,6 +19,7 @@ import { useWordBankFiller, type WordBankFiller } from '@/lib/useWordBankFiller'
 type FillBlankPanelProps = {
   exercise: Exercise
   onComplete: (correct: boolean) => void
+  onCorrect?: () => void
   isAlreadyCompleted?: boolean
 }
 
@@ -58,6 +59,7 @@ function parseLine(line: string, startIndex: number): { segments: Segment[]; nex
 export function FillBlankPanel({
   exercise,
   onComplete,
+  onCorrect,
   isAlreadyCompleted = false,
 }: FillBlankPanelProps) {
   const lines = exercise.codeWithBlanks ?? []
@@ -165,6 +167,7 @@ export function FillBlankPanel({
     if (wrong.every((w) => !w)) {
       setAnswerState('correct')
       setWrongFlags(Array(blankCount).fill(false))
+      onCorrect?.()
     } else {
       setAnswerState('wrong')
       setWrongFlags(wrong)

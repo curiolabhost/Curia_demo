@@ -40,6 +40,7 @@ function parseLine(line: string, startIndex: number): { segments: Segment[]; nex
 export function FillBlankTypedPanel({
   exercise,
   onComplete,
+  onCorrect,
   isAlreadyCompleted = false,
 }: PanelProps) {
   const lines = exercise.codeWithBlanks ?? []
@@ -142,6 +143,7 @@ export function FillBlankTypedPanel({
       if (allPassed) {
         setBlankStates(Array(blankCount).fill('correct'))
         setAnswerState('correct')
+        onCorrect?.()
       } else {
         const nextStates: BlankState[] = values.map(() => 'wrong')
         setBlankStates(nextStates)

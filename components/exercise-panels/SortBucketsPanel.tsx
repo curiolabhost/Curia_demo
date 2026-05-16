@@ -92,6 +92,7 @@ function Tray({ isEmpty, children }: TrayProps) {
 export function SortBucketsPanel({
   exercise,
   onComplete,
+  onCorrect,
   isAlreadyCompleted = false,
 }: PanelProps) {
   const buckets = exercise.buckets ?? []
@@ -192,6 +193,7 @@ export function SortBucketsPanel({
     setItemStates(nextStates)
     if (allCorrect) {
       setAnswerState('correct')
+      onCorrect?.()
     } else {
       setAnswerState('wrong')
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current)

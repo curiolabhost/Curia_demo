@@ -7,6 +7,7 @@ import { SyntaxLine } from '@/lib/syntaxLine'
 type MultipleChoicePanelProps = {
   exercise: Exercise
   onComplete: (correct: boolean) => void
+  onCorrect?: () => void
   isAlreadyCompleted?: boolean
 }
 
@@ -15,6 +16,7 @@ type AnswerState = 'idle' | 'correct' | 'wrong'
 export function MultipleChoicePanel({
   exercise,
   onComplete,
+  onCorrect,
   isAlreadyCompleted = false,
 }: MultipleChoicePanelProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -43,6 +45,7 @@ export function MultipleChoicePanel({
     if (!selectedId) return
     if (selectedId === exercise.correctOptionId) {
       setAnswerState('correct')
+      onCorrect?.()
     } else {
       setAnswerState('wrong')
     }

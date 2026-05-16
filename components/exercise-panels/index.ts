@@ -21,6 +21,7 @@ export { CodeEditorPanel } from './CodeEditorPanel'
 export type PanelProps = {
   exercise: Exercise
   onComplete: (correct: boolean) => void
+  onCorrect?: () => void
   isAlreadyCompleted?: boolean
 }
 

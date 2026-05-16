@@ -70,6 +70,7 @@ function SortableLine({ id, code, state }: SortableLineProps) {
 export function DragReorderPanel({
   exercise,
   onComplete,
+  onCorrect,
   isAlreadyCompleted = false,
 }: PanelProps) {
   const codeLines = useMemo(() => exercise.codeLines ?? [], [exercise])
@@ -162,6 +163,7 @@ export function DragReorderPanel({
         })
         setLineStates(next)
         setAnswerState('correct')
+        onCorrect?.()
       } else {
         const nextStates: Record<string, LineState> = {}
         items.forEach((id, idx) => {

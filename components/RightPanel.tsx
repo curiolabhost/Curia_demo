@@ -654,11 +654,23 @@ export function RightPanel({
   const isFinalProject = isPanelFormat && activeFormat === 'final-project'
   const isCodeEditor = isPanelFormat && activeFormat === 'code-editor'
 
+  const handlePanelCorrect = useCallback(() => {
+    if (!classroomId) return
+    const lessonId = renderedLesson.id
+    const completedIndex = renderedExerciseIndex
+    const completedFormat = activeExercise?.format ?? 'multiple-choice'
+    postExerciseProgress(classroomId, lessonId, completedIndex, {
+      format: completedFormat,
+      answerState: {},
+      completed: true,
+      completedAt: new Date().toISOString(),
+    }).catch(() => {})
+  }, [classroomId, renderedLesson.id, renderedExerciseIndex, activeExercise?.format])
+
   const handlePanelComplete = useCallback((correct: boolean) => {
     if (!correct) return
     const lessonId = renderedLesson.id
     const completedIndex = renderedExerciseIndex
-    const completedFormat = activeExercise?.format ?? 'code-editor'
     setCompletedExerciseIndices((prev) => {
       if (prev.has(completedIndex)) return prev
       const next = new Set<number>(prev)
@@ -675,12 +687,6 @@ export function RightPanel({
     }
     const isLastExercise = completedIndex === totalExercises - 1
     if (classroomId) {
-      postExerciseProgress(classroomId, lessonId, completedIndex, {
-        format: completedFormat,
-        answerState: {},
-        completed: true,
-        completedAt: new Date().toISOString(),
-      }).catch(() => {})
       postLessonProgress(classroomId, lessonId, {
         lastExerciseIndex: nextIndex,
         lastMode: mode,
@@ -694,7 +700,6 @@ export function RightPanel({
     classroomId,
     renderedLesson.id,
     renderedExerciseIndex,
-    activeExercise,
     mode,
   ])
 
@@ -920,6 +925,7 @@ export function RightPanel({
                     <PanelComponent
                       exercise={panelExercise}
                       onComplete={handlePanelComplete}
+                      onCorrect={handlePanelCorrect}
                       isAlreadyCompleted={completedExerciseIndices.has(
                         renderedExerciseIndex,
                       )}

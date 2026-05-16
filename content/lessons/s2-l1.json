@@ -524,6 +524,7 @@
     {
       "title": "Run your first variable",
       "type": "practice",
+      "format": "code-editor",
       "duration": "3 min",
       "tasks": [
         "The code is already written just hit Run and look at the console.",
@@ -533,18 +534,39 @@
       ],
       "hint": "Just change the number after the = sign on line 1. Don't change anything else.",
       "starterCode": "let score = 0;\n\nconsole.log(score);",
-      "checks": [
+      "steps": [
         {
-          "type": "variable",
-          "name": "score",
-          "expected": null,
-          "label": "a variable called 'score' exists"
+          "text": "The code is already written just hit Run and look at the console.",
+          "completesOn": "run",
+          "focusRange": [1, 3],
+          "checks": [
+            { "type": "consoleNonEmpty", "label": "something printed" }
+          ]
         },
         {
-          "type": "console",
-          "includes": "",
-          "label": "something is printed to the console"
+          "text": "See the number 0 printed? That came from the variable score.",
+          "completesOn": "auto",
+          "autoDelayMs": 2000
+        },
+        {
+          "text": "Now change 0 to your age on line 1. Hit Run again.",
+          "completesOn": "run",
+          "focusLine": 1,
+          "focusRange": [1, 1],
+          "checks": [
+            { "type": "variable", "name": "score", "expected": null, "label": "score exists" },
+            { "type": "consoleNonEmpty", "label": "something printed" }
+          ]
+        },
+        {
+          "text": "You should see your age printed instead. That's it you just used a variable!",
+          "completesOn": "auto",
+          "autoDelayMs": 1500
         }
+      ],
+      "checks": [
+        { "type": "variable", "name": "score", "expected": null, "label": "a variable called 'score' exists" },
+        { "type": "consoleNonEmpty", "label": "something is printed" }
       ]
     },
     {

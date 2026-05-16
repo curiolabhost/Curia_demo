@@ -10,6 +10,9 @@ type ExercisePromptProps = {
   isFading?: boolean
   currentStepIndex?: number
   completedSteps?: Set<number>
+  nextEnabled?: boolean
+  onNext?: () => void
+  tasks?: string[]
 }
 
 function taskState(
@@ -18,9 +21,10 @@ function taskState(
   completedSteps?: Set<number>,
 ): '' | 'active' | 'done' | 'upcoming' {
   if (currentStepIndex === undefined) return ''
-  if (completedSteps?.has(i)) return 'done'
   if (i === currentStepIndex) return 'active'
-  return 'upcoming'
+  if (completedSteps?.has(i)) return 'done'
+  if (i > currentStepIndex) return 'upcoming'
+  return 'done'
 }
 
 const TYPE_TOOLTIPS: Record<Exercise['type'], string> = {
@@ -39,6 +43,9 @@ export function ExercisePrompt({
   isFading = false,
   currentStepIndex,
   completedSteps,
+  nextEnabled = false,
+  onNext,
+  tasks: tasksOverride,
 }: ExercisePromptProps) {
   const exercise = exercises[activeIndex]
   const scrollRef = useRef<HTMLElement | null>(null)
@@ -75,7 +82,8 @@ export function ExercisePrompt({
     )
   }
 
-  const { type, title, duration, tasks, hint } = exercise
+  const { type, title, duration, tasks: exerciseTasks, hint } = exercise
+  const tasks = tasksOverride ?? exerciseTasks
   const total = exercises.length
 
   return (
@@ -112,7 +120,17 @@ export function ExercisePrompt({
           return (
             <li className={className} key={i}>
               <span className="task-step">{String(i + 1).padStart(2, '0')}</span>
-              <span>{task}</span>
+              <span className="task-text">{task}</span>
+              {state === 'active' && onNext && (
+                <button
+                  className="step-next-btn"
+                  type="button"
+                  disabled={!nextEnabled}
+                  onClick={onNext}
+                >
+                  Next →
+                </button>
+              )}
             </li>
           )
         })}

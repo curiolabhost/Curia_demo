@@ -397,11 +397,15 @@ body {
 }
 .task-item {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
   font-size: 15px;
   color: var(--text2);
   line-height: 1.5;
   padding: 4px 0;
+}
+.task-text {
+  flex: 1;
 }
 .task-step {
   font-family: var(--mono);
@@ -1203,25 +1207,28 @@ body {
 }
 
 .step-next-btn {
-  font-family: var(--sans);
-  font-size: 13px;
+  font-family: var(--mono);
+  font-size: 11px;
   font-weight: 500;
-  padding: 5px 14px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background 120ms ease, opacity 120ms ease;
 }
 
 .step-next-btn:enabled {
   background: var(--accent);
   color: white;
+  border-color: var(--accent);
   cursor: pointer;
 }
 
 .step-next-btn:disabled {
-  background: var(--border2);
+  background: transparent;
   color: var(--text3);
+  border-color: var(--border2);
   cursor: not-allowed;
   opacity: 0.6;
 }

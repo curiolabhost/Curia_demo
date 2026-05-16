@@ -107,6 +107,8 @@ export function RightPanel({
   const [stepPromptState, setStepPromptState] = useState<{
     currentStepIndex: number
     completedSteps: Set<number>
+    nextEnabled: boolean
+    onNext: () => void
   } | null>(null)
   const [carryFromCode, setCarryFromCode] = useState<string | null>(null)
 
@@ -861,16 +863,27 @@ export function RightPanel({
             {modeTabBar}
 
             {isFinalProject ? null : mode === 'exercises' ? (
-              activeExercise ? (
-                <ExercisePrompt
-                  exercises={renderedLesson.exercises}
-                  activeIndex={renderedExerciseIndex}
-                  hintVisible={hintVisible}
-                  isFading={isFading}
-                  currentStepIndex={stepPromptState?.currentStepIndex}
-                  completedSteps={stepPromptState?.completedSteps}
-                />
-              ) : (
+              activeExercise ? (() => {
+                const promptTasks =
+                  activeExercise.steps && activeExercise.steps.length > 0
+                    ? activeExercise.steps.map((s) =>
+                        typeof s === 'string' ? s : s.text,
+                      )
+                    : activeExercise.tasks
+                return (
+                  <ExercisePrompt
+                    exercises={renderedLesson.exercises}
+                    activeIndex={renderedExerciseIndex}
+                    hintVisible={hintVisible}
+                    isFading={isFading}
+                    currentStepIndex={stepPromptState?.currentStepIndex}
+                    completedSteps={stepPromptState?.completedSteps}
+                    nextEnabled={stepPromptState?.nextEnabled ?? false}
+                    onNext={stepPromptState?.onNext}
+                    tasks={promptTasks}
+                  />
+                )
+              })() : (
                 <section className="exercise-prompt">
                   <div className="empty-state-block">No exercises for this lesson.</div>
                 </section>
@@ -911,10 +924,12 @@ export function RightPanel({
                   exerciseIndex={renderedExerciseIndex}
                   onComplete={handlePanelComplete}
                   classroomId={classroomId}
-                  onStepChange={(idx, done) =>
+                  onStepChange={(idx, done, nextEnabled, onNext) =>
                     setStepPromptState({
                       currentStepIndex: idx,
                       completedSteps: done,
+                      nextEnabled,
+                      onNext,
                     })
                   }
                 />

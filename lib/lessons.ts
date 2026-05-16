@@ -66,7 +66,7 @@ export type TaskStep = {
 export function normalizeStep(t: string | TaskStep): TaskStep {
   return typeof t === 'string'
     ? { text: t, completesOn: 'run' }
-    : { completesOn: 'run', autoDelayMs: 1200, ...t }
+    : { completesOn: 'run', autoDelayMs: 2000, ...t }
 }
 
 export type ExerciseFormat =

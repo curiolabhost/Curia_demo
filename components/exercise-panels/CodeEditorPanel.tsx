@@ -22,6 +22,8 @@ type CodeEditorPanelProps = {
   onStepChange?: (
     currentStepIndex: number,
     completedSteps: Set<number>,
+    nextEnabled: boolean,
+    onNext: () => void,
   ) => void
 }
 
@@ -44,6 +46,7 @@ export function CodeEditorPanel({
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
   const [exerciseValidated, setExerciseValidated] = useState(false)
   const [nextEnabled, setNextEnabled] = useState(false)
+  const [stepShake, setStepShake] = useState(false)
 
   const [entries, setEntries] = useState<LogEntry[]>([])
   const [checkResults, setCheckResults] = useState<CheckResult[]>([])
@@ -55,6 +58,8 @@ export function CodeEditorPanel({
   const cleanupRef = useRef<(() => void) | null>(null)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const onStepChangeRef = useRef(onStepChange)
+  const handleNextRef = useRef<() => void>(() => {})
+  const stableOnNext = useCallback(() => handleNextRef.current(), [])
 
   // Keep the latest onStepChange in a ref so the dispatch effect's deps stay
   // limited to actual step state — inline callbacks from the parent won't
@@ -67,8 +72,13 @@ export function CodeEditorPanel({
   // exercises leave parent state at null → ExercisePrompt renders flat.
   useEffect(() => {
     if (!isReactive) return
-    onStepChangeRef.current?.(currentStepIndex, completedSteps)
-  }, [isReactive, currentStepIndex, completedSteps])
+    onStepChangeRef.current?.(
+      currentStepIndex,
+      completedSteps,
+      nextEnabled,
+      stableOnNext,
+    )
+  }, [isReactive, currentStepIndex, completedSteps, nextEnabled, stableOnNext])
 
   // Reset everything when the exercise changes (panel is reused across exercises)
   useEffect(() => {
@@ -293,7 +303,8 @@ export function CodeEditorPanel({
           setCompletedSteps((prev) => new Set(prev).add(stepIndex))
           setNextEnabled(true)
         } else {
-          setNextEnabled(false)
+          setStepShake(true)
+          setTimeout(() => setStepShake(false), 600)
         }
       })
     },
@@ -312,32 +323,38 @@ export function CodeEditorPanel({
   useEffect(() => {
     const step = normalizedSteps[currentStepIndex]
     if (!step || step.completesOn !== 'auto') return
-    const t = setTimeout(
-      () => setNextEnabled(true),
-      step.autoDelayMs ?? 2000,
-    )
+    const t = setTimeout(() => {
+      setCompletedSteps((prev) => new Set(prev).add(currentStepIndex))
+      setNextEnabled(true)
+    }, step.autoDelayMs ?? 2000)
     return () => clearTimeout(t)
   }, [currentStepIndex, normalizedSteps])
 
   const handleNext = useCallback(() => {
     if (!nextEnabled) return
-    setCompletedSteps((prev) => new Set(prev).add(currentStepIndex))
-    if (currentStepIndex + 1 >= normalizedSteps.length) {
-      // Last step. Only complete the exercise if checks have validated.
-      if (exerciseValidated) {
-        editorRef.current?.markComplete()
+    const nextIndex = currentStepIndex + 1
+    if (nextIndex >= normalizedSteps.length) {
+      const noChecks = !exercise.checks || exercise.checks.length === 0
+      if (exerciseValidated || noChecks) {
         onComplete(true)
       }
       return
     }
-    setCurrentStepIndex(currentStepIndex + 1)
+    setCurrentStepIndex(nextIndex)
+    setNextEnabled(false)
   }, [
     nextEnabled,
     currentStepIndex,
     normalizedSteps.length,
+    exercise.checks,
     exerciseValidated,
     onComplete,
   ])
+
+  // Keep the ref in sync during render so stableOnNext always invokes the
+  // latest handleNext — updating in a post-render effect can leave the ref
+  // stale if the parent dispatch effect reads it first.
+  handleNextRef.current = handleNext
 
   // panel:check-answer — Cmd/Ctrl+Enter from RightPanel
   useEffect(() => {
@@ -376,7 +393,7 @@ export function CodeEditorPanel({
           onClear={handleClearOutput}
         />
       </div>
-      <div className="bottom-bar">
+      <div className={`bottom-bar${stepShake ? ' shake' : ''}`}>
         <button
           className={`run-button${isRunning ? ' running' : ''}`}
           type="button"
@@ -395,23 +412,6 @@ export function CodeEditorPanel({
             </>
           )}
         </button>
-        {isReactive ? (
-          <>
-            <span className="cep-step-counter">
-              Step {currentStepIndex + 1} of {normalizedSteps.length}
-            </span>
-            <button
-              className="step-next-btn"
-              type="button"
-              onClick={handleNext}
-              disabled={!nextEnabled}
-            >
-              {currentStepIndex + 1 >= normalizedSteps.length
-                ? 'Done ✓'
-                : 'Next →'}
-            </button>
-          </>
-        ) : null}
       </div>
     </div>
   )

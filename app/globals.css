@@ -1138,6 +1138,7 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   cursor: grabbing;
 }
+.fb-token.used { opacity: 0.2; pointer-events: none; }
 
 .fb-blank.drag-over {
   border-style: solid;

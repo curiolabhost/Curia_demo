@@ -6,6 +6,7 @@ import type React from 'react'
 export type TypedFiller = {
   values: string[]
   setValueAt: (index: number, value: string) => void
+  setAllValues: (next: string[]) => void
   handleChange: (index: number, value: string) => void
   handleKeyDown: (
     index: number,
@@ -56,6 +57,10 @@ export function useTypedFiller(
       next[index] = value
       return next
     })
+  }
+
+  const setAllValues = (next: string[]) => {
+    setValues(next)
   }
 
   const handleChange = (index: number, value: string) => {
@@ -109,6 +114,7 @@ export function useTypedFiller(
   return {
     values,
     setValueAt,
+    setAllValues,
     handleChange,
     handleKeyDown,
     registerInputRef,

@@ -153,6 +153,7 @@ export type Exercise = {
   tokenBank?: FillBlankToken[]
   correctOrder?: string[]
   blankPlaceholders?: string[]
+  blankAnswers?: string[]
   blankWidths?: number[]
   hintBank?: { id: string; label: string }[]
   compactBlanks?: boolean

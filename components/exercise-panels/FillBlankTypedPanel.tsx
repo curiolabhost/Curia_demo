@@ -64,6 +64,7 @@ export function FillBlankTypedPanel({
   const {
     values,
     setValueAt,
+    setAllValues,
     registerInputRef,
     focusBlank,
     allFilled,
@@ -93,8 +94,15 @@ export function FillBlankTypedPanel({
 
   useEffect(() => {
     if (!isAlreadyCompleted) return
+    const answers = exercise.blankAnswers ?? []
+    const seeded: string[] = new Array(blankCount).fill('')
+    for (let i = 0; i < blankCount; i += 1) {
+      if (typeof answers[i] === 'string') seeded[i] = answers[i]
+    }
+    setAllValues(seeded)
     setBlankStates(Array(blankCount).fill('correct'))
     setAnswerState('correct')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAlreadyCompleted, exercise, blankCount])
 
   useEffect(() => {

@@ -108,18 +108,26 @@ export function FillBlankPanel({
     const fills: (string | null)[] = new Array(blankCount).fill(null)
     const ids: (string | null)[] = new Array(blankCount).fill(null)
     for (let i = 0; i < blankCount; i += 1) {
-      const tokenId = correctOrder[i]
-      const tok = tokens.find((t) => t.id === tokenId)
-      if (tok) {
-        fills[i] = tok.label
-        ids[i] = tokenId
-      }
+      const expected = correctOrder[i]
+      // correctOrder stores labels, not ids — match against token.label.
+      const tok = tokens.find((t) => t.label === expected)
+      fills[i] = expected
+      ids[i] = tok ? tok.id : `restored-${i}`
     }
     filler.setAll(fills, ids)
     setAnswerState('correct')
     setWrongFlags(Array(blankCount).fill(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAlreadyCompleted, exercise, blankCount])
+
+  const placedLabels = useMemo(() => {
+    if (answerState !== 'correct') return new Set<string>()
+    const set = new Set<string>()
+    for (const v of filled) {
+      if (v !== null) set.add(v)
+    }
+    return set
+  }, [answerState, filled])
 
   useEffect(() => {
     return () => {
@@ -238,6 +246,7 @@ export function FillBlankPanel({
         filler={filler}
         answerState={answerState}
         wrongFlags={wrongFlags}
+        placedLabels={placedLabels}
         onTokenClick={handleTokenClick}
         onBlankClick={handleBlankClick}
         onCheck={handleCheck}
@@ -325,12 +334,13 @@ export function FillBlankPanel({
           const isDragging =
             draggingSource?.kind === 'token' &&
             draggingSource.tokenId === token.id
+          const isUsed = placedLabels.has(token.label)
           return (
             <div
               key={token.id}
               role="button"
               tabIndex={0}
-              className={`fb-token${isDragging ? ' dragging' : ''}`}
+              className={`fb-token${isDragging ? ' dragging' : ''}${isUsed ? ' used' : ''}`}
               onClick={() => handleTokenClick(token.id, token.label)}
               onKeyDown={(e) => {
                 if (e.key === ' ' || e.key === 'Enter') {
@@ -412,16 +422,17 @@ type DraggableTokenProps = {
   token: { id: string; label: string }
   disabled: boolean
   isActive: boolean
+  isUsed: boolean
   onClick: () => void
 }
 
-function DraggableToken({ token, disabled, isActive, onClick }: DraggableTokenProps) {
+function DraggableToken({ token, disabled, isActive, isUsed, onClick }: DraggableTokenProps) {
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: `fb-token:${token.id}`,
     data: { kind: 'token', tokenId: token.id, label: token.label } satisfies DragData,
     disabled,
   })
-  const cls = `fb-token${isActive ? ' dragging' : ''}`
+  const cls = `fb-token${isActive ? ' dragging' : ''}${isUsed ? ' used' : ''}`
   return (
     <div
       ref={setNodeRef}
@@ -518,6 +529,7 @@ type FillBlankTabletProps = {
   filler: WordBankFiller
   answerState: AnswerState
   wrongFlags: boolean[]
+  placedLabels: Set<string>
   onTokenClick: (tokenId: string, label: string) => void
   onBlankClick: (index: number) => void
   onCheck: () => void
@@ -531,6 +543,7 @@ export function FillBlankTablet({
   filler,
   answerState,
   wrongFlags,
+  placedLabels,
   onTokenClick,
   onBlankClick,
   onCheck,
@@ -657,6 +670,7 @@ export function FillBlankTablet({
                 token={token}
                 disabled={answerState === 'correct'}
                 isActive={tokenActive}
+                isUsed={placedLabels.has(token.label)}
                 onClick={() => onTokenClick(token.id, token.label)}
               />
             )

@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { Lesson } from '@/lib/lessons'
+import type { Exercise, Lesson } from '@/lib/lessons'
+import type { Deck } from '@/lib/deckTypes'
 import { LessonContent } from './LessonContent'
 
 type SlideshowViewProps = {
   lesson: Lesson
+  deck: Deck
   pageIndex: number
   onPageChange: (index: number) => void
   onExit: () => void
@@ -87,17 +89,134 @@ function NavButton({
   )
 }
 
+function ExerciseSlide({ exercise }: { exercise: Exercise }) {
+  const format = exercise.format ?? 'code-editor'
+  const task = exercise.tasks?.[0] ?? exercise.title ?? ''
+
+  let body: React.ReactNode
+
+  if (format === 'multiple-choice') {
+    const options = exercise.options ?? []
+    body = (
+      <div
+        style={{
+          marginTop: 32,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: 16,
+        }}
+      >
+        {options.map((opt) => (
+          <div
+            key={opt.id}
+            style={{
+              border: '1.5px solid var(--border2)',
+              borderRadius: 12,
+              background: 'var(--surface)',
+              padding: '20px 22px',
+              fontFamily: opt.code ? 'var(--mono)' : 'var(--sans)',
+              fontSize: opt.code ? 15 : 16,
+              color: 'var(--text)',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+            }}
+          >
+            {opt.code ?? opt.label}
+          </div>
+        ))}
+      </div>
+    )
+  } else if (format === 'fill-blank' || format === 'fill-blank-typed') {
+    const lines = exercise.codeWithBlanks ?? exercise.codeLines ?? []
+    body = (
+      <pre
+        style={{
+          marginTop: 32,
+          background: 'var(--surface)',
+          border: '1.5px solid var(--border2)',
+          borderRadius: 12,
+          padding: '20px 24px',
+          fontFamily: 'var(--mono)',
+          fontSize: 16,
+          color: 'var(--text)',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          textAlign: 'left',
+        }}
+      >
+        {lines.map((line, i) => (
+          <div key={i}>{line.replace(/<<[^>]+>>/g, '________')}</div>
+        ))}
+      </pre>
+    )
+  } else {
+    body = (
+      <div
+        style={{
+          marginTop: 32,
+          fontSize: 16,
+          color: 'var(--text3)',
+          textAlign: 'center',
+        }}
+      >
+        Students complete this on their devices
+      </div>
+    )
+  }
+
+  return (
+    <div
+      style={{
+        maxWidth: 700,
+        margin: '0 auto',
+        textAlign: 'center',
+      }}
+    >
+      <span
+        style={{
+          display: 'inline-block',
+          fontFamily: 'var(--mono)',
+          fontSize: 11,
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          color: 'var(--text3)',
+          background: 'var(--surface2)',
+          borderRadius: 20,
+          padding: '4px 12px',
+        }}
+      >
+        {format}
+      </span>
+      <div
+        style={{
+          marginTop: 24,
+          fontFamily: 'var(--sans)',
+          fontSize: 24,
+          fontWeight: 700,
+          color: 'var(--text)',
+          lineHeight: 1.3,
+        }}
+      >
+        {task}
+      </div>
+      {body}
+    </div>
+  )
+}
+
 export function SlideshowView({
   lesson,
+  deck,
   pageIndex,
   onPageChange,
   onExit,
 }: SlideshowViewProps) {
-  const totalPages = lesson.content.length
+  const enabledSlides = deck.filter((s) => s.enabled)
+  const totalPages = enabledSlides.length
   const safeIndex = totalPages > 0 ? Math.max(0, Math.min(pageIndex, totalPages - 1)) : 0
-  const currentPage = lesson.content[safeIndex]
+  const currentSlide = totalPages > 0 ? enabledSlides[safeIndex] : null
   const isFirst = safeIndex === 0
-  const isLast = safeIndex >= totalPages - 1
+  const isLast = totalPages === 0 ? true : safeIndex >= totalPages - 1
 
   const [exitHover, setExitHover] = useState(false)
 
@@ -150,6 +269,35 @@ export function SlideshowView({
 
   const showDots = totalPages > 1 && totalPages <= 12
 
+  let slideBody: React.ReactNode = null
+  if (!currentSlide) {
+    slideBody = (
+      <div
+        style={{
+          color: 'var(--text3)',
+          fontFamily: 'var(--sans)',
+          fontSize: 16,
+          textAlign: 'center',
+        }}
+      >
+        No slides in deck. Exit and edit your deck.
+      </div>
+    )
+  } else if (currentSlide.type === 'content') {
+    const page = lesson.content[currentSlide.index]
+    slideBody = page ? (
+      <LessonContent
+        page={page}
+        isLastPage={isLast}
+        lesson={lesson}
+        variant="slide"
+      />
+    ) : null
+  } else {
+    const exercise = lesson.exercises[currentSlide.index]
+    slideBody = exercise ? <ExerciseSlide exercise={exercise} /> : null
+  }
+
   return (
     <div
       style={{
@@ -184,16 +332,13 @@ export function SlideshowView({
             padding: '52px 72px',
             width: '100%',
             boxSizing: 'border-box',
+            flex: currentSlide ? undefined : 1,
+            display: currentSlide ? undefined : 'flex',
+            alignItems: currentSlide ? undefined : 'center',
+            justifyContent: currentSlide ? undefined : 'center',
           }}
         >
-          {currentPage ? (
-            <LessonContent
-              page={currentPage}
-              isLastPage={isLast}
-              lesson={lesson}
-              variant="slide"
-            />
-          ) : null}
+          {slideBody}
         </div>
       </div>
 
@@ -224,7 +369,7 @@ export function SlideshowView({
             color: 'rgba(255,255,255,0.5)',
           }}
         >
-          {lesson.title}  ·  Page {safeIndex + 1} of {totalPages}
+          {lesson.title}  ·  Slide {totalPages === 0 ? 0 : safeIndex + 1} of {totalPages}
         </span>
 
         {showDots ? (

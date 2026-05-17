@@ -12,7 +12,11 @@ import {
   getLessonProgress,
   type LessonProgressRow,
 } from '@/lib/progressClient'
+import { useCuriaSession } from '@/lib/useCuriaSession'
+import { useDeck } from '@/lib/useDeck'
+import type { Deck } from '@/lib/deckTypes'
 import { ImpersonationBanner } from './admin/ImpersonationBanner'
+import { DeckEditor } from './DeckEditor'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
 import { LessonWorkspace } from './LessonWorkspace'
 import { NavOverlay } from './NavOverlay'
@@ -55,6 +59,20 @@ export function LearnPageClient({
   const [viewMode, setViewMode] = useState<'normal' | 'slideshow'>(() =>
     searchParams?.get('view') === 'slide' ? 'slideshow' : 'normal',
   )
+  const [deckEditorOpen, setDeckEditorOpen] = useState(false)
+  const { role } = useCuriaSession()
+  const deckLesson = useMemo<Lesson>(
+    () =>
+      activeLesson ?? {
+        id: '__empty__',
+        session: '',
+        title: '',
+        content: [],
+        exercises: [],
+      },
+    [activeLesson],
+  )
+  const { deck, saveDeck } = useDeck(deckLesson)
   const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
   const classroomContext = useClassroomContext()
   const { classroomId, isReady: classroomReady, isImpersonating } = classroomContext
@@ -155,28 +173,53 @@ export function LearnPageClient({
     }
   }, [mode, splitAllowed, setMode])
 
-  const handleToggleSlideshow = useCallback(() => {
-    const next = viewMode === 'slideshow' ? 'normal' : 'slideshow'
-    if (next === 'slideshow') {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {})
+  const updateViewUrl = useCallback(
+    (view: 'normal' | 'slideshow') => {
+      const params = new URLSearchParams(searchParams?.toString() ?? '')
+      if (view === 'slideshow') {
+        params.set('view', 'slide')
+      } else {
+        params.delete('view')
       }
-    } else {
+      const queryString = params.toString()
+      const url = `/learn/${activeLessonId}${queryString ? `?${queryString}` : ''}`
+      router.replace(url, { scroll: false })
+    },
+    [searchParams, router, activeLessonId],
+  )
+
+  const handleToggleSlideshow = useCallback(() => {
+    if (viewMode === 'slideshow') {
       if (document.fullscreenElement) {
         document.exitFullscreen().catch(() => {})
       }
+      setViewMode('normal')
+      updateViewUrl('normal')
+      return
     }
-    setViewMode(next)
-    const params = new URLSearchParams(searchParams?.toString() ?? '')
-    if (next === 'slideshow') {
-      params.set('view', 'slide')
-    } else {
-      params.delete('view')
+    if (role === 'ADMIN') {
+      setDeckEditorOpen(true)
+      return
     }
-    const queryString = params.toString()
-    const url = `/learn/${activeLessonId}${queryString ? `?${queryString}` : ''}`
-    router.replace(url, { scroll: false })
-  }, [viewMode, searchParams, router, activeLessonId])
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(() => {})
+    }
+    setViewMode('slideshow')
+    updateViewUrl('slideshow')
+  }, [viewMode, role, updateViewUrl])
+
+  const handlePresent = useCallback(
+    (finalDeck: Deck) => {
+      saveDeck(finalDeck)
+      setDeckEditorOpen(false)
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {})
+      }
+      setViewMode('slideshow')
+      updateViewUrl('slideshow')
+    },
+    [saveDeck, updateViewUrl],
+  )
 
   const exParam = searchParams?.get('ex')
   const parsedEx = exParam !== null && exParam !== undefined ? Number(exParam) : NaN
@@ -254,10 +297,23 @@ export function LearnPageClient({
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [navOpen])
 
+  if (deckEditorOpen && activeLesson) {
+    return (
+      <DeckEditor
+        lesson={activeLesson}
+        deck={deck}
+        onSave={saveDeck}
+        onPresent={handlePresent}
+        onClose={() => setDeckEditorOpen(false)}
+      />
+    )
+  }
+
   if (viewMode === 'slideshow' && activeLesson) {
     return (
       <SlideshowView
         lesson={activeLesson}
+        deck={deck}
         pageIndex={Math.min(pageIndex, totalPages - 1)}
         onPageChange={setPageIndex}
         onExit={handleToggleSlideshow}
@@ -334,96 +390,85 @@ export function LearnPageClient({
         <span className="nav-edge-toggle-icon">{navOpen ? '‹' : '›'}</span>
       </button>
       <div className="app-main">
-        {viewMode === 'slideshow' && activeLesson ? (
-          <SlideshowView
-            lesson={activeLesson}
-            pageIndex={Math.min(pageIndex, totalPages - 1)}
-            onPageChange={setPageIndex}
-            onExit={handleToggleSlideshow}
-          />
-        ) : (
-          <>
-            <div
-              style={{
-                width:
-                  mode === 'expanded-left'  ? '100%' :
-                  mode === 'expanded-right' ? '0%' :
-                  '50%',
-                transition: splitAllowed
-                  ? 'width 0.25s ease'
-                  : 'none',
-                flexShrink: 0,
-                overflow: 'hidden',
-                minHeight: 0,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
+        <div
+          style={{
+            width:
+              mode === 'expanded-left'  ? '100%' :
+              mode === 'expanded-right' ? '0%' :
+              '50%',
+            transition: splitAllowed
+              ? 'width 0.25s ease'
+              : 'none',
+            flexShrink: 0,
+            overflow: 'hidden',
+            minHeight: 0,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {isFinalProject && activeLesson ? (
+            <FinalProjectSidebar
+              lesson={activeLesson}
+              activeBlockIndex={activeExerciseIndex}
+              activeBankIndex={activeBankIndex}
+              selectedLineIndex={selectedLineIndex}
+              selectedBlankIndex={selectedBlankIndex}
+              allLessons={lessons}
+              editMode={editMode}
+              editActions={editActions}
+            />
+          ) : (
+            <Sidebar
+              lesson={activeLesson}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              totalPages={totalPages}
+              layoutMode={mode}
+              onToggleLeft={handleToggleLeft}
+            />
+          )}
+        </div>
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            minHeight: 0,
+            overflow: 'hidden',
+            transition: splitAllowed ? 'width 0.25s ease' : 'none',
+          }}
+        >
+          {activeLesson ? (
+            <LessonWorkspace
+              lesson={activeLesson}
+              allLessons={lessons}
+              prevLessonId={prevLessonId}
+              nextLessonId={nextLessonId}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              totalPages={totalPages}
+              layoutMode={mode}
+              onResetLayout={resetLayout}
+              onToggleRight={handleToggleRight}
+              initialExerciseIndex={initialExerciseIndex}
+              initialMode={resumeMode ?? undefined}
+              onExerciseIndexChange={setActiveExerciseIndex}
+              onActiveBankIndexChange={setActiveBankIndex}
+              onLineSelect={(li, bi) => {
+                setSelectedLineIndex(li)
+                setSelectedBlankIndex(bi)
               }}
-            >
-              {isFinalProject && activeLesson ? (
-                <FinalProjectSidebar
-                  lesson={activeLesson}
-                  activeBlockIndex={activeExerciseIndex}
-                  activeBankIndex={activeBankIndex}
-                  selectedLineIndex={selectedLineIndex}
-                  selectedBlankIndex={selectedBlankIndex}
-                  allLessons={lessons}
-                  editMode={editMode}
-                  editActions={editActions}
-                />
-              ) : (
-                <Sidebar
-                  lesson={activeLesson}
-                  pageIndex={pageIndex}
-                  setPageIndex={setPageIndex}
-                  totalPages={totalPages}
-                  layoutMode={mode}
-                  onToggleLeft={handleToggleLeft}
-                />
-              )}
+              editMode={editMode}
+              editActions={editActions}
+              isReadOnly={isReadOnly}
+              classroomId={classroomId}
+            />
+          ) : (
+            <div className="right-panel">
+              <div style={{ padding: 24, color: 'var(--text2)' }}>Lesson not found.</div>
             </div>
-            <div
-              style={{
-                flex: 1,
-                minWidth: 0,
-                minHeight: 0,
-                overflow: 'hidden',
-                transition: splitAllowed ? 'width 0.25s ease' : 'none',
-              }}
-            >
-              {activeLesson ? (
-                <LessonWorkspace
-                  lesson={activeLesson}
-                  allLessons={lessons}
-                  prevLessonId={prevLessonId}
-                  nextLessonId={nextLessonId}
-                  pageIndex={pageIndex}
-                  setPageIndex={setPageIndex}
-                  totalPages={totalPages}
-                  layoutMode={mode}
-                  onResetLayout={resetLayout}
-                  onToggleRight={handleToggleRight}
-                  initialExerciseIndex={initialExerciseIndex}
-                  initialMode={resumeMode ?? undefined}
-                  onExerciseIndexChange={setActiveExerciseIndex}
-                  onActiveBankIndexChange={setActiveBankIndex}
-                  onLineSelect={(li, bi) => {
-                    setSelectedLineIndex(li)
-                    setSelectedBlankIndex(bi)
-                  }}
-                  editMode={editMode}
-                  editActions={editActions}
-                  isReadOnly={isReadOnly}
-                  classroomId={classroomId}
-                />
-              ) : (
-                <div className="right-panel">
-                  <div style={{ padding: 24, color: 'var(--text2)' }}>Lesson not found.</div>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

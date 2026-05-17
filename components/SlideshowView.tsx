@@ -59,7 +59,7 @@ function NavButton({
   onClick: () => void
 }) {
   const [hover, setHover] = useState(false)
-  const enabledBg = hover ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.15)'
+  const enabledBg = hover ? 'var(--surface2)' : 'var(--surface)'
   return (
     <button
       type="button"
@@ -77,8 +77,8 @@ function NavButton({
         padding: 0,
         border: 'none',
         borderRadius: 6,
-        background: disabled ? 'rgba(255,255,255,0.06)' : enabledBg,
-        color: disabled ? 'rgba(255,255,255,0.25)' : 'var(--white)',
+        background: disabled ? 'transparent' : enabledBg,
+        color: disabled ? 'var(--border2)' : 'var(--text)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         transition: 'background 0.15s ease',
         flexShrink: 0,
@@ -218,8 +218,6 @@ export function SlideshowView({
   const isFirst = safeIndex === 0
   const isLast = totalPages === 0 ? true : safeIndex >= totalPages - 1
 
-  const [exitHover, setExitHover] = useState(false)
-
   const goPrev = () => {
     if (!isFirst) onPageChange(safeIndex - 1)
   }
@@ -304,7 +302,7 @@ export function SlideshowView({
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: '#000000',
+        background: 'var(--bg)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -318,7 +316,7 @@ export function SlideshowView({
           width: '100%',
           aspectRatio: '16 / 9',
           maxHeight: 'calc(100vh - 48px)',
-          background: 'var(--bg)',
+          background: 'var(--surface)',
           borderRadius: 0,
           overflowX: 'hidden',
           overflowY: 'auto',
@@ -354,7 +352,7 @@ export function SlideshowView({
           alignItems: 'center',
           gap: 12,
           padding: '0 20px',
-          background: '#000000',
+          background: 'var(--bg)',
         }}
       >
         <NavButton direction="prev" disabled={isFirst} onClick={goPrev} />
@@ -366,7 +364,7 @@ export function SlideshowView({
             fontFamily: 'var(--sans)',
             fontSize: 12,
             fontWeight: 400,
-            color: 'rgba(255,255,255,0.5)',
+            color: 'var(--text2)',
           }}
         >
           {lesson.title}  ·  Slide {totalPages === 0 ? 0 : safeIndex + 1} of {totalPages}
@@ -393,7 +391,7 @@ export function SlideshowView({
                   width: 6,
                   height: 6,
                   borderRadius: '50%',
-                  background: i === safeIndex ? 'var(--white)' : 'rgba(255,255,255,0.25)',
+                  background: i === safeIndex ? 'var(--accent)' : 'var(--border2)',
                 }}
               />
             ))}
@@ -409,17 +407,14 @@ export function SlideshowView({
               onExit()
             }
           }}
-          onMouseEnter={() => setExitHover(true)}
-          onMouseLeave={() => setExitHover(false)}
           style={{
             background: 'none',
             border: 'none',
             padding: '6px 8px',
-            color: exitHover ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.5)',
+            color: 'var(--text2)',
             fontFamily: 'var(--sans)',
             fontSize: 12,
             cursor: 'pointer',
-            transition: 'color 0.15s ease',
           }}
         >
           Exit slideshow

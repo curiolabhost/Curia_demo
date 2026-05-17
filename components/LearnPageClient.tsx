@@ -55,6 +55,7 @@ export function LearnPageClient({
 }: LearnPageClientProps) {
   const [navOpen, setNavOpen] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
+  const [slideshowPageIndex, setSlideshowPageIndex] = useState(0)
   const { mode, setMode, splitAllowed, resetLayout } = useLayoutMode()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -216,6 +217,7 @@ export function LearnPageClient({
       document.documentElement.requestFullscreen().catch(() => {})
     }
     setAnswerKeyMode(false)
+    setSlideshowPageIndex(0)
     setViewMode('slideshow')
     updateViewUrl('slideshow')
   }, [viewMode, isInstructorPreview, deckEditorOpen, updateViewUrl])
@@ -228,6 +230,7 @@ export function LearnPageClient({
         document.documentElement.requestFullscreen().catch(() => {})
       }
       setAnswerKeyMode(false)
+      setSlideshowPageIndex(0)
       setViewMode('slideshow')
       updateViewUrl('slideshow')
     },
@@ -268,6 +271,7 @@ export function LearnPageClient({
 
   useEffect(() => {
     setPageIndex(0)
+    setSlideshowPageIndex(0)
     setActiveExerciseIndex(initialExerciseIndex ?? 0)
     setActiveBankIndex(0)
     setSelectedLineIndex(null)
@@ -328,8 +332,8 @@ export function LearnPageClient({
       <SlideshowView
         lesson={activeLesson}
         deck={deck}
-        pageIndex={Math.min(pageIndex, totalPages - 1)}
-        onPageChange={setPageIndex}
+        pageIndex={slideshowPageIndex}
+        onPageChange={setSlideshowPageIndex}
         onExit={handleToggleSlideshow}
       />
     )

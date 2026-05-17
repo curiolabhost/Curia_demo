@@ -25,7 +25,7 @@ export function InstructorPreviewBanner({ onExit }: InstructorPreviewBannerProps
       }}
     >
       <span style={{ fontSize: '13px' }}>
-        Instructor view -- exercises and progress are saved to your instructor record
+        Instructor view - exercises and progress are saved
       </span>
       <button
         onClick={onExit}

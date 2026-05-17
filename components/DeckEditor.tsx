@@ -261,6 +261,7 @@ export function DeckEditor({
 
   const previewContainerRef = useRef<HTMLDivElement | null>(null)
   const [scale, setScale] = useState<number>(0.7)
+  const [containerHeight, setContainerHeight] = useState(600)
 
   useEffect(() => {
     const el = previewContainerRef.current
@@ -269,6 +270,7 @@ export function DeckEditor({
       for (const entry of entries) {
         const { width, height } = entry.contentRect
         setScale(Math.min((width - 80) / 900, (height - 80) / (900 * 9/16)))
+        setContainerHeight(height)
       }
     })
     ro.observe(el)
@@ -531,43 +533,33 @@ export function DeckEditor({
         <div
           ref={previewContainerRef}
           style={{
-            flex: 1,
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
             overflow: 'auto',
             background: '#f0f0f0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
+            flex: 1,
+            paddingTop: `${Math.max(40, (containerHeight - 506 * scale) / 2)}px`,
+            paddingBottom: '40px',
           }}
         >
           {selectedItem ? (
             <div
               style={{
-                width: `${900 * scale}px`,
-                height: `${(900 * (9/16)) * scale}px`,
-                position: 'relative',
+                width: '900px',
+                height: `${900 * (9/16)}px`,
+                background: 'var(--surface)',
+                borderRadius: '4px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                pointerEvents: 'none',
                 flexShrink: 0,
+                transform: `scale(${scale})`,
+                transformOrigin: 'center center',
               }}
             >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '900px',
-                  height: `${900 * (9/16)}px`,
-                  transform: `scale(${scale})`,
-                  transformOrigin: 'top left',
-                  background: 'var(--surface)',
-                  borderRadius: '4px',
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-                  overflowY: 'auto',
-                  overflowX: 'hidden',
-                  pointerEvents: 'none',
-                }}
-              >
-                {previewContent}
-              </div>
+              {previewContent}
             </div>
           ) : (
             <div

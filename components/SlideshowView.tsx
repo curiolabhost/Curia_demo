@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { Exercise, Lesson } from '@/lib/lessons'
+import type { Lesson } from '@/lib/lessons'
 import type { Deck } from '@/lib/deckTypes'
 import { LessonContent } from './LessonContent'
+import { ExercisePrompt } from '@/components/ExercisePrompt'
+import { panelRegistry } from '@/components/exercise-panels'
 
 type SlideshowViewProps = {
   lesson: Lesson
@@ -86,121 +88,6 @@ function NavButton({
     >
       {direction === 'prev' ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
     </button>
-  )
-}
-
-function ExerciseSlide({ exercise }: { exercise: Exercise }) {
-  const format = exercise.format ?? 'code-editor'
-  const task = exercise.tasks?.[0] ?? exercise.title ?? ''
-
-  let body: React.ReactNode
-
-  if (format === 'multiple-choice') {
-    const options = exercise.options ?? []
-    body = (
-      <div
-        style={{
-          marginTop: 32,
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-          gap: 16,
-        }}
-      >
-        {options.map((opt) => (
-          <div
-            key={opt.id}
-            style={{
-              border: '1.5px solid var(--border2)',
-              borderRadius: 12,
-              background: 'var(--surface)',
-              padding: '20px 22px',
-              fontFamily: opt.code ? 'var(--mono)' : 'var(--sans)',
-              fontSize: opt.code ? 15 : 16,
-              color: 'var(--text)',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-            }}
-          >
-            {opt.code ?? opt.label}
-          </div>
-        ))}
-      </div>
-    )
-  } else if (format === 'fill-blank' || format === 'fill-blank-typed') {
-    const lines = exercise.codeWithBlanks ?? exercise.codeLines ?? []
-    body = (
-      <pre
-        style={{
-          marginTop: 32,
-          background: 'var(--surface)',
-          border: '1.5px solid var(--border2)',
-          borderRadius: 12,
-          padding: '20px 24px',
-          fontFamily: 'var(--mono)',
-          fontSize: 16,
-          color: 'var(--text)',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-          textAlign: 'left',
-        }}
-      >
-        {lines.map((line, i) => (
-          <div key={i}>{line.replace(/<<[^>]+>>/g, '________')}</div>
-        ))}
-      </pre>
-    )
-  } else {
-    body = (
-      <div
-        style={{
-          marginTop: 32,
-          fontSize: 16,
-          color: 'var(--text3)',
-          textAlign: 'center',
-        }}
-      >
-        Students complete this on their devices
-      </div>
-    )
-  }
-
-  return (
-    <div
-      style={{
-        maxWidth: 700,
-        margin: '0 auto',
-        textAlign: 'center',
-      }}
-    >
-      <span
-        style={{
-          display: 'inline-block',
-          fontFamily: 'var(--mono)',
-          fontSize: 11,
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          color: 'var(--text3)',
-          background: 'var(--surface2)',
-          borderRadius: 20,
-          padding: '4px 12px',
-        }}
-      >
-        {format}
-      </span>
-      <div
-        style={{
-          marginTop: 24,
-          fontFamily: 'var(--sans)',
-          fontSize: 24,
-          fontWeight: 700,
-          color: 'var(--text)',
-          lineHeight: 1.3,
-        }}
-      >
-        {task}
-      </div>
-      {body}
-    </div>
   )
 }
 
@@ -293,7 +180,31 @@ export function SlideshowView({
     ) : null
   } else {
     const exercise = lesson.exercises[currentSlide.index]
-    slideBody = exercise ? <ExerciseSlide exercise={exercise} /> : null
+    slideBody = exercise ? (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', pointerEvents: 'none' }}>
+        <ExercisePrompt
+          exercises={lesson.exercises}
+          activeIndex={currentSlide.index}
+          hintVisible={false}
+        />
+        <div style={{ flex: 1, padding: '16px 24px', overflow: 'hidden', boxSizing: 'border-box' as const }}>
+          {(() => {
+            const Panel = panelRegistry[exercise.format as keyof typeof panelRegistry]
+            return Panel ? (
+              <Panel
+                exercise={exercise}
+                onComplete={() => {}}
+                onCorrect={() => {}}
+              />
+            ) : (
+              <div style={{ color: 'var(--text3)', fontSize: '14px', textAlign: 'center', paddingTop: '40px' }}>
+                {exercise.format} exercise
+              </div>
+            )
+          })()}
+        </div>
+      </div>
+    ) : null
   }
 
   return (

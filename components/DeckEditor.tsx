@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   DndContext,
   PointerSensor,
@@ -12,13 +12,15 @@ import {
 import {
   SortableContext,
   arrayMove,
-  horizontalListSortingStrategy,
   useSortable,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import type { Lesson } from '@/lib/lessons'
 import type { Deck, SlideItem } from '@/lib/deckTypes'
+import { LessonContent } from '@/components/LessonContent'
+import { panelRegistry } from '@/components/exercise-panels'
 
 type DeckEditorProps = {
   lesson: Lesson
@@ -62,25 +64,6 @@ function CheckmarkIcon() {
   )
 }
 
-function PencilIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z" />
-    </svg>
-  )
-}
-
 function CloseIcon() {
   return (
     <svg
@@ -100,19 +83,25 @@ function CloseIcon() {
   )
 }
 
-type SlideThumbnailProps = {
+type SlideStripItemProps = {
   id: string
   item: SlideItem
+  index: number
   lesson: Lesson
+  isSelected: boolean
+  onSelect: () => void
   onToggleEnabled: () => void
 }
 
-function SlideThumbnail({
+function SlideStripItem({
   id,
   item,
+  index,
   lesson,
+  isSelected,
+  onSelect,
   onToggleEnabled,
-}: SlideThumbnailProps) {
+}: SlideStripItemProps) {
   const {
     attributes,
     listeners,
@@ -122,161 +111,92 @@ function SlideThumbnail({
     isDragging,
   } = useSortable({ id })
 
-  const wrapperStyle: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    position: 'relative',
-    width: '200px',
-    height: '130px',
-    flexShrink: 0,
-    zIndex: isDragging ? 2 : undefined,
-    touchAction: 'none',
-  }
-
-  const cardStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
-    boxSizing: 'border-box',
-    border: '1.5px solid var(--border2)',
-    borderRadius: '10px',
-    background: 'var(--surface)',
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    cursor: isDragging ? 'grabbing' : 'grab',
-    boxShadow: isDragging ? '0 6px 20px rgba(0,0,0,0.12)' : undefined,
-    opacity: item.enabled ? 1 : 0.5,
-  }
-
-  let previewNode: React.ReactNode = null
-  let labelText = ''
-  let subLabelText = ''
-
+  let typeLabel = ''
+  let titleText = ''
   if (item.type === 'content') {
     const page = lesson.content[item.index]
     const heading = page?.heading?.trim() ?? ''
-    labelText = `Page ${item.index + 1}`
-    subLabelText = heading.length > 0 ? heading : '(no heading)'
-    previewNode = heading.length > 0 ? (
-      <span
-        style={{
-          fontSize: '11px',
-          color: 'var(--text2)',
-          textAlign: 'center',
-          padding: '0 8px',
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-          lineHeight: 1.3,
-        }}
-      >
-        {heading}
-      </span>
-    ) : (
-      <span
-        style={{
-          fontSize: '11px',
-          color: 'var(--text3)',
-          textAlign: 'center',
-          padding: '0 8px',
-        }}
-      >
-        Page {item.index + 1}
-      </span>
-    )
+    typeLabel = `Page ${item.index + 1}`
+    titleText = heading.length > 0 ? heading : '(no heading)'
   } else {
     const exercise = lesson.exercises[item.index]
-    const format = exercise?.format ?? 'code-editor'
     const task = exercise?.tasks?.[0] ?? ''
-    labelText = `Exercise ${item.index + 1}`
-    subLabelText = format
-    previewNode = (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '4px',
-          color: 'var(--text3)',
-          padding: '0 8px',
-          width: '100%',
-        }}
-      >
-        <PencilIcon size={20} />
-        <span style={{ fontSize: '11px', color: 'var(--text3)' }}>
-          Exercise {item.index + 1}
-        </span>
-        {task.length > 0 ? (
-          <span
-            style={{
-              fontSize: '10px',
-              color: 'var(--text3)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
-              textAlign: 'center',
-            }}
-          >
-            {task}
-          </span>
-        ) : null}
-      </div>
-    )
+    typeLabel = `Exercise ${item.index + 1}`
+    titleText = task.length > 0 ? task : exercise?.format ?? 'exercise'
+  }
+
+  const wrapperStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    width: '100%',
+    height: '80px',
+    flexShrink: 0,
+    zIndex: isDragging ? 2 : undefined,
+    touchAction: 'none',
+    boxSizing: 'border-box',
+    borderRadius: '6px',
+    border: isSelected
+      ? '1.5px solid var(--accent)'
+      : '1.5px solid var(--border2)',
+    background: isSelected ? 'var(--accent-dim)' : 'var(--surface)',
+    opacity: item.enabled ? 1 : 0.5,
+    cursor: isDragging ? 'grabbing' : 'grab',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 8px',
   }
 
   return (
-    <div ref={setNodeRef} style={wrapperStyle}>
-      <div style={cardStyle} {...attributes} {...listeners}>
-        <div
+    <div
+      ref={setNodeRef}
+      style={wrapperStyle}
+      onClick={onSelect}
+      {...attributes}
+      {...listeners}
+    >
+      <span
+        style={{
+          width: '20px',
+          flexShrink: 0,
+          fontFamily: 'var(--mono)',
+          fontSize: '10px',
+          color: 'var(--text3)',
+        }}
+      >
+        {index + 1}
+      </span>
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2px',
+        }}
+      >
+        <span
           style={{
-            height: '80px',
-            background: 'var(--surface2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
+            fontFamily: 'var(--mono)',
+            fontSize: '10px',
+            color: 'var(--text3)',
+            textTransform: 'uppercase',
           }}
         >
-          {previewNode}
-        </div>
-        <div
+          {typeLabel}
+        </span>
+        <span
           style={{
-            height: '50px',
-            padding: '8px 10px',
-            borderTop: '1px solid var(--border)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2px',
-            boxSizing: 'border-box',
+            fontSize: '12px',
+            color: 'var(--text2)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
         >
-          <span
-            style={{
-              fontFamily: 'var(--mono)',
-              fontSize: '10px',
-              fontWeight: 500,
-              color: 'var(--text3)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-            }}
-          >
-            {labelText}
-          </span>
-          <span
-            style={{
-              fontSize: '11px',
-              color: 'var(--text3)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {subLabelText}
-          </span>
-        </div>
+          {titleText}
+        </span>
       </div>
       <button
         type="button"
@@ -288,9 +208,6 @@ function SlideThumbnail({
         aria-label={item.enabled ? 'Disable slide' : 'Enable slide'}
         aria-pressed={item.enabled}
         style={{
-          position: 'absolute',
-          bottom: '6px',
-          right: '6px',
           width: '16px',
           height: '16px',
           padding: 0,
@@ -302,6 +219,7 @@ function SlideThumbnail({
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
+          flexShrink: 0,
         }}
       >
         {item.enabled ? <CheckmarkIcon /> : null}
@@ -326,6 +244,36 @@ export function DeckEditor({
 
   const enabledCount = deck.filter((s) => s.enabled).length
 
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(
+    deck.length > 0 ? 0 : null,
+  )
+
+  useEffect(() => {
+    if (deck.length === 0) {
+      if (selectedIndex !== null) setSelectedIndex(null)
+      return
+    }
+    if (selectedIndex === null || selectedIndex >= deck.length) {
+      setSelectedIndex(deck.length - 1)
+    }
+  }, [deck.length, selectedIndex])
+
+  const previewContainerRef = useRef<HTMLDivElement | null>(null)
+  const [scale, setScale] = useState<number>(0.7)
+
+  useEffect(() => {
+    const el = previewContainerRef.current
+    if (!el) return
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect
+        setScale(Math.min((width - 80) / 900, (height - 80) / 560))
+      }
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
@@ -333,6 +281,21 @@ export function DeckEditor({
     const to = sortableIds.indexOf(String(over.id))
     if (from === -1 || to === -1) return
     onSave(arrayMove(deck, from, to))
+    if (selectedIndex === from) {
+      setSelectedIndex(to)
+    } else if (
+      selectedIndex !== null &&
+      from < selectedIndex &&
+      to >= selectedIndex
+    ) {
+      setSelectedIndex(selectedIndex - 1)
+    } else if (
+      selectedIndex !== null &&
+      from > selectedIndex &&
+      to <= selectedIndex
+    ) {
+      setSelectedIndex(selectedIndex + 1)
+    }
   }
 
   const handleToggle = (index: number) => {
@@ -340,15 +303,73 @@ export function DeckEditor({
       i === index ? { ...s, enabled: !s.enabled } : s,
     )
     onSave(next)
+    setSelectedIndex(index)
   }
 
   const handleReset = () => {
-    onSave(buildDefaultDeck(lesson))
+    const next = buildDefaultDeck(lesson)
+    onSave(next)
+    setSelectedIndex(next.length > 0 ? 0 : null)
   }
 
   const handlePresentClick = () => {
     if (enabledCount === 0) return
     onPresent(deck)
+  }
+
+  const selectedItem =
+    selectedIndex !== null && selectedIndex < deck.length
+      ? deck[selectedIndex]
+      : null
+
+  let previewContent: React.ReactNode = null
+  if (selectedItem) {
+    if (selectedItem.type === 'content') {
+      const page = lesson.content[selectedItem.index]
+      if (page) {
+        previewContent = (
+          <div
+            style={{
+              padding: '40px',
+              overflow: 'hidden',
+              height: '100%',
+              boxSizing: 'border-box',
+            }}
+          >
+            <LessonContent
+              page={page}
+              isLastPage={false}
+              lesson={lesson}
+              variant="slide"
+            />
+          </div>
+        )
+      }
+    } else {
+      const exercise = lesson.exercises[selectedItem.index]
+      if (exercise) {
+        const format = exercise.format ?? 'code-editor'
+        const Panel = panelRegistry[format]
+        if (Panel) {
+          previewContent = (
+            <div
+              style={{
+                padding: '24px',
+                overflow: 'hidden',
+                height: '100%',
+                boxSizing: 'border-box',
+              }}
+            >
+              <Panel
+                exercise={exercise}
+                onComplete={() => {}}
+                onCorrect={() => {}}
+              />
+            </div>
+          )
+        }
+      }
+    }
   }
 
   return (
@@ -449,34 +470,89 @@ export function DeckEditor({
           minHeight: 0,
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'flex-start',
-          gap: '16px',
-          padding: '32px 40px',
-          overflowX: 'auto',
-          overflowY: 'hidden',
         }}
       >
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          modifiers={[restrictToHorizontalAxis]}
-          onDragEnd={handleDragEnd}
+        <div
+          style={{
+            width: '240px',
+            flexShrink: 0,
+            background: 'var(--surface)',
+            borderRight: '1px solid var(--border)',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            padding: '12px 8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+          }}
         >
-          <SortableContext
-            items={sortableIds}
-            strategy={horizontalListSortingStrategy}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis]}
+            onDragEnd={handleDragEnd}
           >
-            {deck.map((item, i) => (
-              <SlideThumbnail
-                key={slideKey(item)}
-                id={slideKey(item)}
-                item={item}
-                lesson={lesson}
-                onToggleEnabled={() => handleToggle(i)}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
+            <SortableContext
+              items={sortableIds}
+              strategy={verticalListSortingStrategy}
+            >
+              {deck.map((item, i) => (
+                <SlideStripItem
+                  key={slideKey(item)}
+                  id={slideKey(item)}
+                  item={item}
+                  index={i}
+                  lesson={lesson}
+                  isSelected={selectedIndex === i}
+                  onSelect={() => setSelectedIndex(i)}
+                  onToggleEnabled={() => handleToggle(i)}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        </div>
+
+        <div
+          ref={previewContainerRef}
+          style={{
+            flex: 1,
+            overflow: 'hidden',
+            background: '#f0f0f0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}
+        >
+          {selectedItem ? (
+            <div
+              style={{
+                width: '900px',
+                height: '560px',
+                background: 'var(--white)',
+                borderRadius: '4px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+                overflow: 'hidden',
+                transform: `scale(${scale})`,
+                transformOrigin: 'center center',
+                pointerEvents: 'none',
+                flexShrink: 0,
+              }}
+            >
+              {previewContent}
+            </div>
+          ) : (
+            <div
+              style={{
+                color: 'var(--text3)',
+                fontSize: '14px',
+                fontFamily: 'var(--sans)',
+              }}
+            >
+              Select a slide to preview
+            </div>
+          )}
+        </div>
       </div>
 
       <div

@@ -267,8 +267,8 @@ export function DeckEditor({
     if (!el) return
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const { width, height } = entry.contentRect
-        setScale(Math.min((width - 80) / 900, (height - 80) / 560))
+        const { width } = entry.contentRect
+        setScale((width - 80) / 900)
       }
     })
     ro.observe(el)
@@ -532,7 +532,7 @@ export function DeckEditor({
           ref={previewContainerRef}
           style={{
             flex: 1,
-            overflow: 'hidden',
+            overflow: 'auto',
             background: '#f0f0f0',
             display: 'flex',
             alignItems: 'center',
@@ -544,11 +544,12 @@ export function DeckEditor({
             <div
               style={{
                 width: '900px',
-                height: '560px',
+                aspectRatio: '16 / 9',
                 background: 'var(--white)',
                 borderRadius: '4px',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-                overflow: 'hidden',
+                overflowY: 'auto',
+                overflowX: 'hidden',
                 transform: `scale(${scale})`,
                 transformOrigin: 'center center',
                 pointerEvents: 'none',

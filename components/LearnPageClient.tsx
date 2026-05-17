@@ -8,6 +8,8 @@ import type { Lesson } from '@/lib/lessons'
 import { useClassroomContext } from '@/lib/useClassroomContext'
 import { useLayoutMode } from '@/lib/useLayoutMode'
 import {
+  getAdminClassroomLessonsProgress,
+  getAdminLessonProgress,
   getClassroomLessonsProgress,
   getLessonProgress,
   type LessonProgressRow,
@@ -81,16 +83,14 @@ export function LearnPageClient({
   const [resumeMode, setResumeMode] = useState<'exercises' | 'challenges' | null>(null)
 
   useEffect(() => {
-    if (isInstructorPreview) return
-    if (!classroomReady || !classroomId) return
-    let cancelled = false
-    getClassroomLessonsProgress(classroomId).then((res) => {
-      if (cancelled) return
-      if (res.ok) setProgressRows(res.lessons)
-    })
-    return () => {
-      cancelled = true
+    if (!classroomId || !classroomReady) return
+    const fetchProgress = async () => {
+      const result = isInstructorPreview
+        ? await getAdminClassroomLessonsProgress(classroomId)
+        : await getClassroomLessonsProgress(classroomId)
+      if (result.ok) setProgressRows(result.lessons)
     }
+    fetchProgress()
   }, [classroomId, classroomReady, isInstructorPreview])
 
   useEffect(() => {
@@ -101,21 +101,25 @@ export function LearnPageClient({
   useEffect(() => {
     if (!classroomReady || !classroomId) return
     let cancelled = false
-    getLessonProgress(classroomId, activeLessonId).then((res) => {
+    const fetchResume = async () => {
+      const result = isInstructorPreview
+        ? await getAdminLessonProgress(classroomId, activeLessonId)
+        : await getLessonProgress(classroomId, activeLessonId)
       if (cancelled) return
-      if (!res.ok || !res.progress) return
-      if (res.progress.lastExerciseIndex > 0) {
-        setResumeIndex(res.progress.lastExerciseIndex)
+      if (!result.ok || !result.progress) return
+      if (result.progress.lastExerciseIndex > 0) {
+        setResumeIndex(result.progress.lastExerciseIndex)
       }
-      const m = res.progress.lastMode
+      const m = result.progress.lastMode
       if (m === 'exercises' || m === 'challenges') {
         setResumeMode(m)
       }
-    })
+    }
+    fetchResume()
     return () => {
       cancelled = true
     }
-  }, [classroomId, classroomReady, activeLessonId])
+  }, [classroomId, classroomReady, activeLessonId, isInstructorPreview])
 
   const completedLessonIds = useMemo(
     () =>
@@ -474,6 +478,7 @@ export function LearnPageClient({
               editActions={editActions}
               isReadOnly={isReadOnly || isInstructorPreview}
               classroomId={classroomId}
+              role={role ?? undefined}
             />
           ) : (
             <div className="right-panel">

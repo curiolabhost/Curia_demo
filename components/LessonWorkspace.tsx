@@ -26,6 +26,7 @@ type LessonWorkspaceProps = {
   editActions?: EditActions
   isReadOnly?: boolean
   classroomId?: string | null
+  role?: string
 }
 
 export function LessonWorkspace({
@@ -48,6 +49,7 @@ export function LessonWorkspace({
   editActions,
   isReadOnly = false,
   classroomId = null,
+  role = undefined,
 }: LessonWorkspaceProps) {
   return (
     <RightPanel
@@ -70,6 +72,7 @@ export function LessonWorkspace({
       editActions={editActions}
       isReadOnly={isReadOnly}
       classroomId={classroomId}
+      role={role}
     />
   )
 }

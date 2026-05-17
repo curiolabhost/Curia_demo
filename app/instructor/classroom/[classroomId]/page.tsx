@@ -37,6 +37,17 @@ type StudentProgress = {
   lessons: LessonSummary[]
 }
 
+type Admin = {
+  membershipId: string
+  adminKey: string
+  isOwner: boolean
+  claimed: boolean
+  joinedAt: string | null
+  firstName: string | null
+  lastName: string | null
+  username: string | null
+}
+
 type ClassroomEntry = {
   classroomId: string
   name: string
@@ -78,6 +89,13 @@ export default function InstructorClassroomPage() {
   const [addSuccess, setAddSuccess] = useState<string | null>(null)
   const [addSubmitting, setAddSubmitting] = useState(false)
 
+  const [admins, setAdmins] = useState<Admin[]>([])
+  const [showAddAdminForm, setShowAddAdminForm] = useState(false)
+  const [newAdminFirstName, setNewAdminFirstName] = useState('')
+  const [newAdminLastName, setNewAdminLastName] = useState('')
+  const [addAdminError, setAddAdminError] = useState<string | null>(null)
+  const [addAdminSuccess, setAddAdminSuccess] = useState<string | null>(null)
+
   async function fetchStudents(): Promise<Student[]> {
     const res = await fetch(`/api/classroom/${classroomId}/students`, {
       cache: 'no-store',
@@ -94,6 +112,15 @@ export default function InstructorClassroomPage() {
     if (!res.ok) throw new Error('progress_fetch_failed')
     const data = await res.json()
     return (data.students ?? []) as StudentProgress[]
+  }
+
+  async function fetchAdmins(): Promise<Admin[]> {
+    const res = await fetch(`/api/classroom/${classroomId}/admins`, {
+      cache: 'no-store',
+    })
+    if (!res.ok) throw new Error('admins_fetch_failed')
+    const data = await res.json()
+    return (data.admins ?? []) as Admin[]
   }
 
   async function fetchClassroomCard(): Promise<ClassroomCard | null> {
@@ -119,10 +146,11 @@ export default function InstructorClassroomPage() {
       setLoading(true)
       setError(null)
       try {
-        const [card, studentList, progressList] = await Promise.all([
+        const [card, studentList, progressList, adminList] = await Promise.all([
           fetchClassroomCard(),
           fetchStudents(),
           fetchProgress(),
+          fetchAdmins(),
         ])
         if (cancelled) return
         if (!card) {
@@ -132,6 +160,7 @@ export default function InstructorClassroomPage() {
         setClassroom(card)
         setStudents(studentList)
         setProgress(progressList)
+        setAdmins(adminList)
       } catch {
         if (!cancelled) setError('Could not load this classroom.')
       } finally {
@@ -188,6 +217,48 @@ export default function InstructorClassroomPage() {
       setAddError('Something went wrong.')
     } finally {
       setAddSubmitting(false)
+    }
+  }
+
+  async function handleAddAdmin() {
+    if (!newAdminFirstName.trim() || !newAdminLastName.trim()) {
+      setAddAdminError('Please fill in both names.')
+      return
+    }
+    setAddAdminError(null)
+    setAddAdminSuccess(null)
+    try {
+      const res = await fetch('/api/classroom/add-admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          classroomId,
+          firstName: newAdminFirstName.trim(),
+          lastName: newAdminLastName.trim(),
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) {
+        setAddAdminSuccess(`Admin added. Their key is: ${data.adminKey}`)
+        setNewAdminFirstName('')
+        setNewAdminLastName('')
+        try {
+          const list = await fetchAdmins()
+          setAdmins(list)
+        } catch {
+          // ignore refresh failure
+        }
+      } else {
+        const errorMap: Record<string, string> = {
+          missing_fields: 'Please fill in both names.',
+          forbidden: 'You do not have permission to add admins.',
+          not_owner: 'You do not have permission to add admins.',
+          server_error: 'Something went wrong. Please try again.',
+        }
+        setAddAdminError(errorMap[data.error] ?? 'Something went wrong.')
+      }
+    } catch {
+      setAddAdminError('Something went wrong. Please try again.')
     }
   }
 
@@ -419,6 +490,161 @@ export default function InstructorClassroomPage() {
                             >
                               Impersonate
                             </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </section>
+
+            <section className="ic-section">
+              <div className="ic-section-header">
+                <h2 className="ic-section-title">Instructors</h2>
+                <button
+                  type="button"
+                  className="ic-add-btn"
+                  onClick={() => {
+                    setShowAddAdminForm(true)
+                    setAddAdminSuccess(null)
+                    setAddAdminError(null)
+                  }}
+                >
+                  + Add instructor
+                </button>
+              </div>
+
+              {showAddAdminForm && (
+                <div className="ic-add-form">
+                  <button
+                    type="button"
+                    className="ic-add-form-close"
+                    onClick={() => {
+                      setShowAddAdminForm(false)
+                      setAddAdminSuccess(null)
+                      setAddAdminError(null)
+                    }}
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                  <div className="ic-add-form-title">Add an instructor</div>
+                  <p
+                    style={{
+                      fontSize: '13px',
+                      color: 'var(--text3)',
+                      marginBottom: '20px',
+                    }}
+                  >
+                    An admin key will be generated. Share it along with the classroom join code.
+                  </p>
+
+                  <label htmlFor="ic-admin-first-name">First name</label>
+                  <input
+                    id="ic-admin-first-name"
+                    type="text"
+                    value={newAdminFirstName}
+                    onChange={(e) => setNewAdminFirstName(e.target.value)}
+                    placeholder="First name"
+                  />
+
+                  <label htmlFor="ic-admin-last-name">Last name</label>
+                  <input
+                    id="ic-admin-last-name"
+                    type="text"
+                    value={newAdminLastName}
+                    onChange={(e) => setNewAdminLastName(e.target.value)}
+                    placeholder="Last name"
+                  />
+
+                  <button
+                    type="button"
+                    className="ic-add-btn"
+                    style={{ width: '100%', marginTop: '4px' }}
+                    onClick={handleAddAdmin}
+                  >
+                    Add instructor
+                  </button>
+                  {addAdminError !== null && (
+                    <p
+                      style={{
+                        fontSize: '13px',
+                        color: 'var(--red)',
+                        marginTop: '8px',
+                      }}
+                    >
+                      {addAdminError}
+                    </p>
+                  )}
+                  {addAdminSuccess !== null && (
+                    <p
+                      style={{
+                        fontSize: '13px',
+                        color: 'var(--green)',
+                        marginTop: '8px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {addAdminSuccess}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {admins.length === 0 ? (
+                <div className="ic-empty-state">
+                  No instructors yet. Use Add instructor to create seats.
+                </div>
+              ) : (
+                <table className="ic-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Username</th>
+                      <th>Admin key</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th>Joined</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {admins.map((admin) => (
+                      <tr key={admin.membershipId}>
+                        <td>
+                          {admin.claimed && (admin.firstName || admin.lastName) ? (
+                            `${admin.firstName ?? ''} ${admin.lastName ?? ''}`.trim()
+                          ) : (
+                            <span className="ic-muted">(pending)</span>
+                          )}
+                        </td>
+                        <td>
+                          {admin.claimed && admin.username ? (
+                            admin.username
+                          ) : (
+                            <span className="ic-muted">-</span>
+                          )}
+                        </td>
+                        <td className="ic-key-cell">{admin.adminKey}</td>
+                        <td>
+                          {admin.isOwner ? (
+                            <span className="ic-status-pill registered">Owner</span>
+                          ) : (
+                            <span className="ic-status-pill pending">Admin</span>
+                          )}
+                        </td>
+                        <td>
+                          {admin.claimed ? (
+                            <span className="ic-status-pill registered">Registered</span>
+                          ) : (
+                            <span className="ic-status-pill pending">Pending</span>
+                          )}
+                        </td>
+                        <td>
+                          {admin.claimed ? (
+                            formatDate(admin.joinedAt)
+                          ) : (
+                            <span className="ic-muted">-</span>
                           )}
                         </td>
                       </tr>

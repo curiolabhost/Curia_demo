@@ -76,7 +76,7 @@ export function LearnPageClient({
   const classroomContext = useClassroomContext()
   const { classroomId, isReady: classroomReady, isImpersonating, role } = classroomContext
   const isInstructorPreview = role === 'ADMIN' && !isImpersonating && !!classroomId
-  const { deck, saveDeck } = useDeck(deckLesson, classroomId)
+  const { deck, saveDeck, saving } = useDeck(deckLesson, classroomId)
   const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
   const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
   const [resumeIndex, setResumeIndex] = useState<number | null>(null)
@@ -204,16 +204,21 @@ export function LearnPageClient({
       updateViewUrl('normal')
       return
     }
-    if (role === 'ADMIN') {
+    if (isInstructorPreview) {
+      if (deckEditorOpen) {
+        setDeckEditorOpen(false)
+        return
+      }
       setDeckEditorOpen(true)
       return
     }
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().catch(() => {})
     }
+    setAnswerKeyMode(false)
     setViewMode('slideshow')
     updateViewUrl('slideshow')
-  }, [viewMode, role, updateViewUrl])
+  }, [viewMode, isInstructorPreview, deckEditorOpen, updateViewUrl])
 
   const handlePresent = useCallback(
     (finalDeck: Deck) => {
@@ -222,6 +227,7 @@ export function LearnPageClient({
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen().catch(() => {})
       }
+      setAnswerKeyMode(false)
       setViewMode('slideshow')
       updateViewUrl('slideshow')
     },
@@ -312,6 +318,7 @@ export function LearnPageClient({
         onSave={saveDeck}
         onPresent={handlePresent}
         onClose={() => setDeckEditorOpen(false)}
+        saving={saving}
       />
     )
   }
@@ -386,6 +393,7 @@ export function LearnPageClient({
         device={device}
         viewMode={activeLesson ? viewMode : undefined}
         onToggleSlideshow={activeLesson ? handleToggleSlideshow : undefined}
+        showDeckEditor={role === 'ADMIN' && !isImpersonating}
         answerKeyMode={answerKeyMode}
         onToggleAnswerKey={role === 'ADMIN' ? () => setAnswerKeyMode((prev) => !prev) : undefined}
       />

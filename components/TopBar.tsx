@@ -6,6 +6,7 @@ type TopBarProps = {
   device?: string
   viewMode?: 'normal' | 'slideshow'
   onToggleSlideshow?: () => void
+  showDeckEditor?: boolean
   answerKeyMode?: boolean
   onToggleAnswerKey?: () => void
 }
@@ -18,11 +19,17 @@ export function TopBar({
   device,
   viewMode,
   onToggleSlideshow,
+  showDeckEditor = false,
   answerKeyMode = false,
   onToggleAnswerKey,
 }: TopBarProps) {
   const slideshowActive = viewMode === 'slideshow'
   const showSlideshowToggle = viewMode !== undefined && onToggleSlideshow !== undefined
+  const slideshowButtonLabel = slideshowActive
+    ? 'Exit slideshow'
+    : showDeckEditor
+      ? 'Edit slide deck'
+      : 'Start slideshow'
 
   return (
     <header className="topbar">
@@ -64,7 +71,7 @@ export function TopBar({
           gap: 14,
         }}
       >
-        {onToggleAnswerKey ? (
+        {viewMode !== 'slideshow' && onToggleAnswerKey ? (
           <button
             type="button"
             onClick={() => onToggleAnswerKey?.()}
@@ -87,9 +94,9 @@ export function TopBar({
           <button
             type="button"
             onClick={onToggleSlideshow}
-            aria-label="Slideshow mode"
+            aria-label={slideshowButtonLabel}
             aria-pressed={slideshowActive}
-            title="Slideshow mode"
+            title={slideshowButtonLabel}
             style={{
               display: 'inline-flex',
               alignItems: 'center',

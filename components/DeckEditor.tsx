@@ -26,6 +26,7 @@ type DeckEditorProps = {
   onSave: (deck: Deck) => void
   onPresent: (deck: Deck) => void
   onClose: () => void
+  saving?: boolean
 }
 
 function buildDefaultDeck(lesson: Lesson): Deck {
@@ -315,6 +316,7 @@ export function DeckEditor({
   onSave,
   onPresent,
   onClose,
+  saving = false,
 }: DeckEditorProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -498,6 +500,11 @@ export function DeckEditor({
           }}
         >
           {enabledCount} slides in deck
+          {saving ? (
+            <span style={{ fontSize: '12px', color: 'var(--text3)', fontFamily: 'var(--mono)', marginLeft: '8px' }}>
+              saving...
+            </span>
+          ) : null}
         </span>
         <button
           type="button"

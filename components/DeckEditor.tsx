@@ -267,8 +267,8 @@ export function DeckEditor({
     if (!el) return
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const { width } = entry.contentRect
-        setScale((width - 80) / 900)
+        const { width, height } = entry.contentRect
+        setScale(Math.min((width - 80) / 900, (height - 80) / (900 * 9/16)))
       }
     })
     ro.observe(el)
@@ -543,20 +543,31 @@ export function DeckEditor({
           {selectedItem ? (
             <div
               style={{
-                width: '900px',
-                aspectRatio: '16 / 9',
-                background: 'var(--white)',
-                borderRadius: '4px',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                transform: `scale(${scale})`,
-                transformOrigin: 'center center',
-                pointerEvents: 'none',
+                width: `${900 * scale}px`,
+                height: `${(900 * (9/16)) * scale}px`,
+                position: 'relative',
                 flexShrink: 0,
               }}
             >
-              {previewContent}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '900px',
+                  height: `${900 * (9/16)}px`,
+                  transform: `scale(${scale})`,
+                  transformOrigin: 'top left',
+                  background: 'var(--surface)',
+                  borderRadius: '4px',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+                  overflowY: 'auto',
+                  overflowX: 'hidden',
+                  pointerEvents: 'none',
+                }}
+              >
+                {previewContent}
+              </div>
             </div>
           ) : (
             <div

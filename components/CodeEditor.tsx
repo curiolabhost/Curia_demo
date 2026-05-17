@@ -5,7 +5,12 @@ import Editor, {
   type OnMount,
 } from '@monaco-editor/react'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { getCodeProgress, postCodeProgress } from '@/lib/progressClient'
+import {
+  getCodeProgress,
+  postCodeProgress,
+  getAdminCodeProgress,
+  postAdminCodeProgress,
+} from '@/lib/progressClient'
 import { loadCode } from '@/lib/storage'
 
 type EditorInstance = Parameters<OnMount>[0]
@@ -18,6 +23,7 @@ type CodeEditorProps = {
   onReady?: () => void
   classroomId?: string | null
   onSaveCode?: (code: string) => void
+  role?: string
 }
 
 export type CodeEditorHandle = {
@@ -45,6 +51,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
       onReady,
       classroomId = null,
       onSaveCode,
+      role = undefined,
     },
     ref,
   ) {
@@ -58,10 +65,15 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
     const classroomIdRef = useRef<string | null>(classroomId)
     const lessonIdRef = useRef<string>(lessonId)
     const exerciseIndexRef = useRef<number>(exerciseIndex)
+    const roleRef = useRef<string | undefined>(role)
 
     useEffect(() => {
       classroomIdRef.current = classroomId
     }, [classroomId])
+
+    useEffect(() => {
+      roleRef.current = role
+    }, [role])
 
     useEffect(() => {
       lessonIdRef.current = lessonId
@@ -77,7 +89,8 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
     useEffect(() => {
       if (!classroomId) return
       let cancelled = false
-      getCodeProgress(classroomId, lessonId, exerciseIndex)
+      const getCode = role === 'ADMIN' ? getAdminCodeProgress : getCodeProgress
+      getCode(classroomId, lessonId, exerciseIndex)
         .then((res) => {
           if (cancelled) return
           if (
@@ -95,7 +108,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
       return () => {
         cancelled = true
       }
-    }, [classroomId, lessonId, exerciseIndex])
+    }, [classroomId, lessonId, exerciseIndex, role])
 
     useEffect(() => {
       return () => {
@@ -143,7 +156,8 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
         }
         const cid = classroomIdRef.current
         if (!cid) return
-        postCodeProgress(cid, lessonIdRef.current, exerciseIndexRef.current, {
+        const postCode = roleRef.current === 'ADMIN' ? postAdminCodeProgress : postCodeProgress
+        postCode(cid, lessonIdRef.current, exerciseIndexRef.current, {
           code: valueRef.current,
           completed: true,
           completedAt: new Date().toISOString(),
@@ -161,8 +175,9 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
         const cid = classroomId
         const lid = lessonId
         const eidx = exerciseIndex
+        const postCode = role === 'ADMIN' ? postAdminCodeProgress : postCodeProgress
         remoteDebounceRef.current = setTimeout(() => {
-          postCodeProgress(cid, lid, eidx, {
+          postCode(cid, lid, eidx, {
             code: valueRef.current,
             completed: false,
           }).catch(() => {})

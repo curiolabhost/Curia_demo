@@ -6,10 +6,13 @@ import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import type { LayoutMode } from '@/lib/useLayoutMode'
 import {
-  getCodeProgress,
-  getExerciseProgress,
   postExerciseProgress,
   postLessonProgress,
+  getExerciseProgress,
+  postAdminExerciseProgress,
+  postAdminLessonProgress,
+  getAdminExerciseProgress,
+  getCodeProgress,
 } from '@/lib/progressClient'
 import { loadCode } from '@/lib/storage'
 import { runInSandbox, type CheckResult, type LogEntry } from '@/lib/sandbox'
@@ -59,6 +62,7 @@ type RightPanelProps = {
   editActions?: EditActions
   isReadOnly?: boolean
   classroomId?: string | null
+  role?: string
 }
 
 function isInsideEditor(target: EventTarget | null): boolean {
@@ -94,6 +98,7 @@ export function RightPanel({
   editActions,
   isReadOnly = false,
   classroomId = null,
+  role = undefined,
 }: RightPanelProps) {
   void isReadOnly
   const router = useRouter()
@@ -286,8 +291,9 @@ export function RightPanel({
     }
     let cancelled = false
     const total = renderedLesson.exercises.length
+    const getEx = role === 'ADMIN' ? getAdminExerciseProgress : getExerciseProgress
     const fetches = Array.from({ length: total }, (_, i) =>
-      getExerciseProgress(classroomId, renderedLesson.id, i),
+      getEx(classroomId, renderedLesson.id, i),
     )
     Promise.all(fetches)
       .then((results) => {
@@ -304,7 +310,7 @@ export function RightPanel({
     return () => {
       cancelled = true
     }
-  }, [classroomId, renderedLesson.id, renderedLesson.exercises.length])
+  }, [classroomId, renderedLesson.id, renderedLesson.exercises.length, role])
 
   useEffect(() => {
     const carryIdx = activeExercise?.carryFrom
@@ -664,13 +670,14 @@ export function RightPanel({
     const lessonId = renderedLesson.id
     const completedIndex = renderedExerciseIndex
     const completedFormat = activeExercise?.format ?? 'multiple-choice'
-    postExerciseProgress(classroomId, lessonId, completedIndex, {
+    const postEx = role === 'ADMIN' ? postAdminExerciseProgress : postExerciseProgress
+    postEx(classroomId, lessonId, completedIndex, {
       format: completedFormat,
       answerState: {},
       completed: true,
       completedAt: new Date().toISOString(),
     }).catch(() => {})
-  }, [classroomId, renderedLesson.id, renderedExerciseIndex, activeExercise?.format])
+  }, [classroomId, renderedLesson.id, renderedExerciseIndex, activeExercise?.format, role])
 
   const handlePanelComplete = useCallback((correct: boolean) => {
     if (!correct) return
@@ -692,7 +699,8 @@ export function RightPanel({
     }
     const isLastExercise = completedIndex === totalExercises - 1
     if (classroomId) {
-      postLessonProgress(classroomId, lessonId, {
+      const postLesson = role === 'ADMIN' ? postAdminLessonProgress : postLessonProgress
+      postLesson(classroomId, lessonId, {
         lastExerciseIndex: nextIndex,
         lastMode: mode,
         ...(isLastExercise ? { completedAt: new Date().toISOString() } : {}),
@@ -706,6 +714,7 @@ export function RightPanel({
     renderedLesson.id,
     renderedExerciseIndex,
     mode,
+    role,
   ])
 
   const handleHomeToggle = useCallback(() => {
@@ -927,6 +936,7 @@ export function RightPanel({
                   exerciseIndex={renderedExerciseIndex}
                   onComplete={handlePanelComplete}
                   classroomId={classroomId}
+                  role={role}
                   onStepChange={(idx, done, nextEnabled, onNext) =>
                     setStepPromptState({
                       currentStepIndex: idx,
@@ -963,6 +973,7 @@ export function RightPanel({
                     starterCode={editorStarterCode}
                     isFading={isFading}
                     classroomId={classroomId}
+                    role={role}
                   />
                 ) : (
                   <div className="editor-pane" />

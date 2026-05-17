@@ -19,6 +19,7 @@ type CodeEditorPanelProps = {
   exerciseIndex: number
   onComplete: (correct: boolean) => void
   classroomId?: string | null
+  role?: string
   onStepChange?: (
     currentStepIndex: number,
     completedSteps: Set<number>,
@@ -33,6 +34,7 @@ export function CodeEditorPanel({
   exerciseIndex,
   onComplete,
   classroomId = null,
+  role = undefined,
   onStepChange,
 }: CodeEditorPanelProps) {
   const normalizedSteps: TaskStep[] = useMemo(
@@ -387,6 +389,7 @@ export function CodeEditorPanel({
           starterCode={editorStarter}
           onReady={handleEditorReady}
           classroomId={classroomId}
+          role={role}
         />
         <OutputConsole
           entries={entries}

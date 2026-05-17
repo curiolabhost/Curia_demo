@@ -78,6 +78,11 @@ model AdminMembership {
 
   liveSessions LiveSession[]
 
+  adminLessonProgress       AdminLessonProgress[]
+  adminExerciseProgress     AdminExerciseProgress[]
+  adminCodeEditorState      AdminCodeEditorState[]
+  adminFinalProjectProgress AdminFinalProjectProgress[]
+
   @@unique([userId, classroomId])
   @@unique([classroomId, adminKey])
 }
@@ -144,17 +149,79 @@ model CodeEditorState {
   @@unique([membershipId, lessonId, exerciseIndex])
 }
 
+model AdminLessonProgress {
+  id                String    @id @default(cuid())
+  adminMembershipId String
+  lessonId          String
+  lastExerciseIndex  Int       @default(0)
+  lastChallengeIndex Int       @default(0)
+  lastMode          String    @default("exercises")
+  completedAt       DateTime?
+  updatedAt         DateTime  @updatedAt
+
+  adminMembership AdminMembership @relation(fields: [adminMembershipId], references: [id], onDelete: Cascade)
+
+  @@unique([adminMembershipId, lessonId])
+}
+
+model AdminExerciseProgress {
+  id                String    @id @default(cuid())
+  adminMembershipId String
+  lessonId          String
+  exerciseIndex     Int
+  format            String
+  answerState       Json
+  completed         Boolean   @default(false)
+  completedAt       DateTime?
+  updatedAt         DateTime  @updatedAt
+
+  adminMembership AdminMembership @relation(fields: [adminMembershipId], references: [id], onDelete: Cascade)
+
+  @@unique([adminMembershipId, lessonId, exerciseIndex])
+}
+
+model AdminCodeEditorState {
+  id                String    @id @default(cuid())
+  adminMembershipId String
+  lessonId          String
+  exerciseIndex     Int
+  code              String    @db.Text
+  completed         Boolean   @default(false)
+  completedAt       DateTime?
+  updatedAt         DateTime  @updatedAt
+
+  adminMembership AdminMembership @relation(fields: [adminMembershipId], references: [id], onDelete: Cascade)
+
+  @@unique([adminMembershipId, lessonId, exerciseIndex])
+}
+
+model AdminFinalProjectProgress {
+  id                String    @id @default(cuid())
+  adminMembershipId String
+  lessonId          String
+  activeBlockIndex  Int       @default(0)
+  blocks            Json      @default("{}")
+  editedHtml        String?   @db.Text
+  editedCss         String?   @db.Text
+  completedAt       DateTime?
+  updatedAt         DateTime  @updatedAt
+
+  adminMembership AdminMembership @relation(fields: [adminMembershipId], references: [id], onDelete: Cascade)
+
+  @@unique([adminMembershipId, lessonId])
+}
+
 model SlidesDeck {
-  id               String   @id
-  classroomId      String
-  lessonId         String
-  instructorUserId String
-  slides           Json
-  updatedAt        DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  classroomId        String
+  lessonId           String
+  lastEditedByUserId String?
+  slides             Json
+  updatedAt          DateTime @updatedAt
 
   classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
 
-  @@unique([classroomId, lessonId, instructorUserId])
+  @@unique([classroomId, lessonId])
 }
 
 model LiveSession {

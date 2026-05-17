@@ -72,10 +72,10 @@ export function LearnPageClient({
       },
     [activeLesson],
   )
-  const { deck, saveDeck } = useDeck(deckLesson)
-  const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
   const classroomContext = useClassroomContext()
   const { classroomId, isReady: classroomReady, isImpersonating } = classroomContext
+  const { deck, saveDeck } = useDeck(deckLesson, classroomId)
+  const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
   const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
   const [resumeIndex, setResumeIndex] = useState<number | null>(null)
   const [resumeMode, setResumeMode] = useState<'exercises' | 'challenges' | null>(null)

@@ -191,6 +191,23 @@ export default function InstructorClassroomPage() {
     }
   }
 
+  async function handleEnterLessons() {
+    try {
+      const res = await fetch('/api/classroom/select', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ classroomId }),
+      })
+      if (res.ok) {
+        window.location.href = '/learn/s2-l1'
+      } else {
+        console.error('[enter lessons] select failed', await res.json())
+      }
+    } catch (err) {
+      console.error('[enter lessons] error', err)
+    }
+  }
+
   async function handleImpersonate(student: Student) {
     if (!student.userId) return
     try {
@@ -273,6 +290,9 @@ export default function InstructorClassroomPage() {
                   <span>{classroom.studentCount}</span>
                 </div>
               </div>
+              <button className="ic-enter-lessons-btn" onClick={handleEnterLessons}>
+                Enter lessons
+              </button>
               {classroom.description && (
                 <p className="ic-description">{classroom.description}</p>
               )}

@@ -46,6 +46,7 @@ export function LessonWorkspace({
   onLineSelect,
   editMode = false,
   editActions,
+  isReadOnly = false,
   classroomId = null,
 }: LessonWorkspaceProps) {
   return (
@@ -67,6 +68,7 @@ export function LessonWorkspace({
       onLineSelect={onLineSelect}
       editMode={editMode}
       editActions={editActions}
+      isReadOnly={isReadOnly}
       classroomId={classroomId}
     />
   )

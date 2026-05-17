@@ -12,10 +12,10 @@ import {
   getLessonProgress,
   type LessonProgressRow,
 } from '@/lib/progressClient'
-import { useCuriaSession } from '@/lib/useCuriaSession'
 import { useDeck } from '@/lib/useDeck'
 import type { Deck } from '@/lib/deckTypes'
 import { ImpersonationBanner } from './admin/ImpersonationBanner'
+import { InstructorPreviewBanner } from '@/components/InstructorPreviewBanner'
 import { DeckEditor } from './DeckEditor'
 import { FinalProjectSidebar } from './FinalProjectSidebar'
 import { LessonWorkspace } from './LessonWorkspace'
@@ -60,7 +60,6 @@ export function LearnPageClient({
     searchParams?.get('view') === 'slide' ? 'slideshow' : 'normal',
   )
   const [deckEditorOpen, setDeckEditorOpen] = useState(false)
-  const { role } = useCuriaSession()
   const deckLesson = useMemo<Lesson>(
     () =>
       activeLesson ?? {
@@ -73,7 +72,8 @@ export function LearnPageClient({
     [activeLesson],
   )
   const classroomContext = useClassroomContext()
-  const { classroomId, isReady: classroomReady, isImpersonating } = classroomContext
+  const { classroomId, isReady: classroomReady, isImpersonating, role } = classroomContext
+  const isInstructorPreview = role === 'ADMIN' && !isImpersonating && !!classroomId
   const { deck, saveDeck } = useDeck(deckLesson, classroomId)
   const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
   const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
@@ -81,6 +81,7 @@ export function LearnPageClient({
   const [resumeMode, setResumeMode] = useState<'exercises' | 'challenges' | null>(null)
 
   useEffect(() => {
+    if (isInstructorPreview) return
     if (!classroomReady || !classroomId) return
     let cancelled = false
     getClassroomLessonsProgress(classroomId).then((res) => {
@@ -90,7 +91,7 @@ export function LearnPageClient({
     return () => {
       cancelled = true
     }
-  }, [classroomId, classroomReady])
+  }, [classroomId, classroomReady, isInstructorPreview])
 
   useEffect(() => {
     setResumeIndex(null)
@@ -351,7 +352,18 @@ export function LearnPageClient({
   }
 
   return (
-    <div className="app-shell" style={{ paddingTop: impersonationState ? 36 : 0 }}>
+    <>
+      {isInstructorPreview && (
+        <InstructorPreviewBanner
+          onExit={() => {
+            window.location.href = '/instructor/home'
+          }}
+        />
+      )}
+    <div
+      className="app-shell"
+      style={{ paddingTop: isInstructorPreview ? '36px' : impersonationState ? 36 : undefined }}
+    >
       {impersonationState ? (
         <ImpersonationBanner
           studentFirstName={impersonationState.studentFirstName}
@@ -460,7 +472,7 @@ export function LearnPageClient({
               }}
               editMode={editMode}
               editActions={editActions}
-              isReadOnly={isReadOnly}
+              isReadOnly={isReadOnly || isInstructorPreview}
               classroomId={classroomId}
             />
           ) : (
@@ -471,5 +483,6 @@ export function LearnPageClient({
         </div>
       </div>
     </div>
+    </>
   )
 }

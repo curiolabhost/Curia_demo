@@ -31,7 +31,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const classroomId = body.classroomId
 
   if (session.role === 'ADMIN') {
-    return jsonError(403, 'forbidden')
+    const membership = await prisma.adminMembership.findFirst({
+      where: { classroomId, userId: session.userId },
+      select: { id: true, classroomId: true },
+    })
+    if (!membership) return jsonError(404, 'membership_not_found')
+    const newSession: SessionData = {
+      ...session,
+      activeClassroomId: membership.classroomId,
+      activeMembershipId: membership.id,
+    }
+    const response = NextResponse.json({
+      ok: true,
+      classroomId: membership.classroomId,
+      role: 'ADMIN',
+    })
+    return await setSessionCookie(response, newSession)
   }
 
   try {

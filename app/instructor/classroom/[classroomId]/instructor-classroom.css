@@ -356,3 +356,20 @@ body:has(.instructor-classroom-page) {
   border: 1px dashed var(--border2);
   border-radius: 12px;
 }
+
+.ic-enter-lessons-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: var(--sans);
+  margin-top: 16px;
+}
+
+.ic-enter-lessons-btn:hover {
+  opacity: 0.9;
+}

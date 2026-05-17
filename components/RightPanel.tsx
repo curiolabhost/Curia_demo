@@ -57,6 +57,7 @@ type RightPanelProps = {
   ) => void
   editMode?: boolean
   editActions?: EditActions
+  isReadOnly?: boolean
   classroomId?: string | null
 }
 
@@ -91,8 +92,10 @@ export function RightPanel({
   onLineSelect,
   editMode = false,
   editActions,
+  isReadOnly = false,
   classroomId = null,
 }: RightPanelProps) {
+  void isReadOnly
   const router = useRouter()
   const [mode, setMode] = useState<Mode>(initialMode ?? 'exercises')
   const [showHome, setShowHome] = useState(false)

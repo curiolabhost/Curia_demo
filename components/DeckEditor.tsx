@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   DndContext,
   PointerSensor,
@@ -259,24 +259,6 @@ export function DeckEditor({
     }
   }, [deck.length, selectedIndex])
 
-  const previewContainerRef = useRef<HTMLDivElement | null>(null)
-  const [scale, setScale] = useState<number>(0.7)
-  const [containerHeight, setContainerHeight] = useState(600)
-
-  useEffect(() => {
-    const el = previewContainerRef.current
-    if (!el) return
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect
-        setScale(Math.min((width - 80) / 900, (height - 80) / (900 * 9/16)))
-        setContainerHeight(height)
-      }
-    })
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
@@ -531,23 +513,23 @@ export function DeckEditor({
         </div>
 
         <div
-          ref={previewContainerRef}
           style={{
+            flex: 1,
+            overflow: 'auto',
+            background: '#f0f0f0',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'center',
-            overflow: 'auto',
-            background: '#f0f0f0',
-            flex: 1,
-            paddingTop: `${Math.max(40, (containerHeight - 506 * scale) / 2)}px`,
-            paddingBottom: '40px',
+            padding: '40px',
+            boxSizing: 'border-box',
           }}
         >
           {selectedItem ? (
             <div
               style={{
-                width: '900px',
-                height: `${900 * (9/16)}px`,
+                width: '100%',
+                maxWidth: '900px',
+                minHeight: '400px',
                 background: 'var(--surface)',
                 borderRadius: '4px',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
@@ -555,8 +537,6 @@ export function DeckEditor({
                 overflowX: 'hidden',
                 pointerEvents: 'none',
                 flexShrink: 0,
-                transform: `scale(${scale})`,
-                transformOrigin: 'center center',
               }}
             >
               {previewContent}

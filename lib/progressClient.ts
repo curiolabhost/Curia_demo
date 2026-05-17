@@ -187,3 +187,151 @@ export async function getClassroomLessonsProgress(classroomId: string): Promise<
     return { ok: false, lessons: [] }
   }
 }
+
+// Admin progress helpers
+
+export async function getAdminLessonProgress(classroomId: string, lessonId: string): Promise<{
+  ok: boolean
+  progress: { lastExerciseIndex: number; lastChallengeIndex: number; lastMode: string; completedAt: string | null } | null
+}> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/lesson/${lessonId}`, { credentials: 'same-origin' })
+    if (!res.ok) return { ok: false, progress: null }
+    const data = await res.json()
+    return { ok: true, progress: data.progress ?? null }
+  } catch {
+    return { ok: false, progress: null }
+  }
+}
+
+export async function postAdminLessonProgress(classroomId: string, lessonId: string, data: {
+  lastExerciseIndex?: number
+  lastChallengeIndex?: number
+  lastMode?: string
+  completedAt?: string | null
+}): Promise<{ ok: boolean }> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/lesson/${lessonId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(data),
+    })
+    return { ok: res.ok }
+  } catch {
+    return { ok: false }
+  }
+}
+
+export async function getAdminExerciseProgress(classroomId: string, lessonId: string, exerciseIndex: number): Promise<{
+  ok: boolean
+  progress: { format: string; answerState: unknown; completed: boolean; completedAt: string | null } | null
+}> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/exercise/${lessonId}/${exerciseIndex}`, { credentials: 'same-origin' })
+    if (!res.ok) return { ok: false, progress: null }
+    const data = await res.json()
+    return { ok: true, progress: data.progress ?? null }
+  } catch {
+    return { ok: false, progress: null }
+  }
+}
+
+export async function postAdminExerciseProgress(classroomId: string, lessonId: string, exerciseIndex: number, data: {
+  format: string
+  answerState: unknown
+  completed: boolean
+  completedAt?: string | null
+}): Promise<{ ok: boolean }> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/exercise/${lessonId}/${exerciseIndex}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(data),
+    })
+    return { ok: res.ok }
+  } catch {
+    return { ok: false }
+  }
+}
+
+export async function getAdminCodeProgress(classroomId: string, lessonId: string, exerciseIndex: number): Promise<{
+  ok: boolean
+  progress: { code: string; completed: boolean; completedAt: string | null } | null
+}> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/code/${lessonId}/${exerciseIndex}`, { credentials: 'same-origin' })
+    if (!res.ok) return { ok: false, progress: null }
+    const data = await res.json()
+    return { ok: true, progress: data.progress ?? null }
+  } catch {
+    return { ok: false, progress: null }
+  }
+}
+
+export async function postAdminCodeProgress(classroomId: string, lessonId: string, exerciseIndex: number, data: {
+  code: string
+  completed: boolean
+  completedAt?: string | null
+}): Promise<{ ok: boolean }> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/code/${lessonId}/${exerciseIndex}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(data),
+    })
+    return { ok: res.ok }
+  } catch {
+    return { ok: false }
+  }
+}
+
+export async function getAdminFinalProjectProgress(classroomId: string, lessonId: string): Promise<{
+  ok: boolean
+  progress: { activeBlockIndex: number; blocks: Record<string, unknown>; editedHtml: string | null; editedCss: string | null; completedAt: string | null } | null
+}> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/final-project/${lessonId}`, { credentials: 'same-origin' })
+    if (!res.ok) return { ok: false, progress: null }
+    const data = await res.json()
+    return { ok: true, progress: data.progress ?? null }
+  } catch {
+    return { ok: false, progress: null }
+  }
+}
+
+export async function postAdminFinalProjectProgress(classroomId: string, lessonId: string, data: {
+  activeBlockIndex: number
+  blocks: Record<string, unknown>
+  editedHtml?: string | null
+  editedCss?: string | null
+  completedAt?: string | null
+}): Promise<{ ok: boolean }> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/final-project/${lessonId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(data),
+    })
+    return { ok: res.ok }
+  } catch {
+    return { ok: false }
+  }
+}
+
+export async function getAdminClassroomLessonsProgress(classroomId: string): Promise<{
+  ok: boolean
+  lessons: LessonProgressRow[]
+}> {
+  try {
+    const res = await fetch(`/api/admin-progress/${classroomId}/lessons`, { credentials: 'same-origin' })
+    if (!res.ok) return { ok: false, lessons: [] }
+    const data = await res.json()
+    return { ok: true, lessons: data.lessons ?? [] }
+  } catch {
+    return { ok: false, lessons: [] }
+  }
+}

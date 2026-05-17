@@ -20,6 +20,7 @@ import { CSS } from '@dnd-kit/utilities'
 import type { Lesson } from '@/lib/lessons'
 import type { Deck, SlideItem } from '@/lib/deckTypes'
 import { LessonContent } from '@/components/LessonContent'
+import { ExercisePrompt } from '@/components/ExercisePrompt'
 import { panelRegistry } from '@/components/exercise-panels'
 
 type DeckEditorProps = {
@@ -354,17 +355,32 @@ export function DeckEditor({
           previewContent = (
             <div
               style={{
-                padding: '24px',
-                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
                 height: '100%',
-                boxSizing: 'border-box',
+                overflow: 'hidden',
+                pointerEvents: 'none',
               }}
             >
-              <Panel
-                exercise={exercise}
-                onComplete={() => {}}
-                onCorrect={() => {}}
+              <ExercisePrompt
+                exercises={lesson.exercises}
+                activeIndex={selectedItem.index}
+                hintVisible={false}
               />
+              <div
+                style={{
+                  flex: 1,
+                  padding: '16px 24px',
+                  overflow: 'hidden',
+                  boxSizing: 'border-box' as const,
+                }}
+              >
+                <Panel
+                  exercise={exercise}
+                  onComplete={() => {}}
+                  onCorrect={() => {}}
+                />
+              </div>
             </div>
           )
         }

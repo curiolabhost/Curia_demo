@@ -20,6 +20,7 @@ type CodeEditorPanelProps = {
   onComplete: (correct: boolean) => void
   classroomId?: string | null
   role?: string
+  answerKeyMode?: boolean
   onStepChange?: (
     currentStepIndex: number,
     completedSteps: Set<number>,
@@ -35,8 +36,10 @@ export function CodeEditorPanel({
   onComplete,
   classroomId = null,
   role = undefined,
+  answerKeyMode = false,
   onStepChange,
 }: CodeEditorPanelProps) {
+  void answerKeyMode
   const normalizedSteps: TaskStep[] = useMemo(
     () => (exercise.steps ?? []).map(normalizeStep),
     [exercise.steps],

@@ -61,6 +61,7 @@ type RightPanelProps = {
   editMode?: boolean
   editActions?: EditActions
   isReadOnly?: boolean
+  answerKeyMode?: boolean
   classroomId?: string | null
   role?: string
 }
@@ -97,10 +98,10 @@ export function RightPanel({
   editMode = false,
   editActions,
   isReadOnly = false,
+  answerKeyMode = false,
   classroomId = null,
   role = undefined,
 }: RightPanelProps) {
-  void isReadOnly
   const router = useRouter()
   const [mode, setMode] = useState<Mode>(initialMode ?? 'exercises')
   const [showHome, setShowHome] = useState(false)
@@ -666,6 +667,7 @@ export function RightPanel({
   const isCodeEditor = isPanelFormat && activeFormat === 'code-editor'
 
   const handlePanelCorrect = useCallback(() => {
+    if (isReadOnly) return
     if (!classroomId) return
     const lessonId = renderedLesson.id
     const completedIndex = renderedExerciseIndex
@@ -677,9 +679,10 @@ export function RightPanel({
       completed: true,
       completedAt: new Date().toISOString(),
     }).catch(() => {})
-  }, [classroomId, renderedLesson.id, renderedExerciseIndex, activeExercise?.format, role])
+  }, [isReadOnly, classroomId, renderedLesson.id, renderedExerciseIndex, activeExercise?.format, role])
 
   const handlePanelComplete = useCallback((correct: boolean) => {
+    if (isReadOnly) return
     if (!correct) return
     const lessonId = renderedLesson.id
     const completedIndex = renderedExerciseIndex
@@ -707,6 +710,7 @@ export function RightPanel({
       }).catch(() => {})
     }
   }, [
+    isReadOnly,
     goNextExercise,
     isFinalProjectLesson,
     totalExercises,
@@ -937,6 +941,7 @@ export function RightPanel({
                   onComplete={handlePanelComplete}
                   classroomId={classroomId}
                   role={role}
+                  answerKeyMode={answerKeyMode}
                   onStepChange={(idx, done, nextEnabled, onNext) =>
                     setStepPromptState({
                       currentStepIndex: idx,
@@ -957,6 +962,7 @@ export function RightPanel({
                       isAlreadyCompleted={completedExerciseIndices.has(
                         renderedExerciseIndex,
                       )}
+                      answerKeyMode={answerKeyMode}
                     />
                   ) : null
                 })()

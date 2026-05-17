@@ -194,7 +194,8 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(
         remoteDebounceRef.current = null
       }
       if (classroomId) {
-        postCodeProgress(classroomId, lessonId, exerciseIndex, {
+        const postCode = roleRef.current === 'ADMIN' ? postAdminCodeProgress : postCodeProgress
+        postCode(classroomId, lessonId, exerciseIndex, {
           code: starterCode,
           completed: false,
           completedAt: null,

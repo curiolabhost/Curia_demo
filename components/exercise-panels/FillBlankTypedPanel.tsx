@@ -42,6 +42,7 @@ export function FillBlankTypedPanel({
   onComplete,
   onCorrect,
   isAlreadyCompleted = false,
+  answerKeyMode = false,
 }: PanelProps) {
   const lines = exercise.codeWithBlanks ?? []
   const placeholders = exercise.blankPlaceholders ?? []
@@ -105,6 +106,19 @@ export function FillBlankTypedPanel({
     setAnswerState('correct')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAlreadyCompleted, exercise, blankCount])
+
+  useEffect(() => {
+    if (!answerKeyMode) return
+    const answers = exercise.blankAnswers ?? []
+    const seeded: string[] = new Array(blankCount).fill('')
+    for (let i = 0; i < blankCount; i += 1) {
+      if (typeof answers[i] === 'string') seeded[i] = answers[i]
+    }
+    setAllValues(seeded)
+    setBlankStates(Array(blankCount).fill('correct'))
+    setAnswerState('correct')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answerKeyMode, exercise, blankCount])
 
   useEffect(() => {
     return () => {
@@ -295,7 +309,10 @@ export function FillBlankTypedPanel({
           <button
             type="button"
             className="panel-next-btn"
-            onClick={() => onComplete(true)}
+            onClick={() => {
+              if (answerKeyMode) return
+              onComplete(true)
+            }}
           >
             Next
           </button>

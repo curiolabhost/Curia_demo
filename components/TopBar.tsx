@@ -6,6 +6,8 @@ type TopBarProps = {
   device?: string
   viewMode?: 'normal' | 'slideshow'
   onToggleSlideshow?: () => void
+  answerKeyMode?: boolean
+  onToggleAnswerKey?: () => void
 }
 
 export function TopBar({
@@ -16,6 +18,8 @@ export function TopBar({
   device,
   viewMode,
   onToggleSlideshow,
+  answerKeyMode = false,
+  onToggleAnswerKey,
 }: TopBarProps) {
   const slideshowActive = viewMode === 'slideshow'
   const showSlideshowToggle = viewMode !== undefined && onToggleSlideshow !== undefined
@@ -60,6 +64,25 @@ export function TopBar({
           gap: 14,
         }}
       >
+        {onToggleAnswerKey ? (
+          <button
+            type="button"
+            onClick={() => onToggleAnswerKey?.()}
+            aria-pressed={answerKeyMode}
+            style={{
+              background: answerKeyMode ? 'var(--accent-dim)' : 'none',
+              border: `1px solid ${answerKeyMode ? 'var(--accent)' : 'var(--border2)'}`,
+              borderRadius: 4,
+              padding: '4px 10px',
+              color: answerKeyMode ? 'var(--accent)' : 'var(--text3)',
+              fontSize: 12,
+              fontFamily: 'var(--mono)',
+              cursor: 'pointer',
+            }}
+          >
+            {answerKeyMode ? 'answer key on' : 'answer key'}
+          </button>
+        ) : null}
         {showSlideshowToggle ? (
           <button
             type="button"

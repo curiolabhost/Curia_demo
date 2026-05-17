@@ -21,6 +21,7 @@ type FillBlankPanelProps = {
   onComplete: (correct: boolean) => void
   onCorrect?: () => void
   isAlreadyCompleted?: boolean
+  answerKeyMode?: boolean
 }
 
 type AnswerState = 'idle' | 'correct' | 'wrong'
@@ -61,6 +62,7 @@ export function FillBlankPanel({
   onComplete,
   onCorrect,
   isAlreadyCompleted = false,
+  answerKeyMode = false,
 }: FillBlankPanelProps) {
   const lines = exercise.codeWithBlanks ?? []
   const tokens = exercise.tokenBank ?? []
@@ -121,6 +123,22 @@ export function FillBlankPanel({
     setWrongFlags(Array(blankCount).fill(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAlreadyCompleted, exercise, blankCount])
+
+  useEffect(() => {
+    if (!answerKeyMode) return
+    const fills: (string | null)[] = new Array(blankCount).fill(null)
+    const ids: (string | null)[] = new Array(blankCount).fill(null)
+    for (let i = 0; i < blankCount; i += 1) {
+      const expected = correctOrder[i]
+      const tok = tokens.find((t) => t.label === expected)
+      fills[i] = expected
+      ids[i] = tok ? tok.id : `answerkey-${i}`
+    }
+    filler.setAll(fills, ids)
+    setAnswerState('correct')
+    setWrongFlags(Array(blankCount).fill(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answerKeyMode, exercise, blankCount])
 
   const placedLabels = useMemo(() => {
     if (answerState !== 'correct') return new Set<string>()
@@ -255,6 +273,7 @@ export function FillBlankPanel({
         onCheck={handleCheck}
         clearWrongState={clearWrongState}
         onComplete={onComplete}
+        answerKeyMode={answerKeyMode}
       />
     )
   }
@@ -399,7 +418,10 @@ export function FillBlankPanel({
           <button
             type="button"
             className="panel-next-btn"
-            onClick={() => onComplete(true)}
+            onClick={() => {
+              if (answerKeyMode) return
+              onComplete(true)
+            }}
           >
             Next
           </button>
@@ -538,6 +560,7 @@ type FillBlankTabletProps = {
   onCheck: () => void
   clearWrongState: () => void
   onComplete: (correct: boolean) => void
+  answerKeyMode?: boolean
 }
 
 export function FillBlankTablet({
@@ -552,6 +575,7 @@ export function FillBlankTablet({
   onCheck,
   clearWrongState,
   onComplete,
+  answerKeyMode = false,
 }: FillBlankTabletProps) {
   const tokens = exercise.tokenBank ?? []
   const correctOrder = exercise.correctOrder ?? []
@@ -710,7 +734,10 @@ export function FillBlankTablet({
           <button
             type="button"
             className="panel-next-btn"
-            onClick={() => onComplete(true)}
+            onClick={() => {
+              if (answerKeyMode) return
+              onComplete(true)
+            }}
           >
             Next
           </button>

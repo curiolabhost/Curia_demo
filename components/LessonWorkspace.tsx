@@ -25,6 +25,7 @@ type LessonWorkspaceProps = {
   editMode?: boolean
   editActions?: EditActions
   isReadOnly?: boolean
+  answerKeyMode?: boolean
   classroomId?: string | null
   role?: string
 }
@@ -48,6 +49,7 @@ export function LessonWorkspace({
   editMode = false,
   editActions,
   isReadOnly = false,
+  answerKeyMode = false,
   classroomId = null,
   role = undefined,
 }: LessonWorkspaceProps) {
@@ -71,6 +73,7 @@ export function LessonWorkspace({
       editMode={editMode}
       editActions={editActions}
       isReadOnly={isReadOnly}
+      answerKeyMode={answerKeyMode}
       classroomId={classroomId}
       role={role}
     />

@@ -23,6 +23,7 @@ export type PanelProps = {
   onComplete: (correct: boolean) => void
   onCorrect?: () => void
   isAlreadyCompleted?: boolean
+  answerKeyMode?: boolean
 }
 
 export type FinalProjectPanelProps = PanelProps & {

@@ -81,6 +81,7 @@ export function LearnPageClient({
   const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
   const [resumeIndex, setResumeIndex] = useState<number | null>(null)
   const [resumeMode, setResumeMode] = useState<'exercises' | 'challenges' | null>(null)
+  const [answerKeyMode, setAnswerKeyMode] = useState(false)
 
   useEffect(() => {
     if (!classroomId || !classroomReady) return
@@ -96,6 +97,7 @@ export function LearnPageClient({
   useEffect(() => {
     setResumeIndex(null)
     setResumeMode(null)
+    setAnswerKeyMode(false)
   }, [activeLessonId])
 
   useEffect(() => {
@@ -384,6 +386,8 @@ export function LearnPageClient({
         device={device}
         viewMode={activeLesson ? viewMode : undefined}
         onToggleSlideshow={activeLesson ? handleToggleSlideshow : undefined}
+        answerKeyMode={answerKeyMode}
+        onToggleAnswerKey={role === 'ADMIN' ? () => setAnswerKeyMode((prev) => !prev) : undefined}
       />
       <NavOverlay
         lessons={lessons}
@@ -476,7 +480,8 @@ export function LearnPageClient({
               }}
               editMode={editMode}
               editActions={editActions}
-              isReadOnly={isReadOnly || isInstructorPreview}
+              isReadOnly={isReadOnly}
+              answerKeyMode={answerKeyMode}
               classroomId={classroomId}
               role={role ?? undefined}
             />

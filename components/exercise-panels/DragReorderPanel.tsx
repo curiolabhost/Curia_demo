@@ -72,6 +72,7 @@ export function DragReorderPanel({
   onComplete,
   onCorrect,
   isAlreadyCompleted = false,
+  answerKeyMode = false,
 }: PanelProps) {
   const codeLines = useMemo(() => exercise.codeLines ?? [], [exercise])
   const checks = exercise.checks ?? []
@@ -129,6 +130,17 @@ export function DragReorderPanel({
     setLineStates(next)
     setAnswerState('correct')
   }, [isAlreadyCompleted, exercise, correctOrder])
+
+  useEffect(() => {
+    if (!answerKeyMode) return
+    setItems([...correctOrder])
+    const next: Record<string, LineState> = {}
+    correctOrder.forEach((id) => {
+      next[id] = 'correct'
+    })
+    setLineStates(next)
+    setAnswerState('correct')
+  }, [answerKeyMode, exercise, correctOrder])
 
   useEffect(() => {
     return () => {
@@ -264,7 +276,10 @@ export function DragReorderPanel({
           <button
             type="button"
             className="panel-next-btn"
-            onClick={() => onComplete(true)}
+            onClick={() => {
+              if (answerKeyMode) return
+              onComplete(true)
+            }}
           >
             Next
           </button>

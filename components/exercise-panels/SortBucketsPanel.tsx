@@ -94,6 +94,7 @@ export function SortBucketsPanel({
   onComplete,
   onCorrect,
   isAlreadyCompleted = false,
+  answerKeyMode = false,
 }: PanelProps) {
   const buckets = exercise.buckets ?? []
   const items = exercise.bucketItems ?? []
@@ -150,6 +151,20 @@ export function SortBucketsPanel({
     setAnswerState('correct')
     setActiveId(null)
   }, [isAlreadyCompleted, exercise, items])
+
+  useEffect(() => {
+    if (!answerKeyMode) return
+    const nextPlacements: Record<string, string | null> = {}
+    const nextStates: Record<string, ItemState> = {}
+    items.forEach((item) => {
+      nextPlacements[item.id] = item.correctBucketId
+      nextStates[item.id] = 'correct'
+    })
+    setPlacements(nextPlacements)
+    setItemStates(nextStates)
+    setAnswerState('correct')
+    setActiveId(null)
+  }, [answerKeyMode, exercise, items])
 
   useEffect(() => {
     return () => {
@@ -310,7 +325,10 @@ export function SortBucketsPanel({
           <button
             type="button"
             className="panel-next-btn"
-            onClick={() => onComplete(true)}
+            onClick={() => {
+              if (answerKeyMode) return
+              onComplete(true)
+            }}
           >
             Next
           </button>

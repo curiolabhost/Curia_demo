@@ -9,6 +9,7 @@ type MultipleChoicePanelProps = {
   onComplete: (correct: boolean) => void
   onCorrect?: () => void
   isAlreadyCompleted?: boolean
+  answerKeyMode?: boolean
 }
 
 type AnswerState = 'idle' | 'correct' | 'wrong'
@@ -18,6 +19,7 @@ export function MultipleChoicePanel({
   onComplete,
   onCorrect,
   isAlreadyCompleted = false,
+  answerKeyMode = false,
 }: MultipleChoicePanelProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [answerState, setAnswerState] = useState<AnswerState>('idle')
@@ -33,9 +35,16 @@ export function MultipleChoicePanel({
     setAnswerState('correct')
   }, [isAlreadyCompleted, exercise])
 
+  useEffect(() => {
+    if (!answerKeyMode) return
+    setSelectedId(exercise.correctOptionId ?? null)
+    setAnswerState('correct')
+  }, [answerKeyMode, exercise])
+
   const options = exercise.options ?? []
 
   const handleSelect = (id: string) => {
+    if (answerKeyMode) return
     if (answerState === 'correct') return
     setSelectedId(id)
     if (answerState === 'wrong') setAnswerState('idle')
@@ -109,7 +118,10 @@ export function MultipleChoicePanel({
           <button
             type="button"
             className="panel-next-btn"
-            onClick={() => onComplete(true)}
+            onClick={() => {
+              if (answerKeyMode) return
+              onComplete(true)
+            }}
           >
             Next
           </button>

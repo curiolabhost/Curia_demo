@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   DndContext,
   PointerSensor,
@@ -20,6 +20,7 @@ import { CSS } from '@dnd-kit/utilities'
 import type { Lesson } from '@/lib/lessons'
 import type { Deck, SlideItem } from '@/lib/deckTypes'
 import { LessonContent } from '@/components/LessonContent'
+import { ExercisePrompt } from '@/components/ExercisePrompt'
 import { panelRegistry } from '@/components/exercise-panels'
 
 type DeckEditorProps = {
@@ -258,22 +259,6 @@ export function DeckEditor({
     }
   }, [deck.length, selectedIndex])
 
-  const previewContainerRef = useRef<HTMLDivElement | null>(null)
-  const [scale, setScale] = useState<number>(0.7)
-
-  useEffect(() => {
-    const el = previewContainerRef.current
-    if (!el) return
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect
-        setScale(Math.min((width - 80) / 900, (height - 80) / 560))
-      }
-    })
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
@@ -354,17 +339,32 @@ export function DeckEditor({
           previewContent = (
             <div
               style={{
-                padding: '24px',
-                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
                 height: '100%',
-                boxSizing: 'border-box',
+                overflow: 'hidden',
+                pointerEvents: 'none',
               }}
             >
-              <Panel
-                exercise={exercise}
-                onComplete={() => {}}
-                onCorrect={() => {}}
+              <ExercisePrompt
+                exercises={lesson.exercises}
+                activeIndex={selectedItem.index}
+                hintVisible={false}
               />
+              <div
+                style={{
+                  flex: 1,
+                  padding: '16px 24px',
+                  overflow: 'hidden',
+                  boxSizing: 'border-box' as const,
+                }}
+              >
+                <Panel
+                  exercise={exercise}
+                  onComplete={() => {}}
+                  onCorrect={() => {}}
+                />
+              </div>
             </div>
           )
         }
@@ -513,28 +513,28 @@ export function DeckEditor({
         </div>
 
         <div
-          ref={previewContainerRef}
           style={{
             flex: 1,
-            overflow: 'hidden',
+            overflow: 'auto',
             background: '#f0f0f0',
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'center',
-            position: 'relative',
+            padding: '40px',
+            boxSizing: 'border-box',
           }}
         >
           {selectedItem ? (
             <div
               style={{
-                width: '900px',
-                height: '560px',
-                background: 'var(--white)',
+                width: '100%',
+                maxWidth: '900px',
+                minHeight: '400px',
+                background: 'var(--surface)',
                 borderRadius: '4px',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-                overflow: 'hidden',
-                transform: `scale(${scale})`,
-                transformOrigin: 'center center',
+                overflowY: 'auto',
+                overflowX: 'hidden',
                 pointerEvents: 'none',
                 flexShrink: 0,
               }}

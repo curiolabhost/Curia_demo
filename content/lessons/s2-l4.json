@@ -1,84 +1,125 @@
 {
   "id": "s2-l4",
   "session": "Session 2",
-  "title": "Data Types",
+  "title": "Strings",
   "content": [
     {
-      "heading": "Data Types — what kind of thing is this?",
+      "heading": "Strings — text in a variable (instead of numbers)",
       "blocks": [
-        { "kind": "p", "text": "Every value in JavaScript has a type. The type determines what you can do with it. You can't do math with text, and you can't use string methods on a number. " },
-        { "kind": "image", "src": "/assets/lessons/s2-l4/js-types-table-v3.svg", "alt": "The different JavaScript Types Table" },
-        { "kind": "callout", "variant": "warn", "label": "Remember!", "text": "Knowing the types helps you avoid bugs that seem totally random but have a very simple cause." }
+         { "kind": "image", "src": "/assets/lessons/s2-l4/strings_javascript_matched_style.svg", "alt": "Visual explainer of strings in JavaScript — showing text, numbers, and symbols all wrapped in quotes", "caption": "Anything inside quotes is a string: letters, numbers, symbols, even emojis. The quotes are what makes it text." },
+
+        { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there: letters, numbers, symbols, spaces, emojis. If it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
+        { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
+        { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property. It tells you how many characters are inside." },
+        { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up, so watch for it." }
       ]
     },
     {
-      "heading": "How to check types?",
+      "heading": "Template literals",
       "blocks": [
-        { "kind": "p", "text": "You can check the type of a value using the `typeof` operator." },
-        { "kind": "image", "src": "/assets/lessons/s2-l4/typeof-visual.svg"},
-        { "kind": "concept", "code": "typeof variableName", "desc": "The typeof operator tells you what the type is for 'variableName'. It returns a string of the name of the type: 'number', 'string', or 'boolean'." },
-        { "kind": "callout", "variant": "danger", "label": "The most common beginner trap", "text": "If a number comes from user input or an HTML field, it arrives as a STRING. So '5' + 5 gives you '55'. Always check your types when math isn't working the way you expect." }
+        { "kind": "p", "text": "Think of Template Literals as a fill-in-the-blank sentence. `${VariableName}` marks the gaps where variables get dropped in. Wrap the whole sentence in backtick (`) quotes." },
+        { "kind": "image", "src": "/assets/lessons/s2-l4/template-literals.svg", "alt": "A template literal using backticks with ${name} and ${age} dropped directly into the sentence" },
+
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "Easy to mix up",
+          "text": "Backtick (`) is not the same as a single quote ('). If your template literal isn't working, that's the first thing to check."
+        },        
+
+        { "kind": "code", "lines": [
+          "let firstName = 'Alex';",
+          "let age = 13;",
+          "",
+          "// Template literal — one clean sentence",
+          "let intro = `My name is ${firstName} and I am ${age} years old.`;",
+          "console.log(intro);  // My name is Alex and I am 13 years old."
+        ]}
+      ]
+    },
+    {
+      "heading": "The (+) sign has two jobs",
+      "blocks": [
+        { "kind": "p", "text": "The `+` sign does different things depending on what's on each side of it. With two numbers it adds. With a string on either side, it joins the values together as text. JavaScript checks the types first, then decides which job to do." },
+        { "kind": "image", "src": "/assets/lessons/s2-l4/plus-sign-final.svg", "alt": "Two examples side by side: 5 + 5 with both values labeled as numbers giving 10, and '5' + 5 with the string highlighted differently giving '55'", "caption": "Same + sign, different result. The types on each side decide whether it adds or joins." },
+
+
+        { "kind": "code", "lines": [
+          "console.log(5 + 5);           // 10       — both numbers, so + adds",
+          "console.log('5' + 5);         // '55'     — string + number, so + joins",
+          "console.log('5' + '5');       // '55'     — both strings, so + joins",
+          "console.log('Score: ' + 100); // 'Score: 100' — string + number, so + joins"
+        ]},
+        { "kind": "callout", "variant": "warn", "label": "Remember!", "text": "If either value is a string, + treats the whole thing as text and joins. It only adds when both sides are numbers." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Identify the types",
+      "title": "Build a name tag",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "Declare variables for your first name and last name.",
+        "Join them together into a variable called fullName with a space in between.",
+        "Log fullName.",
+        "Log the length of both fullName and firstName. Which is longer, and by how much?"
+      ],
+      "hint": "Don't forget the space: firstName + ' ' + lastName",
+      "starterCode": "let firstName = 'Your';\nlet lastName = 'Name';\n\n// Build fullName\n\n\nconsole.log(fullName);\nconsole.log('Length:', fullName.length);\n",
+      "checks": [
+        { "type": "variable", "name": "fullName", "expected": null, "label": "a variable called 'fullName' exists" },
+        { "type": "console", "includes": "Length:", "label": "logged the length to the console" }
+      ]
+    },
+    {
+      "title": "Template literals",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Declare variables: name (your name), age (your age), city (your city).",
+        "Using template literals (backticks), build a sentence: 'Hi! I'm [name], I'm [age] years old, and I live in [city].'",
+        "Log it.",
+        "Now change your city and log it again. The sentence updates automatically.",
+        "Challenge: add a 4th variable for your favorite food and include it in the sentence."
+      ],
+      "hint": "Template literals use the backtick key, found in the top-left of your keyboard, same key as ~",
+      "starterCode": "let name = 'Alex';\nlet age = 13;\nlet city = 'Atlanta';\n\n// Build your sentence with a template literal\nlet intro = ``;\n\nconsole.log(intro);\n",
+      "checks": [
+        { "type": "variable", "name": "intro", "expected": null, "label": "a variable called 'intro' exists" },
+        { "type": "console", "includes": "", "label": "something is logged to the console" }
+      ]
+    },
+    {
+      "title": "String + number trap",
       "type": "predict",
       "duration": "5 min",
       "tasks": [
-        "Before running: write down the type you expect for each variable.",
-        "Then run and use typeof to check each one.",
-        "Which one surprises you?"
+        "Before running: predict the output of each console.log below.",
+        "Write your predictions down.",
+        "Run the code and see which ones surprised you.",
+        "Explain in your own words why '5' + 5 doesn't give you 10."
       ],
-      "hint": "Remember: anything in quotes is a string, even if it looks like a number.",
-      "starterCode": "let a = 100;\nlet b = '100';\nlet c = true;\nlet d = 'false';\nlet e = 3.14;\nlet f;\n\nconsole.log('a:', typeof a);\nconsole.log('b:', typeof b);\nconsole.log('c:', typeof c);\nconsole.log('d:', typeof d);\nconsole.log('e:', typeof e);\nconsole.log('f:', typeof f);\n"
+      "hint": "The + sign has two jobs: add numbers AND join strings. Which one it uses depends on the types involved.",
+      "starterCode": "console.log(5 + 5);\nconsole.log('5' + 5);\nconsole.log('5' + '5');\nconsole.log('Score: ' + 100);\nconsole.log(10 + 20 + ' points');\nconsole.log('Points: ' + 10 + 20);\n"
     },
     {
-      "title": "Fix the broken math",
-      "type": "debug",
-      "duration": "6 min",
-      "tasks": [
-        "The code below should add two numbers together and get 15.",
-        "Run it first and see what you get.",
-        "Use typeof to figure out what's wrong.",
-        "Fix it so the result is actually 15."
-      ],
-      "hint": "The Number() function converts a string to a number: Number('10') gives you 10.",
-      "starterCode": "let a = '10';\nlet b = 5;\nlet result = a + b;\nconsole.log('Result:', result);\nconsole.log('Type of a:', typeof a);\n\n// Fix it here:\n",
-      "checks": [
-        { "type": "variable", "name": "result", "expected": 15, "label": "result equals 15" }
-      ]
-    },
-    {
-      "title": "Booleans",
+      "title": "Username generator",
       "type": "practice",
-      "duration": "5 min",
+      "duration": "7 min",
       "tasks": [
-        "Declare a variable called gameOver and set it to false.",
-        "Declare a variable called playerAlive and set it to true.",
-        "Log both variables and their types.",
-        "Now try: console.log('false' === false). What do you get? Why?",
-        "Flip gameOver to true and log it again."
+        "Declare firstName, lastName, and a lucky number.",
+        "Build a username by combining the first 3 characters aren't available yet. Just use the full firstName + lastName + luckyNumber.",
+        "Log: 'Your username is: ' + username",
+        "Log the length of the username.",
+        "Challenge: using a template literal, build a welcome message: 'Welcome, [username]! Your username is [length] characters long.'"
       ],
-      "hint": "true and false (without quotes) are booleans. 'true' and 'false' (with quotes) are strings, which are completely different things.",
-      "starterCode": "let gameOver = false;\nlet playerAlive = true;\n\nconsole.log('gameOver:', gameOver, '- type:', typeof gameOver);\nconsole.log('playerAlive:', playerAlive, '- type:', typeof playerAlive);\n\n// Try this — what does it print?\nconsole.log('false' === false);\n\n// Change gameOver to true\n",
+      "hint": "Joining strings and numbers with + works fine: 'Jordan' + 7 gives 'Jordan7'",
+      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet luckyNumber = 7;\n\n// Build username\nlet username = '';\n\nconsole.log('Your username is:', username);\nconsole.log('Length:', username.length);\n\n// Challenge: welcome message with template literal\n",
       "checks": [
-        { "type": "variable", "name": "gameOver", "expected": true, "label": "gameOver was changed to true" }
+        { "type": "variable", "name": "username", "expected": null, "label": "a variable called 'username' exists" },
+        { "type": "console", "includes": "username", "label": "logged the username message" }
       ]
-    },
-    {
-      "title": "Type detective",
-      "type": "practice",
-      "duration": "6 min",
-      "tasks": [
-        "Create one variable of each type: string, number, boolean, and leave one undefined.",
-        "Use typeof on all four and log the results with labels.",
-        "Now try typeof on some expressions: typeof (5 + 3), typeof ('hi' + 5), typeof (5 > 3).",
-        "Predict the result before running each one."
-      ],
-      "hint": "An expression like (5 > 3) evaluates to true or false, so its type is boolean.",
-      "starterCode": "// Create one of each type\nlet myString = '';\nlet myNumber = 0;\nlet myBoolean = true;\nlet myUndefined;\n\n// Log each with typeof\nconsole.log('string:', typeof myString);\n// continue for the others...\n\n// Bonus: check expression types\nconsole.log(typeof (5 + 3));\nconsole.log(typeof ('hi' + 5));\nconsole.log(typeof (5 > 3));\n"
     }
   ],
   "challenges": [
@@ -86,44 +127,44 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "The scoreboard display",
-      "description": "A game needs to display a player's name and score. Right now it's just printing two separate values. Fix the code so it prints exactly: 'Jordan - 340 pts', first using + concatenation, then using a template literal.",
-      "buggyCode": "let playerName = 'Jordan';\nlet score = 340;\n\n// Version 1: using +\nlet display1 = playerName + score;\nconsole.log('concat:', display1);\n\n// Version 2: using a template literal\nlet display2 = `${playerName}${score}`;\nconsole.log('template:', display2);",
-      "starterCode": "let playerName = 'Jordan';\nlet score = 340;\n\n// Version 1: using +\nlet display1 = playerName + score;\nconsole.log('concat:', display1);\n\n// Version 2: using a template literal\nlet display2 = `${playerName}${score}`;\nconsole.log('template:', display2);",
-      "hint": "The output should be 'Jordan - 340 pts'. You need the dash, the spaces, and the word 'pts'. None of those are in the variables.",
+      "title": "The broken calculator",
+      "description": "A student built a score calculator. They stored the starting score as '200' because they copied it from a text box. When they add 50 for a correct answer, the score shows '20050' instead of 250. Explain why this happens and rewrite the code so the math works correctly.",
+      "buggyCode": "let score = '200';\nlet correct = 50;\nlet total = score + correct;\nconsole.log('Your score:', total);",
+      "starterCode": "let score = '200';\nlet correct = 50;\nlet total = score + correct;\nconsole.log('Your score:', total);",
+      "hint": "Text boxes always give you a string, even if the value looks like a number. Check how score is declared.",
       "checks": [
-        { "type": "console", "includes": "concat: Jordan - 340 pts", "label": "concatenation prints 'Jordan - 340 pts'" },
-        { "type": "console", "includes": "template: Jordan - 340 pts", "label": "template literal prints 'Jordan - 340 pts'" }
+        { "type": "variable", "name": "total", "expected": 250, "label": "total equals 250" }
       ],
-      "explanation": "Variables only contain what you put in them. The dash, spaces, and 'pts' are not stored anywhere. You have to add them yourself. With +: playerName + ' - ' + score + ' pts'. With a template literal: `${playerName} - ${score} pts`."
+      "explanation": "score is '200' in quotes, making it a string, not a number. So '200' + 50 joins as text and gives '20050'. Fix: remove the quotes (let score = 200) or convert it with Number(score) before adding."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
-      "title": "The broken name badge machine",
-      "description": "A school event needs name badges. Each badge should say: 'Hi, my name is Jordan Lee and I am from Atlanta.' But the machine is printing 'Hi, my name is JordanLeeAtlanta', with no spaces or punctuation. Find what's wrong and fix it.",
-      "buggyCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\n\nlet badge = 'Hi, my name is ' + firstName + lastName + ' and I am from ' + city + '.';\nconsole.log(badge);",
-      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\n\nlet badge = 'Hi, my name is ' + firstName + lastName + ' and I am from ' + city + '.';\nconsole.log(badge);",
-      "hint": "When you join strings with +, JavaScript adds no spaces for you. Every space has to be written explicitly.",
+      "title": "The name badge machine",
+      "description": "A school event needs name badges. Each badge should say \"Hi, my name is [first] [last] and I am from [city].\" You have three variables: firstName, lastName, city. But the machine is printing \"Hi, my name is JordanLeeAtlanta\", with no spaces or punctuation. Find what's wrong and fix it.",
+      "buggyCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
+      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
+      "hint": "Strings join exactly as written. JavaScript won't add spaces or punctuation for you.",
       "checks": [
-        { "type": "console", "includes": "Hi, my name is Jordan Lee and I am from Atlanta.", "label": "prints the correct badge text" }
+        { "type": "console", "includes": "Hi, my name is Jordan Lee and I am from Atlanta.", "label": "prints the correct badge message" }
       ],
-      "explanation": "firstName + lastName joins them with nothing in between, giving 'JordanLee'. You need a space between them: firstName + ' ' + lastName. Always check every join point for missing spaces."
+      "explanation": "The + sign joins strings with nothing in between unless you add it yourself. Fix: add spaces and the missing phrase: 'Hi, my name is ' + firstName + ' ' + lastName + ' and I am from ' + city + '.'"
     },
     {
       "id": "c3",
       "level": 3,
       "difficulty": "tricky",
-      "title": "The game state inspector",
-      "description": "A Simon Says game has four variables. The game never ends even when isGameOver should be true. When you log isGameOver it prints true, but the game keeps going. Use typeof to inspect all four variables and find the one that isn't the type you'd expect. Then fix it.",
-      "buggyCode": "let level = 3;\nlet score = 120;\nlet isGameOver = 'true';\nlet playerName = 'Alex';\n\n// The game checks this condition to stop\nif (isGameOver === true) {\n  console.log('Game over! Final score:', score);\n} else {\n  console.log('Still playing...');\n}\n\n// Use typeof to inspect all four variables\nconsole.log('level:', typeof level);\nconsole.log('score:', typeof score);\nconsole.log('isGameOver:', typeof isGameOver);\nconsole.log('playerName:', typeof playerName);",
-      "starterCode": "let level = 3;\nlet score = 120;\nlet isGameOver = 'true';\nlet playerName = 'Alex';\n\n// The game checks this condition to stop\nif (isGameOver === true) {\n  console.log('Game over! Final score:', score);\n} else {\n  console.log('Still playing...');\n}\n\n// Use typeof to inspect all four variables\nconsole.log('level:', typeof level);\nconsole.log('score:', typeof score);\nconsole.log('isGameOver:', typeof isGameOver);\nconsole.log('playerName:', typeof playerName);",
-      "hint": "=== checks both the value AND the type. 'true' and true look the same when logged, but typeof will reveal the difference.",
+      "title": "The mystery output",
+      "description": "Before running this code, predict both outputs. Then explain in one sentence why the two lines give different results even though they use the same three variables.",
+      "buggyCode": "let a = '10';\nlet b = 20;\nlet c = 30;\nconsole.log(a + b + c);\nconsole.log(b + c + a);",
+      "starterCode": "let a = '10';\nlet b = 20;\nlet c = 30;\nconsole.log(a + b + c);\nconsole.log(b + c + a);",
+      "hint": "JavaScript reads left to right. What happens the moment it hits a string?",
       "checks": [
-        { "type": "console", "includes": "Game over! Final score: 120", "label": "prints the game over message" }
+        { "type": "console", "includes": "102030", "label": "first log prints 102030" },
+        { "type": "console", "includes": "5010", "label": "second log prints 5010" }
       ],
-      "explanation": "isGameOver is set to 'true' in quotes, making it a string, not a boolean. The condition isGameOver === true fails because 'true' (string) is not the same as true (boolean). typeof isGameOver returns 'string', which reveals the bug. Fix: remove the quotes so isGameOver = true."
+      "explanation": "JavaScript evaluates left to right. In a + b + c, the first + sees a string on the left so it joins: '10' + 20 = '1020', then '1020' + 30 = '102030'. In b + c + a, the first + sees two numbers so it adds: 20 + 30 = 50, then 50 + '10' = '5010'. Same variables, different order, different result."
     }
   ]
 }

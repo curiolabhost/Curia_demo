@@ -1,75 +1,103 @@
 {
   "id": "s3-l2",
   "session": "Session 3",
-  "title": "Conditionals",
+  "title": "Return Values",
   "content": [
     {
-      "heading": "Conditionals — making decisions",
+      "heading": "Return Values — making your function answer a question",
       "blocks": [
-        { "kind": "p", "text": "An if statement runs a block of code only when a condition is true. An else block runs when it is false. This is how programs make decisions based on the current state." },
-        { "kind": "concept", "code": "if (score >= 10) { ... }", "desc": "Run this block only when score is 10 or higher" },
-        { "kind": "concept", "code": "} else { ... }", "desc": "Run this block when the condition is false" }
+        { "kind": "p", "text": "A function can do two things: it can log output so a human can read it, or it can return a value so the rest of your code can use it. The return keyword sends a value back to whoever called the function — and the function stops the moment it hits return." },
+        { "kind": "concept", "code": "return value", "desc": "Send this value back to the caller — the function stops here" },
+        { "kind": "concept", "code": "let result = fn()", "desc": "Call the function and capture whatever it returns into a variable" }
       ]
     },
     {
       "blocks": [
         { "kind": "code", "lines": [
-          "let score = 8;",
-          "",
-          "if (score >= 10) {",
-          "    console.log('You win!');",
-          "} else {",
-          "    console.log('Keep going — ' + (10 - score) + ' more needed.');",
+          "// This function only logs — result disappears after it prints",
+          "function doubleLog(n) {",
+          "    console.log(n * 2);",
           "}",
           "",
-          "// === checks value AND type — always use === not ==",
-          "// >= means greater than or equal to",
-          "// !  means NOT — !true is false, !false is true"
+          "// This function returns — the caller gets the value back",
+          "function doubleReturn(n) {",
+          "    return n * 2;",
+          "}",
+          "",
+          "let answer = doubleReturn(5);   // answer is now 10",
+          "console.log('Double is:', answer);",
+          "console.log('Triple is:', answer + 5);  // we can keep using it"
         ]},
-        { "kind": "callout", "variant": "danger", "label": "=== is not =", "text": "A single = puts a value into a variable. Triple === checks whether two values are equal. Using = inside an if condition is one of the most common bugs in JavaScript." }
+        { "kind": "callout", "variant": "warn", "label": "return vs console.log", "text": "console.log shows a value on screen — but that value is gone the moment it prints. return hands the value back to your code so you can store it, do math with it, or pass it somewhere else. A function that only logs cannot be used in math or stored in a variable." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Write a decision",
+      "title": "Write functions that return",
       "type": "practice",
       "duration": "6 min",
       "tasks": [
-        "Declare a variable called temperature set to 22.",
-        "Write an if/else: log 'Wear a jacket' if temperature is below 15, otherwise log 'No jacket needed'.",
-        "Change temperature to 10 and run again — confirm the output changes.",
-        "Add a third condition using else if: if temperature is above 30, log 'It is very hot'.",
-        "Challenge: rewrite the logic as a function called getAdvice(temp) that returns the message instead of logging it."
+        "Write a function called multiply that takes two numbers a and b and returns their product.",
+        "Store the result of calling multiply(3, 4) in a variable called product and log it.",
+        "Write a function called fullName that takes a first and last parameter and returns the combined name as one string with a space in between.",
+        "Call fullName with your own first and last name, store the result, and log it.",
+        "Call multiply three more times with different numbers and log each result."
       ],
-      "hint": "else if goes between if and else: if (...) { } else if (...) { } else { }",
-      "starterCode": "// Declare temperature\nlet temperature = 22;\n\n// Write your if / else if / else below\n\n",
+      "hint": "Use the return keyword inside the function body. The caller needs to store the result in a variable to use it: let result = multiply(3, 4);",
+      "starterCode": "// Write multiply below\n\n\n// Store and log the result of multiply(3, 4)\n\n\n// Write fullName below\n\n\n// Call fullName and log the result\n",
       "checks": [
         {
-          "type": "variable",
-          "name": "temperature",
-          "expected": null,
-          "label": "a variable called 'temperature' exists"
+          "type": "call",
+          "fn": "multiply",
+          "args": [3, 4],
+          "assert": "result === 12",
+          "label": "multiply(3, 4) returns 12"
         },
         {
-          "type": "console",
-          "includes": "jacket",
-          "label": "console output mentions 'jacket'"
+          "type": "call",
+          "fn": "multiply",
+          "args": [7, 6],
+          "assert": "result === 42",
+          "label": "multiply(7, 6) returns 42"
+        },
+        {
+          "type": "call",
+          "fn": "fullName",
+          "args": ["Ada", "Lovelace"],
+          "assert": "result === 'Ada Lovelace'",
+          "label": "fullName('Ada', 'Lovelace') returns 'Ada Lovelace'"
         }
       ]
     },
     {
-      "title": "Debug the conditional",
+      "title": "Fix the missing return",
       "type": "debug",
       "duration": "4 min",
       "tasks": [
-        "The function below should log 'You win!' when score reaches 5 — but it never does.",
-        "Find the bug. It is a single character error.",
-        "Fix it and confirm the win message appears.",
-        "Then change the target from 5 to 10 and test again."
+        "Read the code carefully. The function double is supposed to give back a value, but something is wrong.",
+        "Predict: what will tripled log, and why?",
+        "Run it and read the output. Was your prediction right?",
+        "Fix the function so that calling double(5) returns 10, and tripled logs the correct number."
       ],
-      "hint": "Look carefully at the comparison operator inside the if condition. = and === are very different.",
-      "starterCode": "let score = 5;\n\nfunction checkWin() {\n    if (score = 5) {\n        console.log('You win!');\n    } else {\n        console.log('Not yet. Score is:', score);\n    }\n}\n\ncheckWin();\n"
+      "hint": "console.log inside a function shows output but does not send anything back. The caller gets undefined instead. Replace the console.log with a return statement.",
+      "starterCode": "function double(n) {\n    console.log(n * 2);  // this logs but does not return\n}\n\nlet result = double(5);\nlet tripled = result + 5;  // what happens when result is undefined?\nconsole.log('Tripled:', tripled);\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "double",
+          "args": [5],
+          "assert": "result === 10",
+          "label": "double(5) returns 10"
+        },
+        {
+          "type": "call",
+          "fn": "double",
+          "args": [3],
+          "assert": "result === 6",
+          "label": "double(3) returns 6"
+        }
+      ]
     }
   ]
 }

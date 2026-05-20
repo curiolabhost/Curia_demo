@@ -1,104 +1,96 @@
 {
   "id": "s2-l7",
   "session": "Session 2",
-  "title": "Conditionals",
+  "title": "Comparisons",
   "content": [
     {
-      "heading": "Conditionals — making your program decide",
+      "heading": "Comparisons — asking yes or no questions",
       "blocks": [
-        { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
-        { "kind": "concept", "code": "if (score >= 100) { ... }", "desc": "If this condition is true, run the code inside the curly braces" },
-        { "kind": "concept", "code": "} else { ... }", "desc": "If the condition was false, run this instead" },
-        { "kind": "concept", "code": "} else if (score >= 50) { ... }", "desc": "Check a second condition — only runs if the first one was false" }
+        { "kind": "p", "text": "Every decision a program makes comes down to a question with a yes or no answer. Is the score high enough? Is the player alive? Is this the right answer? Comparison operators ask those questions. The answer is always a boolean: true or false." },
+        { "kind": "table", "headers": ["Operator", "Meaning", "Example", "Result"], "rows": [
+          ["===", "exactly equal (value AND type)", "5 === 5", "true"],
+          ["!==", "NOT equal", "5 !== 3", "true"],
+          [">", "greater than", "10 > 5", "true"],
+          ["<", "less than", "3 < 1", "false"],
+          [">=", "greater than or equal", "5 >= 5", "true"],
+          ["<=", "less than or equal", "4 <= 3", "false"]
+        ]}
+      ]
+    },
+    {
+      "heading": "Combining conditions",
+      "blocks": [
+        { "kind": "concept", "code": "age >= 13 && hasTicket === true", "desc": "AND — both conditions must be true for the whole thing to be true" },
+        { "kind": "concept", "code": "isVIP || hasCoupon", "desc": "OR — at least one condition must be true" },
+        { "kind": "concept", "code": "!isGameOver", "desc": "NOT — flips true to false and false to true" }
       ]
     },
     {
       "blocks": [
         { "kind": "code", "lines": [
-          "let score = 75;",
+          "let score = 85;",
+          "let lives = 3;",
           "",
-          "if (score >= 90) {",
-          "    console.log('Amazing! You got an A.');",
-          "} else if (score >= 70) {",
-          "    console.log('Good job! You got a B.');",
-          "} else if (score >= 50) {",
-          "    console.log('You passed. Keep practicing.');",
-          "} else {",
-          "    console.log('Not quite. Try again!');",
-          "}",
+          "console.log(score > 80);          // true",
+          "console.log(score === 100);        // false",
+          "console.log(lives !== 0);          // true",
           "",
-          "// score is 75, so the second condition is true",
-          "// JavaScript checks top to bottom and stops at the first true one"
+          "// AND — both must be true",
+          "console.log(score > 80 && lives > 0);  // true",
+          "",
+          "// OR — at least one must be true",
+          "console.log(score > 90 || lives > 0);  // true",
+          "",
+          "// NOT — flips it",
+          "let gameOver = false;",
+          "console.log(!gameOver);  // true"
         ]},
-        { "kind": "callout", "variant": "warn", "label": "Top to bottom — first match wins", "text": "JavaScript checks each condition in order. The moment it finds a true one, it runs that block and skips the rest. If you put a less specific condition first, a more specific one below it might never run." }
+        { "kind": "callout", "variant": "danger", "label": "=== not ==", "text": "Always use === (three equals signs) to check if things are equal. Using == (two equals signs) lets JavaScript change types before comparing, which causes bugs. Stick to === and you'll avoid a whole class of problems." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Trace the path",
+      "title": "Predict true or false",
       "type": "predict",
       "duration": "6 min",
       "tasks": [
-        "Look at the starter code. There are 4 different values for score.",
-        "For each one, predict which message will print before you run it.",
-        "Run the code and check. Where were you wrong?",
-        "Change the score to exactly 70. Which branch runs? Why?"
+        "Before running anything — write true or false for each line in the starter code.",
+        "Then run it and check your answers.",
+        "For any wrong ones: explain why the result is what it is."
       ],
-      "hint": "Go through the conditions top to bottom. The first one that's true wins.",
-      "starterCode": "// Test each score value — change it to see different outputs\nlet score = 95;\n\nif (score >= 90) {\n    console.log('Grade: A');\n} else if (score >= 80) {\n    console.log('Grade: B');\n} else if (score >= 70) {\n    console.log('Grade: C');\n} else {\n    console.log('Grade: F');\n}\n\n// Try these values: 95, 82, 71, 45\n"
+      "hint": "Work through each comparison one at a time. Don't rush — this is the most important skill in programming.",
+      "starterCode": "let age = 15;\nlet score = 80;\nlet name = 'Alex';\n\nconsole.log(age > 13);\nconsole.log(score === 100);\nconsole.log(score >= 80);\nconsole.log(name === 'alex');\nconsole.log(age !== 15);\nconsole.log(score > 50 && age > 10);\nconsole.log(score > 90 || age > 10);\nconsole.log(!(age === 15));\n"
     },
     {
-      "title": "Weather advisor",
+      "title": "Build your own comparisons",
       "type": "practice",
-      "duration": "7 min",
+      "duration": "6 min",
       "tasks": [
-        "Declare a variable called temperature and set it to 22.",
-        "Write an if / else if / else that logs:",
-        "  - 'Bundle up!' if below 5",
-        "  - 'Wear a jacket' if below 15",
-        "  - 'Nice weather!' if below 25",
-        "  - 'It's hot!' otherwise",
-        "Test with temperatures: 2, 10, 22, 35"
+        "Declare: playerScore = 72, maxScore = 100, lives = 2, playerName = 'Sam'",
+        "Write a comparison that checks if playerScore is at least 70. Log it.",
+        "Write a comparison that checks if lives is NOT 0. Log it.",
+        "Write a comparison that checks if playerScore is above 50 AND lives is above 0. Log it.",
+        "Write a comparison that checks if playerName equals 'Sam' OR 'Alex'. Log it.",
+        "Challenge: write a comparison that's true only when the player has NOT won (score below 100)."
       ],
-      "hint": "Order matters! Put the most specific (lowest) condition first.",
-      "starterCode": "let temperature = 22;\n\n// Your conditions here\n",
+      "hint": "For the OR name check: playerName === 'Sam' || playerName === 'Alex'",
+      "starterCode": "let playerScore = 72;\nlet maxScore = 100;\nlet lives = 2;\nlet playerName = 'Sam';\n\n// Score at least 70?\nconsole.log(playerScore >= 70);\n\n// Lives not 0?\n\n// Score above 50 AND lives above 0?\n\n// Name is Sam OR Alex?\n\n// Player has NOT won?\n",
       "checks": [
-        { "type": "variable", "name": "temperature", "expected": null, "label": "a variable called 'temperature' exists" },
-        { "type": "console", "includes": "Nice weather!", "label": "logged the correct message for 22 degrees" }
+        { "type": "console", "includes": "true", "label": "at least one comparison logged true" }
       ]
     },
     {
-      "title": "Build a quiz",
-      "type": "practice",
-      "duration": "8 min",
+      "title": "Logical operator puzzles",
+      "type": "predict",
+      "duration": "6 min",
       "tasks": [
-        "Use prompt() to ask: 'What is 8 times 7?'",
-        "Convert the answer to a Number.",
-        "Use an if/else to check if the answer is 56.",
-        "If correct: log 'Correct! 8 x 7 = 56'",
-        "If wrong: log 'Not quite. The answer was 56. You said: ' + their answer",
-        "Test it with a right answer and a wrong answer."
+        "Predict the result of each expression before running.",
+        "After checking, write one sentence explaining the rule for &&, one for ||, and one for !.",
+        "Then come up with your own example of a real-world situation for each operator."
       ],
-      "hint": "Number(prompt(...)) gets the input and converts it. Then compare with ===.",
-      "starterCode": "let answer = Number(prompt('What is 8 times 7?'));\n\n// Check the answer\n",
-      "checks": [
-        { "type": "console", "includes": "56", "label": "mentions 56 in the output" }
-      ]
-    },
-    {
-      "title": "Multiple conditions with &&",
-      "type": "practice",
-      "duration": "7 min",
-      "tasks": [
-        "Declare: playerLevel = 5, hasKey = true, bossDefeated = false",
-        "Write an if that logs 'You can enter the castle!' only when: level is 5 or higher AND hasKey is true.",
-        "Write a second if that logs 'Game over. Please restart.' when bossDefeated is false AND playerLevel is below 3.",
-        "Change the values and confirm the messages only appear under the right conditions.",
-        "Challenge: add an else to each if with an appropriate message."
-      ],
-      "hint": "Combine conditions with &&: if (playerLevel >= 5 && hasKey === true)",
-      "starterCode": "let playerLevel = 5;\nlet hasKey = true;\nlet bossDefeated = false;\n\n// Castle entry check\n\n\n// Game over check\n\n"
+      "hint": "For &&: both sides must be true. For ||: either side just needs to be true. For !: it just flips it.",
+      "starterCode": "console.log(true && true);\nconsole.log(true && false);\nconsole.log(false && false);\nconsole.log(true || false);\nconsole.log(false || false);\nconsole.log(!true);\nconsole.log(!false);\nconsole.log(!(5 > 3));\nconsole.log(5 > 3 && 10 < 20);\nconsole.log(5 > 10 || 3 < 4);\n"
     }
   ],
   "challenges": [
@@ -106,43 +98,43 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "The else block never runs",
-      "description": "No matter what score is set to, only the first message prints. Why?",
-      "buggyCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
-      "starterCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
-      "hint": "Think about the first condition. Is score >= 0 true for any score?",
+      "title": "The age check is always wrong",
+      "description": "This check should be true when age is 13 or older. But it's returning false for age = 13. One character is wrong.",
+      "buggyCode": "let age = 13;\nconsole.log(age > 13);",
+      "starterCode": "let age = 13;\nconsole.log(age > 13);",
+      "hint": "The condition is 'older than 13' not '13 or older'. One extra character fixes it.",
       "checks": [
-        { "type": "console", "includes": "You failed.", "label": "logs 'You failed.' for score = 40" }
+        { "type": "console", "includes": "true", "label": "logs true for age = 13" }
       ],
-      "explanation": "score >= 0 is true for every possible score (including 40), so the very first branch always wins. The else if and else never get a chance to run. Fix: reorder so the most specific conditions come first — check >= 50 before >= 0."
+      "explanation": "> means strictly greater than — 13 > 13 is false. To include 13 itself, you need >= (greater than OR equal to)."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
-      "title": "The discount code only works sometimes",
-      "description": "The store should give a discount when the customer has a coupon OR has spent more than $100. But it's only giving the discount when BOTH are true.",
-      "buggyCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
-      "starterCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
-      "hint": "Should both conditions need to be true, or just one?",
+      "title": "The password check always passes",
+      "description": "This login check should only pass when BOTH the username AND password are correct. Right now it passes even with the wrong password.",
+      "buggyCode": "let username = 'admin';\nlet password = 'wrong';\nlet isLoggedIn = username === 'admin' || password === 'secret123';\nconsole.log('Logged in:', isLoggedIn);",
+      "starterCode": "let username = 'admin';\nlet password = 'wrong';\nlet isLoggedIn = username === 'admin' || password === 'secret123';\nconsole.log('Logged in:', isLoggedIn);",
+      "hint": "The logic requires BOTH to be correct. Which operator requires both sides to be true?",
       "checks": [
-        { "type": "variable", "name": "getsDiscount", "expected": true, "label": "getsDiscount is true when hasCoupon is true" }
+        { "type": "variable", "name": "isLoggedIn", "expected": false, "label": "isLoggedIn is false when password is wrong" }
       ],
-      "explanation": "&& requires both conditions. The customer has a coupon but only spent $50. Since amountSpent > 100 is false, the whole && expression is false. Change && to || so having either condition is enough."
+      "explanation": "|| means OR — if either condition is true, the whole thing is true. Since username === 'admin' IS true, it doesn't even check the password. Change || to && so BOTH must be true."
     },
     {
       "id": "c3",
       "level": 3,
       "difficulty": "tricky",
-      "title": "The game never ends",
-      "description": "The game should end when lives reach 0 OR score hits 100. Find the three bugs.",
-      "buggyCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
-      "starterCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
-      "hint": "Count the equals signs in the condition. What do single, double, and triple equals each do?",
+      "title": "The name check never matches",
+      "description": "The check should be true when the name is 'Alex'. It's never true even when you set name to 'Alex'.",
+      "buggyCode": "let name = 'Alex';\nconsole.log(name == 'alex');",
+      "starterCode": "let name = 'Alex';\nconsole.log(name == 'alex');",
+      "hint": "There are TWO problems here. Look at the operator AND look at the capitalization.",
       "checks": [
-        { "type": "console", "includes": "Game over!", "label": "logs 'Game over!'" }
+        { "type": "console", "includes": "true", "label": "logs true" }
       ],
-      "explanation": "There are three = signs where there should be === (comparison, not assignment). lives = 0 SETS lives to 0 inside the condition — it doesn't check if lives IS 0. Fix all three: lives === 0 || score === 100."
+      "explanation": "Two bugs: (1) 'Alex' !== 'alex' — strings are case-sensitive. (2) Using == instead of ===. Fix both: change == to === and change 'alex' to 'Alex'."
     }
   ]
 }

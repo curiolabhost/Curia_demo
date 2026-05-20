@@ -1,96 +1,108 @@
 {
   "id": "s2-l6",
   "session": "Session 2",
-  "title": "Comparisons",
+  "title": "Getting Input",
   "content": [
     {
-      "heading": "Comparisons — asking yes or no questions",
+      "heading": "Before we start coding — think about this:",
       "blocks": [
-        { "kind": "p", "text": "Every decision a program makes comes down to a question with a yes or no answer. Is the score high enough? Is the player alive? Is this the right answer? Comparison operators ask those questions. The answer is always a boolean: true or false." },
-        { "kind": "table", "headers": ["Operator", "Meaning", "Example", "Result"], "rows": [
-          ["===", "exactly equal (value AND type)", "5 === 5", "true"],
-          ["!==", "NOT equal", "5 !== 3", "true"],
-          [">", "greater than", "10 > 5", "true"],
-          ["<", "less than", "3 < 1", "false"],
-          [">=", "greater than or equal", "5 >= 5", "true"],
-          ["<=", "less than or equal", "4 <= 3", "false"]
-        ]}
-      ]
-    },
-    {
-      "heading": "Combining conditions",
-      "blocks": [
-        { "kind": "concept", "code": "age >= 13 && hasTicket === true", "desc": "AND — both conditions must be true for the whole thing to be true" },
-        { "kind": "concept", "code": "isVIP || hasCoupon", "desc": "OR — at least one condition must be true" },
-        { "kind": "concept", "code": "!isGameOver", "desc": "NOT — flips true to false and false to true" }
-      ]
-    },
-    {
-      "blocks": [
-        { "kind": "code", "lines": [
-          "let score = 85;",
-          "let lives = 3;",
-          "",
-          "console.log(score > 80);          // true",
-          "console.log(score === 100);        // false",
-          "console.log(lives !== 0);          // true",
-          "",
-          "// AND — both must be true",
-          "console.log(score > 80 && lives > 0);  // true",
-          "",
-          "// OR — at least one must be true",
-          "console.log(score > 90 || lives > 0);  // true",
-          "",
-          "// NOT — flips it",
-          "let gameOver = false;",
-          "console.log(!gameOver);  // true"
+        { "kind": "image", "src": "/assets/lessons/s2-l6/hello-alex-bubble-v6.svg" },
+        { "kind": "p", "text": "You're building a game and you want to greet the player by name. But you don't know who's going to play it. You can't write `let name = 'Alex'` because it won't always be Alex." },
+        { "kind": "heading", "text": "So what do we do?" },
+        { "kind": "list", "items": [
+          "Could you just guess it?",
+          "Could the code figure it out on its own?",
+          "Could we tell the program to ask the user for their name?"
         ]},
-        { "kind": "callout", "variant": "danger", "label": "=== not ==", "text": "Always use === (three equals signs) to check if things are equal. Using == (two equals signs) lets JavaScript change types before comparing, which causes bugs. Stick to === and you'll avoid a whole class of problems." }
+        { "kind": "heading", "text": "Yes, we can!" },
+
+        {"kind": "image", "src": "/assets/lessons/s2-l6/before-we-code-v2.svg"}
+      ]
+    },
+    {
+      "heading": "We can make the code interactive!",
+      "blocks": [
+        { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful. Real programs respond to the person using them. `prompt()` pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
+        { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
+        { "kind": "image", "src": "/assets/lessons/s2-l6/prompt-visual-v6.svg"}
+      ]
+    },
+    {
+      "heading": "What happens if you are prompting for a number?",
+      "blocks": [
+        { "kind": "p", "text": "prompt() always gives you back a string, with no exceptions. Even if the user types `42`, you get the text `'42'`, not the number `42`. That means you can't do math with it yet. `'42' + 1` gives you `'421'`, not `43`. The fix: wrap `prompt()` in `Number()` and it converts the answer the moment the user hits OK." },
+        { "kind": "concept", "code": "let age = prompt('How old are you?')", "desc": "Returns the string '13' even if the user typed 13. Looks like a number, but it's text, so math won't work." },
+        { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "Number() converts the string '13' into the actual number 13. Now you can add, subtract, and multiply normally." },
+        { "kind": "image", "src": "/assets/lessons/s2-l6/prompt-number-visual.svg", "alt": "Visual showing prompt() returning a string vs Number(prompt()) returning a number" },
+        { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time , even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Predict true or false",
-      "type": "predict",
-      "duration": "6 min",
-      "tasks": [
-        "Before running anything — write true or false for each line in the starter code.",
-        "Then run it and check your answers.",
-        "For any wrong ones: explain why the result is what it is."
-      ],
-      "hint": "Work through each comparison one at a time. Don't rush — this is the most important skill in programming.",
-      "starterCode": "let age = 15;\nlet score = 80;\nlet name = 'Alex';\n\nconsole.log(age > 13);\nconsole.log(score === 100);\nconsole.log(score >= 80);\nconsole.log(name === 'alex');\nconsole.log(age !== 15);\nconsole.log(score > 50 && age > 10);\nconsole.log(score > 90 || age > 10);\nconsole.log(!(age === 15));\n"
-    },
-    {
-      "title": "Build your own comparisons",
+      "title": "Your first interactive program",
       "type": "practice",
       "duration": "6 min",
       "tasks": [
-        "Declare: playerScore = 72, maxScore = 100, lives = 2, playerName = 'Sam'",
-        "Write a comparison that checks if playerScore is at least 70. Log it.",
-        "Write a comparison that checks if lives is NOT 0. Log it.",
-        "Write a comparison that checks if playerScore is above 50 AND lives is above 0. Log it.",
-        "Write a comparison that checks if playerName equals 'Sam' OR 'Alex'. Log it.",
-        "Challenge: write a comparison that's true only when the player has NOT won (score below 100)."
+        "Use prompt() to ask the user for their name.",
+        "Store it in a variable called userName.",
+        "Use a template literal to log: 'Nice to meet you, [name]! Welcome to Curia.'",
+        "Run it and type your name in the pop-up."
       ],
-      "hint": "For the OR name check: playerName === 'Sam' || playerName === 'Alex'",
-      "starterCode": "let playerScore = 72;\nlet maxScore = 100;\nlet lives = 2;\nlet playerName = 'Sam';\n\n// Score at least 70?\nconsole.log(playerScore >= 70);\n\n// Lives not 0?\n\n// Score above 50 AND lives above 0?\n\n// Name is Sam OR Alex?\n\n// Player has NOT won?\n",
+      "hint": "The string inside prompt() is the message the user sees. Whatever they type becomes your variable's value.",
+      "starterCode": "// Ask for the user's name\nlet userName = prompt('What is your name?');\n\n// Log a welcome message\nconsole.log(`Nice to meet you, ${userName}! Welcome to Curia.`);\n",
       "checks": [
-        { "type": "console", "includes": "true", "label": "at least one comparison logged true" }
+        { "type": "variable", "name": "userName", "expected": null, "label": "a variable called 'userName' exists" }
       ]
     },
     {
-      "title": "Logical operator puzzles",
-      "type": "predict",
-      "duration": "6 min",
+      "title": "Age calculator",
+      "type": "practice",
+      "duration": "7 min",
       "tasks": [
-        "Predict the result of each expression before running.",
-        "After checking, write one sentence explaining the rule for &&, one for ||, and one for !.",
-        "Then come up with your own example of a real-world situation for each operator."
+        "Ask the user how old they are using prompt().",
+        "Convert the input to a number with Number().",
+        "Calculate how old they'll be in 5 years and in 10 years.",
+        "Log both results with labels.",
+        "Bonus: log what year they were born (use 2025 as the current year)."
       ],
-      "hint": "For &&: both sides must be true. For ||: either side just needs to be true. For !: it just flips it.",
-      "starterCode": "console.log(true && true);\nconsole.log(true && false);\nconsole.log(false && false);\nconsole.log(true || false);\nconsole.log(false || false);\nconsole.log(!true);\nconsole.log(!false);\nconsole.log(!(5 > 3));\nconsole.log(5 > 3 && 10 < 20);\nconsole.log(5 > 10 || 3 < 4);\n"
+      "hint": "Number(prompt('...')) does both steps at once: asks the question and converts the answer.",
+      "starterCode": "// Get age from user — remember to convert!\nlet age = Number(prompt('How old are you?'));\n\n// Calculate future ages\n\n\nconsole.log(`In 5 years you will be ${age + 5} years old.`);\n// Add the 10 years one below\n\n// Bonus: birth year\n",
+      "checks": [
+        { "type": "console", "includes": "years old", "label": "logged a future age message" }
+      ]
+    },
+    {
+      "title": "The string trap with prompt()",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Run the starter code. When the prompt appears, type: 10",
+        "Look at the result. Is it what you expected?",
+        "Now look at the second version using Number(). Run that and type 10 again.",
+        "Explain the difference in your own words."
+      ],
+      "hint": "prompt() returns text, not a number, even when the user types digits.",
+      "starterCode": "// Version 1 — no conversion\nlet input1 = prompt('Enter a number (version 1):');\nconsole.log('Without Number():', input1 + 5);\nconsole.log('Type:', typeof input1);\n\n// Version 2 — with conversion\nlet input2 = Number(prompt('Enter a number (version 2):'));\nconsole.log('With Number():', input2 + 5);\nconsole.log('Type:', typeof input2);\n"
+    },
+    {
+      "title": "Build a personal fact card",
+      "type": "practice",
+      "duration": "8 min",
+      "tasks": [
+        "Use prompt() to ask 3 questions: name, favorite animal, and a lucky number.",
+        "Convert the lucky number to a Number.",
+        "Build a single string using a template literal that combines all three.",
+        "Log the full sentence.",
+        "Log the lucky number doubled.",
+        "Log the length of their name."
+      ],
+      "hint": "Ask all three questions first, store all three, then do the math and build the sentence.",
+      "starterCode": "let name = prompt('What is your name?');\nlet animal = prompt('What is your favorite animal?');\nlet luckyNumber = Number(prompt('What is your lucky number?'));\n\n// Build your fact card\nlet factCard = ``;\n\nconsole.log(factCard);\nconsole.log('Lucky number doubled:', luckyNumber * 2);\nconsole.log('Name length:', name.length);\n",
+      "checks": [
+        { "type": "variable", "name": "luckyNumber", "expected": null, "label": "luckyNumber exists" },
+        { "type": "console", "includes": "doubled", "label": "logged the doubled lucky number" }
+      ]
     }
   ],
   "challenges": [
@@ -98,43 +110,48 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "The age check is always wrong",
-      "description": "This check should be true when age is 13 or older. But it's returning false for age = 13. One character is wrong.",
-      "buggyCode": "let age = 13;\nconsole.log(age > 13);",
-      "starterCode": "let age = 13;\nconsole.log(age > 13);",
-      "hint": "The condition is 'older than 13' not '13 or older'. One extra character fixes it.",
+      "title": "The personalised greeting",
+      "description": "A game wants to welcome the player by name and tell them which level they're starting on. Right now it just prints a generic message. Fix the code so it asks for the player's name using prompt(), then prints a personalised welcome using a template literal. Then extend it to ask what level they want to start on and include that too.",
+      "buggyCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\n// Template literal structure:\n// console.log(`Welcome ${name}! You are on level ${level}.`);\n\nconsole.log(name);\nconsole.log(level);",
+      "starterCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\n// Template literal structure:\n// console.log(`Welcome ${name}! You are on level ${level}.`);\n\nconsole.log(name);\nconsole.log(level);",
+      "hint": "Replace the hardcoded values with prompt() calls. The level prompt returns a string, so you don't need Number() here since you're just displaying it, not doing math.",
       "checks": [
-        { "type": "console", "includes": "true", "label": "logs true for age = 13" }
+        { "type": "console", "includes": "Welcome", "label": "prints a welcome message" },
+        { "type": "console", "includes": "! You are on level", "label": "message includes the level in the right format" }
       ],
-      "explanation": "> means strictly greater than — 13 > 13 is false. To include 13 itself, you need >= (greater than OR equal to)."
+      "explanation": "prompt() lets the user provide their own value at runtime instead of you hardcoding it. Replace let name = 'Player' with let name = prompt('What is your name?') and let level = 1 with let level = prompt('What level do you want to start on?'). The template literal then drops both values in automatically."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
-      "title": "The password check always passes",
-      "description": "This login check should only pass when BOTH the username AND password are correct. Right now it passes even with the wrong password.",
-      "buggyCode": "let username = 'admin';\nlet password = 'wrong';\nlet isLoggedIn = username === 'admin' || password === 'secret123';\nconsole.log('Logged in:', isLoggedIn);",
-      "starterCode": "let username = 'admin';\nlet password = 'wrong';\nlet isLoggedIn = username === 'admin' || password === 'secret123';\nconsole.log('Logged in:', isLoggedIn);",
-      "hint": "The logic requires BOTH to be correct. Which operator requires both sides to be true?",
+      "title": "The tip calculator",
+      "description": "A restaurant bill is £45. The code asks the user for a tip percentage using prompt() and tries to calculate the tip, but the numbers come out wrong. Diagnose the type issue using typeof, fix it with Number(), then log: 'Tip: £[amount]. Total: £[total].'",
+      "buggyCode": "let bill = 45;\n// Write a line of code that prompts the user for the tip percentage they want to leave\n\n// Check the types\nconsole.log('bill type:', typeof bill);\nconsole.log('tipPercent type:', typeof tipPercent);\n\n// Calculate\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
+      "starterCode": "let bill = 45;\n// Write a line of code that prompts the user for the tip percentage they want to leave (make sure the input is the number before the % sign. ex. 10 for 10%)\n// Name the variable tipPercent\n\n// Check the types\nconsole.log('bill type:', typeof bill);\nconsole.log('tipPercent type:', typeof tipPercent);\n\n// Calculate\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
+      "hint": "typeof tipPercent will reveal the problem. Wrap tipPercent in Number() before doing the math. Notice how * works differently than + when mixing strings and numbers.",
       "checks": [
-        { "type": "variable", "name": "isLoggedIn", "expected": false, "label": "isLoggedIn is false when password is wrong" }
+        { "type": "console", "includes": "tipPercent type: number", "label": "tipPercent is wrapped with Number()" },
+        { "type": "console", "includes": "Tip: £", "label": "logs the tip amount" },
+        { "type": "console", "includes": "Total: £", "label": "logs the total amount" }
       ],
-      "explanation": "|| means OR — if either condition is true, the whole thing is true. Since username === 'admin' IS true, it doesn't even check the password. Change || to && so BOTH must be true."
+      "explanation": "prompt() always returns a string. When you use * with a string that looks like a number, JavaScript actually converts it silently, so the multiplication might work. But + is the dangerous one: bill + tip might join instead of add if tip is still a string. Always wrap prompt() in Number() when doing math: let tipPercent = Number(prompt(...)). Then typeof tipPercent confirms it's a number before you use it."
     },
     {
       "id": "c3",
       "level": 3,
       "difficulty": "tricky",
-      "title": "The name check never matches",
-      "description": "The check should be true when the name is 'Alex'. It's never true even when you set name to 'Alex'.",
-      "buggyCode": "let name = 'Alex';\nconsole.log(name == 'alex');",
-      "starterCode": "let name = 'Alex';\nconsole.log(name == 'alex');",
-      "hint": "There are TWO problems here. Look at the operator AND look at the capitalization.",
+      "title": "The Simon Says intro sequence",
+      "description": "Build a mini intro sequence for the Simon Says game. Ask the player for their name, age, and how many rounds they want to play. Then log a single summary message and check whether they qualify as a junior player.",
+      "buggyCode": "// Ask for three pieces of information\nlet playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\n// Log a summary using a template literal\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\n// Log the length of their name\nconsole.log('Name length:', playerName.length);\n\n// If age is under 10, add junior label\n// This is broken — fix it\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
+      "starterCode": "// Ask for three pieces of information\nlet playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\n// Log a summary using a template literal\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\n// Log the length of their name\nconsole.log('Name length:', playerName.length);\n\n// If age is under 10, add junior label\n// This is broken — fix it\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
+      "hint": "The summary and .length will work fine without Number(). But the age comparison < 10 won't work correctly when playerAge is a string. Use typeof to confirm, then wrap it in Number() just for the comparison.",
       "checks": [
-        { "type": "console", "includes": "true", "label": "logs true" }
+        { "type": "console", "includes": "Player:", "label": "logs the summary line" },
+        { "type": "console", "includes": "Name length:", "label": "logs the name length" },
+        { "type": "console", "includes": "player", "label": "logs the junior or regular player message" }
       ],
-      "explanation": "Two bugs: (1) 'Alex' !== 'alex' — strings are case-sensitive. (2) Using == instead of ===. Fix both: change == to === and change 'alex' to 'Alex'."
+      "explanation": "prompt() returns strings for all three values. The summary template literal works fine with strings. .length works on strings too. But playerAge < 10 compares a string to a number, and JavaScript tries to convert it, and it mostly works, but it's unreliable and considered a bug. The fix: wrap only playerAge in Number() when comparing: if (Number(playerAge) < 10). This is the real-world lesson: you only need Number() when doing math or comparisons, not when displaying."
     }
   ]
 }

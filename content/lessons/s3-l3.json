@@ -1,71 +1,75 @@
 {
   "id": "s3-l3",
   "session": "Session 3",
-  "title": "Scope",
+  "title": "Decision-Making",
   "content": [
     {
-      "heading": "Scope — what can each part of your code see?",
+      "heading": "Conditionals — making decisions",
       "blocks": [
-        { "kind": "p", "text": "Scope determines which variables a piece of code can access. Variables declared outside any function are global — visible everywhere. Variables declared inside a function are local — only visible inside that function." },
-        { "kind": "concept", "code": "let x = 0  (outside)", "desc": "Global scope — any function can read or change this" },
-        { "kind": "concept", "code": "let y = 0  (inside fn)", "desc": "Local scope — only visible inside the function it was declared in" }
+        { "kind": "p", "text": "An if statement runs a block of code only when a condition is true. An else block runs when it is false. This is how programs make decisions based on the current state." },
+        { "kind": "concept", "code": "if (score >= 10) { ... }", "desc": "Run this block only when score is 10 or higher" },
+        { "kind": "concept", "code": "} else { ... }", "desc": "Run this block when the condition is false" }
       ]
     },
     {
       "blocks": [
         { "kind": "code", "lines": [
-          "let count = 0;          // global — visible everywhere",
+          "let score = 8;",
           "",
-          "function increment() {",
-          "    let secret = 42;    // local — only visible inside increment()",
-          "    count = count + 1;  // works — count is global",
+          "if (score >= 10) {",
+          "    console.log('You win!');",
+          "} else {",
+          "    console.log('Keep going — ' + (10 - score) + ' more needed.');",
           "}",
           "",
-          "console.log(count);     // works",
-          "console.log(secret);    // ReferenceError — secret does not exist here"
+          "// === checks value AND type — always use === not ==",
+          "// >= means greater than or equal to",
+          "// !  means NOT — !true is false, !false is true"
         ]},
-        { "kind": "callout", "variant": "info", "label": "Do not explain this first", "text": "Have students predict whether the last line will work, then run it and read the error. A ReferenceError is more memorable than a definition of scope." }
+        { "kind": "callout", "variant": "danger", "label": "=== is not =", "text": "A single = puts a value into a variable. Triple === checks whether two values are equal. Using = inside an if condition is one of the most common bugs in JavaScript." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Break scope on purpose",
-      "type": "debug",
-      "duration": "7 min",
+      "title": "Write a decision",
+      "type": "practice",
+      "duration": "6 min",
       "tasks": [
-        "The code below throws a ReferenceError. Read it and predict which line causes the error before running.",
-        "Run it and confirm. Read the error message in the console carefully.",
-        "Fix it by moving the offending line to where secret is actually visible.",
-        "Now try the reverse: declare a variable globally and confirm a function can read it."
+        "Declare a variable called temperature set to 22.",
+        "Write an if/else: log 'Wear a jacket' if temperature is below 15, otherwise log 'No jacket needed'.",
+        "Change temperature to 10 and run again — confirm the output changes.",
+        "Add a third condition using else if: if temperature is above 30, log 'It is very hot'.",
+        "Challenge: rewrite the logic as a function called getAdvice(temp) that returns the message instead of logging it."
       ],
-      "hint": "A variable declared with let inside a function only exists inside that function's curly braces.",
-      "starterCode": "function makeSecret() {\n    let secret = 42;\n    console.log('Inside function:', secret);\n}\n\nmakeSecret();\nconsole.log('Outside function:', secret); // will this work?\n",
+      "hint": "else if goes between if and else: if (...) { } else if (...) { } else { }",
+      "starterCode": "// Declare temperature\nlet temperature = 22;\n\n// Write your if / else if / else below\n\n",
       "checks": [
         {
-          "type": "console",
-          "includes": "Inside function",
-          "label": "logs something from inside the function"
+          "type": "variable",
+          "name": "temperature",
+          "expected": null,
+          "label": "a variable called 'temperature' exists"
         },
         {
           "type": "console",
-          "includes": "ReferenceError",
-          "label": "a ReferenceError appears in the output"
+          "includes": "jacket",
+          "label": "console output mentions 'jacket'"
         }
       ]
     },
     {
-      "title": "Global vs local scope",
-      "type": "practice",
-      "duration": "5 min",
+      "title": "Debug the conditional",
+      "type": "debug",
+      "duration": "4 min",
       "tasks": [
-        "Declare a variable called total set to 0 outside any function.",
-        "Write a function called addFive that adds 5 to total each time it is called.",
-        "Call addFive three times and log total after each call.",
-        "Now declare a variable called localOnly inside addFive. Try to log it outside the function. Read the error."
+        "The function below should log 'You win!' when score reaches 5 — but it never does.",
+        "Find the bug. It is a single character error.",
+        "Fix it and confirm the win message appears.",
+        "Then change the target from 5 to 10 and test again."
       ],
-      "hint": "total is global so addFive can read and change it. localOnly is local so nothing outside addFive can see it.",
-      "starterCode": "let total = 0;\n\nfunction addFive() {\n    // add 5 to total\n    // declare localOnly here\n}\n\n// call addFive three times and log total each time\n\n// try to log localOnly here\n"
+      "hint": "Look carefully at the comparison operator inside the if condition. = and === are very different.",
+      "starterCode": "let score = 5;\n\nfunction checkWin() {\n    if (score = 5) {\n        console.log('You win!');\n    } else {\n        console.log('Not yet. Score is:', score);\n    }\n}\n\ncheckWin();\n"
     }
   ]
 }

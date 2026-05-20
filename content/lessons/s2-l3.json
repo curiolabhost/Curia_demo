@@ -1,124 +1,633 @@
 {
   "id": "s2-l3",
   "session": "Session 2",
-  "title": "Strings",
+  "title": "Numbers & Math",
   "content": [
     {
-      "heading": "Strings — text in a variable (instead of numbers)",
+      "heading": "Numbers doing math with JavaScript",
       "blocks": [
-         { "kind": "image", "src": "/assets/lessons/s2-l3/strings_javascript_matched_style.svg", "alt": "Visual explainer of strings in JavaScript — showing text, numbers, and symbols all wrapped in quotes", "caption": "Anything inside quotes is a string: letters, numbers, symbols, even emojis. The quotes are what makes it text." },
-
-        { "kind": "p", "text": "A string is any text you put inside quotes. JavaScript doesn't care what's in there: letters, numbers, symbols, spaces, emojis. If it's in quotes, it's a string. Strings are one of the most common things you'll work with." },
-        { "kind": "concept", "code": "'Hello' + ' ' + 'World'", "desc": "Joining two or more strings together is called concatenation. The + sign does it." },
-        { "kind": "concept", "code": "name.length", "desc": "Every string has a built-in length property. It tells you how many characters are inside." },
-        { "kind": "callout", "variant": "warn", "label": "Strings vs Numbers", "text": "'5' and 5 are completely different things. '5' is text. 5 is a number. '5' + '5' gives you '55'. 5 + 5 gives you 10. This will trip you up, so watch for it." }
-      ]
-    },
-    {
-      "heading": "Template literals",
-      "blocks": [
-        { "kind": "p", "text": "Think of Template Literals as a fill-in-the-blank sentence. `${VariableName}` marks the gaps where variables get dropped in. Wrap the whole sentence in backtick (`) quotes." },
-        { "kind": "image", "src": "/assets/lessons/s2-l3/template-literals.svg", "alt": "A template literal using backticks with ${name} and ${age} dropped directly into the sentence" },
-
+        {
+          "kind": "p",
+          "text": "JavaScript can do math the same way a calculator can. You already know most of the symbols plus, minus, multiply, divide. There are five operators total, and each one has a job."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l3/math-operators.svg",
+          "alt": "Five cards showing the five math operators: + for add, - for subtract, * for multiply, / for divide, and % for remainder, each with a code example",
+          "caption": "These five operators are the building blocks of all math in JavaScript."
+        },
         {
           "kind": "callout",
           "variant": "warn",
-          "label": "Easy to mix up",
-          "text": "Backtick (`) is not the same as a single quote ('). If your template literal isn't working, that's the first thing to check."
-        },        
-
-        { "kind": "code", "lines": [
-          "let firstName = 'Alex';",
-          "let age = 13;",
-          "",
-          "// Template literal — one clean sentence",
-          "let intro = `My name is ${firstName} and I am ${age} years old.`;",
-          "console.log(intro);  // My name is Alex and I am 13 years old."
-        ]}
+          "label": "One difference from math class",
+          "text": "Multiplication uses * (not x) and division uses / (not the division symbol). Your keyboard doesn't have those symbols so JavaScript uses these instead."
+        }
       ]
     },
     {
-      "heading": "The (+) sign has two jobs",
+      "heading": "Variables + numbers = useful programs",
       "blocks": [
-        { "kind": "p", "text": "The `+` sign does different things depending on what's on each side of it. With two numbers it adds. With a string on either side, it joins the values together as text. JavaScript checks the types first, then decides which job to do." },
-        { "kind": "image", "src": "/assets/lessons/s2-l3/plus-sign-final.svg", "alt": "Two examples side by side: 5 + 5 with both values labeled as numbers giving 10, and '5' + 5 with the string highlighted differently giving '55'", "caption": "Same + sign, different result. The types on each side decide whether it adds or joins." },
-
-
-        { "kind": "code", "lines": [
-          "console.log(5 + 5);           // 10       — both numbers, so + adds",
-          "console.log('5' + 5);         // '55'     — string + number, so + joins",
-          "console.log('5' + '5');       // '55'     — both strings, so + joins",
-          "console.log('Score: ' + 100); // 'Score: 100' — string + number, so + joins"
-        ]},
-        { "kind": "callout", "variant": "warn", "label": "Remember!", "text": "If either value is a string, + treats the whole thing as text and joins. It only adds when both sides are numbers." }
+        {
+          "kind": "p",
+          "text": "A number on its own is fine for one calculation. But what if you need to use that number again later? Or change it? That's where variables come in. You store your numbers in variables, then use the variable names in your math. JavaScript swaps in the value automatically."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l3/math-variables.svg",
+          "alt": "Four step flowchart showing: declare variables with let, store numbers in them, use the variable names in a math expression, then log the result to the console",
+          "caption": "You write the variable name JavaScript looks up the number stored inside it and uses that."
+        },
+        {
+          "kind": "concept",
+          "code": "let total = price + tax",
+          "desc": "JavaScript reads price (20) and tax (2), adds them, and stores 22 into total. You never have to type the actual numbers again just the names."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "Why this matters",
+          "text": "If you change price from 20 to 35, total automatically becomes 37 the next time it's calculated. You changed one variable and everything that depends on it updates. That's the whole point of variables."
+        }
+      ]
+    },
+    {
+      "heading": "The remainder operator %",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "The % operator is the one that looks strangest at first. It doesn't give you the result of dividing it gives you the leftover after dividing as evenly as possible. That leftover is called the remainder."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l3/math-remainder.svg",
+          "alt": "Ten numbered dots grouped into three boxes of three, with one dot left over in a dashed box labeled 'left over'. The result is 1.",
+          "caption": "10 % 3 = 1 because 3 fits into 10 three full times, with 1 left over."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "The even/odd trick",
+          "text": "Any number % 2 gives you either 0 or 1. If the answer is 0, the number is even. If it's 1, the number is odd. Game developers use this constantly for example, to do something every other turn."
+        }
+      ]
+    },
+    {
+      "heading": "Shortcut operators",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "Updating a variable using itself is so common adding to a score, losing a life, collecting coins that JavaScript has shortcuts for it. Instead of writing the full thing every time, you can use a shorter version."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l3/math-shortcuts.svg",
+          "alt": "Side by side table: the long way to write score = score + 10 versus the shortcut score += 10, repeated for -=, *=, ++, and --",
+          "caption": "The shortcut does exactly the same thing it just saves you from typing the variable name twice."
+        },
+        {
+          "kind": "concept",
+          "code": "score++",
+          "desc": "The most common shortcut of all adds exactly 1. You'll see this in almost every program that counts something."
+        }
+      ]
+    },
+    {
+      "heading": "Order of operations",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "JavaScript follows the same math rules you learned in school. Multiplication and division happen before addition and subtraction. If you want a different order, use parentheses they always run first."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l3/math-order.svg",
+          "alt": "Two expressions side by side: 2 + 3 * 4 equals 14 because * runs first, versus (2 + 3) * 4 equals 20 because parentheses run first",
+          "caption": "Same numbers, different answer all because of where the parentheses go."
+        },
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "When in doubt, use parentheses",
+          "text": "If you're not sure what order JavaScript will evaluate your math, add parentheses to make it explicit. There's no penalty for using them and they make your intention obvious to anyone reading your code."
+        }
+      ]
+    },
+    {
+      "heading": "Putting it all together",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "Here's a code block that uses everything from this lesson at once. Read through each line before running it try to predict what the final value of score will be."
+        },
+        {
+          "kind": "code",
+          "lines": [
+            "let score = 0;",
+            "",
+            "score += 50; // score is now 50",
+            "score *= 3;  // score is now 150",
+            "score -= 25; // score is now 125",
+            "score++;     // score is now 126",
+            "",
+            "console.log('Final score:', score); // 126",
+            "",
+            "// Order of operations matters:",
+            "let bonus  = 2 + 3 * 10;  // 32, not 50",
+            "let bonus2 = (2 + 3) * 10; // 50",
+            "console.log(bonus, bonus2);"
+          ]
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "Predict before you run",
+          "text": "Before hitting Run, write down what you think score will be at the end. Then run it and compare. If you were wrong, trace through each line again this is the most important skill in programming."
+        }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Build a name tag",
+      "title": "Which operator does which job?",
       "type": "practice",
-      "duration": "5 min",
-      "tasks": [
-        "Declare variables for your first name and last name.",
-        "Join them together into a variable called fullName with a space in between.",
-        "Log fullName.",
-        "Log the length of both fullName and firstName. Which is longer, and by how much?"
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Which operator gives you the leftover after dividing?"],
+      "hint": "It's not + - * or /. It's the fifth one.",
+      "options": [
+        { "id": "a", "label": "+", "code": "10 + 3" },
+        { "id": "b", "label": "/", "code": "10 / 3" },
+        { "id": "c", "label": "%", "code": "10 % 3" },
+        { "id": "d", "label": "*", "code": "10 * 3" }
       ],
-      "hint": "Don't forget the space: firstName + ' ' + lastName",
-      "starterCode": "let firstName = 'Your';\nlet lastName = 'Name';\n\n// Build fullName\n\n\nconsole.log(fullName);\nconsole.log('Length:', fullName.length);\n",
+      "correctOptionId": "c",
+      "explanation": "% is the remainder operator. 10 % 3 = 1 because 3 fits into 10 three full times, with 1 left over.",
+      "checks": []
+    },
+    {
+      "title": "What does this print?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Read the code. What number does console.log print?"],
+      "hint": "What is 10 multiplied by 4?",
+      "codeSnippet": "let x = 10 * 4;\nconsole.log(x);",
+      "options": [
+        { "id": "a", "label": "14" },
+        { "id": "b", "label": "104" },
+        { "id": "c", "label": "40" },
+        { "id": "d", "label": "6" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "10 * 4 = 40. That value gets stored in x, and console.log prints whatever is inside x.",
+      "checks": []
+    },
+    {
+      "title": "Match the expression to its result",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Drag each expression into the bucket showing its result."],
+      "hint": "Work through each one step by step. Remember % gives you the leftover after dividing.",
+      "buckets": [
+        { "id": "b1", "label": "1" },
+        { "id": "b7", "label": "7" },
+        { "id": "b13", "label": "13" },
+        { "id": "b20", "label": "20" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "10 + 3", "correctBucketId": "b13" },
+        { "id": "i2", "label": "10 * 2", "correctBucketId": "b20" },
+        { "id": "i3", "label": "10 % 3", "correctBucketId": "b1" },
+        { "id": "i4", "label": "10 - 3", "correctBucketId": "b7" }
+      ],
+      "checks": [],
+      "explanation": "10 + 3 = 13, 10 * 2 = 20, 10 % 3 = 1 (3 goes into 10 three times with 1 left over), 10 - 3 = 7."
+    },
+    {
+      "title": "Drop the operator",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the correct operator into the blank to calculate the total cost."],
+      "hint": "You're combining price and tax together. Which operator adds two things?",
+      "codeWithBlanks": [
+        "let price = 20;",
+        "let tax = 2;",
+        "let total = price ___BLANK___ tax;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "+" },
+        { "id": "t2", "label": "-" },
+        { "id": "t3", "label": "*" },
+        { "id": "t4", "label": "/" }
+      ],
+      "correctOrder": ["+"],
+      "explanation": "Adding price + tax gives the total cost. The other operators would give wrong results: - subtracts, * multiplies, / divides.",
+      "checks": []
+    },
+    {
+      "title": "Drop the operator and the variable",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Two blanks this time. Drop the operator and the second variable to calculate the area."],
+      "hint": "Area = length times width. The operator for multiply is *. What is the second variable called?",
+      "codeWithBlanks": [
+        "let length = 10;",
+        "let width = 4;",
+        "let area = length ___BLANK___ ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "*" },
+        { "id": "t2", "label": "width" },
+        { "id": "t3", "label": "+" },
+        { "id": "t4", "label": "length" },
+        { "id": "t5", "label": "4" }
+      ],
+      "correctOrder": ["*", "width"],
+      "explanation": "length * width multiplies the two variables. Using the variable name 'width' instead of the raw number 4 means the formula still works if you change width later.",
+      "checks": []
+    },
+    {
+      "title": "What does this print? (two variables)",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Two variables are used in a math expression. What does the console print?"],
+      "hint": "JavaScript replaces each variable name with its value, then does the math.",
+      "codeSnippet": "let apples = 5;\nlet oranges = 3;\nlet total = apples + oranges;\nconsole.log(total);",
+      "options": [
+        { "id": "a", "label": "53" },
+        { "id": "b", "label": "apples + oranges" },
+        { "id": "c", "label": "8" },
+        { "id": "d", "label": "2" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "JavaScript looks up apples (5) and oranges (3), adds them to get 8, and stores that in total. The console prints 8.",
+      "checks": []
+    },
+    {
+      "title": "Type the operator",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Type the operator that subtracts amountSpent from balance."],
+      "hint": "You're taking money away. Which single character operator removes something?",
+      "hintBank": [
+        { "id": "h1", "label": "+" },
+        { "id": "h2", "label": "-" },
+        { "id": "h3", "label": "*" },
+        { "id": "h4", "label": "/" }
+      ],
+      "codeWithBlanks": [
+        "let balance = 50;",
+        "let amountSpent = 12;",
+        "let remaining = balance ___BLANK___ amountSpent;"
+      ],
+      "blankPlaceholders": ["operator"],
+      "blankWidths": [3],
       "checks": [
-        { "type": "variable", "name": "fullName", "expected": null, "label": "a variable called 'fullName' exists" },
-        { "type": "console", "includes": "Length:", "label": "logged the length to the console" }
+        {
+          "type": "variable",
+          "name": "remaining",
+          "expected": 38,
+          "label": "remaining equals 38"
+        }
+      ],
+      "explanation": "balance - amountSpent = 50 - 12 = 38. The minus operator subtracts the right side from the left."
+    },
+    {
+      "title": "Type the operator and the variable",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Two blanks now. Type the operator and the second variable name."],
+      "hint": "You're multiplying price by quantity. One character for the operator, then the variable name.",
+      "hintBank": [
+        { "id": "h1", "label": "*" },
+        { "id": "h2", "label": "quantity" },
+        { "id": "h3", "label": "+" },
+        { "id": "h4", "label": "price" },
+        { "id": "h5", "label": "/" }
+      ],
+      "codeWithBlanks": [
+        "let price = 15;",
+        "let quantity = 3;",
+        "let total = price ___BLANK___ ___BLANK___;"
+      ],
+      "blankPlaceholders": ["operator", "variable"],
+      "blankWidths": [3, 10],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "total",
+          "expected": 45,
+          "label": "total equals 45"
+        }
+      ],
+      "explanation": "price * quantity = 15 * 3 = 45. Using the variable name 'quantity' means the formula updates automatically if quantity changes."
+    },
+    {
+      "title": "Put the calculation in order",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": ["Drag these lines into the correct order so the math works."],
+      "hint": "You have to declare a variable before you can use it in a calculation.",
+      "codeLines": [
+        "let price = 15;",
+        "let quantity = 3;",
+        "let total = price * quantity;",
+        "console.log(total);"
+      ],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "total",
+          "expected": 45,
+          "label": "total equals 45"
+        },
+        {
+          "type": "console",
+          "includes": "45",
+          "label": "45 is printed to the console"
+        }
+      ],
+      "explanation": "You must declare price and quantity before using them in the total calculation. Then log after total exists."
+    },
+    {
+      "title": "What does a shortcut mean?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What does score += 10 mean?"],
+      "hint": "The += shortcut is a shorter way of writing something you already know.",
+      "options": [
+        { "id": "a", "label": "Create a new variable called score with value 10" },
+        { "id": "b", "label": "Add 10 to score and store the result back in score"},
+        { "id": "c", "label": "Print score + 10 to the console" },
+        { "id": "d", "label": "Check if score equals 10" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "score += 10 is a shortcut for score = score + 10. It reads score, adds 10, and stores the result back. The variable updates itself.",
+      "checks": []
+    },
+    {
+      "title": "What does this print? (shortcut)",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["A shortcut operator is used. What does the console print?"],
+      "hint": "score += 10 does the same thing as score = score + 10.",
+      "codeSnippet": "let score = 5;\nscore += 10;\nconsole.log(score);",
+      "options": [
+        { "id": "a", "label": "5" },
+        { "id": "b", "label": "10" },
+        { "id": "c", "label": "15" },
+        { "id": "d", "label": "50" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "score starts at 5. score += 10 adds 10 to it, making it 15. The console prints 15.",
+      "checks": []
+    },
+    {
+      "title": "Drop the shortcut",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["You lost a life. Drop the shortcut operator that subtracts 1 from lives."],
+      "hint": "You want to subtract. The shortcut for subtracting is -=.",
+      "codeWithBlanks": [
+        "let lives = 3;",
+        "lives ___BLANK___ 1;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "-=" },
+        { "id": "t2", "label": "+=" },
+        { "id": "t3", "label": "*=" },
+        { "id": "t4", "label": "==" }
+      ],
+      "correctOrder": ["-="],
+      "explanation": "-= subtracts from a variable. lives -= 1 is the shortcut for lives = lives - 1. lives goes from 3 to 2.",
+      "checks": []
+    },
+    {
+      "title": "Drop the shortcut and the amount",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Two blanks. Drop the shortcut operator and the number to collect 10 coins."],
+      "hint": "You're adding coins, so you're using +=. How many are you collecting?",
+      "codeWithBlanks": [
+        "let coins = 0;",
+        "coins ___BLANK___ ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "+=" },
+        { "id": "t2", "label": "10" },
+        { "id": "t3", "label": "-=" },
+        { "id": "t4", "label": "1" },
+        { "id": "t5", "label": "*=" }
+      ],
+      "correctOrder": ["+=", "10"],
+      "explanation": "coins += 10 adds 10 to coins. It's the shortcut for coins = coins + 10. coins goes from 0 to 10.",
+      "checks": []
+    },
+    {
+      "title": "Type the shortcut",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Rewrite the long version as a shortcut. Fill in the blank."],
+      "hint": "score = score + 3 can be written as score ___ 3. The shortcut operator is two characters.",
+      "hintBank": [
+        { "id": "h1", "label": "+=" },
+        { "id": "h2", "label": "-=" },
+        { "id": "h3", "label": "*=" },
+        { "id": "h4", "label": "/=" }
+      ],
+      "codeWithBlanks": [
+        "let score = 10;",
+        "// Long version: score = score + 3;",
+        "score ___BLANK___ 3;"
+      ],
+      "blankPlaceholders": ["shortcut"],
+      "blankWidths": [4],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 13,
+          "label": "score equals 13"
+        }
+      ],
+      "explanation": "+= is the shortcut for adding to a variable. score += 3 does exactly the same thing as score = score + 3."
+    },
+    {
+      "title": "Drop the full shortcut line",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Decrease health by 10 points. Drop all four tokens in the right order."], 
+      "hint": "A shortcut expression has: variable name, shortcut operator, number, semicolon is already there.",
+      "compactBlanks": true,
+      "codeWithBlanks": [
+        "let health = 100;",
+        "___BLANK___ ___BLANK___ ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "health" },
+        { "id": "t2", "label": "-=" },
+        { "id": "t3", "label": "10" },
+        { "id": "t4", "label": "+=" },
+        { "id": "t5", "label": "lives" },
+        { "id": "t6", "label": "5" }
+      ],
+      "correctOrder": ["health", "-=", "10"],
+      "explanation": "health -= 10 subtracts 10 from health. 100 - 10 = 90. The three parts are: the variable name, the shortcut operator, and the amount.",
+      "checks": []
+    },
+    {
+      "title": "Type the shortcut and amount",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["No hints this time. Type both the shortcut operator and the amount yourself."],
+      "hint": "You're subtracting 5 from health. The subtraction shortcut is two characters.",
+      "codeWithBlanks": [
+        "let health = 100;",
+        "health ___BLANK___ ___BLANK___;"
+      ],
+      "blankPlaceholders": ["shortcut", "amount"],
+      "blankWidths": [4, 3],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "health",
+          "expected": 95,
+          "label": "health equals 95"
+        }
+      ],
+      "explanation": "health -= 5 subtracts 5 from health. 100 - 5 = 95. No hints this time you wrote both parts from memory."
+    },
+    {
+      "title": "What does this print? (order of operations)",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Two very similar expressions. What are the two values printed?"],
+      "hint": "In the first line, what runs first: the + or the *?",
+      "codeSnippet": "let a = 2 + 3 * 4;\nlet b = (2 + 3) * 4;\nconsole.log(a, b);",
+      "options": [
+        { "id": "a", "label": "20 and 14" },
+        { "id": "b", "label": "14 and 20" },
+        { "id": "c", "label": "20 and 20" },
+        { "id": "d", "label": "14 and 14" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Without parentheses, * runs first: 3 * 4 = 12, then 2 + 12 = 14. With parentheses, + runs first: 2 + 3 = 5, then 5 * 4 = 20. Same numbers, different answers.",
+      "checks": []
+    },
+    {
+      "title": "Run the math",
+      "type": "practice",
+      "duration": "3 min",
+      "tasks": [
+        "The code is already written just hit Run.",
+        "Look at each number printed in the console.",
+        "Which result surprised you?",
+        "Change one of the numbers and run it again to see how the output changes."
+      ],
+      "hint": "Just hit Run first. Read the output. Then start changing numbers.",
+      "starterCode": "console.log(10 + 3);\nconsole.log(10 - 3);\nconsole.log(10 * 3);\nconsole.log(10 / 2);\nconsole.log(10 % 3);\n",
+      "checks": [
+        {
+          "type": "console",
+          "includes": "",
+          "label": "something is printed to the console"
+        }
       ]
     },
     {
-      "title": "Template literals",
+      "title": "Use the shortcuts",
+      "type": "practice",
+      "duration": "5 min",
+      "tasks": [
+        "A variable called lives is set to 3.",
+        "Use lives-- to lose one life. Log lives after.",
+        "A variable called coins is set to 0.",
+        "Use coins += 10 three separate times. Log coins after each one.",
+        "Then use coins *= 2 to double them. Log the final result."
+      ],
+      "hint": "lives-- subtracts 1. coins += 10 adds 10. Both shortcuts work without needing the full version.",
+      "starterCode": "let lives = 3;\nconsole.log('Lives:', lives);\n\n// Lose a life\n\nconsole.log('After losing one:', lives);\n\nlet coins = 0;\n// Collect 10 coins three times\n\n\n\n// Double your coins\n\nconsole.log('Final coins:', coins);\n",
+      "checks": [
+        {
+          "type": "variable",
+          "name": "lives",
+          "expected": 2,
+          "label": "lives equals 2"
+        },
+        {
+          "type": "variable",
+          "name": "coins",
+          "expected": 60,
+          "label": "coins equals 60"
+        }
+      ]
+    },
+    {
+      "title": "Score calculator",
       "type": "practice",
       "duration": "6 min",
       "tasks": [
-        "Declare variables: name (your name), age (your age), city (your city).",
-        "Using template literals (backticks), build a sentence: 'Hi! I'm [name], I'm [age] years old, and I live in [city].'",
-        "Log it.",
-        "Now change your city and log it again. The sentence updates automatically.",
-        "Challenge: add a 4th variable for your favorite food and include it in the sentence."
+        "Start with score = 0.",
+        "Use += to add 50 points.",
+        "Use *= to triple it.",
+        "Use -= to subtract 25.",
+        "Use ++ to add 1 more.",
+        "Log 'Final score:' and score. The answer should be 126.",
+        "Then log whether the score is even or odd using %."
       ],
-      "hint": "Template literals use the backtick key, found in the top-left of your keyboard, same key as ~",
-      "starterCode": "let name = 'Alex';\nlet age = 13;\nlet city = 'Atlanta';\n\n// Build your sentence with a template literal\nlet intro = ``;\n\nconsole.log(intro);\n",
+      "hint": "Do each step one at a time. If you get stuck, add a console.log after each line to track your progress.",
+      "starterCode": "let score = 0;\n\n// Add 50\n\n// Triple it\n\n// Subtract 25\n\n// Add 1\n\nconsole.log('Final score:', score);\n\n// Even or odd? (hint: use score % 2)\nconsole.log('Remainder when divided by 2:', score % 2);\n",
       "checks": [
-        { "type": "variable", "name": "intro", "expected": null, "label": "a variable called 'intro' exists" },
-        { "type": "console", "includes": "", "label": "something is logged to the console" }
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 126,
+          "label": "score equals 126"
+        }
       ]
     },
     {
-      "title": "String + number trap",
-      "type": "predict",
-      "duration": "5 min",
-      "tasks": [
-        "Before running: predict the output of each console.log below.",
-        "Write your predictions down.",
-        "Run the code and see which ones surprised you.",
-        "Explain in your own words why '5' + 5 doesn't give you 10."
-      ],
-      "hint": "The + sign has two jobs: add numbers AND join strings. Which one it uses depends on the types involved.",
-      "starterCode": "console.log(5 + 5);\nconsole.log('5' + 5);\nconsole.log('5' + '5');\nconsole.log('Score: ' + 100);\nconsole.log(10 + 20 + ' points');\nconsole.log('Points: ' + 10 + 20);\n"
-    },
-    {
-      "title": "Username generator",
+      "title": "Build a math story",
       "type": "practice",
       "duration": "7 min",
       "tasks": [
-        "Declare firstName, lastName, and a lucky number.",
-        "Build a username by combining the first 3 characters aren't available yet. Just use the full firstName + lastName + luckyNumber.",
-        "Log: 'Your username is: ' + username",
-        "Log the length of the username.",
-        "Challenge: using a template literal, build a welcome message: 'Welcome, [username]! Your username is [length] characters long.'"
+        "You start with 100 coins. Write each step as code.",
+        "You spend 20 coins at the shop.",
+        "You find a chest that doubles your coins.",
+        "You collect 10 more coins.",
+        "You split your coins equally with a friend (divide by 2).",
+        "Log 'You have X coins left.' at the end.",
+        "Bonus: log whether your final coin count is even or odd using %."
       ],
-      "hint": "Joining strings and numbers with + works fine: 'Jordan' + 7 gives 'Jordan7'",
-      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet luckyNumber = 7;\n\n// Build username\nlet username = '';\n\nconsole.log('Your username is:', username);\nconsole.log('Length:', username.length);\n\n// Challenge: welcome message with template literal\n",
+      "hint": "Use -=, *=, += and /= for each step. Add a console.log after each operation to track the value.",
+      "starterCode": "let coins = 100;\nconsole.log('Start:', coins);\n\n// Spend 20 coins\n\n// Double your coins (chest)\n\n// Collect 10 more\n\n// Split with a friend\n\nconsole.log('You have', coins, 'coins left.');\n\n// Bonus: even or odd?\n",
       "checks": [
-        { "type": "variable", "name": "username", "expected": null, "label": "a variable called 'username' exists" },
-        { "type": "console", "includes": "username", "label": "logged the username message" }
+        {
+          "type": "variable",
+          "name": "coins",
+          "expected": 85,
+          "label": "coins equals 85 after all steps"
+        },
+        {
+          "type": "console",
+          "includes": "coins left",
+          "label": "logged the final coin count"
+        }
       ]
     }
   ],
@@ -127,44 +636,58 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "The broken calculator",
-      "description": "A student built a score calculator. They stored the starting score as '200' because they copied it from a text box. When they add 50 for a correct answer, the score shows '20050' instead of 250. Explain why this happens and rewrite the code so the math works correctly.",
-      "buggyCode": "let score = '200';\nlet correct = 50;\nlet total = score + correct;\nconsole.log('Your score:', total);",
-      "starterCode": "let score = '200';\nlet correct = 50;\nlet total = score + correct;\nconsole.log('Your score:', total);",
-      "hint": "Text boxes always give you a string, even if the value looks like a number. Check how score is declared.",
+      "title": "The answer should be 20 not 14",
+      "description": "This expression should calculate (2 + 3) * 4 = 20, but it's giving 14. One fix will do it.",
+      "buggyCode": "let result = 2 + 3 * 4;\nconsole.log(result);",
+      "starterCode": "let result = 2 + 3 * 4;\nconsole.log(result);",
+      "hint": "Think about what parentheses do to order of operations.",
       "checks": [
-        { "type": "variable", "name": "total", "expected": 250, "label": "total equals 250" }
+        {
+          "type": "variable",
+          "name": "result",
+          "expected": 20,
+          "label": "result equals 20"
+        }
       ],
-      "explanation": "score is '200' in quotes, making it a string, not a number. So '200' + 50 joins as text and gives '20050'. Fix: remove the quotes (let score = 200) or convert it with Number(score) before adding."
+      "explanation": "Without parentheses, * runs before +, so 3 * 4 = 12, then 2 + 12 = 14. To get 20, add parentheses: (2 + 3) * 4."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
-      "title": "The name badge machine",
-      "description": "A school event needs name badges. Each badge should say \"Hi, my name is [first] [last] and I am from [city].\" You have three variables: firstName, lastName, city. But the machine is printing \"Hi, my name is JordanLeeAtlanta\", with no spaces or punctuation. Find what's wrong and fix it.",
-      "buggyCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
-      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\nlet badge = 'Hi, my name is ' + firstName + lastName + city;\nconsole.log(badge);",
-      "hint": "Strings join exactly as written. JavaScript won't add spaces or punctuation for you.",
+      "title": "The score isn't updating correctly",
+      "description": "score should be 100 after adding 50, but something is wrong. Find and fix it.",
+      "buggyCode": "let score = 50;\nscore + 50;\nconsole.log('Score:', score);",
+      "starterCode": "let score = 50;\nscore + 50;\nconsole.log('Score:', score);",
+      "hint": "Look carefully at line 2. Does it actually change score?",
       "checks": [
-        { "type": "console", "includes": "Hi, my name is Jordan Lee and I am from Atlanta.", "label": "prints the correct badge message" }
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 100,
+          "label": "score equals 100"
+        }
       ],
-      "explanation": "The + sign joins strings with nothing in between unless you add it yourself. Fix: add spaces and the missing phrase: 'Hi, my name is ' + firstName + ' ' + lastName + ' and I am from ' + city + '.'"
+      "explanation": "score + 50 calculates the result but throws it away it never stores it back into score. Fix: change it to score += 50 so score actually gets updated."
     },
     {
       "id": "c3",
       "level": 3,
       "difficulty": "tricky",
-      "title": "The mystery output",
-      "description": "Before running this code, predict both outputs. Then explain in one sentence why the two lines give different results even though they use the same three variables.",
-      "buggyCode": "let a = '10';\nlet b = 20;\nlet c = 30;\nconsole.log(a + b + c);\nconsole.log(b + c + a);",
-      "starterCode": "let a = '10';\nlet b = 20;\nlet c = 30;\nconsole.log(a + b + c);\nconsole.log(b + c + a);",
-      "hint": "JavaScript reads left to right. What happens the moment it hits a string?",
+      "title": "The discount isn't being applied",
+      "description": "An item costs 80 and there's a 20% discount, so the final price should be 64. But the code gives the wrong answer. Find the bug.",
+      "buggyCode": "let price = 80;\nlet discount = price * 20;\nlet finalPrice = price - discount;\nconsole.log('Final price:', finalPrice);",
+      "starterCode": "let price = 80;\nlet discount = price * 20;\nlet finalPrice = price - discount;\nconsole.log('Final price:', finalPrice);",
+      "hint": "20% means 20 out of 100, which is 0.20 as a decimal. What is price * 20 actually calculating?",
       "checks": [
-        { "type": "console", "includes": "102030", "label": "first log prints 102030" },
-        { "type": "console", "includes": "5010", "label": "second log prints 5010" }
+        {
+          "type": "variable",
+          "name": "finalPrice",
+          "expected": 64,
+          "label": "finalPrice equals 64"
+        }
       ],
-      "explanation": "JavaScript evaluates left to right. In a + b + c, the first + sees a string on the left so it joins: '10' + 20 = '1020', then '1020' + 30 = '102030'. In b + c + a, the first + sees two numbers so it adds: 20 + 30 = 50, then 50 + '10' = '5010'. Same variables, different order, different result."
+      "explanation": "price * 20 = 1600, not 16. To get 20% of a number you multiply by 0.20, not 20. Fix: change discount = price * 20 to discount = price * 0.20. Then discount = 16 and finalPrice = 80 - 16 = 64."
     }
   ]
 }

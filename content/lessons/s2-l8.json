@@ -1,119 +1,104 @@
 {
   "id": "s2-l8",
   "session": "Session 2",
-  "title": "Putting It Together",
+  "title": "Conditionals",
   "content": [
     {
-      "heading": "Putting it all together — your first real program",
+      "heading": "Conditionals — making your program decide",
       "blocks": [
-        { "kind": "p", "text": "You've learned variables, numbers, strings, data types, input, comparisons, and conditionals. These aren't separate topics — they're ingredients. Real programs use all of them at once. This lesson is about mixing them together." },
-        { "kind": "p", "text": "Here's a small program that combines everything from Session 2. Read through it carefully before moving to the exercises." }
+        { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
+        { "kind": "concept", "code": "if (score >= 100) { ... }", "desc": "If this condition is true, run the code inside the curly braces" },
+        { "kind": "concept", "code": "} else { ... }", "desc": "If the condition was false, run this instead" },
+        { "kind": "concept", "code": "} else if (score >= 50) { ... }", "desc": "Check a second condition — only runs if the first one was false" }
       ]
     },
     {
       "blocks": [
         { "kind": "code", "lines": [
-          "// Variables to track the game state",
-          "let playerName = prompt('What is your name?');",
-          "let score = 0;",
-          "let lives = 3;",
+          "let score = 75;",
           "",
-          "// Greet the player",
-          "console.log(`Welcome, ${playerName}! You have ${lives} lives.`);",
-          "",
-          "// Simulate a correct answer",
-          "score += 10;",
-          "console.log(`Score: ${score}`);",
-          "",
-          "// Simulate a wrong answer",
-          "lives--;",
-          "console.log(`Lives left: ${lives}`);",
-          "",
-          "// Check the current state",
-          "if (lives === 0) {",
-          "    console.log('Game over, ' + playerName + '!');",
+          "if (score >= 90) {",
+          "    console.log('Amazing! You got an A.');",
+          "} else if (score >= 70) {",
+          "    console.log('Good job! You got a B.');",
           "} else if (score >= 50) {",
-          "    console.log('You win!');",
+          "    console.log('You passed. Keep practicing.');",
           "} else {",
-          "    console.log(`Keep going! You need ${50 - score} more points.`);",
-          "}"
+          "    console.log('Not quite. Try again!');",
+          "}",
+          "",
+          "// score is 75, so the second condition is true",
+          "// JavaScript checks top to bottom and stops at the first true one"
         ]},
-        { "kind": "callout", "variant": "info", "label": "What you just used", "text": "That program used: variables (let), strings, numbers, template literals, prompt(), +=, --, comparison operators (===, >=), and conditionals (if/else if/else). That's the entire Session 2 toolkit." }
+        { "kind": "callout", "variant": "warn", "label": "Top to bottom — first match wins", "text": "JavaScript checks each condition in order. The moment it finds a true one, it runs that block and skips the rest. If you put a less specific condition first, a more specific one below it might never run." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Trace the full program",
+      "title": "Trace the path",
       "type": "predict",
-      "duration": "8 min",
+      "duration": "6 min",
       "tasks": [
-        "Read the starter code carefully. It simulates a full round of a quiz game — no running yet.",
-        "Trace through it on paper. Write down the value of score, lives, and correct after each section.",
-        "Predict the final console.log output.",
-        "Run it and check.",
-        "Now change the answer to make the player get it right. Trace through again."
+        "Look at the starter code. There are 4 different values for score.",
+        "For each one, predict which message will print before you run it.",
+        "Run the code and check. Where were you wrong?",
+        "Change the score to exactly 70. Which branch runs? Why?"
       ],
-      "hint": "Start at the top. Follow every assignment, every operation, every condition — one line at a time.",
-      "starterCode": "let playerName = 'Jordan';\nlet score = 0;\nlet lives = 3;\nlet correctAnswer = 42;\nlet playerAnswer = 40;  // change this to 42 to get it right\n\nconsole.log(`${playerName} starts with ${score} points and ${lives} lives.`);\n\nlet correct = playerAnswer === correctAnswer;\n\nif (correct) {\n    score += 10;\n    console.log('Correct! Score is now:', score);\n} else {\n    lives--;\n    console.log('Wrong! Lives left:', lives);\n}\n\nif (lives === 0) {\n    console.log('Game over!');\n} else if (score >= 30) {\n    console.log('You win! Final score:', score);\n} else {\n    console.log(`You need ${30 - score} more points. Lives: ${lives}`);\n}\n"
+      "hint": "Go through the conditions top to bottom. The first one that's true wins.",
+      "starterCode": "// Test each score value — change it to see different outputs\nlet score = 95;\n\nif (score >= 90) {\n    console.log('Grade: A');\n} else if (score >= 80) {\n    console.log('Grade: B');\n} else if (score >= 70) {\n    console.log('Grade: C');\n} else {\n    console.log('Grade: F');\n}\n\n// Try these values: 95, 82, 71, 45\n"
     },
     {
-      "title": "Number guessing game",
+      "title": "Weather advisor",
       "type": "practice",
-      "duration": "10 min",
+      "duration": "7 min",
       "tasks": [
-        "Set a secret number (pick any number 1-10 and store it in a variable).",
-        "Use prompt() to ask the player to guess a number between 1 and 10.",
-        "Convert the guess to a Number.",
-        "Use if/else if/else to respond:",
-        "  - If correct: 'You got it! The number was [secret].'",
-        "  - If the guess is too low: 'Too low! The number was [secret].'",
-        "  - If the guess is too high: 'Too high! The number was [secret].'",
-        "Test with a correct guess, a low guess, and a high guess."
+        "Declare a variable called temperature and set it to 22.",
+        "Write an if / else if / else that logs:",
+        "  - 'Bundle up!' if below 5",
+        "  - 'Wear a jacket' if below 15",
+        "  - 'Nice weather!' if below 25",
+        "  - 'It's hot!' otherwise",
+        "Test with temperatures: 2, 10, 22, 35"
       ],
-      "hint": "Three conditions: guess === secret, guess < secret, and the else handles guess > secret.",
-      "starterCode": "let secretNumber = 7;  // change this if you want\n\nlet guess = Number(prompt('Guess a number between 1 and 10:'));\n\n// Your conditions here\n",
+      "hint": "Order matters! Put the most specific (lowest) condition first.",
+      "starterCode": "let temperature = 22;\n\n// Your conditions here\n",
       "checks": [
-        { "type": "console", "includes": "7", "label": "the secret number appears in the output" }
+        { "type": "variable", "name": "temperature", "expected": null, "label": "a variable called 'temperature' exists" },
+        { "type": "console", "includes": "Nice weather!", "label": "logged the correct message for 22 degrees" }
       ]
     },
     {
-      "title": "Grade calculator",
+      "title": "Build a quiz",
       "type": "practice",
       "duration": "8 min",
       "tasks": [
-        "Use prompt() to ask for a student's name.",
-        "Use prompt() to ask for their score (0-100). Convert to Number.",
-        "Use if/else if/else to assign a letter grade: A (90+), B (80-89), C (70-79), D (60-69), F (below 60).",
-        "Log: '[name] scored [score] and got a [grade].'",
-        "Challenge: also log whether they passed (grade is NOT 'F') using a boolean variable called passed."
+        "Use prompt() to ask: 'What is 8 times 7?'",
+        "Convert the answer to a Number.",
+        "Use an if/else to check if the answer is 56.",
+        "If correct: log 'Correct! 8 x 7 = 56'",
+        "If wrong: log 'Not quite. The answer was 56. You said: ' + their answer",
+        "Test it with a right answer and a wrong answer."
       ],
-      "hint": "Build the grade string first (let grade = 'A'), then use it inside the template literal.",
-      "starterCode": "let studentName = prompt('Enter student name:');\nlet score = Number(prompt('Enter score (0-100):'));\nlet grade = '';\n\n// Assign grade based on score\n\n\nconsole.log(`${studentName} scored ${score} and got a ${grade}.`);\n\n// Challenge: did they pass?\n",
+      "hint": "Number(prompt(...)) gets the input and converts it. Then compare with ===.",
+      "starterCode": "let answer = Number(prompt('What is 8 times 7?'));\n\n// Check the answer\n",
       "checks": [
-        { "type": "variable", "name": "grade", "expected": null, "label": "a variable called 'grade' exists" },
-        { "type": "console", "includes": "scored", "label": "logged the result sentence" }
+        { "type": "console", "includes": "56", "label": "mentions 56 in the output" }
       ]
     },
     {
-      "title": "Build your own adventure",
+      "title": "Multiple conditions with &&",
       "type": "practice",
-      "duration": "12 min",
+      "duration": "7 min",
       "tasks": [
-        "Create a tiny text adventure using everything you know.",
-        "Ask the player for their name.",
-        "Ask them to choose a path: 'forest' or 'cave'. (No conversion needed — this stays a string.)",
-        "If they pick forest: ask 'Do you have a torch? (yes/no)'",
-        "  - If yes: 'You light the way and find treasure! You win!'",
-        "  - If no: 'It's too dark to see. Game over.'",
-        "If they pick cave: ask 'How many potions do you have?'",
-        "  - Convert to Number. If 2 or more: 'You survive the monster! You win!'",
-        "  - If fewer than 2: 'You run out of potions. Game over.'",
-        "If they pick anything else: 'Unknown path. The game ends.',",
-        "Use template literals throughout."
+        "Declare: playerLevel = 5, hasKey = true, bossDefeated = false",
+        "Write an if that logs 'You can enter the castle!' only when: level is 5 or higher AND hasKey is true.",
+        "Write a second if that logs 'Game over. Please restart.' when bossDefeated is false AND playerLevel is below 3.",
+        "Change the values and confirm the messages only appear under the right conditions.",
+        "Challenge: add an else to each if with an appropriate message."
       ],
-      "hint": "Nested if statements are fine — an if inside an if. Just keep track of your curly braces.",
-      "starterCode": "let hero = prompt('What is your name, hero?');\nlet path = prompt(`${hero}, do you go into the forest or the cave?`);\n\n// Your adventure here\n"
+      "hint": "Combine conditions with &&: if (playerLevel >= 5 && hasKey === true)",
+      "starterCode": "let playerLevel = 5;\nlet hasKey = true;\nlet bossDefeated = false;\n\n// Castle entry check\n\n\n// Game over check\n\n"
     }
   ],
   "challenges": [
@@ -121,43 +106,43 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "The win check fires too early",
-      "description": "The player should win at 100 points. But they're winning at just 10 points. Find the bug.",
-      "buggyCode": "let score = 10;\n\nif (score >= 10) {\n    console.log('You win!');\n} else if (score >= 50) {\n    console.log('Almost there...');\n} else {\n    console.log('Keep going!');\n}",
-      "starterCode": "let score = 10;\n\nif (score >= 10) {\n    console.log('You win!');\n} else if (score >= 50) {\n    console.log('Almost there...');\n} else {\n    console.log('Keep going!');\n}",
-      "hint": "What should the winning threshold actually be?",
+      "title": "The else block never runs",
+      "description": "No matter what score is set to, only the first message prints. Why?",
+      "buggyCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
+      "starterCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
+      "hint": "Think about the first condition. Is score >= 0 true for any score?",
       "checks": [
-        { "type": "console", "includes": "Keep going!", "label": "logs 'Keep going!' for score = 10" }
+        { "type": "console", "includes": "You failed.", "label": "logs 'You failed.' for score = 40" }
       ],
-      "explanation": "The winning condition is score >= 10 but the win should be at 100. Also the conditions are out of order — the >= 10 catches everything above 10 before >= 50 gets a chance. Fix: change the first condition to score >= 100, and put the most specific condition (highest threshold) first."
+      "explanation": "score >= 0 is true for every possible score (including 40), so the very first branch always wins. The else if and else never get a chance to run. Fix: reorder so the most specific conditions come first — check >= 50 before >= 0."
     },
     {
       "id": "c2",
       "level": 2,
       "difficulty": "medium",
-      "title": "The name length check crashes",
-      "description": "This code should check if a username is long enough. But it sometimes gives a wrong answer. Find out why and fix it.",
-      "buggyCode": "let username = prompt('Choose a username:');\n\nif (username.length > 3) {\n    console.log('Username accepted:', username);\n} else {\n    console.log('Too short! Must be more than 3 characters.');\n}",
-      "starterCode": "let username = prompt('Choose a username:');\n\nif (username.length > 3) {\n    console.log('Username accepted:', username);\n} else {\n    console.log('Too short! Must be more than 3 characters.');\n}",
-      "hint": "Test with exactly 3 characters like 'abc'. Does it pass or fail? Is that the right behavior?",
+      "title": "The discount code only works sometimes",
+      "description": "The store should give a discount when the customer has a coupon OR has spent more than $100. But it's only giving the discount when BOTH are true.",
+      "buggyCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
+      "starterCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
+      "hint": "Should both conditions need to be true, or just one?",
       "checks": [
-        { "type": "console", "includes": "Too short!", "label": "rejects a 3-character username" }
+        { "type": "variable", "name": "getsDiscount", "expected": true, "label": "getsDiscount is true when hasCoupon is true" }
       ],
-      "explanation": "'abc' has length 3. The condition is > 3, which means 3 characters would fail (3 is not greater than 3). That's actually correct behavior for 'more than 3'. But if the rule should be 'at least 3', change > to >=. This is about understanding what the rule actually needs to be."
+      "explanation": "&& requires both conditions. The customer has a coupon but only spent $50. Since amountSpent > 100 is false, the whole && expression is false. Change && to || so having either condition is enough."
     },
     {
       "id": "c3",
       "level": 3,
       "difficulty": "tricky",
-      "title": "The ticket buyer is underaged — but they got in",
-      "description": "The event is 18+. The buyer said they're 17 but they still got a ticket. Find all the bugs.",
-      "buggyCode": "let buyerAge = Number(prompt('How old are you?'));\nlet ticketPrice = 20;\n\nif (buyerAge >= 18 || ticketPrice <= 25) {\n    console.log('Ticket sold!');\n} else {\n    console.log('Sorry, you must be 18 or older.');\n}",
-      "starterCode": "let buyerAge = 17;\nlet ticketPrice = 20;\n\nif (buyerAge >= 18 || ticketPrice <= 25) {\n    console.log('Ticket sold!');\n} else {\n    console.log('Sorry, you must be 18 or older.');\n}",
-      "hint": "The age check is right. But why does ticketPrice even factor into whether someone is old enough?",
+      "title": "The game never ends",
+      "description": "The game should end when lives reach 0 OR score hits 100. Find the three bugs.",
+      "buggyCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
+      "starterCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
+      "hint": "Count the equals signs in the condition. What do single, double, and triple equals each do?",
       "checks": [
-        { "type": "console", "includes": "Sorry, you must be 18 or older.", "label": "rejects the 17-year-old buyer" }
+        { "type": "console", "includes": "Game over!", "label": "logs 'Game over!'" }
       ],
-      "explanation": "ticketPrice is 20 and 20 <= 25 is true — so the || makes the whole condition true regardless of age. The ticket price has nothing to do with whether someone is old enough. Remove the || ticketPrice <= 25 entirely. The only check needed is buyerAge >= 18."
+      "explanation": "There are three = signs where there should be === (comparison, not assignment). lives = 0 SETS lives to 0 inside the condition — it doesn't check if lives IS 0. Fix all three: lives === 0 || score === 100."
     }
   ]
 }

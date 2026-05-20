@@ -1,0 +1,219 @@
+{
+  "id": "s3-l5",
+  "session": "Session 3",
+  "title": "Session 3 Capstone",
+  "content": [
+    {
+      "heading": "Session 3 Capstone — put it all together",
+      "blocks": [
+        { "kind": "p", "text": "You have learned four ideas this session. Now you will combine all of them in one project." },
+        { "kind": "list", "items": [
+          "Functions — write code once, call it anywhere by name",
+          "Return Values — functions that send answers back to the caller",
+          "Decision-Making — if / else if / else to choose what happens",
+          "Scope — global variables that any function can see, local variables that stay private"
+        ]}
+      ]
+    },
+    {
+      "heading": "The challenge: build a grade calculator",
+      "blocks": [
+        { "kind": "p", "text": "You are building a tool that takes a score (0–100) and tells you the letter grade. It needs a function that returns the grade letter, uses if/else if/else to decide which grade to give, and a global variable that tracks how many scores have been graded so far." },
+        { "kind": "code", "lines": [
+          "let gradesChecked = 0;   // global — track how many grades we've given",
+          "",
+          "function getGrade(score) {",
+          "    gradesChecked = gradesChecked + 1;",
+          "    if (score >= 90) {",
+          "        return 'A';",
+          "    } else if (score >= 80) {",
+          "        return 'B';",
+          "    } else if (score >= 70) {",
+          "        return 'C';",
+          "    } else if (score >= 60) {",
+          "        return 'D';",
+          "    } else {",
+          "        return 'F';",
+          "    }",
+          "}",
+          "",
+          "console.log(getGrade(95));   // A",
+          "console.log(getGrade(72));   // C",
+          "console.log('Total graded:', gradesChecked);  // 2"
+        ]}
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Build the grade calculator",
+      "type": "apply",
+      "duration": "10 min",
+      "tasks": [
+        "Inside getGrade, write if/else if/else that returns 'A' for 90 and above, 'B' for 80 and above, 'C' for 70 and above, 'D' for 60 and above, and 'F' for everything else.",
+        "Each time getGrade runs, add 1 to the global variable gradesChecked.",
+        "Call getGrade with the scores 95, 72, and 55. Store each result and log it.",
+        "After all three calls, log the value of gradesChecked — it should be 3."
+      ],
+      "hint": "Use return inside each branch of the if/else if/else. The function stops at the first return it hits. Remember to increment gradesChecked at the top of the function before any return.",
+      "starterCode": "let gradesChecked = 0;\n\nfunction getGrade(score) {\n    // increment gradesChecked here\n\n    // write your if / else if / else below\n\n}\n\n// Call getGrade with 95, 72, and 55\n// Store each result and log it\n\n\n// Log gradesChecked when done\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "getGrade",
+          "args": [95],
+          "assert": "result === 'A'",
+          "label": "getGrade(95) returns 'A'"
+        },
+        {
+          "type": "call",
+          "fn": "getGrade",
+          "args": [72],
+          "assert": "result === 'C'",
+          "label": "getGrade(72) returns 'C'"
+        },
+        {
+          "type": "call",
+          "fn": "getGrade",
+          "args": [55],
+          "assert": "result === 'F'",
+          "label": "getGrade(55) returns 'F'"
+        },
+        {
+          "type": "variable",
+          "name": "gradesChecked",
+          "expected": null,
+          "label": "gradesChecked exists"
+        }
+      ]
+    },
+    {
+      "title": "Scope check",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Read the starter code. One line will throw a ReferenceError — predict which one before running.",
+        "Run it and confirm your prediction. Read the error message carefully.",
+        "Fix it: move the console.log that causes the error to a place where the variable is visible."
+      ],
+      "hint": "A variable declared with let inside a function only exists inside that function. Nothing outside can see it.",
+      "starterCode": "function buildMessage() {\n    let greeting = 'Hello from inside!';\n    console.log('Inside:', greeting);\n}\n\nbuildMessage();\nconsole.log('Outside:', greeting);  // will this work?\n",
+      "checks": [
+        {
+          "type": "console",
+          "includes": "Inside",
+          "label": "logs from inside the function"
+        }
+      ]
+    },
+    {
+      "title": "Build your own discount calculator",
+      "type": "independent",
+      "duration": "10 min",
+      "tasks": [
+        "Write a function called getDiscount that takes two parameters: price and memberType.",
+        "If memberType is 'gold', return the price minus 20% (multiply by 0.8).",
+        "If memberType is 'silver', return the price minus 10% (multiply by 0.9).",
+        "For any other memberType, return the full price unchanged.",
+        "Call getDiscount three times — once for each tier — and log each result using a template literal."
+      ],
+      "hint": "Use if / else if / else to check the memberType. The return value is a number, so you can use it in a template literal: `Price after discount: ${getDiscount(100, 'gold')}`",
+      "starterCode": "// Write getDiscount below\n\n\n// Test all three tiers\n",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "getDiscount",
+          "args": [100, "gold"],
+          "assert": "result === 80",
+          "label": "getDiscount(100, 'gold') returns 80"
+        },
+        {
+          "type": "call",
+          "fn": "getDiscount",
+          "args": [100, "silver"],
+          "assert": "result === 90",
+          "label": "getDiscount(100, 'silver') returns 90"
+        },
+        {
+          "type": "call",
+          "fn": "getDiscount",
+          "args": [100, "basic"],
+          "assert": "result === 100",
+          "label": "getDiscount(100, 'basic') returns 100"
+        }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "Missing return",
+      "description": "The function square should give back the result of multiplying a number by itself so the caller can use it. Right now the answer prints to the console but the caller gets undefined. Fix the function so it actually returns the squared value.",
+      "buggyCode": "function square(n) {\n    let result = n * n;\n    console.log(result);\n}\n\nlet answer = square(4);\nconsole.log('Squared:', answer);",
+      "starterCode": "function square(n) {\n    let result = n * n;\n    console.log(result);\n}\n\nlet answer = square(4);\nconsole.log('Squared:', answer);",
+      "hint": "console.log shows the value but does not send it back. Replace console.log(result) with return result.",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "square",
+          "args": [4],
+          "assert": "result === 16",
+          "label": "square(4) returns 16"
+        },
+        {
+          "type": "console",
+          "includes": "Squared: 16",
+          "label": "logs 'Squared: 16'"
+        }
+      ],
+      "explanation": "console.log makes the value visible on screen but the function still returns undefined. The caller stores that undefined in answer, which is why 'Squared: undefined' appears. The fix is to replace console.log(result) with return result. Now square(4) hands back 16 and answer holds the real number."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "Incomplete branches",
+      "description": "The function classify should return 'pass' for scores 60 and above and 'fail' for everything below. But it only handles one case — calling it with a failing score produces undefined. Add the missing branch so the function always returns a string.",
+      "buggyCode": "function classify(score) {\n    if (score >= 60) {\n        return 'pass';\n    }\n}\n\nconsole.log(classify(90));\nconsole.log(classify(45));",
+      "starterCode": "function classify(score) {\n    if (score >= 60) {\n        return 'pass';\n    }\n}\n\nconsole.log(classify(90));\nconsole.log(classify(45));",
+      "hint": "When no if condition matches, the function falls through and returns undefined. Add an else block that returns 'fail'.",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "classify",
+          "args": [45],
+          "assert": "result === 'fail'",
+          "label": "classify(45) returns 'fail'"
+        },
+        {
+          "type": "call",
+          "fn": "classify",
+          "args": [90],
+          "assert": "result === 'pass'",
+          "label": "classify(90) returns 'pass'"
+        }
+      ],
+      "explanation": "A function that hits no return statement returns undefined by default. Since the if only covers scores >= 60, anything below 60 falls through without hitting a return. The fix is to add else { return 'fail'; } — now every call to classify reaches a return and always gets a string back."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "Scope escape",
+      "description": "The function makeMessage creates a greeting and the code tries to print it in uppercase outside the function. But it throws a ReferenceError because msg is local to makeMessage. Fix the code so the greeting can be used outside without moving the let declaration outside the function.",
+      "buggyCode": "function makeMessage() {\n    let msg = 'Hello from Curia!';\n}\n\nmakeMessage();\nconsole.log(msg.toUpperCase());",
+      "starterCode": "function makeMessage() {\n    let msg = 'Hello from Curia!';\n}\n\nmakeMessage();\nconsole.log(msg.toUpperCase());",
+      "hint": "You cannot reach inside a function to grab its local variables. Instead, make the function return the value and capture it on the outside: let msg = makeMessage();",
+      "checks": [
+        {
+          "type": "console",
+          "includes": "HELLO FROM CURIA!",
+          "label": "logs 'HELLO FROM CURIA!' in uppercase"
+        }
+      ],
+      "explanation": "msg is declared inside makeMessage with let, so it only exists inside that function's curly braces. Trying to use it outside causes a ReferenceError. The fix: add return msg; inside the function, then capture it outside: let msg = makeMessage(); Now the value escapes through the return, and the local variable name no longer matters — the caller gives it its own name."
+    }
+  ]
+}

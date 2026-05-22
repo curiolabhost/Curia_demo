@@ -1,0 +1,37 @@
+{
+  "id": "s5-l6",
+  "session": "Session 5",
+  "title": "The Finished Game",
+  "content": [
+    {
+      "heading": "The finished game — you built this",
+      "blocks": [
+        { "kind": "p", "text": "This is the game you have been building toward since Session 1. Every concept from every lesson is in here. Variables track the state. Functions organise the logic. Arrays store the sequences. setTimeout controls the timing. addEventListener responds to clicks. classList connects everything to the page." },
+        { "kind": "embed", "src": "/assets/lessons/s5-l6/index.html", "height": 640, "caption": "Simon Says — the game you built" },
+        { "kind": "callout", "variant": "info", "label": "What each file does", "text": "index.html builds the grid and buttons. style.css makes it look right — colours, sizes, the lit class. game.js makes it do things — pick sequences, handle clicks, check answers, manage timing." }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Customise your game",
+      "type": "practice",
+      "format": "code-viewer",
+      "duration": "15 min",
+      "tasks": [
+        "Open style.css. Change the .lit background colour to anything you want.",
+        "Change the .cell background to a different colour.",
+        "Open game.js. Find the 1500 in setTimeout — change it to 800 for a faster game or 2500 for a slower one.",
+        "Find where level starts. Change it from 2 to 3 so the first round shows 3 squares.",
+        "Challenge: add a second colour for when the player clicks incorrectly. Add a class called 'wrong' in CSS and apply it in handleClick when the answer is wrong."
+      ],
+      "editableFiles": ["style.css", "game.js"],
+      "codeFiles": [
+        { "filename": "index.html", "src": "/assets/lessons/s5-l6/index.html" },
+        { "filename": "style.css",  "src": "/assets/lessons/s5-l6/style.css"  },
+        { "filename": "game.js",    "src": "/assets/lessons/s5-l6/game.js"    }
+      ]
+    }
+  ],
+  "challenges": []
+}

@@ -1,59 +1,104 @@
 {
   "id": "s5-l2",
   "session": "Session 5",
-  "title": "setTimeout",
+  "title": "addEventListener",
   "content": [
     {
-      "heading": "setTimeout — delayed actions",
+      "heading": "addEventListener — making elements respond to clicks",
       "blocks": [
-        { "kind": "p", "text": "setTimeout runs a function after a delay in milliseconds. The rest of the program does not pause and wait — it keeps running. The delayed function is called later, on its own." },
-        { "kind": "concept", "code": "setTimeout(fn, 2000)", "desc": "Run fn after 2000 milliseconds — 2 seconds from now" }
+        { "kind": "p", "text": "addEventListener attaches a function to a DOM element. Every time that element is clicked, the function runs. This is how the Simon Says grid responds when you click a square." },
+        { "kind": "concept", "code": "element.addEventListener('click', handleClick)", "desc": "Every time the element is clicked, call handleClick. Pass the function name without () — you are passing it, not calling it." }
       ]
     },
     {
       "blocks": [
         { "kind": "code", "lines": [
-          "console.log('A');",
+          "let btn = document.getElementById('myButton');",
           "",
-          "setTimeout(function() {",
-          "    console.log('B');",
-          "}, 1000);",
+          "// Attach a named function",
+          "function handleClick() {",
+          "    console.log('Button clicked!');",
+          "}",
+          "btn.addEventListener('click', handleClick);",
           "",
-          "console.log('C');",
+          "// Or attach an anonymous function",
+          "btn.addEventListener('click', function() {",
+          "    console.log('Also works!');",
+          "});",
           "",
-          "// Output order: A, C, then B one second later",
-          "// The program does NOT pause at setTimeout"
+          "// In Simon Says: attach to every grid square",
+          "let squares = document.querySelectorAll('.cell');",
+          "squares.forEach(function(square, index) {",
+          "    square.addEventListener('click', function() {",
+          "        handleClick(index);",
+          "    });",
+          "});"
         ]},
-        { "kind": "callout", "variant": "warn", "label": "The program does not pause", "text": "This surprises almost every beginner. Code after setTimeout runs immediately — before the delayed function fires. Think of it as scheduling a callback, not pausing execution." }
+        { "kind": "callout", "variant": "info", "label": "Simon Says connection", "text": "Every square in the Simon Says grid has an addEventListener attached to it. When a player clicks a square, it calls handleClick(index) with that square's index number. That index is what gets added to playerClicks." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Predict the order",
-      "type": "predict",
-      "duration": "5 min",
+      "title": "Attach a click listener",
+      "type": "practice",
+      "duration": "6 min",
       "tasks": [
-        "Read the starter code without running it.",
-        "Write down the exact order you expect the letters to appear in the console.",
-        "Run it and compare to your prediction.",
-        "Now change the delay to 0ms. Does B appear before or after C? Why?"
+        "The page has a button with id='myButton'. Find it.",
+        "Write a function called handleClick that logs 'Clicked!'.",
+        "Attach it to the button using addEventListener.",
+        "Click the button in the preview and confirm the console logs 'Clicked!'.",
+        "Now change the function to log how many times the button has been clicked. Declare a counter variable outside the function."
       ],
-      "hint": "setTimeout with 0ms delay still runs after the current code finishes — it is never truly immediate.",
-      "starterCode": "console.log('A');\n\nsetTimeout(function() {\n    console.log('B');\n}, 1000);\n\nconsole.log('C');\n\nsetTimeout(function() {\n    console.log('D');\n}, 500);\n\nconsole.log('E');\n"
+      "hint": "Declare let count = 0 outside the function. Inside handleClick: count++ then console.log('Clicked', count, 'times').",
+      "starterCode": "let btn = document.getElementById('myButton');\n\n// Write handleClick\nfunction handleClick() {\n  console.log('Clicked!');\n}\n\n// Attach it\nbtn.addEventListener('click', handleClick);\n",
+      "checks": [
+        { "type": "dom", "id": "myButton", "property": "onclick", "expected": null, "label": "a click listener is attached to myButton" }
+      ]
     },
     {
-      "title": "Comparing arrays",
+      "title": "Attach to multiple elements",
       "type": "practice",
-      "duration": "5 min",
+      "duration": "7 min",
       "tasks": [
-        "Create two arrays with the same numbers in different orders.",
-        "Try comparing them with === and log the result. Explain why it returns false.",
-        "Now sort both arrays and compare them as strings using .toString().",
-        "Confirm it returns true when contents match and false when they differ."
+        "The page has four divs with class 'cell' and data-index values 0 through 3.",
+        "Use document.querySelectorAll('.cell') to get all four.",
+        "Use forEach to attach a click listener to each one.",
+        "Each listener should log: 'You clicked cell ' + index.",
+        "This is exactly how Simon Says wires up its grid."
       ],
-      "hint": "Use .slice() before .sort() to avoid sorting the original array in place.",
-      "starterCode": "let a = [3, 7, 1];\nlet b = [7, 1, 3];\n\n// Direct comparison\nconsole.log('Direct ===:', a === b);\n\n// Sort and compare as strings\nlet sortedA = a.slice().sort();\nlet sortedB = b.slice().sort();\nconsole.log('Sorted toString match:', sortedA.toString() === sortedB.toString());\n\n// Now try with different contents\nlet c = [3, 7, 2];\nlet sortedC = c.slice().sort();\nconsole.log('Different contents match:', sortedA.toString() === sortedC.toString());\n"
+      "hint": "In the forEach callback, use the second parameter (index) to get each element's position: squares.forEach(function(square, index) { ... })",
+      "starterCode": "let squares = document.querySelectorAll('.cell');\n\n// Attach a click listener to each square\nsquares.forEach(function(square, index) {\n  // attach addEventListener here\n});\n"
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The click listener fires immediately instead of on click",
+      "description": "The button should log 'Clicked!' when pressed. But it logs immediately when the page loads and never again. One character is the problem.",
+      "buggyCode": "let btn = document.getElementById('myButton');\n\nfunction handleClick() {\n  console.log('Clicked!');\n}\n\nbtn.addEventListener('click', handleClick());",
+      "starterCode": "let btn = document.getElementById('myButton');\n\nfunction handleClick() {\n  console.log('Clicked!');\n}\n\nbtn.addEventListener('click', handleClick());",
+      "hint": "Same rule as setTimeout — no () when passing a function as a callback.",
+      "checks": [
+        { "type": "dom", "id": "myButton", "property": "onclick", "expected": null, "label": "click listener is correctly attached" }
+      ],
+      "explanation": "handleClick() calls the function immediately and passes its return value (undefined) to addEventListener. Remove the (): addEventListener('click', handleClick). Now the function is passed as a callback and only runs when the button is actually clicked."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "All squares log the same index",
+      "description": "The grid has 4 squares. Clicking any of them logs 'Cell 3' — always 3, never the correct index. Find the bug.",
+      "buggyCode": "let squares = document.querySelectorAll('.cell');\n\nfor (let i = 0; i < squares.length; i++) {\n  squares[i].addEventListener('click', function() {\n    console.log('Cell', i);\n  });\n}",
+      "starterCode": "let squares = document.querySelectorAll('.cell');\n\nfor (let i = 0; i < squares.length; i++) {\n  squares[i].addEventListener('click', function() {\n    console.log('Cell', i);\n  });\n}",
+      "hint": "This is a classic closure bug. Try using forEach instead — it passes the index as a fresh argument each time.",
+      "checks": [
+        { "type": "console", "includes": "Cell 0", "label": "clicking first square logs Cell 0" }
+      ],
+      "explanation": "With var or let in a classic for loop, all callbacks share the same 'i' variable. By the time any click fires, the loop has finished and i is 3. Fix: use forEach instead — the index parameter is a fresh copy each time: squares.forEach(function(square, index) { square.addEventListener('click', function() { console.log('Cell', index); }); })"
     }
   ]
 }

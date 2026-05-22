@@ -1,0 +1,103 @@
+{
+  "id": "s4-l4",
+  "session": "Session 4",
+  "title": "Callbacks",
+  "content": [
+    {
+      "heading": "Callbacks — passing a function as an argument",
+      "blocks": [
+        { "kind": "p", "text": "A callback is a function you pass into another function to be called later. You've already used them — forEach takes a callback and runs it for each item. setTimeout takes a callback and runs it after a delay. Understanding callbacks is the key to understanding how Simon Says controls timing." },
+        { "kind": "concept", "code": "setTimeout(function() { ... }, 1500)", "desc": "Pass an anonymous function to setTimeout. It runs after 1500ms. The rest of your code keeps running immediately." },
+        { "kind": "concept", "code": "array.forEach(function(item) { ... })", "desc": "Pass a function to forEach. It runs once for each item in the array, with that item passed in as the argument." }
+      ]
+    },
+    {
+      "blocks": [
+        { "kind": "code", "lines": [
+          "// A named function used as a callback",
+          "function turnOff() {",
+          "    console.log('Lights off!');",
+          "}",
+          "",
+          "// Pass it to setTimeout — no () here, just the name",
+          "setTimeout(turnOff, 1500);",
+          "",
+          "// Or pass an anonymous function directly",
+          "setTimeout(function() {",
+          "    console.log('Lights off!');",
+          "}, 1500);",
+          "",
+          "// forEach with a named function",
+          "let cells = [2, 5, 7];",
+          "cells.forEach(function(cell) {",
+          "    console.log('Lighting up cell', cell);",
+          "});"
+        ]},
+        { "kind": "callout", "variant": "warn", "label": "No () when passing a function", "text": "When you pass a function as a callback, do NOT write the () after its name. setTimeout(turnOff, 1500) passes the function. setTimeout(turnOff(), 1500) calls it immediately and passes the result — not what you want." }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Predict the order",
+      "type": "predict",
+      "duration": "5 min",
+      "tasks": [
+        "Before running — write down the exact order you expect the messages to appear.",
+        "Run it and compare.",
+        "Why does 'C' appear before 'B' even though 'B' is written first?"
+      ],
+      "hint": "setTimeout doesn't pause the code. Everything after it runs first, then the callback fires later.",
+      "starterCode": "console.log('A');\n\nsetTimeout(function() {\n  console.log('B');\n}, 1000);\n\nconsole.log('C');\n"
+    },
+    {
+      "title": "Write a delayed action",
+      "type": "practice",
+      "duration": "6 min",
+      "tasks": [
+        "Write a function called lightUp() that logs 'Squares are lit!'.",
+        "Write a function called turnOff() that logs 'Squares are off.'",
+        "Call lightUp() immediately.",
+        "Use setTimeout to call turnOff() 2 seconds later.",
+        "This is the exact pattern Simon Says uses for its display phase."
+      ],
+      "hint": "Pass turnOff to setTimeout without the (): setTimeout(turnOff, 2000)",
+      "starterCode": "function lightUp() {\n  // log 'Squares are lit!'\n}\n\nfunction turnOff() {\n  // log 'Squares are off.'\n}\n\n// Call lightUp immediately\n\n// Call turnOff after 2 seconds\n",
+      "checks": [
+        { "type": "call", "fn": "lightUp", "args": [], "assert": "result === undefined", "label": "lightUp() exists and can be called" },
+        { "type": "call", "fn": "turnOff", "args": [], "assert": "result === undefined", "label": "turnOff() exists and can be called" }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The callback fires immediately instead of after 2 seconds",
+      "description": "The turnOff function should run after 2 seconds, but it fires immediately. One character is wrong.",
+      "buggyCode": "function turnOff() {\n  console.log('Lights off.');\n}\n\nsetTimeout(turnOff(), 2000);",
+      "starterCode": "function turnOff() {\n  console.log('Lights off.');\n}\n\nsetTimeout(turnOff(), 2000);",
+      "hint": "When you write turnOff() you are calling the function. When you write turnOff you are passing it.",
+      "checks": [
+        { "type": "console", "includes": "Lights off.", "label": "Lights off. is logged" }
+      ],
+      "explanation": "setTimeout(turnOff(), 2000) calls turnOff immediately and passes its return value (undefined) to setTimeout. Remove the parentheses: setTimeout(turnOff, 2000). Now you're passing the function itself to be called later."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "forEach is not lighting up the right cells",
+      "description": "The loop should log 'Lighting up cell X' for each cell in the array. But it's logging undefined for each one. Find the bug.",
+      "buggyCode": "let litCells = [2, 5, 7];\n\nlitCells.forEach(function() {\n  console.log('Lighting up cell', cell);\n});",
+      "starterCode": "let litCells = [2, 5, 7];\n\nlitCells.forEach(function() {\n  console.log('Lighting up cell', cell);\n});",
+      "hint": "The callback function needs a parameter to receive each item from the array.",
+      "checks": [
+        { "type": "console", "includes": "Lighting up cell 2", "label": "logs cell 2" },
+        { "type": "console", "includes": "Lighting up cell 7", "label": "logs cell 7" }
+      ],
+      "explanation": "The callback function has no parameter declared — so 'cell' inside it is undefined. Fix: add the parameter: function(cell) { ... }. Now forEach passes each array item into 'cell' on each iteration."
+    }
+  ]
+}

@@ -6,13 +6,26 @@
     {
       "heading": "Functions — write once, use anywhere",
       "blocks": [
+        {"kind":"image","src":"/assets/lessons/s3-l1/functions-anatomy-v5.svg","alt":"Functions are reusable blocks of code"},
         { "kind": "p", "text": "A function is a named, reusable block of code. You define it once and call it by name whenever you need it. Without functions, you copy and paste the same logic everywhere — and when you need to change it, you change it in every place." },
-        { "kind": "concept", "code": "function greet() { ... }", "desc": "Define a block of code named 'greet' — does not run yet" },
-        { "kind": "concept", "code": "greet()", "desc": "Run that block of code right now" }
+        { "kind": "concept", "code": "function greetPlayer() { ... }", "desc": "Define a block of code named 'greetPlayer' — does not run yet" },
+        { "kind": "concept", "code": "greetPlayer();", "desc": "Run that block of code right now" }
       ]
     },
     {
+      "heading": "Example of creating & calling a function",
       "blocks": [
+        { "kind": "p", "text": "Here's a simple function that logs a greeting message. Notice how the function definition does not run the code inside it. Only when we call greetPlayer() does it execute." },
+        { "kind": "code", "lines": [
+          "// Function keyword starts the definition",
+          "function greetPlayer() {",
+          "    // This is the body of the function — code that runs when you call it",
+          "    console.log('Welcome to the game!');",
+          "    console.log('Get ready to play.');",
+          "}",
+          ""
+        ]},
+        { "kind": "callout", "variant": "info", "label": "Why use functions?", "text": "Functions let you reuse code without copying and pasting. They also help organize your code into logical chunks with clear names." },
         { "kind": "code", "lines": [
           "function showMessage() {",
           "    console.log('Hello!');",
@@ -31,62 +44,351 @@
   ],
   "exercises": [
     {
-      "title": "Define and call",
+      "title": "What does a function do?",
       "type": "practice",
-      "duration": "5 min",
-      "tasks": [
-        "Write a function called sayHello that logs 'Hello!' to the console.",
-        "Below the function definition, call it three times.",
-        "Write a second function called sayGoodbye that logs 'Goodbye!'.",
-        "Call both functions in alternating order three times each.",
-        "Predict: if you write sayHello without the (), does it run? Try it and read the console output."
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What does writing function greetPlayer() {} do?"],
+      "hint": "Think about what happens when you define a function — does it run right away?",
+      "options": [
+        { "id": "a", "label": "Runs the code inside immediately" },
+        { "id": "b", "label": "Creates a reusable block of code called greetPlayer", "code": "function greetPlayer() {}" },
+        { "id": "c", "label": "Prints greetPlayer to the console" },
+        { "id": "d", "label": "Declares a variable called greetPlayer" }
       ],
-      "hint": "A function definition starts with the word 'function'. Calling it uses the function name followed by ().",
-      "starterCode": "// Define sayHello below\n\n\n// Call it three times\n\n\n// Define sayGoodbye below\n\n\n// Call both in alternating order\n",
-      "checks": [
+      "correctOptionId": "b",
+      "explanation": "Defining a function only creates it — it does not run it. Think of it like writing a recipe. Writing the recipe does not cook the food. You have to call the function separately to make it run.",
+      "checks": []
+    },
+    {
+      "title": "Spot the correct definition",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Which of these correctly defines a function called sayHello?"],
+      "hint": "A function definition always starts with the word 'function', then the name, then ().",
+      "options": [
+        { "id": "a", "code": "sayHello() { console.log('Hi'); }" },
+        { "id": "b", "code": "let sayHello = console.log('Hi');" },
+        { "id": "c", "code": "function sayHello() { console.log('Hi'); }" },
+        { "id": "d", "code": "function = sayHello() { console.log('Hi'); }" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "A function definition has four parts: the word 'function', the name, parentheses (), and curly braces {} around the body. Option A is missing the 'function' keyword. Option B is a variable. Option D puts = in the wrong place.",
+      "checks": []
+    },
+    {
+      "title": "Drop the function keyword",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the correct keyword into the blank to define a function called startGame."],
+      "hint": "Every function definition starts with the same keyword — the word that tells JavaScript you are making a function.",
+      "codeWithBlanks": [
+        "___BLANK___ startGame() {",
+        "  console.log('Game started!');",
+        "}"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "function" },
+        { "id": "t2", "label": "let" },
+        { "id": "t3", "label": "const" },
+        { "id": "t4", "label": "define" }
+      ],
+      "correctOrder": ["function"],
+      "explanation": "'function' is the keyword that tells JavaScript you are creating a reusable block of code. 'let' and 'const' are for variables. 'define' is not a JavaScript keyword at all.",
+      "checks": []
+    },
+    {
+      "title": "Drop the full function signature",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop all the parts into the correct order to define a function called showScore."],
+      "hint": "A function definition has three parts on the first line: the keyword, the name with parentheses, and the opening curly brace.",
+      "codeWithBlanks": [
+        "___BLANK___ ___BLANK___ ___BLANK___",
+        "  console.log('Score: 0');",
+        "___BLANK___"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "function" },
+        { "id": "t2", "label": "showScore()" },
+        { "id": "t3", "label": "{" },
+        { "id": "t4", "label": "}" },
+        { "id": "t5", "label": "let" },
+        { "id": "t6", "label": "showScore" }
+      ],
+      "correctOrder": ["function", "showScore()", "{", "}"],
+      "explanation": "The first line of a function is: function, then the name with parentheses (), then an opening curly brace {. The closing curly brace } goes at the very end to close the function body.",
+      "checks": []
+    },
+    {
+      "title": "Defining vs calling",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["The code below defines a function. What needs to be added to actually run it?"],
+      "hint": "Calling a function uses the function name followed by something specific.",
+      "codeSnippet": "function sayGoodbye() {\n  console.log('Goodbye!');\n}",
+      "options": [
+        { "id": "a", "label": "Nothing — it runs automatically when defined" },
+        { "id": "b", "label": "run sayGoodbye" },
+        { "id": "c", "label": "sayGoodbye()" },
+        { "id": "d", "label": "call sayGoodbye" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "The () at the end is what triggers execution. Without the (), you are just referencing the function — not running it. 'run' and 'call' are not JavaScript keywords.",
+      "checks": []
+    },
+    {
+      "title": "Run your first function",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "3 min",
+      "tasks": [
+        "Hit Run — nothing prints yet. The function is defined but never called.",
+        "Write greetPlayer(); on line 6. Hit Run.",
+        "You should see 'Welcome to Simon Says!' in the console.",
+        "Now call it again on line 7. You should see the message twice."
+      ],
+      "hint": "To call a function write its name followed by (). Make sure you spell it exactly right.",
+      "starterCode": "function greetPlayer() {\n  console.log('Welcome to Simon Says!');\n}\n\n// Call the function here\n\n",
+      "steps": [
         {
-          "type": "call",
-          "fn": "sayHello",
-          "args": [],
-          "assert": "result === undefined",
-          "label": "sayHello() exists and can be called"
+          "text": "Hit Run — nothing prints yet. The function is defined but never called.",
+          "completesOn": "run",
+          "focusRange": [1, 7],
+          "checks": [
+            { "type": "consoleEmpty", "label": "nothing printed yet" }
+          ]
         },
         {
-          "type": "call",
-          "fn": "sayGoodbye",
-          "args": [],
-          "assert": "result === undefined",
-          "label": "sayGoodbye() exists and can be called"
+          "text": "Write greetPlayer(); on line 6. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 6,
+          "focusRange": [5, 7],
+          "checks": [
+            {
+              "type": "sourceIncludes",
+              "pattern": "greetPlayer\\s*\\(\\s*\\)",
+              "label": "greetPlayer() is written"
+            },
+            {
+              "type": "console",
+              "includes": "Welcome to Simon Says!",
+              "label": "message is printed"
+            }
+          ]
+        },
+        {
+          "text": "Call it again on line 7. You should see the message twice.",
+          "completesOn": "run",
+          "focusLine": 7,
+          "focusRange": [6, 8],
+          "checks": [
+            {
+              "type": "consoleCount",
+              "includes": "Welcome to Simon Says!",
+              "count": 2,
+              "label": "message printed twice"
+            }
+          ]
+        },
+        {
+          "text": "Same function, called twice, same result both times. That is reusability.",
+          "completesOn": "auto",
+          "autoDelayMs": 1500
         }
+      ],
+      "checks": [
+        { "type": "sourceIncludes", "pattern": "greetPlayer\\s*\\(\\s*\\)", "label": "greetPlayer() is called" },
+        { "type": "console", "includes": "Welcome to Simon Says!", "label": "message is printed" }
       ]
     },
     {
-      "title": "Functions with parameters",
+      "title": "Call it three times",
       "type": "practice",
-      "duration": "6 min",
+      "format": "code-editor",
+      "duration": "3 min",
       "tasks": [
-        "Write a function called double that takes a number and logs that number multiplied by 2.",
-        "Call it with five different numbers.",
-        "Write a function called describe that takes a name and a color, logs: '[name] likes [color].'",
-        "Challenge: write a function called add that takes two numbers and returns (not logs) their sum. Store the result and log it."
+        "Write a function called showRound that logs 'Round starting...'.",
+        "Call it exactly three times below the definition.",
+        "You should see the message printed three times in the console.",
+        "Notice: you wrote the log once but it runs three times."
       ],
-      "hint": "A parameter is declared inside the parentheses: function double(num) { }. Use num inside the function body.",
-      "starterCode": "// Write the double function\n\n\n// Write the describe function\n\n\n// Call both with different inputs\n",
-      "checks": [
+      "hint": "Define the function first, then call it three times on separate lines: showRound(); showRound(); showRound();",
+      "starterCode": "// Define showRound here\n\n\n// Call it three times below\n\n\n",
+      "steps": [
         {
-          "type": "call",
-          "fn": "double",
-          "args": [5],
-          "assert": "result === 10",
-          "label": "double(5) returns 10"
+          "text": "Write a function called showRound that logs 'Round starting...'.",
+          "completesOn": "run",
+          "focusRange": [1, 3],
+          "checks": [
+            {
+              "type": "sourceIncludes",
+              "pattern": "function\\s+showRound",
+              "label": "showRound is defined"
+            }
+          ]
         },
         {
-          "type": "call",
-          "fn": "double",
-          "args": [3],
-          "assert": "result === 6",
-          "label": "double(3) returns 6"
+          "text": "Call it exactly three times. Hit Run.",
+          "completesOn": "run",
+          "focusRange": [4, 7],
+          "checks": [
+            {
+              "type": "consoleCount",
+              "includes": "Round starting",
+              "count": 3,
+              "label": "message printed three times"
+            }
+          ]
+        },
+        {
+          "text": "You wrote the log once. It ran three times. That is the whole point of functions.",
+          "completesOn": "auto",
+          "autoDelayMs": 1500
         }
+      ],
+      "checks": [
+        { "type": "sourceIncludes", "pattern": "function\\s+showRound", "label": "showRound is defined" },
+        { "type": "consoleCount", "includes": "Round starting", "count": 3, "label": "message printed three times" }
+      ]
+    },
+    {
+      "title": "Function with a parameter",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Fill in both blanks to complete this function. It should take a name and use it in the greeting."],
+      "hint": "The parameter is declared inside the parentheses. Then you use that same name inside the function body.",
+      "codeWithBlanks": [
+        "function greet(___BLANK___) {",
+        "  console.log('Hello, ' + ___BLANK___ + '!');",
+        "}"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "name" },
+        { "id": "t2", "label": "'name'" },
+        { "id": "t3", "label": "let" },
+        { "id": "t4", "label": "player" },
+        { "id": "t5", "label": "string" }
+      ],
+      "correctOrder": ["name", "name"],
+      "explanation": "A parameter is a variable that lives inside the parentheses. You give it a name — here 'name' — and then use that same name inside the function body. When you call greet('Jordan'), the word 'Jordan' gets stored in 'name' for that call.",
+      "checks": []
+    },
+    {
+      "title": "Call a function with arguments",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Hit Run — nothing prints yet.",
+        "Call lightUp with index 3. Hit Run.",
+        "Call it again with index 7. Then call it with index 0.",
+        "You should see three messages — each showing a different square number."
+      ],
+      "hint": "To call with an argument: lightUp(3); The number goes inside the parentheses.",
+      "starterCode": "function lightUp(index) {\n  console.log('Lighting up square', index);\n}\n\n// Call it three times with different index numbers\n\n\n",
+      "steps": [
+        {
+          "text": "Hit Run — nothing prints yet. The function exists but hasn't been called.",
+          "completesOn": "run",
+          "focusRange": [1, 8],
+          "checks": [
+            { "type": "consoleEmpty", "label": "nothing printed yet" }
+          ]
+        },
+        {
+          "text": "Call lightUp with index 3. Write lightUp(3); and hit Run.",
+          "completesOn": "run",
+          "focusRange": [5, 7],
+          "checks": [
+            {
+              "type": "console",
+              "includes": "3",
+              "label": "square 3 is logged"
+            }
+          ]
+        },
+        {
+          "text": "Now call it with 7 and 0 as well. You should see three lines.",
+          "completesOn": "run",
+          "focusRange": [5, 8],
+          "checks": [
+            { "type": "console", "includes": "7", "label": "square 7 is logged" },
+            { "type": "console", "includes": "0", "label": "square 0 is logged" }
+          ]
+        },
+        {
+          "text": "One function, three different inputs, three different outputs. This is how Simon Says lights up different squares each round.",
+          "completesOn": "auto",
+          "autoDelayMs": 2000
+        }
+      ],
+      "checks": [
+        { "type": "sourceIncludes", "pattern": "lightUp\\s*\\(\\s*3\\s*\\)", "label": "lightUp(3) is called" },
+        { "type": "sourceIncludes", "pattern": "lightUp\\s*\\(\\s*7\\s*\\)", "label": "lightUp(7) is called" },
+        { "type": "sourceIncludes", "pattern": "lightUp\\s*\\(\\s*0\\s*\\)", "label": "lightUp(0) is called" }
+      ]
+    },
+    {
+      "title": "Write startRound from scratch",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "5 min",
+      "tasks": [
+        "Write a function called startRound.",
+        "Inside it, log two things: 'Picking squares...' and then 'Get ready!'.",
+        "Call it twice below the definition.",
+        "This is the first real function in the Simon Says game."
+      ],
+      "hint": "Define startRound with function startRound() { ... }. Put two console.log lines inside. Then call it: startRound();",
+      "starterCode": "// Write startRound here\n\n\n\n\n// Call it twice\n\n",
+      "steps": [
+        {
+          "text": "Write a function called startRound with two log lines inside. Hit Run.",
+          "completesOn": "run",
+          "focusRange": [1, 6],
+          "checks": [
+            {
+              "type": "sourceIncludes",
+              "pattern": "function\\s+startRound",
+              "label": "startRound is defined"
+            }
+          ]
+        },
+        {
+          "text": "Call startRound twice below the definition. Hit Run.",
+          "completesOn": "run",
+          "focusRange": [7, 9],
+          "checks": [
+            {
+              "type": "consoleCount",
+              "includes": "Picking squares",
+              "count": 2,
+              "label": "'Picking squares...' printed twice"
+            },
+            {
+              "type": "consoleCount",
+              "includes": "Get ready",
+              "count": 2,
+              "label": "'Get ready!' printed twice"
+            }
+          ]
+        },
+        {
+          "text": "You just wrote startRound — a real function from the Simon Says game. Everything from here builds on this.",
+          "completesOn": "auto",
+          "autoDelayMs": 2000
+        }
+      ],
+      "checks": [
+        { "type": "sourceIncludes", "pattern": "function\\s+startRound", "label": "startRound is defined" },
+        { "type": "console", "includes": "Picking squares", "label": "'Picking squares...' is logged" },
+        { "type": "console", "includes": "Get ready", "label": "'Get ready!' is logged" }
       ]
     }
   ]

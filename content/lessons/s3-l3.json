@@ -7,6 +7,7 @@
     "heading": "Functions that make decisions",
     "blocks": [
       { "kind": "p", "text": "You already know two things: functions can return values, and if/else makes decisions. Now let's combine them." },
+      {"kind": "image", "src": "/assets/lessons/s3-l3/functions-that-decide-v2.svg", "alt": "A function that contains an if/else and returns a result is one of the most useful patterns in programming: it's exactly how Simon Says will check your answers.", "caption": "A function that contains an if/else and returns a result is one of the most useful patterns in programming: it's exactly how Simon Says will check your answers."},
       { "kind": "p", "text": "A function that contains an if/else and returns a result is one of the most useful patterns in programming: it's exactly how Simon Says will check your answers. In the Simon Says game, the player clicks a sequence of colours." },
       { "kind": "p", "text": "The game needs to check: did the player get it right? That is a decision — and it happens inside a function called checkResult()." },
       { "kind": "p", "text": "Here is the pattern — a function that makes a decision and returns the answer to the caller:" },
@@ -49,7 +50,7 @@
     "heading": "In Simon-Says, checkResult() takes the action",
     "blocks": [
       { "kind": "p", "text": "The simplified version of `checkResult()` returns true or false." },
-      { "kind": "p", "text": "The real game goes one step further — instead of returning an answer, `checkResult()` takes the action directly. If the player is correct, it increases the level and starts the next round. If wrong, it ends the game." },
+      { "kind": "p", "text": "In Simon-Says, the game goes one step further — instead of returning an answer, `checkResult()` takes the action directly. If the player is correct, it increases the level and starts the next round. If wrong, it ends the game." },
       { "kind": "code", "lines": [
         "function checkResult() {",
         "    if (playerClicks === sequence) {",
@@ -62,105 +63,465 @@
         "    }",
         "}"
       ]},
+      {"kind": "image", "src": "/assets/lessons/s3-l3/checkresult-game-flow.svg", "alt": "In Simon-Says, checkResult() doesn't return true or false. Instead, it takes the action directly: if the player is correct, it increases the level and starts the next round. If wrong, it ends the game.", "caption": "In Simon-Says, checkResult() doesn't return true or false. Instead, it takes the action directly: if the player is correct, it increases the level and starts the next round. If wrong, it ends the game."},
       { "kind": "callout", "variant": "info", "label": "Two valid approaches", "text": "Both versions use if/else inside a function. The simplified one returns true or false and lets the caller decide what to do. The real one takes the action itself. Neither is wrong — they are just different ways to organise the same decision. You will explore this more in Session 5." }
     ]
   }
 ],
   "exercises": [
-  {
-    "title": "Write a decision function",
-    "type": "practice",
-    "duration": "6 min",
-    "tasks": [
-      "Write a function called isCorrect(playerAnswer, correctAnswer) that returns true if both values match and false if they don't.",
-      "Call it four times: two matching pairs and two non-matching pairs.",
-      "Store each result in a variable and log it with a label.",
-      "Confirm you see two trues and two falses."
-    ],
-    "hint": "Use === to compare. Return true inside the if block and false inside the else block.",
-    "starterCode": "// Write isCorrect below\n\n\n// Call it four times\nlet r1 = isCorrect('blue', 'blue');\nconsole.log('r1:', r1);\n\n// Add three more calls below\n",
-    "checks": [
-      { "type": "call", "fn": "isCorrect", "args": ["blue", "blue"], "assert": "result === true", "label": "isCorrect('blue', 'blue') returns true" },
-      { "type": "call", "fn": "isCorrect", "args": ["red", "blue"], "assert": "result === false", "label": "isCorrect('red', 'blue') returns false" }
-    ]
-  },
-  {
-    "title": "Predict the output",
-    "type": "predict",
-    "duration": "5 min",
-    "tasks": [
-      "Before running: write down what each console.log will print.",
-      "Run it and check your predictions.",
-      "For any wrong ones: trace through the function step by step and explain what happened."
-    ],
-    "hint": "Follow the function top to bottom. Remember: the first return it hits stops the function.",
-    "starterCode": "function grade(score) {\n    if (score >= 90) {\n        return 'A';\n    } else if (score >= 70) {\n        return 'B';\n    } else {\n        return 'F';\n    }\n}\n\nconsole.log(grade(95));\nconsole.log(grade(70));\nconsole.log(grade(65));\nconsole.log(grade(90));\n"
-  },
-  {
-    "title": "Build a simplified checkResult()",
-    "type": "practice",
-    "duration": "7 min",
-    "tasks": [
-      "Write a function called checkResult(playerAnswer, correctAnswer) that returns true if they match and false if not.",
-      "Write a second function called handleOutcome(result) that logs 'Correct! Well done.' if result is true, and 'Wrong. Try again.' if false.",
-      "Call checkResult and pass the return value straight into handleOutcome.",
-      "Test with a correct answer and an incorrect answer.",
-      "This is the pattern the Simon Says game uses to separate the decision from the action."
-    ],
-    "hint": "You can pass a function call directly as an argument: handleOutcome(checkResult('blue', 'blue'))",
-    "starterCode": "// Write checkResult below\n\n\n// Write handleOutcome below\n\n\n// Test with a correct answer\n\n\n// Test with an incorrect answer\n\n",
-    "checks": [
-      { "type": "call", "fn": "checkResult", "args": ["blue", "blue"], "assert": "result === true", "label": "checkResult returns true for matching answers" },
-      { "type": "call", "fn": "checkResult", "args": ["red", "blue"], "assert": "result === false", "label": "checkResult returns false for non-matching answers" },
-      { "type": "console", "includes": "Correct!", "label": "logs correct message for a match" },
-      { "type": "console", "includes": "Wrong.", "label": "logs wrong message for a non-match" }
-    ]
-  }
-],
-"challenges": [
-  {
-    "id": "c1",
-    "level": 1,
-    "difficulty": "easy",
-    "title": "The function always returns true",
-    "description": "This function should return true when the score is 10 or higher and false otherwise. But it always returns true. Find the single bug.",
-    "buggyCode": "function isWinner(score) {\n    if (score >= 0) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\nconsole.log(isWinner(10));  // should be true\nconsole.log(isWinner(5));   // should be false",
-    "starterCode": "function isWinner(score) {\n    if (score >= 0) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\nconsole.log(isWinner(10));  // should be true\nconsole.log(isWinner(5));   // should be false",
-    "hint": "Read the condition carefully. score >= 0 is true for every possible score.",
-    "checks": [
-      { "type": "call", "fn": "isWinner", "args": [10], "assert": "result === true", "label": "isWinner(10) returns true" },
-      { "type": "call", "fn": "isWinner", "args": [5], "assert": "result === false", "label": "isWinner(5) returns false" }
-    ],
-    "explanation": "score >= 0 is true for any number including 5. The else branch never runs. Fix: change >= 0 to >= 10 so only scores of 10 and above return true."
-  },
-  {
-    "id": "c2",
-    "level": 2,
-    "difficulty": "medium",
-    "title": "The result is being ignored",
-    "description": "checkResult returns true or false correctly, but the game never logs the outcome. The caller is not using the return value. Fix it so the correct message appears.",
-    "buggyCode": "function checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer === correctAnswer) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\ncheckResult('blue', 'blue');\n\nif (true) {\n    console.log('Correct!');\n} else {\n    console.log('Wrong.');\n}",
-    "starterCode": "function checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer === correctAnswer) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\ncheckResult('blue', 'blue');\n\nif (true) {\n    console.log('Correct!');\n} else {\n    console.log('Wrong.');\n}",
-    "hint": "The return value needs to be captured and used. Store it in a variable first, then use that variable in the if condition.",
-    "checks": [
-      { "type": "console", "includes": "Correct!", "label": "logs Correct! for a matching answer" }
-    ],
-    "explanation": "checkResult is called but its return value is thrown away. The if below it always checks true — a hardcoded value, not the result. Fix: let result = checkResult('blue', 'blue'); then if (result) { ... }."
-  },
-  {
-    "id": "c3",
-    "level": 3,
-    "difficulty": "tricky",
-    "title": "The wrong branch fires for the right answer",
-    "description": "The player typed the correct answer but the function returns false. There are two bugs. Find both.",
-    "buggyCode": "function checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer == correctAnswer) {\n        return false;\n    } else {\n        return true;\n    }\n}\n\nlet result = checkResult('blue', 'blue');\nconsole.log('Correct?', result);",
-    "starterCode": "function checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer == correctAnswer) {\n        return false;\n    } else {\n        return true;\n    }\n}\n\nlet result = checkResult('blue', 'blue');\nconsole.log('Correct?', result);",
-    "hint": "Look at both the comparison operator and the return values. One is the wrong type of equals, one is returning the wrong boolean.",
-    "checks": [
-      { "type": "call", "fn": "checkResult", "args": ["blue", "blue"], "assert": "result === true", "label": "checkResult returns true for matching answers" },
-      { "type": "call", "fn": "checkResult", "args": ["red", "blue"], "assert": "result === false", "label": "checkResult returns false for non-matching answers" }
-    ],
-    "explanation": "Two bugs: (1) == instead of === — always use triple equals. (2) The return values are swapped — the if branch (match) returns false and the else (no match) returns true. Fix both: change == to === and swap the return values."
-  }
-]
+    {
+      "title": "What is this pattern called?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Which best describes a function that contains an if/else and returns a result?"],
+      "hint": "Think about what the function does: it receives input, makes a decision, and hands an answer back.",
+      "options": [
+        { "id": "a", "label": "A loop — it repeats an action" },
+        { "id": "b", "label": "A decision function — it takes input, makes a choice, and returns a result" },
+        { "id": "c", "label": "A variable — it stores a value" },
+        { "id": "d", "label": "A console.log — it displays output" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "A function with if/else inside is a decision function. It takes in values, runs a comparison, and returns an answer the caller can use. This is exactly the pattern checkResult() uses in Simon Says.",
+      "checks": []
+    },
+    {
+      "title": "Which version can the caller use?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Two versions of the same function. Which one lets the caller store and use the result?"],
+      "hint": "The caller needs a value it can put into a variable. Which version gives something back?",
+      "codeSnippet": "// Version A\nfunction isMatch(a, b) {\n    if (a === b) {\n        console.log(true);\n    } else {\n        console.log(false);\n    }\n}\n\n// Version B\nfunction isMatch(a, b) {\n    if (a === b) {\n        return true;\n    } else {\n        return false;\n    }\n}",
+      "options": [
+        { "id": "a", "label": "Version A — it logs the answer" },
+        { "id": "b", "label": "Version B — it returns the answer" },
+        { "id": "c", "label": "Both — they produce the same result for the caller" },
+        { "id": "d", "label": "Neither — the function needs to use let" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Version A shows the value on screen but the caller gets undefined. Version B hands the value back so the caller can store it: let result = isMatch('blue', 'blue');",
+      "checks": []
+    },
+    {
+      "title": "Sort the return values",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Each call to checkResult below produces a result. Drag each one into the correct bucket: true or false."],
+      "hint": "=== returns true only when both values are exactly equal — same spelling, same case.",
+      "buckets": [
+        { "id": "true", "label": "returns true" },
+        { "id": "false", "label": "returns false" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "checkResult('blue', 'blue')", "correctBucketId": "true" },
+        { "id": "i2", "label": "checkResult('red', 'blue')", "correctBucketId": "false" },
+        { "id": "i3", "label": "checkResult('green', 'green')", "correctBucketId": "true" },
+        { "id": "i4", "label": "checkResult('Blue', 'blue')", "correctBucketId": "false" },
+        { "id": "i5", "label": "checkResult('', '')", "correctBucketId": "true" },
+        { "id": "i6", "label": "checkResult('red', 'Red')", "correctBucketId": "false" }
+      ],
+      "checks": [],
+      "explanation": "=== is case-sensitive. 'Blue' and 'blue' are different strings, so that call returns false. Even an empty string matches another empty string, so that one returns true."
+    },
+    {
+      "title": "Complete the if/else inside a function",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the correct tokens to complete this decision function. It should return true when the values match and false when they don't."],
+      "hint": "Use === to compare. The if branch handles a match, the else handles a mismatch.",
+      "codeWithBlanks": [
+        "function isCorrect(playerAnswer, correctAnswer) {",
+        "    if (playerAnswer ___BLANK___ correctAnswer) {",
+        "        return ___BLANK___;",
+        "    } else {",
+        "        return ___BLANK___;",
+        "    }",
+        "}"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "===" },
+        { "id": "t2", "label": "true" },
+        { "id": "t3", "label": "false" },
+        { "id": "t4", "label": "==" },
+        { "id": "t5", "label": "false" },
+        { "id": "t6", "label": "true" }
+      ],
+      "correctOrder": ["===", "true", "false"],
+      "explanation": "Always use === for comparisons — it checks value AND type. The if branch fires on a match and returns true. The else fires on a mismatch and returns false.",
+      "checks": []
+    },
+    {
+      "title": "Predict the output",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Trace through the code. What does the last console.log print?"],
+      "hint": "Follow checkResult step by step. What does it return? Where does that value go?",
+      "codeSnippet": "function checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer === correctAnswer) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\nlet result = checkResult('red', 'blue');\nconsole.log('Match?', result);",
+      "options": [
+        { "id": "a", "label": "Match? true" },
+        { "id": "b", "label": "Match? false" },
+        { "id": "c", "label": "Match? undefined" },
+        { "id": "d", "label": "red" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "'red' and 'blue' are not equal so the else branch runs and returns false. That false gets stored in result. The log prints 'Match? false'.",
+      "checks": []
+    },
+    {
+      "title": "Put the decision function in order",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": ["Drag these lines into the correct order to build a working checkResult function and call it."],
+      "hint": "Define the function first. Then call it and store the result. Then use the result in an if.",
+      "codeLines": [
+        "function checkResult(playerAnswer, correctAnswer) {",
+        "    if (playerAnswer === correctAnswer) {",
+        "        return true;",
+        "    } else {",
+        "        return false;",
+        "    }",
+        "}",
+        "let result = checkResult('green', 'green');",
+        "if (result) {",
+        "    console.log('Correct!');",
+        "}"
+      ],
+      "checks": [
+        {
+          "type": "console",
+          "includes": "Correct!",
+          "label": "'Correct!' is logged"
+        }
+      ],
+      "explanation": "The function must be defined before it's called. The return value is stored in result. Then result is used in the if — this is the separation between the decision and the action."
+    },
+    {
+      "title": "Fill in the full decision function",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "3 min",
+      "tasks": ["Type the missing pieces to complete this checkResult function."],
+      "hint": "The comparison operator is three characters. The two return values are the JavaScript booleans for yes and no.",
+      "hintBank": [
+        { "id": "h1", "label": "===" },
+        { "id": "h2", "label": "==" },
+        { "id": "h3", "label": "true" },
+        { "id": "h4", "label": "false" }
+      ],
+      "codeWithBlanks": [
+        "function checkResult(a, b) {",
+        "    if (a ___BLANK___ b) {",
+        "        return ___BLANK___;",
+        "    } else {",
+        "        return ___BLANK___;",
+        "    }",
+        "}"
+      ],
+      "blankPlaceholders": ["operator", "if true", "if false"],
+      "blankWidths": [5, 6, 6],
+      "checks": [
+        {
+          "type": "call",
+          "fn": "checkResult",
+          "args": ["blue", "blue"],
+          "assert": "result === true",
+          "label": "checkResult('blue', 'blue') returns true"
+        },
+        {
+          "type": "call",
+          "fn": "checkResult",
+          "args": ["red", "blue"],
+          "assert": "result === false",
+          "label": "checkResult('red', 'blue') returns false"
+        }
+      ],
+      "explanation": "=== checks strict equality. When a and b match, the if branch fires and returns true. When they don't, the else fires and returns false."
+    },
+    {
+      "title": "What does this print? (using the result)",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["The caller uses checkResult's return value directly in an if. What gets logged?"],
+      "hint": "What does checkResult('green', 'green') return? Then trace what the if does with that value.",
+      "codeSnippet": "function checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer === correctAnswer) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\nif (checkResult('green', 'green')) {\n    console.log('Level up!');\n} else {\n    console.log('Game over.');\n}",
+      "options": [
+        { "id": "a", "label": "Game over." },
+        { "id": "b", "label": "true" },
+        { "id": "c", "label": "Level up!" },
+        { "id": "d", "label": "undefined" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "checkResult('green', 'green') returns true. The if sees true, so the if branch runs and logs 'Level up!'. You can use a function call directly inside an if — no variable needed.",
+      "checks": []
+    },
+    {
+      "title": "Two approaches — sort the descriptions",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Drag each description into the correct bucket: 'returns true/false' or 'takes the action directly'."],
+      "hint": "One approach lets the caller decide what to do. The other does it itself.",
+      "buckets": [
+        { "id": "returns", "label": "returns true/false" },
+        { "id": "acts", "label": "takes the action directly" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "The caller decides what to do with the result", "correctBucketId": "returns" },
+        { "id": "i2", "label": "Calls startRound() or showGameOver() itself", "correctBucketId": "acts" },
+        { "id": "i3", "label": "Easier to reuse in different situations", "correctBucketId": "returns" },
+        { "id": "i4", "label": "The function handles everything in one place", "correctBucketId": "acts" },
+        { "id": "i5", "label": "Returns true when the player is correct", "correctBucketId": "returns" },
+        { "id": "i6", "label": "Calls level = level + 1 directly inside the function", "correctBucketId": "acts" }
+      ],
+      "checks": [],
+      "explanation": "Both are valid patterns. Returning true/false keeps the decision separate from the action — the caller stays in control. Taking the action directly is simpler when there's only ever one thing to do with the result."
+    },
+    {
+      "title": "Write checkResult from scratch",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Write a function called checkResult that takes playerAnswer and correctAnswer.",
+        "If they match, return true. If not, return false.",
+        "Call it with ('blue', 'blue') and store the result. Log it with a label.",
+        "Call it again with ('red', 'blue') and log that result too.",
+        "You should see true then false."
+      ],
+      "hint": "Use === inside the if. Return true in the if branch, false in the else.",
+      "starterCode": "// Write checkResult here\n\n\n// Call with matching answers and log\n\n\n// Call with non-matching answers and log\n\n",
+      "steps": [
+        {
+          "text": "Write the checkResult function. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 2,
+          "focusRange": [1, 4],
+          "checks": [
+            {
+              "type": "call",
+              "fn": "checkResult",
+              "args": ["blue", "blue"],
+              "assert": "result === true",
+              "label": "checkResult('blue', 'blue') returns true"
+            },
+            {
+              "type": "call",
+              "fn": "checkResult",
+              "args": ["red", "blue"],
+              "assert": "result === false",
+              "label": "checkResult('red', 'blue') returns false"
+            }
+          ]
+        },
+        {
+          "text": "Call it with matching answers and log the result. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 7,
+          "focusRange": [6, 8],
+          "checks": [
+            { "type": "console", "includes": "true", "label": "true is logged" }
+          ]
+        },
+        {
+          "text": "Call it with non-matching answers and log that result too. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 11,
+          "focusRange": [10, 12],
+          "checks": [
+            { "type": "console", "includes": "false", "label": "false is logged" }
+          ]
+        },
+        {
+          "text": "That's the core of Simon Says — a function that compares two things and hands back a yes or no.",
+          "completesOn": "auto",
+          "autoDelayMs": 1800
+        }
+      ],
+      "checks": [
+        {
+          "type": "call",
+          "fn": "checkResult",
+          "args": ["blue", "blue"],
+          "assert": "result === true",
+          "label": "checkResult('blue', 'blue') returns true"
+        },
+        {
+          "type": "call",
+          "fn": "checkResult",
+          "args": ["red", "blue"],
+          "assert": "result === false",
+          "label": "checkResult('red', 'blue') returns false"
+        },
+        { "type": "console", "includes": "true", "label": "true is logged" },
+        { "type": "console", "includes": "false", "label": "false is logged" }
+      ]
+    },
+    {
+      "title": "Wire the decision to an action",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "5 min",
+      "tasks": [
+        "checkResult is already written below. Your job is to use it.",
+        "Call checkResult('green', 'green') and store the result in a variable called outcome.",
+        "Write an if/else that logs 'Level up!' if outcome is true and 'Game over.' if false.",
+        "Then change 'green' to 'red' in the call and run it again — you should see 'Game over.'",
+        "This is how the caller uses the return value to decide what happens next."
+      ],
+      "hint": "Store the result first: let outcome = checkResult(...); Then use outcome in your if condition.",
+      "starterCode": "function checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer === correctAnswer) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\n// Call checkResult and store the result\n\n\n// Use the result in an if/else\n\n",
+      "steps": [
+        {
+          "text": "Call checkResult('green', 'green') and store the result in outcome. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 10,
+          "focusRange": [9, 11],
+          "checks": [
+            {
+              "type": "variable",
+              "name": "outcome",
+              "expected": true,
+              "label": "outcome equals true"
+            }
+          ]
+        },
+        {
+          "text": "Write if (outcome) { log 'Level up!' } else { log 'Game over.' }. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 13,
+          "focusRange": [12, 16],
+          "checks": [
+            { "type": "console", "includes": "Level up!", "label": "logs 'Level up!'" }
+          ]
+        },
+        {
+          "text": "Now change 'green' to 'red' in the call. Hit Run — you should see 'Game over.'",
+          "completesOn": "run",
+          "focusLine": 10,
+          "focusRange": [9, 11],
+          "checks": [
+            { "type": "console", "includes": "Game over.", "label": "logs 'Game over.'" }
+          ]
+        },
+        {
+          "text": "The decision (checkResult) and the action (if/else) are separate. That's the pattern.",
+          "completesOn": "auto",
+          "autoDelayMs": 1800
+        }
+      ],
+      "checks": [
+        { "type": "console", "includes": "Level up!", "label": "Level up! is logged for a match" }
+      ]
+    },
+    {
+      "title": "Build the action-taking version",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "5 min",
+      "tasks": [
+        "This time write a checkResult that takes the action itself — no return value.",
+        "If playerClicks === sequence, log 'Correct! Level is now: ' and increase level by 1.",
+        "If not, log 'Wrong. Game over.'",
+        "Call it twice: once with matching values, once with non-matching.",
+        "This mirrors how checkResult() actually works in the Simon Says game."
+      ],
+      "hint": "No return needed here. Just if/else with console.log and a level variable update inside the if branch.",
+      "starterCode": "let level = 1;\n\n// Write checkResult here\n// It takes playerClicks and sequence as parameters\n// If they match: increase level, log the new level\n// If not: log 'Wrong. Game over.'\n\n\n// Test with a match\n\n\n// Test with a mismatch\n\n",
+      "steps": [
+        {
+          "text": "Write the checkResult function that acts directly. Hit Run.",
+          "completesOn": "run",
+          "focusRange": [1, 8],
+          "checks": [
+            { "type": "noError", "label": "code runs without errors" }
+          ]
+        },
+        {
+          "text": "Call checkResult with two matching values. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 10,
+          "focusRange": [9, 11],
+          "checks": [
+            { "type": "console", "includes": "Correct!", "label": "logs Correct!" },
+            { "type": "variable", "name": "level", "expected": 2, "label": "level increased to 2" }
+          ]
+        },
+        {
+          "text": "Call checkResult with two non-matching values. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 14,
+          "focusRange": [13, 15],
+          "checks": [
+            { "type": "console", "includes": "Game over.", "label": "logs 'Game over.'" }
+          ]
+        },
+        {
+          "text": "Same decision — different structure. This version owns the outcome instead of passing it back.",
+          "completesOn": "auto",
+          "autoDelayMs": 1800
+        }
+      ],
+      "checks": [
+        { "type": "console", "includes": "Correct!", "label": "Correct! is logged for a match" },
+        { "type": "console", "includes": "Game over.", "label": "Game over. is logged for a mismatch" }
+      ]
+    },
+    {
+      "title": "Trace the full game round",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "6 min",
+      "tasks": [
+        "Hit Run and read all the output carefully.",
+        "Then change line 10 so playerAnswer is 'blue' instead of 'green'.",
+        "Hit Run again and trace what changes.",
+        "Finally, add a third round: call playRound('yellow', 'yellow') and run once more.",
+        "This is the full pattern: a decision function wired to actions, called multiple times."
+      ],
+      "hint": "Just run it first and read the output before changing anything. Trace which branch fires each time.",
+      "starterCode": "let level = 1;\n\nfunction checkResult(playerAnswer, correctAnswer) {\n    if (playerAnswer === correctAnswer) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\nfunction playRound(playerAnswer, correctAnswer) {\n    let result = checkResult(playerAnswer, correctAnswer);\n    if (result) {\n        level = level + 1;\n        console.log('Correct! Level is now:', level);\n    } else {\n        console.log('Wrong. Game over. Final level:', level);\n    }\n}\n\nplayRound('green', 'green');\nplayRound('red', 'blue');\n",
+      "steps": [
+        {
+          "text": "Hit Run and read the full output. What happened in each round?",
+          "completesOn": "run",
+          "focusRange": [1, 22],
+          "checks": [
+            { "type": "consoleNonEmpty", "label": "something printed" }
+          ]
+        },
+        {
+          "text": "Change line 21 so playerAnswer is 'blue' instead of 'red'. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 21,
+          "focusRange": [20, 22],
+          "checks": [
+            { "type": "console", "includes": "Level is now: 3", "label": "level reaches 3" }
+          ]
+        },
+        {
+          "text": "Add playRound('yellow', 'yellow') on a new line. Hit Run.",
+          "completesOn": "run",
+          "focusRange": [22, 24],
+          "checks": [
+            { "type": "console", "includes": "Level is now: 4", "label": "level reaches 4" }
+          ]
+        },
+        {
+          "text": "Three correct rounds, three level-ups. That's the game loop in action.",
+          "completesOn": "auto",
+          "autoDelayMs": 1800
+        }
+      ],
+      "checks": [
+        { "type": "consoleNonEmpty", "label": "output is produced" }
+      ]
+    }
+  ]
 }

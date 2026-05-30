@@ -7,6 +7,7 @@
     "heading": "Scope — what can each part of your code see?",
     "blocks": [
       { "kind": "p", "text": "Scope determines which variables a piece of code can access. Variables declared outside any function are global — visible everywhere. Variables declared inside a function are local — only visible inside that function." },
+      {"kind": "image", "src": "/assets/lessons/s3-l4/scope-visual-v4.svg", "alt": "Diagram showing global scope and local scope inside a function." },
       { "kind": "concept", "code": "let level = 1  (outside)", "desc": "Global scope — any function can read or change this" },
       { "kind": "concept", "code": "let message = 'hi'  (inside fn)", "desc": "Local scope — only visible inside the function it was declared in" }
     ]
@@ -52,45 +53,384 @@
 ],
  "exercises": [
   {
-    "title": "Break scope on purpose",
-    "type": "predict",
-    "duration": "6 min",
-    "tasks": [
-      "Before running: predict which line will cause an error and what the error will say.",
-      "Run it and read the error message in the console carefully.",
-      "Fix it by moving the offending line to where secret is actually visible.",
-      "Now declare a variable globally and confirm a function can read it."
-    ],
-    "hint": "A variable declared with let inside a function only exists inside that function's curly braces.",
-    "starterCode": "function makeSecret() {\n    let secret = 42;\n    console.log('Inside function:', secret);\n}\n\nmakeSecret();\nconsole.log('Outside function:', secret);\n"
-  },
-  {
-    "title": "Global vs local",
+    "title": "What does global scope mean?",
     "type": "practice",
-    "duration": "6 min",
-    "tasks": [
-      "Declare a variable called level set to 1 outside any function.",
-      "Write a function called nextLevel that adds 1 to level each time it is called.",
-      "Call nextLevel three times and log level after each call — it should increase each time.",
-      "Now declare a variable called localOnly inside nextLevel. Try to log it outside the function and read the error."
+    "format": "multiple-choice",
+    "duration": "1 min",
+    "tasks": ["level is declared outside any function in Simon Says. What does that mean?"],
+    "hint": "Think about which parts of the code can read a variable declared at the very top.",
+    "options": [
+      { "id": "a", "label": "Only the function directly below it can read it" },
+      { "id": "b", "label": "Any function in the program can read and change it" },
+      { "id": "c", "label": "It is deleted after the first function runs" },
+      { "id": "d", "label": "It can be read but never changed" }
     ],
-    "hint": "To update the global level inside a function, just write level = level + 1 — no let. Adding let creates a new local variable instead.",
-    "starterCode": "let level = 1;\n\nfunction nextLevel() {\n    // add 1 to level\n    // declare localOnly here\n}\n\n// call nextLevel three times and log level each time\n\n// try to log localOnly here\n",
-    "checks": [
-      { "type": "variable", "name": "level", "expected": null, "label": "a global variable called level exists" }
-    ]
+    "correctOptionId": "b",
+    "explanation": "A variable declared outside any function is global — every function in the program can read and update it. That is why level and playerClicks are declared at the top in Simon Says: startRound, handleClick, and checkResult all need them.",
+    "checks": []
   },
   {
-    "title": "Spot the shadow",
-    "type": "predict",
+    "title": "Which line throws a ReferenceError?",
+    "type": "practice",
+    "format": "multiple-choice",
+    "duration": "1 min",
+    "tasks": ["One line in this code throws a ReferenceError. Which one?"],
+    "hint": "A ReferenceError means JavaScript can't find the variable. Where was it declared?",
+    "codeSnippet": "function startRound() {\n    let message = 'Round starting!';\n    console.log(message);\n}\nstartRound();\nconsole.log(message);",
+    "options": [
+      { "id": "a", "label": "Line 2 — message is declared wrong" },
+      { "id": "b", "label": "Line 3 — console.log can't be used inside a function" },
+      { "id": "c", "label": "Line 6 — message only exists inside startRound" },
+      { "id": "d", "label": "Line 5 — you can't call a function that way" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "message was declared with let inside startRound, so it only lives inside those curly braces. Line 6 is outside the function — JavaScript can't find message and throws a ReferenceError. To fix it, either log message inside startRound or declare it globally.",
+    "checks": []
+  },
+  {
+    "title": "Global or local?",
+    "type": "practice",
+    "format": "sort-buckets",
+    "duration": "3 min",
+    "tasks": ["Sort each variable declaration into the correct bucket based on where it is declared."],
+    "hint": "A variable is global if it has no surrounding curly braces. Local if it appears inside a function body.",
+    "buckets": [
+      { "id": "global", "label": "Global" },
+      { "id": "local", "label": "Local to a function" }
+    ],
+    "bucketItems": [
+      { "id": "i1", "label": "let level = 1  (above all functions)", "correctBucketId": "global" },
+      { "id": "i2", "label": "let message = 'Go!'  (inside startRound)", "correctBucketId": "local" },
+      { "id": "i3", "label": "let playerClicks = 0  (above all functions)", "correctBucketId": "global" },
+      { "id": "i4", "label": "let result = false  (inside checkResult)", "correctBucketId": "local" },
+      { "id": "i5", "label": "let maxLevel = 10  (above all functions)", "correctBucketId": "global" },
+      { "id": "i6", "label": "let feedback = 'Correct!'  (inside handleClick)", "correctBucketId": "local" },
+      { "id": "i7", "label": "let level = 99  (inside startRound)", "correctBucketId": "local" }
+    ],
+    "checks": [],
+    "explanation": "The last item is a trap: let level = 99 inside startRound looks like it updates the global, but it creates a brand new local variable named level. The global is untouched. Any let inside a function always creates a local — that is what let does."
+  },
+  {
+    "title": "Read a global inside a function",
+    "type": "practice",
+    "format": "fill-blank",
+    "duration": "2 min",
+    "tasks": ["level is declared globally. Complete showLevel so it logs the current level."],
+    "hint": "To read a global variable inside a function, just use its name — no special keyword needed.",
+    "codeWithBlanks": [
+      "let level = 1;",
+      "",
+      "function showLevel() {",
+      "    console.log(___BLANK___);",
+      "}"
+    ],
+    "tokenBank": [
+      { "id": "t1", "label": "level" },
+      { "id": "t2", "label": "'level'" },
+      { "id": "t3", "label": "let level" },
+      { "id": "t4", "label": "global.level" }
+    ],
+    "correctOrder": ["level"],
+    "explanation": "Inside a function, you read a global variable just by writing its name — level, not 'level' (that is a string), not let level (that creates a new local), and not global.level (that is not JavaScript).",
+    "checks": []
+  },
+  {
+    "title": "Update the global — not a shadow",
+    "type": "practice",
+    "format": "fill-blank",
+    "duration": "2 min",
+    "tasks": ["Complete nextLevel so it adds 1 to the global level without creating a shadow."],
+    "hint": "The let keyword creates a new variable. Without let, you update the one that already exists.",
+    "codeWithBlanks": [
+      "let level = 1;",
+      "",
+      "function nextLevel() {",
+      "    ___BLANK___ = level + 1;",
+      "}"
+    ],
+    "tokenBank": [
+      { "id": "t1", "label": "level" },
+      { "id": "t2", "label": "let level" },
+      { "id": "t3", "label": "let newLevel" },
+      { "id": "t4", "label": "var level" }
+    ],
+    "correctOrder": ["level"],
+    "explanation": "level = level + 1 (no let) reads the global and stores the incremented value back. let level = level + 1 creates a brand new local variable named level — the global is never touched. This is the most common scope bug: forgetting to remove let.",
+    "checks": []
+  },
+  {
+    "title": "Put the Simon Says setup in order",
+    "type": "practice",
+    "format": "drag-reorder",
+    "duration": "3 min",
+    "tasks": ["Drag these lines into the correct order so the program runs without errors and logs the right level."],
+    "hint": "Global variables must be declared before the functions that use them. Functions must be defined before they are called.",
+    "codeLines": [
+      "let level = 1;",
+      "let playerClicks = 0;",
+      "function startRound() {",
+      "    level = level + 1;",
+      "    playerClicks = 0;",
+      "    console.log('Level:', level);",
+      "}",
+      "startRound();"
+    ],
+    "checks": [
+      { "type": "console", "includes": "Level: 2", "label": "Level: 2 is logged" },
+      { "type": "variable", "name": "level", "expected": 2, "label": "level equals 2 after startRound" }
+    ],
+    "explanation": "Globals are declared first so the function body can reference them. The function call goes last — startRound needs to exist before you can call it. Inside startRound, there is no let before level or playerClicks, so both assignments update the globals."
+  },
+  {
+    "title": "Trace the shadow",
+    "type": "practice",
+    "format": "multiple-choice",
+    "duration": "2 min",
+    "tasks": ["Follow the code carefully. What do the two console.log calls print?"],
+    "hint": "Look for the let keyword inside the function. That is where the shadow begins.",
+    "codeSnippet": "let level = 1;\n\nfunction startRound() {\n    let level = 5;\n    console.log('Inside:', level);\n}\n\nstartRound();\nconsole.log('Outside:', level);",
+    "options": [
+      { "id": "a", "label": "Inside: 1, Outside: 1" },
+      { "id": "b", "label": "Inside: 5, Outside: 5" },
+      { "id": "c", "label": "Inside: 5, Outside: 1" },
+      { "id": "d", "label": "ReferenceError on the last line" }
+    ],
+    "correctOptionId": "c",
+    "explanation": "let level = 5 inside startRound creates a completely separate local variable. The global level is never touched. Inside the function you see 5 (the local). Outside you see 1 (the global, unchanged). The local level shadows the global while inside the function, then disappears when the function ends.",
+    "checks": []
+  },
+  {
+    "title": "Type the update — no let",
+    "type": "practice",
+    "format": "fill-blank-typed",
+    "duration": "2 min",
+    "tasks": ["handleClick should add 1 to the global playerClicks. Type the left side of the assignment — no let."],
+    "hint": "To update a global, just write the variable name. Adding let would create a local shadow instead.",
+    "hintBank": [
+      { "id": "h1", "label": "playerClicks" },
+      { "id": "h2", "label": "let playerClicks" },
+      { "id": "h3", "label": "clicks" },
+      { "id": "h4", "label": "let clicks" }
+    ],
+    "codeWithBlanks": [
+      "let playerClicks = 0;",
+      "",
+      "function handleClick() {",
+      "    ___BLANK___ = playerClicks + 1;",
+      "}",
+      "",
+      "handleClick();"
+    ],
+    "blankPlaceholders": ["left side"],
+    "blankWidths": [14],
+    "checks": [
+      { "type": "variable", "name": "playerClicks", "expected": 1, "label": "playerClicks equals 1 after one call" }
+    ],
+    "explanation": "playerClicks = playerClicks + 1 reads the global (0), adds 1, and stores 1 back. Writing let playerClicks = playerClicks + 1 would create a local shadow — the global stays 0 and the check fails."
+  },
+  {
+    "title": "Which version updates the global?",
+    "type": "practice",
+    "format": "multiple-choice",
+    "duration": "2 min",
+    "tasks": ["level is a global variable. Which version of startRound correctly increases it by 1?"],
+    "hint": "Only one version modifies the global variable. The others either create a shadow, log, or return without saving.",
+    "options": [
+      { "id": "a", "label": "Version A", "code": "function startRound() {\n    let level = level + 1;\n}" },
+      { "id": "b", "label": "Version B", "code": "function startRound() {\n    level = level + 1;\n}" },
+      { "id": "c", "label": "Version C", "code": "function startRound() {\n    console.log(level + 1);\n}" },
+      { "id": "d", "label": "Version D", "code": "function startRound() {\n    return level + 1;\n}" }
+    ],
+    "correctOptionId": "b",
+    "explanation": "Version B is the only one that updates the global: level = level + 1 with no let reads the current value and stores the result back. Version A creates a local shadow. Versions C and D compute the new value but never save it anywhere — the global stays unchanged.",
+    "checks": []
+  },
+  {
+    "title": "Write nextLevel",
+    "type": "practice",
+    "format": "code-editor",
     "duration": "5 min",
     "tasks": [
-      "Before running: write down what you think each console.log will print.",
-      "Run it and compare to your predictions.",
-      "Explain in one sentence why the two logs print different values even though they use the same name."
+      "Write a function called nextLevel that adds 1 to the global level.",
+      "Inside nextLevel, also reset playerClicks to 0.",
+      "Call nextLevel twice, then log level — it should print 3."
     ],
-    "hint": "Look carefully for the let keyword inside the function. That is the clue.",
-    "starterCode": "let score = 100;\n\nfunction resetScore() {\n    let score = 0;\n    console.log('Inside:', score);\n}\n\nresetScore();\nconsole.log('Outside:', score);\n"
+    "hint": "No let before level or playerClicks inside the function — those are already declared globally at the top.",
+    "starterCode": "let level = 1;\nlet playerClicks = 5;\n\n// Write nextLevel here\n\n\n// Call it twice and log level\n",
+    "steps": [
+      {
+        "text": "Declare function nextLevel() { } with the curly braces. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [4, 6],
+        "checks": [
+          { "type": "noError", "label": "code runs without errors" },
+          { "type": "sourceIncludes", "pattern": "function\\s+nextLevel", "label": "nextLevel is declared" }
+        ]
+      },
+      {
+        "text": "Inside nextLevel, add level = level + 1; — no let. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [4, 6],
+        "checks": [
+          { "type": "sourceIncludes", "pattern": "level\\s*=\\s*level\\s*\\+\\s*1", "label": "level = level + 1 is written" },
+          { "type": "noError", "label": "no errors" }
+        ]
+      },
+      {
+        "text": "Inside nextLevel, also add playerClicks = 0; Hit Run.",
+        "completesOn": "run",
+        "focusRange": [4, 6],
+        "checks": [
+          { "type": "sourceIncludes", "pattern": "playerClicks\\s*=\\s*0", "label": "playerClicks = 0 is written" },
+          { "type": "noError", "label": "no errors" }
+        ]
+      },
+      {
+        "text": "Call nextLevel(); twice, then write console.log(level); Hit Run.",
+        "completesOn": "run",
+        "focusRange": [8, 10],
+        "checks": [
+          { "type": "variable", "name": "level", "expected": 3, "label": "level equals 3 after two calls" },
+          { "type": "variable", "name": "playerClicks", "expected": 0, "label": "playerClicks was reset to 0" },
+          { "type": "console", "includes": "3", "label": "3 is logged" }
+        ]
+      },
+      {
+        "text": "level is 3 and playerClicks is 0. Both globals updated — no let inside the function, no shadowing.",
+        "completesOn": "auto",
+        "autoDelayMs": 1500
+      }
+    ],
+    "checks": [
+      { "type": "variable", "name": "level", "expected": 3, "label": "level equals 3 after two calls" },
+      { "type": "console", "includes": "3", "label": "3 is printed" }
+    ],
+    "explanation": "Functions can read and write global variables by name with no let inside the function. level = level + 1 updates the global; let level = level + 1 would create a shadow and leave the global unchanged."
+  },
+  {
+    "title": "Make two functions share a global",
+    "type": "practice",
+    "format": "code-editor",
+    "duration": "5 min",
+    "tasks": [
+      "Declare level as a global variable set to 1.",
+      "Write startRound — it adds 1 to level and logs the new level.",
+      "Write resetGame — it sets level back to 1 and logs it.",
+      "Call startRound twice, resetGame once, then startRound once more. Log level at the end — it should print 2."
+    ],
+    "hint": "Both functions use level without let inside their bodies. The let goes only at the very top when the variable is first created.",
+    "starterCode": "// Declare level here\n\n\n// Write startRound here\n\n\n// Write resetGame here\n\n\n// Call them and log level at the end\n",
+    "steps": [
+      {
+        "text": "Declare let level = 1; at the top. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [1, 2],
+        "checks": [
+          { "type": "variable", "name": "level", "expected": 1, "label": "level equals 1" },
+          { "type": "sourceIncludes", "pattern": "let\\s+level\\s*=\\s*1", "label": "let level = 1 is declared" }
+        ]
+      },
+      {
+        "text": "Write function startRound() that adds 1 to level (no let) and logs 'Level: ' + level. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [4, 7],
+        "checks": [
+          { "type": "sourceIncludes", "pattern": "function\\s+startRound", "label": "startRound is declared" },
+          { "type": "noError", "label": "no errors" }
+        ]
+      },
+      {
+        "text": "Write function resetGame() that sets level = 1 and logs 'Reset to level: ' + level. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [9, 12],
+        "checks": [
+          { "type": "sourceIncludes", "pattern": "function\\s+resetGame", "label": "resetGame is declared" },
+          { "type": "noError", "label": "no errors" }
+        ]
+      },
+      {
+        "text": "Call startRound(); twice, resetGame();, then startRound(); once more. Log level. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [14, 18],
+        "checks": [
+          { "type": "variable", "name": "level", "expected": 2, "label": "level ends at 2" },
+          { "type": "console", "includes": "2", "label": "2 is printed" }
+        ]
+      },
+      {
+        "text": "Two functions, one shared global. That is how Simon Says keeps level in sync across every function.",
+        "completesOn": "auto",
+        "autoDelayMs": 2000
+      }
+    ],
+    "checks": [
+      { "type": "variable", "name": "level", "expected": 2, "label": "level ends at 2 after the full sequence" }
+    ],
+    "explanation": "Both startRound and resetGame update the same global level. Neither uses let inside the function body — let was only needed once, at the top when the variable was first created."
+  },
+  {
+    "title": "Build the Simon Says level tracker",
+    "type": "practice",
+    "format": "code-editor",
+    "duration": "6 min",
+    "tasks": [
+      "Write handleClick — it adds 1 to playerClicks and logs the total.",
+      "Write nextLevel — it adds 1 to level and resets playerClicks to 0.",
+      "Write checkWin — if playerClicks equals level, log 'Round won! Level: ' + level, then call nextLevel().",
+      "Simulate a round: call handleClick three times, then checkWin. Log level at the end."
+    ],
+    "hint": "All three functions use level and playerClicks with no let inside them. The globals are declared once at the very top.",
+    "starterCode": "// Globals\nlet level = 3;\nlet playerClicks = 0;\n\n// Write handleClick, nextLevel, and checkWin here\n\n\n\n\n// Simulate one round\n",
+    "steps": [
+      {
+        "text": "Write function handleClick() — it adds 1 to playerClicks and logs 'Clicks: ' + playerClicks. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [5, 8],
+        "checks": [
+          { "type": "sourceIncludes", "pattern": "function\\s+handleClick", "label": "handleClick declared" },
+          { "type": "noError", "label": "no errors" }
+        ]
+      },
+      {
+        "text": "Write function nextLevel() — adds 1 to level and resets playerClicks = 0. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [9, 13],
+        "checks": [
+          { "type": "sourceIncludes", "pattern": "function\\s+nextLevel", "label": "nextLevel declared" },
+          { "type": "noError", "label": "no errors" }
+        ]
+      },
+      {
+        "text": "Write function checkWin() — if playerClicks === level, log 'Round won! Level: ' + level and call nextLevel(). Hit Run.",
+        "completesOn": "run",
+        "focusRange": [14, 20],
+        "checks": [
+          { "type": "sourceIncludes", "pattern": "function\\s+checkWin", "label": "checkWin declared" },
+          { "type": "noError", "label": "no errors" }
+        ]
+      },
+      {
+        "text": "Call handleClick() three times, then checkWin(). Log level at the end. Hit Run.",
+        "completesOn": "run",
+        "focusRange": [21, 27],
+        "checks": [
+          { "type": "console", "includes": "Round won!", "label": "'Round won!' is logged" },
+          { "type": "variable", "name": "level", "expected": 4, "label": "level advanced to 4" },
+          { "type": "variable", "name": "playerClicks", "expected": 0, "label": "playerClicks reset to 0" }
+        ]
+      },
+      {
+        "text": "Three functions, two shared globals, zero let inside the function bodies. That is scope working for you — not against you.",
+        "completesOn": "auto",
+        "autoDelayMs": 2000
+      }
+    ],
+    "checks": [
+      { "type": "console", "includes": "Round won!", "label": "'Round won!' is logged" },
+      { "type": "variable", "name": "level", "expected": 4, "label": "level is 4 after winning" },
+      { "type": "variable", "name": "playerClicks", "expected": 0, "label": "playerClicks reset to 0" }
+    ],
+    "explanation": "All three functions share level and playerClicks without declaring their own local copies. This is the scope pattern Simon Says depends on: globals declared once at the top, multiple functions reading and updating them."
   }
 ],
 "challenges": [

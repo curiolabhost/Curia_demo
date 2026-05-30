@@ -3,15 +3,23 @@
   "session": "Session 2",
   "title": "Conditionals",
   "content": [
-    {
-      "heading": "Conditionals — making your program decide",
-      "blocks": [
-        { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
-        { "kind": "concept", "code": "if (score >= 100) { ... }", "desc": "If this condition is true, run the code inside the curly braces" },
-        { "kind": "concept", "code": "} else { ... }", "desc": "If the condition was false, run this instead" },
-        { "kind": "concept", "code": "} else if (score >= 50) { ... }", "desc": "Check a second condition — only runs if the first one was false" }
-      ]
-    },
+  {
+  "heading": "Conditionals — making your program decide",
+  "blocks": [
+    { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
+    { "kind": "p", "text": "The three keywords you need:" },
+    { "kind": "code", "lines": [
+      "if (condition) {",
+      "    // runs when condition is true",
+      "} else if (anotherCondition) {",
+      "    // runs when the first was false but this is true",
+      "} else {",
+      "    // runs when nothing above was true",
+      "}"
+    ]},
+    { "kind": "callout", "variant": "info", "label": "Simon Says connection", "text": "When you click a square, the game asks: is this the right cell? If yes — register the click. If the player has clicked enough — check the result. If wrong — end the game. Every one of those decisions is an if/else." }
+  ]
+},
     {
       "blocks": [
         { "kind": "code", "lines": [

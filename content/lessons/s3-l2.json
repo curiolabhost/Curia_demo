@@ -153,94 +153,432 @@
   ],
   "exercises": [
     {
-      "title": "Write functions that return",
+      "title": "What does return do?",
       "type": "practice",
-      "duration": "6 min",
-      "tasks": [
-        "Write a function called multiply that takes two numbers a and b and returns their product.",
-        "Store the result of calling multiply(3, 4) in a variable called product and log it.",
-        "Write a function called fullName that takes a first and last parameter and returns the combined name as one string with a space in between.",
-        "Call fullName with your own first and last name, store the result, and log it.",
-        "Call multiply three more times with different numbers and log each result."
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What does the return keyword do inside a function?"],
+      "hint": "Think about what the caller gets back when it calls the function.",
+      "options": [
+        { "id": "a", "label": "Prints the value to the console" },
+        { "id": "b", "label": "Sends the value back to whoever called the function", "code": "return n * 2;" },
+        { "id": "c", "label": "Creates a new variable" },
+        { "id": "d", "label": "Runs the function again from the top" }
       ],
-      "hint": "Use the return keyword inside the function body. The caller needs to store the result in a variable to use it: let result = multiply(3, 4);",
-      "starterCode": "// Write multiply below\n\n\n// Store and log the result of multiply(3, 4)\n\n\n// Write fullName below\n\n\n// Call fullName and log the result\n",
+      "correctOptionId": "b",
+      "explanation": "return hands a value back to the caller so the rest of the code can use it. console.log only shows something on screen — the value disappears the moment it prints.",
+      "checks": []
+    },
+    {
+      "title": "log or return?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["A function logs its result instead of returning it. What does the caller get back?"],
+      "hint": "What does JavaScript hand back when a function has no return statement?",
+      "options": [
+        { "id": "a", "label": "The logged value" },
+        { "id": "b", "label": "0" },
+        { "id": "c", "label": "undefined" },
+        { "id": "d", "label": "null" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "A function with no return statement automatically gives back undefined. The value that was logged is shown on screen but is completely gone after that — the caller gets nothing useful.",
+      "checks": []
+    },
+    {
+      "title": "Sort the outcomes",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Drag each statement into the correct bucket: console.log or return."],
+      "hint": "Ask yourself: does this show something on screen, or does it hand a value back to the caller?",
+      "buckets": [
+        { "id": "log", "label": "console.log" },
+        { "id": "return", "label": "return" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "Shows a value on screen", "correctBucketId": "log" },
+        { "id": "i2", "label": "Hands the value back to the caller", "correctBucketId": "return" },
+        { "id": "i3", "label": "The caller can store the result in a variable", "correctBucketId": "return" },
+        { "id": "i4", "label": "The value disappears after it prints", "correctBucketId": "log" },
+        { "id": "i5", "label": "Stops the function immediately", "correctBucketId": "return" },
+        { "id": "i6", "label": "Useful for debugging — seeing values while you build", "correctBucketId": "log" }
+      ],
+      "checks": [],
+      "explanation": "console.log is for humans — you see the value but can't use it. return is for code — the caller gets the value and can do things with it."
+    },
+    {
+      "title": "Complete the return",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the correct tokens to make this function return the result instead of logging it."],
+      "hint": "Replace console.log with the keyword that sends a value back to the caller.",
+      "codeWithBlanks": [
+        "function addTen(n) {",
+        "    ___BLANK___ n + 10;",
+        "}"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "return" },
+        { "id": "t2", "label": "console.log" },
+        { "id": "t3", "label": "let result =" },
+        { "id": "t4", "label": "print" }
+      ],
+      "correctOrder": ["return"],
+      "explanation": "return n + 10; sends the calculated value back to whoever called addTen. The caller can now store it: let answer = addTen(5);",
+      "checks": []
+    },
+    {
+      "title": "What does the caller get?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Read the code carefully. What is stored in answer?"],
+      "hint": "Does this function return anything, or does it only log?",
+      "codeSnippet": "function triple(n) {\n    console.log(n * 3);\n}\n\nlet answer = triple(4);",
+      "options": [
+        { "id": "a", "label": "12" },
+        { "id": "b", "label": "4" },
+        { "id": "c", "label": "undefined" },
+        { "id": "d", "label": "0" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "triple only logs — it has no return statement. So the caller gets undefined stored into answer. The 12 is printed to the console but is completely lost to the code.",
+      "checks": []
+    },
+    {
+      "title": "Build the return chain",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Fill in both blanks so the function returns the doubled score and the caller stores it correctly."],
+      "hint": "The function needs return. The caller needs to capture what comes back.",
+      "codeWithBlanks": [
+        "function doubleScore(score) {",
+        "    ___BLANK___ score * 2;",
+        "}",
+        "",
+        "let newScore = ___BLANK___(100);"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "return" },
+        { "id": "t2", "label": "console.log" },
+        { "id": "t3", "label": "doubleScore" },
+        { "id": "t4", "label": "newScore" },
+        { "id": "t5", "label": "double" }
+      ],
+      "correctOrder": ["return", "doubleScore"],
+      "explanation": "return score * 2 sends the value out of the function. doubleScore(100) calls the function and the result (200) gets stored in newScore.",
+      "checks": []
+    },
+    {
+      "title": "Put the function in order",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": ["Drag these lines into the correct order so the function returns a result and the caller logs it."],
+      "hint": "Define the function first. Call it and store the result. Then log the result.",
+      "codeLines": [
+        "function addPoints(n) {",
+        "    return n + 50;",
+        "}",
+        "let total = addPoints(10);",
+        "console.log(total);"
+      ],
+      "checks": [
+        {
+          "type": "console",
+          "includes": "60",
+          "label": "60 is printed to the console"
+        }
+      ],
+      "explanation": "The function must be defined before it's called. The return sends the value out. The caller stores it in total. Then total can be logged."
+    },
+    {
+      "title": "What does this print?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Trace the code step by step. What does the last console.log print?"],
+      "hint": "Follow what checkResult returns, then look at what happens to that value.",
+      "codeSnippet": "function checkResult(correct) {\n    if (correct) {\n        return 'Nice!';\n    } else {\n        return 'Try again.';\n    }\n}\n\nlet message = checkResult(false);\nconsole.log(message);",
+      "options": [
+        { "id": "a", "label": "Nice!" },
+        { "id": "b", "label": "Try again." },
+        { "id": "c", "label": "false" },
+        { "id": "d", "label": "undefined" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "checkResult is called with false. The else branch runs and returns 'Try again.' That string gets stored in message. The last line prints it.",
+      "checks": []
+    },
+    {
+      "title": "Type the return statement",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Complete the function so it returns the sum of a and b."],
+      "hint": "The keyword is 'return'. After it, write the expression you want to send back.",
+      "hintBank": [
+        { "id": "h1", "label": "return" },
+        { "id": "h2", "label": "console.log" },
+        { "id": "h3", "label": "a + b" },
+        { "id": "h4", "label": "a - b" }
+      ],
+      "codeWithBlanks": [
+        "function add(a, b) {",
+        "    ___BLANK___ ___BLANK___;",
+        "}"
+      ],
+      "blankPlaceholders": ["keyword", "expression"],
+      "blankWidths": [8, 7],
       "checks": [
         {
           "type": "call",
-          "fn": "multiply",
-          "args": [
-            3,
-            4
-          ],
-          "assert": "result === 12",
-          "label": "multiply(3, 4) returns 12"
+          "fn": "add",
+          "args": [3, 7],
+          "assert": "result === 10",
+          "label": "add(3, 7) returns 10"
+        }
+      ],
+      "explanation": "return a + b; calculates the sum and hands it back to the caller. The function stops the moment it hits return."
+    },
+    {
+      "title": "Where does the function stop?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Which line does this function stop on?"],
+      "hint": "A function stops the moment it hits a return statement.",
+      "codeSnippet": "function mystery(n) {\n    let doubled = n * 2;\n    return doubled;\n    console.log('Done!');\n}",
+      "options": [
+        { "id": "a", "label": "Line 2 — let doubled = n * 2;" },
+        { "id": "b", "label": "Line 3 — return doubled;" },
+        { "id": "c", "label": "Line 4 — console.log('Done!');" },
+        { "id": "d", "label": "It runs all four lines" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The function hits return on line 3 and exits immediately. Line 4 is unreachable — it will never run. This is why return is like an exit door.",
+      "checks": []
+    },
+    {
+      "title": "Fix the broken chain",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Hit Run and read the console. total prints something unexpected.",
+        "Find the bug: the function doesn't return its result.",
+        "Fix it so that total ends up as 200. Hit Run to confirm."
+      ],
+      "hint": "Look at what the function does with its calculated value. Does it return it or only show it?",
+      "starterCode": "function doubleScore(score) {\n    let result = score * 2;\n    console.log(result);\n}\n\nlet total = doubleScore(100);\nconsole.log('Total:', total);",
+      "steps": [
+        {
+          "text": "Hit Run and read the console. What is total printing, and why?",
+          "completesOn": "run",
+          "focusRange": [1, 7],
+          "checks": [
+            { "type": "consoleNonEmpty", "label": "something printed" }
+          ]
         },
         {
-          "type": "call",
-          "fn": "multiply",
-          "args": [
-            7,
-            6
-          ],
-          "assert": "result === 42",
-          "label": "multiply(7, 6) returns 42"
+          "text": "The function logs but never returns. Replace console.log(result) with return result. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 3,
+          "focusRange": [1, 4],
+          "checks": [
+            {
+              "type": "call",
+              "fn": "doubleScore",
+              "args": [100],
+              "assert": "result === 200",
+              "label": "doubleScore(100) returns 200"
+            },
+            {
+              "type": "console",
+              "includes": "Total: 200",
+              "label": "logs 'Total: 200'"
+            }
+          ]
         },
         {
+          "text": "Total is now 200. The function hands its value back instead of swallowing it.",
+          "completesOn": "auto",
+          "autoDelayMs": 1500
+        }
+      ],
+      "checks": [
+        {
           "type": "call",
-          "fn": "fullName",
-          "args": [
-            "Ada",
-            "Lovelace"
-          ],
-          "assert": "result === 'Ada Lovelace'",
-          "label": "fullName('Ada', 'Lovelace') returns 'Ada Lovelace'"
+          "fn": "doubleScore",
+          "args": [100],
+          "assert": "result === 200",
+          "label": "doubleScore(100) returns 200"
+        },
+        {
+          "type": "console",
+          "includes": "Total: 200",
+          "label": "Total: 200 is logged"
         }
       ]
     },
     {
-      "title": "What does the caller get?",
-      "type": "predict",
-      "duration": "6 min",
+      "title": "Write checkResult for Simon Says",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "5 min",
       "tasks": [
-        "Before running: for each function below, write down what you think the caller gets back.",
-        "Write your predictions next to each console.log.",
-        "Run it and compare. Pay close attention to any 'undefined' that appears.",
-        "Explain in one sentence why greetLog and greetReturn behave differently for the caller."
+        "Write a function called checkResult that takes one parameter: correct.",
+        "If correct is true, return the string 'Correct!'.",
+        "If correct is false, return the string 'Wrong!'.",
+        "Call checkResult(true) and log the result. Then call checkResult(false) and log that too."
       ],
-      "hint": "A function that only logs shows something on screen but hands nothing back. The caller gets undefined.",
-      "starterCode": "function greetLog(name) {\n    console.log('Hello, ' + name);\n}\n\nfunction greetReturn(name) {\n    return 'Hello, ' + name;\n}\n\nlet a = greetLog('Alex');\nlet b = greetReturn('Alex');\n\nconsole.log('a is:', a);\nconsole.log('b is:', b);\n\n// Bonus: what happens here?\nconsole.log('Length of b:', b.length);\nconsole.log('Length of a:', a.length);\n"
-    },
-    {
-      "title": "Fix the missing return",
-      "type": "debug",
-      "duration": "4 min",
-      "tasks": [
-        "Read the code carefully. The function double is supposed to give back a value, but something is wrong.",
-        "Predict: what will tripled log, and why?",
-        "Run it and read the output. Was your prediction right?",
-        "Fix the function so that calling double(5) returns 10, and tripled logs the correct number."
+      "hint": "Use if/else inside the function. Each branch should return a different string. Remember: strings need quotes.",
+      "starterCode": "// Write checkResult here\n\n\n// Call it with true and log the result\n\n\n// Call it with false and log the result\n\n",
+      "steps": [
+        {
+          "text": "Write the checkResult function with an if/else that returns 'Correct!' or 'Wrong!'. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 2,
+          "focusRange": [1, 4],
+          "checks": [
+            {
+              "type": "call",
+              "fn": "checkResult",
+              "args": [true],
+              "assert": "result === 'Correct!'",
+              "label": "checkResult(true) returns 'Correct!'"
+            },
+            {
+              "type": "call",
+              "fn": "checkResult",
+              "args": [false],
+              "assert": "result === 'Wrong!'",
+              "label": "checkResult(false) returns 'Wrong!'"
+            }
+          ]
+        },
+        {
+          "text": "Now call checkResult(true), store it in a variable, and log it. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 7,
+          "focusRange": [6, 8],
+          "checks": [
+            {
+              "type": "console",
+              "includes": "Correct!",
+              "label": "logs 'Correct!'"
+            }
+          ]
+        },
+        {
+          "text": "Call checkResult(false), store it, and log it. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 11,
+          "focusRange": [10, 12],
+          "checks": [
+            {
+              "type": "console",
+              "includes": "Wrong!",
+              "label": "logs 'Wrong!'"
+            }
+          ]
+        },
+        {
+          "text": "That's checkResult — the core decision function of Simon Says. It returns a value so the game can act on it.",
+          "completesOn": "auto",
+          "autoDelayMs": 1800
+        }
       ],
-      "hint": "console.log inside a function shows output but does not send anything back. The caller gets undefined instead. Replace the console.log with a return statement.",
-      "starterCode": "function double(n) {\n    console.log(n * 2);  // this logs but does not return\n}\n\nlet result = double(5);\nlet tripled = result + 5;  // what happens when result is undefined?\nconsole.log('Tripled:', tripled);\n",
       "checks": [
         {
           "type": "call",
-          "fn": "double",
-          "args": [
-            5
-          ],
-          "assert": "result === 10",
-          "label": "double(5) returns 10"
+          "fn": "checkResult",
+          "args": [true],
+          "assert": "result === 'Correct!'",
+          "label": "checkResult(true) returns 'Correct!'"
         },
         {
           "type": "call",
-          "fn": "double",
-          "args": [
-            3
-          ],
-          "assert": "result === 6",
-          "label": "double(3) returns 6"
+          "fn": "checkResult",
+          "args": [false],
+          "assert": "result === 'Wrong!'",
+          "label": "checkResult(false) returns 'Wrong!'"
+        },
+        {
+          "type": "console",
+          "includes": "Correct!",
+          "label": "Correct! is logged"
+        },
+        {
+          "type": "console",
+          "includes": "Wrong!",
+          "label": "Wrong! is logged"
+        }
+      ]
+    },
+    {
+      "title": "Fix the broken score chain",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "5 min",
+      "tasks": [
+        "Hit Run. The final score logs as NaN — something is very wrong.",
+        "There are two functions in this chain. Find which one is missing its return.",
+        "Fix it so that finalScore logs as 320."
+      ],
+      "hint": "Trace what each variable holds after each function call. If a function only logs, the caller gets undefined — and math with undefined gives NaN.",
+      "starterCode": "function applyBonus(score) {\n    let boosted = score * 2;\n    console.log(boosted);\n}\n\nfunction addLevelBonus(score, level) {\n    return score + (level * 10);\n}\n\nlet boostedScore = applyBonus(100);\nlet finalScore = addLevelBonus(boostedScore, 12);\nconsole.log('Final score:', finalScore);",
+      "steps": [
+        {
+          "text": "Hit Run. Read the output carefully. What is boostedScore actually holding?",
+          "completesOn": "run",
+          "focusRange": [1, 12],
+          "checks": [
+            { "type": "consoleNonEmpty", "label": "something printed" }
+          ]
+        },
+        {
+          "text": "applyBonus logs but doesn't return. Add return before boosted on line 3. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 3,
+          "focusRange": [1, 4],
+          "checks": [
+            {
+              "type": "call",
+              "fn": "applyBonus",
+              "args": [100],
+              "assert": "result === 200",
+              "label": "applyBonus(100) returns 200"
+            },
+            {
+              "type": "console",
+              "includes": "Final score: 320",
+              "label": "logs 'Final score: 320'"
+            }
+          ]
+        },
+        {
+          "text": "finalScore is now 320. When functions chain together, every link must return — or the whole chain breaks.",
+          "completesOn": "auto",
+          "autoDelayMs": 1800
+        }
+      ],
+      "checks": [
+        {
+          "type": "call",
+          "fn": "applyBonus",
+          "args": [100],
+          "assert": "result === 200",
+          "label": "applyBonus(100) returns 200"
+        },
+        {
+          "type": "console",
+          "includes": "Final score: 320",
+          "label": "Final score: 320 is logged"
         }
       ]
     }

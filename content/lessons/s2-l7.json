@@ -18,6 +18,22 @@
       ]
     },
     {
+      "blocks": [
+        {
+          "kind": "interactive-table",
+          "headers": ["Meaning", "Example", "Operator"],
+          "rows": [
+            { "meaning": "exactly equal (value AND type)", "example": "5 ___ 5 gives true", "answer": "===" },
+            { "meaning": "NOT equal", "example": "5 ___ 3 gives true", "answer": "!==" },
+            { "meaning": "greater than", "example": "10 ___ 5 gives true", "answer": ">" },
+            { "meaning": "less than", "example": "3 ___ 1 gives false", "answer": "<" },
+            { "meaning": "greater than or equal", "example": "5 ___ 5 gives true", "answer": ">=" },
+            { "meaning": "less than or equal", "example": "4 ___ 3 gives false", "answer": "<=" }
+          ]
+        }
+      ]
+    },
+    {
       "heading": "Combining conditions",
       "blocks": [
         { "kind": "concept", "code": "age >= 13 && hasTicket === true", "desc": "AND — both conditions must be true for the whole thing to be true" },

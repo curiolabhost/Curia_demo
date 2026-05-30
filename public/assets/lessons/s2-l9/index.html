@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mad Libs — Simon Says Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="card">
+    <div class="tag">✨ Mad Libs</div>
+    <h1>Simon Says Edition</h1>
+    <p class="subtitle">Fill in the blanks to generate your silly story.</p>
+
+    <div class="story-box">
+      <p class="story-text empty" id="story-output">
+        Your story will appear here once you fill in the blanks and hit Generate.
+      </p>
+    </div>
+
+    <div class="inputs">
+      <div class="input-group">
+        <label class="label-adjective">Adjective</label>
+        <input id="adjective" type="text" placeholder="e.g. clumsy"/>
+      </div>
+      <div class="input-group">
+        <label class="label-name">Robot Name</label>
+        <input id="robotName" type="text" placeholder="e.g. Beepsworth"/>
+      </div>
+      <div class="input-group">
+        <label class="label-noun">Noun</label>
+        <input id="noun" type="text" placeholder="e.g. spatula"/>
+      </div>
+      <div class="input-group">
+        <label class="label-color">Color</label>
+        <input id="color" type="text" placeholder="e.g. neon green"/>
+      </div>
+      <div class="input-group">
+        <label class="label-exclamation">Exclamation</label>
+        <input id="exclamation" type="text" placeholder="e.g. BEEP!"/>
+      </div>
+      <div class="input-group">
+        <label class="label-count">Number of Squares</label>
+        <input id="squareCount" type="number" placeholder="e.g. 5" min="1"/>
+      </div>
+    </div>
+
+    <button class="btn" onclick="generate()">✨ Generate Story</button>
+    <div class="ending" id="ending"></div>
+  </div>
+
+  <script>
+    function generate() {
+      const adjective   = document.getElementById('adjective').value.trim()   || '___';
+      const robotName   = document.getElementById('robotName').value.trim()   || '___';
+      const noun        = document.getElementById('noun').value.trim()        || '___';
+      const color       = document.getElementById('color').value.trim()       || '___';
+      const exclamation = document.getElementById('exclamation').value.trim() || '___';
+      const squareCount = Number(document.getElementById('squareCount').value) || 0;
+
+      const sentences = [
+        `One day, a <span class="blank blank-adjective">${adjective}</span> robot named <span class="blank blank-name">${robotName}</span> decided to play Simon Says.`,
+        `The robot pressed a <span class="blank blank-noun">${noun}</span> to start the game.`,
+        `The first square lit up <span class="blank blank-color">${color}</span> and the robot shouted '<span class="blank blank-exclamation">${exclamation}</span>!'`,
+        `Then <span class="blank blank-count">${squareCount}</span> more squares lit up all at once.`
+      ];
+
+      const storyOutput = document.getElementById('story-output');
+      storyOutput.className = 'story-text';
+      storyOutput.innerHTML = sentences.join(' ');
+
+      const ending = document.getElementById('ending');
+      if (squareCount > 3) {
+        ending.className = 'ending dramatic';
+        ending.textContent = `Whoa — ${squareCount} squares?! ${robotName} was completely overwhelmed. Game over!`;
+      } else {
+        ending.className = 'ending calm';
+        ending.textContent = 'Not bad for a first try. The robot will do better next time.';
+      }
+      ending.style.display = 'block';
+    }
+  </script>
+
+  <script>
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.type !== 'css-override') return;
+      var el = document.getElementById('__css_override__');
+      if (!el) {
+        el = document.createElement('style');
+        el.id = '__css_override__';
+        document.head.appendChild(el);
+      }
+      el.textContent = e.data.css;
+    });
+  </script>
+
+</body>
+</html>

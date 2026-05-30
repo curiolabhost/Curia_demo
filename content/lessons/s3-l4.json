@@ -3,69 +3,140 @@
   "session": "Session 3",
   "title": "Scope",
   "content": [
-    {
-      "heading": "Scope — what can each part of your code see?",
-      "blocks": [
-        { "kind": "p", "text": "Scope determines which variables a piece of code can access. Variables declared outside any function are global — visible everywhere. Variables declared inside a function are local — only visible inside that function." },
-        { "kind": "concept", "code": "let x = 0  (outside)", "desc": "Global scope — any function can read or change this" },
-        { "kind": "concept", "code": "let y = 0  (inside fn)", "desc": "Local scope — only visible inside the function it was declared in" }
-      ]
-    },
-    {
-      "blocks": [
-        { "kind": "code", "lines": [
-          "let count = 0;          // global — visible everywhere",
-          "",
-          "function increment() {",
-          "    let secret = 42;    // local — only visible inside increment()",
-          "    count = count + 1;  // works — count is global",
-          "}",
-          "",
-          "console.log(count);     // works",
-          "console.log(secret);    // ReferenceError — secret does not exist here"
-        ]},
-        { "kind": "callout", "variant": "info", "label": "Do not explain this first", "text": "Have students predict whether the last line will work, then run it and read the error. A ReferenceError is more memorable than a definition of scope." }
-      ]
-    }
-  ],
-  "exercises": [
-    {
-      "title": "Break scope on purpose",
-      "type": "debug",
-      "duration": "7 min",
-      "tasks": [
-        "The code below throws a ReferenceError. Read it and predict which line causes the error before running.",
-        "Run it and confirm. Read the error message in the console carefully.",
-        "Fix it by moving the offending line to where secret is actually visible.",
-        "Now try the reverse: declare a variable globally and confirm a function can read it."
-      ],
-      "hint": "A variable declared with let inside a function only exists inside that function's curly braces.",
-      "starterCode": "function makeSecret() {\n    let secret = 42;\n    console.log('Inside function:', secret);\n}\n\nmakeSecret();\nconsole.log('Outside function:', secret); // will this work?\n",
-      "checks": [
-        {
-          "type": "console",
-          "includes": "Inside function",
-          "label": "logs something from inside the function"
-        },
-        {
-          "type": "console",
-          "includes": "ReferenceError",
-          "label": "a ReferenceError appears in the output"
-        }
-      ]
-    },
-    {
-      "title": "Global vs local scope",
-      "type": "practice",
-      "duration": "5 min",
-      "tasks": [
-        "Declare a variable called total set to 0 outside any function.",
-        "Write a function called addFive that adds 5 to total each time it is called.",
-        "Call addFive three times and log total after each call.",
-        "Now declare a variable called localOnly inside addFive. Try to log it outside the function. Read the error."
-      ],
-      "hint": "total is global so addFive can read and change it. localOnly is local so nothing outside addFive can see it.",
-      "starterCode": "let total = 0;\n\nfunction addFive() {\n    // add 5 to total\n    // declare localOnly here\n}\n\n// call addFive three times and log total each time\n\n// try to log localOnly here\n"
-    }
-  ]
+  {
+    "heading": "Scope — what can each part of your code see?",
+    "blocks": [
+      { "kind": "p", "text": "Scope determines which variables a piece of code can access. Variables declared outside any function are global — visible everywhere. Variables declared inside a function are local — only visible inside that function." },
+      { "kind": "concept", "code": "let level = 1  (outside)", "desc": "Global scope — any function can read or change this" },
+      { "kind": "concept", "code": "let message = 'hi'  (inside fn)", "desc": "Local scope — only visible inside the function it was declared in" }
+    ]
+  },
+  {
+    "heading": "Global vs local in action",
+    "blocks": [
+      { "kind": "code", "lines": [
+        "let level = 1;          // global — visible everywhere",
+        "",
+        "function startRound() {",
+        "    let message = 'Round starting!';  // local — only visible here",
+        "    level = level + 1;                // works — level is global",
+        "    console.log(message);             // works — message is local",
+        "}",
+        "",
+        "startRound();",
+        "console.log(level);    // works — level is global",
+        "console.log(message);  // ReferenceError — message does not exist here"
+      ]},
+      { "kind": "callout", "variant": "warn", "label": "Reference Error", "text": "When JavaScript can't find a variable, it throws a ReferenceError. This almost always means the variable was declared inside a function and you're trying to use it outside. Check where it was declared with let." }
+    ]
+  },
+  {
+    "heading": "Watch out — same name, different variable",
+    "blocks": [
+      { "kind": "p", "text": "If you declare a variable inside a function with the same name as a global one, JavaScript creates a brand new local variable. The global one is untouched. This is called shadowing and it is one of the most common bugs beginners write." },
+      { "kind": "code", "lines": [
+        "let level = 1;  // global",
+        "",
+        "function startRound() {",
+        "    let level = 99;  // local — shadows the global",
+        "    console.log(level);  // 99",
+        "}",
+        "",
+        "startRound();",
+        "console.log(level);  // still 1 — the global was never touched"
+      ]},
+      { "kind": "callout", "variant": "danger", "label": "Easy bug to miss", "text": "If you write let level inside a function, you are creating a new local variable — not updating the global one. To change the global, just write level = 99 with no let. The let keyword is what creates a new variable." },
+      { "kind": "callout", "variant": "info", "label": "Simon Says connection", "text": "In Simon Says, level and playerClicks are global so every function — startRound, handleClick, checkResult — can read and update them. If any of those functions declared their own local level with let, the game would break in a very confusing way." }
+    ]
+  }
+],
+ "exercises": [
+  {
+    "title": "Break scope on purpose",
+    "type": "predict",
+    "duration": "6 min",
+    "tasks": [
+      "Before running: predict which line will cause an error and what the error will say.",
+      "Run it and read the error message in the console carefully.",
+      "Fix it by moving the offending line to where secret is actually visible.",
+      "Now declare a variable globally and confirm a function can read it."
+    ],
+    "hint": "A variable declared with let inside a function only exists inside that function's curly braces.",
+    "starterCode": "function makeSecret() {\n    let secret = 42;\n    console.log('Inside function:', secret);\n}\n\nmakeSecret();\nconsole.log('Outside function:', secret);\n"
+  },
+  {
+    "title": "Global vs local",
+    "type": "practice",
+    "duration": "6 min",
+    "tasks": [
+      "Declare a variable called level set to 1 outside any function.",
+      "Write a function called nextLevel that adds 1 to level each time it is called.",
+      "Call nextLevel three times and log level after each call — it should increase each time.",
+      "Now declare a variable called localOnly inside nextLevel. Try to log it outside the function and read the error."
+    ],
+    "hint": "To update the global level inside a function, just write level = level + 1 — no let. Adding let creates a new local variable instead.",
+    "starterCode": "let level = 1;\n\nfunction nextLevel() {\n    // add 1 to level\n    // declare localOnly here\n}\n\n// call nextLevel three times and log level each time\n\n// try to log localOnly here\n",
+    "checks": [
+      { "type": "variable", "name": "level", "expected": null, "label": "a global variable called level exists" }
+    ]
+  },
+  {
+    "title": "Spot the shadow",
+    "type": "predict",
+    "duration": "5 min",
+    "tasks": [
+      "Before running: write down what you think each console.log will print.",
+      "Run it and compare to your predictions.",
+      "Explain in one sentence why the two logs print different values even though they use the same name."
+    ],
+    "hint": "Look carefully for the let keyword inside the function. That is the clue.",
+    "starterCode": "let score = 100;\n\nfunction resetScore() {\n    let score = 0;\n    console.log('Inside:', score);\n}\n\nresetScore();\nconsole.log('Outside:', score);\n"
+  }
+],
+"challenges": [
+  {
+    "id": "c1",
+    "level": 1,
+    "difficulty": "easy",
+    "title": "The level never increases",
+    "description": "The function should increase the global level by 1 each time it runs. But level is always 1 no matter how many times you call it. Find the single bug.",
+    "buggyCode": "let level = 1;\n\nfunction nextLevel() {\n    let level = level + 1;\n}\n\nnextLevel();\nnextLevel();\nnextLevel();\nconsole.log(level);",
+    "starterCode": "let level = 1;\n\nfunction nextLevel() {\n    let level = level + 1;\n}\n\nnextLevel();\nnextLevel();\nnextLevel();\nconsole.log(level);",
+    "hint": "Look at the let keyword inside the function. What does let do?",
+    "checks": [
+      { "type": "variable", "name": "level", "expected": 4, "label": "level equals 4 after three calls" }
+    ],
+    "explanation": "let level inside the function creates a brand new local variable that shadows the global one. The global level is never touched. Fix: remove the let so it reads level = level + 1. Now the function updates the global variable instead of creating a new local one."
+  },
+  {
+    "id": "c2",
+    "level": 2,
+    "difficulty": "medium",
+    "title": "The score display can't see the score",
+    "description": "The function updateDisplay should show the current score on screen but it throws a ReferenceError. Find why and fix it without moving the console.log.",
+    "buggyCode": "function setScore() {\n    let score = 42;\n}\n\nfunction updateDisplay() {\n    console.log('Score:', score);\n}\n\nsetScore();\nupdateDisplay();",
+    "starterCode": "function setScore() {\n    let score = 42;\n}\n\nfunction updateDisplay() {\n    console.log('Score:', score);\n}\n\nsetScore();\nupdateDisplay();",
+    "hint": "score is local to setScore. updateDisplay can't see inside another function. Where would score need to live so both functions can see it?",
+    "checks": [
+      { "type": "console", "includes": "Score: 42", "label": "logs Score: 42" }
+    ],
+    "explanation": "score is declared inside setScore with let, making it local. updateDisplay is a completely separate function — it can't see inside setScore. Fix: move let score = 42 outside both functions so it is global. Now both functions can read it."
+  },
+  {
+    "id": "c3",
+    "level": 3,
+    "difficulty": "tricky",
+    "title": "Three functions, one broken variable",
+    "description": "A Simon Says game has three functions that all need to read and update level. Right now only one of them works correctly. Find all the scope bugs and fix them so all three functions share the same global level.",
+    "buggyCode": "let level = 1;\n\nfunction startRound() {\n    let level = level + 1;\n    console.log('Starting level:', level);\n}\n\nfunction resetGame() {\n    level = 1;\n    console.log('Reset to level:', level);\n}\n\nfunction displayLevel() {\n    let level = 99;\n    console.log('Current level:', level);\n}\n\nstartRound();\ndisplayLevel();\nresetGame();\ndisplayLevel();",
+    "starterCode": "let level = 1;\n\nfunction startRound() {\n    let level = level + 1;\n    console.log('Starting level:', level);\n}\n\nfunction resetGame() {\n    level = 1;\n    console.log('Reset to level:', level);\n}\n\nfunction displayLevel() {\n    let level = 99;\n    console.log('Current level:', level);\n}\n\nstartRound();\ndisplayLevel();\nresetGame();\ndisplayLevel();",
+    "hint": "Look for let inside functions. Each one creates a shadow. resetGame is the only one doing it correctly.",
+    "checks": [
+      { "type": "console", "includes": "Starting level: 2", "label": "startRound logs level 2" },
+      { "type": "console", "includes": "Reset to level: 1", "label": "resetGame logs level 1" },
+      { "type": "console", "includes": "Current level: 2", "label": "displayLevel shows the real level" }
+    ],
+    "explanation": "startRound and displayLevel both use let level inside the function, creating local shadows instead of touching the global. resetGame is the only correct one — no let, so it updates the global. Fix: remove let from both startRound and displayLevel so all three functions read and write the same global level."
+  }
+]
 }

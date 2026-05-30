@@ -6,30 +6,149 @@
     {
       "heading": "Return Values — making your function answer a question",
       "blocks": [
-        { "kind": "p", "text": "A function can do two things: it can log output so a human can read it, or it can return a value so the rest of your code can use it. The return keyword sends a value back to whoever called the function — and the function stops the moment it hits return." },
-        { "kind": "concept", "code": "return value", "desc": "Send this value back to the caller — the function stops here" },
-        { "kind": "concept", "code": "let result = fn()", "desc": "Call the function and capture whatever it returns into a variable" }
+        {"kind":"image","src":"/assets/lessons/s3-l2/return-vs-consolelog-v5.svg", "alt":"A function is like a machine. It takes in inputs, does something with them, and gives back an output. A function that only logs shows something on screen but hands nothing back. The caller gets undefined.", "caption":"A function is like a machine. It takes in inputs, does something with them, and gives back an output. A function that only logs shows something on screen but hands nothing back. The caller gets undefined."},
+        {
+          "kind": "p",
+          "text": "A function can do two things: it can log output so a human can read it, or it can return a value so the rest of your code can use it. The return keyword sends a value back to whoever called the function — and the function stops the moment it hits return."
+        },
+        {
+          "kind": "concept",
+          "code": "return value",
+          "desc": "Send this value back to the caller — the function stops here"
+        },
+        {
+          "kind": "concept",
+          "code": "let result = fn()",
+          "desc": "Call the function and capture whatever it returns into a variable"
+        }
       ]
     },
     {
       "blocks": [
-        { "kind": "code", "lines": [
-          "// This function only logs — result disappears after it prints",
-          "function doubleLog(n) {",
-          "    console.log(n * 2);",
-          "}",
-          "",
-          "// This function returns — the caller gets the value back",
-          "function doubleReturn(n) {",
-          "    return n * 2;",
-          "}",
-          "",
-          "let answer = doubleReturn(5);   // answer is now 10",
-          "console.log('Double is:', answer);",
-          "console.log('Triple is:', answer + 5);  // we can keep using it"
-        ]},
-        { "kind": "callout", "variant": "warn", "label": "return vs console.log", "text": "console.log shows a value on screen — but that value is gone the moment it prints. return hands the value back to your code so you can store it, do math with it, or pass it somewhere else. A function that only logs cannot be used in math or stored in a variable." }
+        {
+          "kind": "p",
+          "text": "Here are two versions of the same function. The first only logs — the result is printed but lost. The second uses return, so the caller gets the value back and can keep using it."
+        },
+        {
+          "kind": "code",
+          "lines": [
+            "// This function only logs — result disappears after it prints",
+            "function doubleLog(n) {",
+            "    console.log(n * 2);",
+            "}",
+            "",
+            "// This function returns — the caller gets the value back",
+            "function doubleReturn(n) {",
+            "    return n * 2;",
+            "}",
+            "",
+            "let answer = doubleReturn(5);   // answer is now 10",
+            "console.log('Double is:', answer);",
+            "console.log('Triple is:', answer + 5);  // we can keep using it"
+          ]
+        },
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "return vs console.log",
+          "text": "console.log shows a value on screen — but that value is gone the moment it prints. return hands the value back to your code so you can store it, do math with it, or pass it somewhere else. A function that only logs cannot be used in math or stored in a variable."
+        }
       ]
+    },
+  {  
+    "heading": "return stops the function — immediately",
+    "blocks": [
+      { "kind": "p", "text": "The moment JavaScript hits a return statement, the function stops. Any code after it in the same function is completely ignored." },
+      {"kind": "image", "src":"/assets/lessons/s3-l2/return-stops-function.svg", "alt":"The moment JavaScript hits a return statement, the function stops. Any code after it in the same function is completely ignored.", "caption":"The moment JavaScript hits a return statement, the function stops. Any code after it in the same function is completely ignored."},
+      { "kind": "callout", "variant": "info", "label": "Think of it like an exit door", "text": "A function is a room. return is the exit door. The moment your code walks through it, it leaves the room. Anything left in the room stays behind." },
+      { "kind": "p", "text": "This is why having return inside an if/else works so cleanly — only one branch ever runs, so only one return is ever reached." }
+    ]
+  }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The function isn't sharing its answer",
+      "description": "The function addTen should give the caller back a number they can use. Right now the caller gets undefined. Fix it.",
+      "buggyCode": "function addTen(n) {\n    let result = n + 10;\n    console.log(result);\n}\n\nlet answer = addTen(5);\nconsole.log('Answer is:', answer);",
+      "starterCode": "function addTen(n) {\n    let result = n + 10;\n    console.log(result);\n}\n\nlet answer = addTen(5);\nconsole.log('Answer is:', answer);",
+      "hint": "console.log shows the value but does not send it back. Replace it with return.",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "addTen",
+          "args": [
+            5
+          ],
+          "assert": "result === 15",
+          "label": "addTen(5) returns 15"
+        },
+        {
+          "type": "console",
+          "includes": "Answer is: 15",
+          "label": "logs 'Answer is: 15'"
+        }
+      ],
+      "explanation": "console.log prints the value to the screen but the function still returns undefined. The caller stores that undefined in answer. Fix: replace console.log(result) with return result. Now addTen(5) hands back 15 and the caller can use it."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "The score multiplier is broken",
+      "description": "A game multiplies the score by a bonus and then adds 100 to reward the player. The final total is always 100 no matter what. Find why and fix it.",
+      "buggyCode": "function multiplyScore(score, bonus) {\n    console.log(score * bonus);\n}\n\nlet boosted = multiplyScore(50, 3);\nlet total = boosted + 100;\nconsole.log('Total:', total);",
+      "starterCode": "function multiplyScore(score, bonus) {\n    console.log(score * bonus);\n}\n\nlet boosted = multiplyScore(50, 3);\nlet total = boosted + 100;\nconsole.log('Total:', total);",
+      "hint": "What is boosted if the function never returns anything? What does undefined + 100 give you?",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "multiplyScore",
+          "args": [
+            50,
+            3
+          ],
+          "assert": "result === 150",
+          "label": "multiplyScore(50, 3) returns 150"
+        },
+        {
+          "type": "variable",
+          "name": "total",
+          "expected": 250,
+          "label": "total equals 250"
+        }
+      ],
+      "explanation": "multiplyScore logs but doesn't return, so boosted is undefined. undefined + 100 gives NaN in most cases — but the point is the function's result is lost the moment it prints. Fix: return score * bonus. Now boosted holds 150 and total is 250."
+    },
+    {
+      "id": "c3",
+      "level": 3,
+      "difficulty": "tricky",
+      "title": "The chain is broken",
+      "description": "This code builds a greeting in two steps — first building the name, then wrapping it in a message. The final output should be 'Welcome to the game, Alex Smith!' but it prints something unexpected. There are two bugs, both related to return.",
+      "buggyCode": "function buildName(first, last) {\n    let full = first + ' ' + last;\n    console.log(full);\n}\n\nfunction buildGreeting(name) {\n    return 'Welcome to the game, ' + name + '!';\n}\n\nlet name = buildName('Alex', 'Smith');\nlet greeting = buildGreeting(name);\nconsole.log(greeting);",
+      "starterCode": "function buildName(first, last) {\n    let full = first + ' ' + last;\n    console.log(full);\n}\n\nfunction buildGreeting(name) {\n    return 'Welcome to the game, ' + name + '!';\n}\n\nlet name = buildName('Alex', 'Smith');\nlet greeting = buildGreeting(name);\nconsole.log(greeting);",
+      "hint": "Trace what name actually contains before it gets passed to buildGreeting. What does buildName hand back?",
+      "checks": [
+        {
+          "type": "call",
+          "fn": "buildName",
+          "args": [
+            "Alex",
+            "Smith"
+          ],
+          "assert": "result === 'Alex Smith'",
+          "label": "buildName returns 'Alex Smith'"
+        },
+        {
+          "type": "console",
+          "includes": "Welcome to the game, Alex Smith!",
+          "label": "logs the correct greeting"
+        }
+      ],
+      "explanation": "buildName logs the full name but returns undefined. So name holds undefined, and buildGreeting receives undefined, producing 'Welcome to the game, undefined!'. Fix: add return full inside buildName. When functions need to pass values to each other, every step in the chain must return."
     }
   ],
   "exercises": [
@@ -50,25 +169,47 @@
         {
           "type": "call",
           "fn": "multiply",
-          "args": [3, 4],
+          "args": [
+            3,
+            4
+          ],
           "assert": "result === 12",
           "label": "multiply(3, 4) returns 12"
         },
         {
           "type": "call",
           "fn": "multiply",
-          "args": [7, 6],
+          "args": [
+            7,
+            6
+          ],
           "assert": "result === 42",
           "label": "multiply(7, 6) returns 42"
         },
         {
           "type": "call",
           "fn": "fullName",
-          "args": ["Ada", "Lovelace"],
+          "args": [
+            "Ada",
+            "Lovelace"
+          ],
           "assert": "result === 'Ada Lovelace'",
           "label": "fullName('Ada', 'Lovelace') returns 'Ada Lovelace'"
         }
       ]
+    },
+    {
+      "title": "What does the caller get?",
+      "type": "predict",
+      "duration": "6 min",
+      "tasks": [
+        "Before running: for each function below, write down what you think the caller gets back.",
+        "Write your predictions next to each console.log.",
+        "Run it and compare. Pay close attention to any 'undefined' that appears.",
+        "Explain in one sentence why greetLog and greetReturn behave differently for the caller."
+      ],
+      "hint": "A function that only logs shows something on screen but hands nothing back. The caller gets undefined.",
+      "starterCode": "function greetLog(name) {\n    console.log('Hello, ' + name);\n}\n\nfunction greetReturn(name) {\n    return 'Hello, ' + name;\n}\n\nlet a = greetLog('Alex');\nlet b = greetReturn('Alex');\n\nconsole.log('a is:', a);\nconsole.log('b is:', b);\n\n// Bonus: what happens here?\nconsole.log('Length of b:', b.length);\nconsole.log('Length of a:', a.length);\n"
     },
     {
       "title": "Fix the missing return",
@@ -86,14 +227,18 @@
         {
           "type": "call",
           "fn": "double",
-          "args": [5],
+          "args": [
+            5
+          ],
           "assert": "result === 10",
           "label": "double(5) returns 10"
         },
         {
           "type": "call",
           "fn": "double",
-          "args": [3],
+          "args": [
+            3
+          ],
           "assert": "result === 6",
           "label": "double(3) returns 6"
         }

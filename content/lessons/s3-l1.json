@@ -6,7 +6,7 @@
     {
       "heading": "Functions — write once, use anywhere",
       "blocks": [
-        {"kind":"image","src":"/assets/lessons/s3-l1/functions-anatomy-v5.svg","alt":"Functions are reusable blocks of code"},
+        {"kind":"image","src":"/assets/lessons/s3-l1/functions-anatomy-v5.svg","alt":"Functions are reusable blocks of code","caption":"Functions are reusable blocks of code"},
         { "kind": "p", "text": "A function is a named, reusable block of code. You define it once and call it by name whenever you need it. Without functions, you copy and paste the same logic everywhere — and when you need to change it, you change it in every place." },
         { "kind": "concept", "code": "function greetPlayer() { ... }", "desc": "Define a block of code named 'greetPlayer' — does not run yet" },
         { "kind": "concept", "code": "greetPlayer();", "desc": "Run that block of code right now" }

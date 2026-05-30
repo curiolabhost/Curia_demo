@@ -1,219 +1,811 @@
 {
   "id": "s3-l5",
   "session": "Session 3",
-  "title": "Session 3 Capstone",
+  "title": "Capstone 3: Mr. Simon",
+  "finalProject": {
+    "htmlTemplate": "<header>\n  <h1 class=\"game-title\">Mr. Simon</h1>\n  <p class=\"game-subtitle\">Answer correctly — keep the streak going</p>\n</header>\n\n<div class=\"stats-bar\">\n  <div class=\"stat-box\">\n    <span class=\"stat-label\">Score</span>\n    <span class=\"stat-number\" id=\"score-display\">0</span>\n  </div>\n  <div class=\"stat-box stat-box--round\">\n    <span class=\"stat-label\">Round</span>\n    <span class=\"stat-number\" id=\"round-display\">1</span>\n  </div>\n</div>\n\n<div class=\"status-message\" id=\"status-message\">\n  Press Start to play\n</div>\n\n<div class=\"question-card\">\n  <p class=\"question-label\">What is</p>\n  <div class=\"question-display\">\n    <span class=\"q-num\" id=\"num-a\">?</span>\n    <span class=\"q-op\">+</span>\n    <span class=\"q-num\" id=\"num-b\">?</span>\n    <span class=\"q-op\">=</span>\n  </div>\n  <input class=\"answer-input\" id=\"answer-input\" type=\"number\" placeholder=\"your answer\" min=\"0\" max=\"99\" disabled />\n  <button class=\"check-btn\" id=\"check-btn\" disabled>Check</button>\n</div>\n\n<button class=\"start-btn\" id=\"start-btn\">Start Game</button>\n\n<div class=\"overlay\" id=\"game-over-screen\">\n  <div class=\"overlay-box\">\n    <p class=\"overlay-eyebrow\">Game Over</p>\n    <h2 class=\"overlay-title\">You scored</h2>\n    <div class=\"overlay-score-display\" id=\"final-score\">0</div>\n    <p class=\"overlay-sub\" id=\"overlay-sub-message\">Keep practising!</p>\n    <button class=\"start-btn\" id=\"restart-btn\">Try Again</button>\n  </div>\n</div>\n\n<div class=\"wrong-flash\" id=\"wrong-flash\"></div>\n",
+    "cssTemplate": ":root {\n  --bg:             #f5f5f0;\n  --surface:        #ffffff;\n  --border:         #e2e2dc;\n  --accent:         #4f8ef7;\n  --accent-dark:    #2f6fd4;\n  --green:          #34c97e;\n  --red:            #f25c54;\n  --text-primary:   #1a1a1a;\n  --text-secondary: #6b6b6b;\n  --text-muted:     #a0a0a0;\n  --radius-card:    16px;\n}\n*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\nbody { font-family: 'DM Sans', sans-serif; background-color: var(--bg); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 16px 64px; color: var(--text-primary); }\nheader { text-align: center; margin-bottom: 32px; }\n.game-title { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text-primary); }\n.game-subtitle { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }\n.stats-bar { display: flex; gap: 12px; margin-bottom: 20px; }\n.stat-box { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-card); padding: 12px 28px; text-align: center; min-width: 100px; }\n.stat-box--round { border-color: var(--accent); background: #f0f5ff; }\n.stat-label { display: block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 4px; }\n.stat-number { display: block; font-family: 'DM Mono', monospace; font-size: 1.8rem; font-weight: 500; color: var(--text-primary); line-height: 1; }\n.stat-box--round .stat-number { color: var(--accent); }\n.status-message { font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); background: var(--surface); border: 1.5px solid var(--border); border-radius: 50px; padding: 8px 22px; margin-bottom: 24px; min-height: 40px; display: flex; align-items: center; justify-content: center; }\n.question-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-card); padding: 32px 28px 28px; text-align: center; width: 100%; max-width: 360px; margin-bottom: 24px; }\n.question-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px; }\n.question-display { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 24px; }\n.q-num { font-family: 'DM Mono', monospace; font-size: 2.6rem; font-weight: 500; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 6px 18px; color: var(--text-primary); min-width: 72px; text-align: center; }\n.q-op { font-family: 'DM Mono', monospace; font-size: 2rem; color: var(--accent); font-weight: 500; }\n.answer-input { width: 100%; font-family: 'DM Mono', monospace; font-size: 1.6rem; font-weight: 500; text-align: center; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 10px; color: var(--text-primary); outline: none; margin-bottom: 12px; transition: border-color 0.15s; -moz-appearance: textfield; }\n.answer-input::-webkit-inner-spin-button, .answer-input::-webkit-outer-spin-button { -webkit-appearance: none; }\n.answer-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,142,247,0.15); }\n.answer-input:disabled { opacity: 0.4; cursor: not-allowed; }\n.check-btn { font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; background: var(--accent); color: #fff; border: none; border-radius: 50px; padding: 11px 32px; cursor: pointer; width: 100%; transition: background 0.15s, transform 0.1s; }\n.check-btn:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-1px); }\n.check-btn:disabled { opacity: 0.4; cursor: not-allowed; }\n.start-btn { font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700; background: var(--accent); color: #fff; border: none; border-radius: 50px; padding: 13px 40px; cursor: pointer; transition: background 0.15s ease, transform 0.1s ease; }\n.start-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }\n.overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,20,0.5); backdrop-filter: blur(6px); z-index: 100; align-items: center; justify-content: center; }\n.overlay-box { background: var(--surface); border-radius: 20px; border: 1.5px solid var(--border); padding: 48px 40px 40px; text-align: center; max-width: 300px; width: 90%; animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }\n.overlay-eyebrow { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--red); margin-bottom: 8px; }\n.overlay-title { font-size: 1.1rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 12px; }\n.overlay-score-display { font-family: 'DM Mono', monospace; font-size: 3.5rem; font-weight: 500; color: var(--text-primary); line-height: 1; margin-bottom: 10px; }\n.overlay-sub { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 28px; }\n.wrong-flash { display: none; position: fixed; inset: 0; background: rgba(242,92,84,0.2); z-index: 50; pointer-events: none; }\n.wrong-flash.active { display: block; animation: flashFade 0.45s ease forwards; }\n@keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }\n@keyframes flashFade { from { opacity: 1; } to { opacity: 0; } }\n"
+  },
   "content": [
     {
-      "heading": "Session 3 Capstone — put it all together",
+      "heading": "Put it all together — Mr. Simon",
       "blocks": [
-        { "kind": "p", "text": "You have learned four ideas this session. Now you will combine all of them in one project." },
-        { "kind": "list", "items": [
-          "Functions — write code once, call it anywhere by name",
-          "Return Values — functions that send answers back to the caller",
-          "Decision-Making — if / else if / else to choose what happens",
-          "Scope — global variables that any function can see, local variables that stay private"
-        ]}
-      ]
-    },
-    {
-      "heading": "The challenge: build a grade calculator",
-      "blocks": [
-        { "kind": "p", "text": "You are building a tool that takes a score (0–100) and tells you the letter grade. It needs a function that returns the grade letter, uses if/else if/else to decide which grade to give, and a global variable that tracks how many scores have been graded so far." },
-        { "kind": "code", "lines": [
-          "let gradesChecked = 0;   // global — track how many grades we've given",
-          "",
-          "function getGrade(score) {",
-          "    gradesChecked = gradesChecked + 1;",
-          "    if (score >= 90) {",
-          "        return 'A';",
-          "    } else if (score >= 80) {",
-          "        return 'B';",
-          "    } else if (score >= 70) {",
-          "        return 'C';",
-          "    } else if (score >= 60) {",
-          "        return 'D';",
-          "    } else {",
-          "        return 'F';",
-          "    }",
-          "}",
-          "",
-          "console.log(getGrade(95));   // A",
-          "console.log(getGrade(72));   // C",
-          "console.log('Total graded:', gradesChecked);  // 2"
-        ]}
-      ]
-    }
-  ],
-  "exercises": [
-    {
-      "title": "Build the grade calculator",
-      "type": "apply",
-      "duration": "10 min",
-      "tasks": [
-        "Inside getGrade, write if/else if/else that returns 'A' for 90 and above, 'B' for 80 and above, 'C' for 70 and above, 'D' for 60 and above, and 'F' for everything else.",
-        "Each time getGrade runs, add 1 to the global variable gradesChecked.",
-        "Call getGrade with the scores 95, 72, and 55. Store each result and log it.",
-        "After all three calls, log the value of gradesChecked — it should be 3."
-      ],
-      "hint": "Use return inside each branch of the if/else if/else. The function stops at the first return it hits. Remember to increment gradesChecked at the top of the function before any return.",
-      "starterCode": "let gradesChecked = 0;\n\nfunction getGrade(score) {\n    // increment gradesChecked here\n\n    // write your if / else if / else below\n\n}\n\n// Call getGrade with 95, 72, and 55\n// Store each result and log it\n\n\n// Log gradesChecked when done\n",
-      "checks": [
         {
-          "type": "call",
-          "fn": "getGrade",
-          "args": [95],
-          "assert": "result === 'A'",
-          "label": "getGrade(95) returns 'A'"
+          "kind": "p",
+          "text": "You've learned functions, return values, and scope. Now you're going to use all three together to build a working maths game. Mr. Simon asks you a random addition question. Get it right and you keep playing. Get it wrong and the game ends."
         },
         {
-          "type": "call",
-          "fn": "getGrade",
-          "args": [72],
-          "assert": "result === 'C'",
-          "label": "getGrade(72) returns 'C'"
-        },
-        {
-          "type": "call",
-          "fn": "getGrade",
-          "args": [55],
-          "assert": "result === 'F'",
-          "label": "getGrade(55) returns 'F'"
-        },
-        {
-          "type": "variable",
-          "name": "gradesChecked",
-          "expected": null,
-          "label": "gradesChecked exists"
-        }
-      ]
-    },
-    {
-      "title": "Scope check",
-      "type": "predict",
-      "duration": "5 min",
-      "tasks": [
-        "Read the starter code. One line will throw a ReferenceError — predict which one before running.",
-        "Run it and confirm your prediction. Read the error message carefully.",
-        "Fix it: move the console.log that causes the error to a place where the variable is visible."
-      ],
-      "hint": "A variable declared with let inside a function only exists inside that function. Nothing outside can see it.",
-      "starterCode": "function buildMessage() {\n    let greeting = 'Hello from inside!';\n    console.log('Inside:', greeting);\n}\n\nbuildMessage();\nconsole.log('Outside:', greeting);  // will this work?\n",
-      "checks": [
-        {
-          "type": "console",
-          "includes": "Inside",
-          "label": "logs from inside the function"
-        }
-      ]
-    },
-    {
-      "title": "Build your own discount calculator",
-      "type": "independent",
-      "duration": "10 min",
-      "tasks": [
-        "Write a function called getDiscount that takes two parameters: price and memberType.",
-        "If memberType is 'gold', return the price minus 20% (multiply by 0.8).",
-        "If memberType is 'silver', return the price minus 10% (multiply by 0.9).",
-        "For any other memberType, return the full price unchanged.",
-        "Call getDiscount three times — once for each tier — and log each result using a template literal."
-      ],
-      "hint": "Use if / else if / else to check the memberType. The return value is a number, so you can use it in a template literal: `Price after discount: ${getDiscount(100, 'gold')}`",
-      "starterCode": "// Write getDiscount below\n\n\n// Test all three tiers\n",
-      "checks": [
-        {
-          "type": "call",
-          "fn": "getDiscount",
-          "args": [100, "gold"],
-          "assert": "result === 80",
-          "label": "getDiscount(100, 'gold') returns 80"
-        },
-        {
-          "type": "call",
-          "fn": "getDiscount",
-          "args": [100, "silver"],
-          "assert": "result === 90",
-          "label": "getDiscount(100, 'silver') returns 90"
-        },
-        {
-          "type": "call",
-          "fn": "getDiscount",
-          "args": [100, "basic"],
-          "assert": "result === 100",
-          "label": "getDiscount(100, 'basic') returns 100"
+          "kind": "callout",
+          "variant": "info",
+          "label": "What you're building",
+          "text": "Four functions work together: generateQuestion() picks two random numbers and returns the correct answer, checkResult() compares the player's answer and returns true or false, handleOutcome() updates the score or ends the game, and startRound() calls them all in order. You'll build each one as its own step."
         }
       ]
     }
   ],
   "challenges": [
     {
-      "id": "c1",
-      "level": 1,
-      "difficulty": "easy",
-      "title": "Missing return",
-      "description": "The function square should give back the result of multiplying a number by itself so the caller can use it. Right now the answer prints to the console but the caller gets undefined. Fix the function so it actually returns the squared value.",
-      "buggyCode": "function square(n) {\n    let result = n * n;\n    console.log(result);\n}\n\nlet answer = square(4);\nconsole.log('Squared:', answer);",
-      "starterCode": "function square(n) {\n    let result = n * n;\n    console.log(result);\n}\n\nlet answer = square(4);\nconsole.log('Squared:', answer);",
-      "hint": "console.log shows the value but does not send it back. Replace console.log(result) with return result.",
+      "title": "Try it yourself",
+      "type": "practice",
+      "duration": "10 min",
+      "format": "code-editor",
+      "tasks": [
+        "Change the game to use subtraction instead of addition.",
+        "Make sure generateQuestion() still returns the correct answer.",
+        "Update the question display so it shows a minus sign instead of a plus sign.",
+        "There are no checks here — just make it work."
+      ],
+      "hint": "You only need to change two things: the operator in generateQuestion() and the symbol shown in the HTML.",
+      "starterCode": "// Global state\nlet score         = 0;\nlet round         = 1;\nlet isPlaying     = true;\nlet correctAnswer = 0;\n\n// DOM references\nconst scoreDisplay   = document.getElementById('score-display');\nconst roundDisplay   = document.getElementById('round-display');\nconst statusMessage  = document.getElementById('status-message');\nconst numA           = document.getElementById('num-a');\nconst numB           = document.getElementById('num-b');\nconst answerInput    = document.getElementById('answer-input');\nconst checkBtn       = document.getElementById('check-btn');\nconst gameOverScreen = document.getElementById('game-over-screen');\nconst finalScore     = document.getElementById('final-score');\nconst wrongFlash     = document.getElementById('wrong-flash');\n\nfunction generateQuestion() {\n    let a = Math.floor(Math.random() * 10) + 1;\n    let b = Math.floor(Math.random() * 10) + 1;\n    numA.textContent = a;\n    numB.textContent = b;\n    return a + b;\n}\n\nfunction checkResult(playerAnswer, correctAns) {\n    if (playerAnswer === correctAns) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\nfunction handleOutcome(result) {\n    if (result === true) {\n        score = score + 1;\n        round = round + 1;\n        scoreDisplay.textContent = score;\n        roundDisplay.textContent = round;\n        statusMessage.textContent = 'Correct!';\n        setTimeout(startRound, 800);\n    } else {\n        isPlaying = false;\n        statusMessage.textContent = 'Wrong!';\n        wrongFlash.classList.add('active');\n        setTimeout(showGameOver, 600);\n    }\n}\n\nfunction startRound() {\n    if (isPlaying === false) { return; }\n    statusMessage.textContent = 'Your turn!';\n    answerInput.value = '';\n    answerInput.disabled = false;\n    checkBtn.disabled = false;\n    correctAnswer = generateQuestion();\n    answerInput.focus();\n}\n\nfunction handleClick() {\n    let playerAnswer = Number(answerInput.value);\n    checkBtn.disabled = true;\n    answerInput.disabled = true;\n    let result = checkResult(playerAnswer, correctAnswer);\n    handleOutcome(result);\n}\n\nfunction showGameOver() {\n    finalScore.textContent = score;\n    gameOverScreen.style.display = 'flex';\n}\n\ncheckBtn.addEventListener('click', handleClick);\ndocument.getElementById('start-btn').addEventListener('click', function() {\n    document.getElementById('start-btn').style.display = 'none';\n    startRound();\n});\ndocument.getElementById('restart-btn').addEventListener('click', function() {\n    score = 0; round = 1; isPlaying = true;\n    scoreDisplay.textContent = 0;\n    roundDisplay.textContent = 1;\n    wrongFlash.classList.remove('active');\n    gameOverScreen.style.display = 'none';\n    startRound();\n});\n",
+      "checks": []
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Step 1 — Global state",
+      "type": "practice",
+      "duration": "3 min",
+      "format": "final-project",
+      "lessonRefs": ["s3-l4"],
+      "tasks": [
+        "Every variable the game needs lives outside any function — global scope.",
+        "All four functions will read and update these without declaring them again.",
+        "Fill in the missing keywords and starting values."
+      ],
+      "hint": "Global variables use let because their values change as the game runs. Starting values reflect what is true before the game begins.",
+      "tokenBank": [
+        { "id": "t1", "label": "let" },
+        { "id": "t2", "label": "const" },
+        { "id": "t3", "label": "0" },
+        { "id": "t4", "label": "1" },
+        { "id": "t5", "label": "true" },
+        { "id": "t6", "label": "false" }
+      ],
       "checks": [
         {
-          "type": "call",
-          "fn": "square",
-          "args": [4],
-          "assert": "result === 16",
-          "label": "square(4) returns 16"
+          "type": "sourceIncludes",
+          "pattern": "let\\s+score",
+          "label": "score variable declared"
         },
         {
-          "type": "console",
-          "includes": "Squared: 16",
-          "label": "logs 'Squared: 16'"
-        }
-      ],
-      "explanation": "console.log makes the value visible on screen but the function still returns undefined. The caller stores that undefined in answer, which is why 'Squared: undefined' appears. The fix is to replace console.log(result) with return result. Now square(4) hands back 16 and answer holds the real number."
-    },
-    {
-      "id": "c2",
-      "level": 2,
-      "difficulty": "medium",
-      "title": "Incomplete branches",
-      "description": "The function classify should return 'pass' for scores 60 and above and 'fail' for everything below. But it only handles one case — calling it with a failing score produces undefined. Add the missing branch so the function always returns a string.",
-      "buggyCode": "function classify(score) {\n    if (score >= 60) {\n        return 'pass';\n    }\n}\n\nconsole.log(classify(90));\nconsole.log(classify(45));",
-      "starterCode": "function classify(score) {\n    if (score >= 60) {\n        return 'pass';\n    }\n}\n\nconsole.log(classify(90));\nconsole.log(classify(45));",
-      "hint": "When no if condition matches, the function falls through and returns undefined. Add an else block that returns 'fail'.",
-      "checks": [
-        {
-          "type": "call",
-          "fn": "classify",
-          "args": [45],
-          "assert": "result === 'fail'",
-          "label": "classify(45) returns 'fail'"
+          "type": "sourceIncludes",
+          "pattern": "let\\s+round",
+          "label": "round variable declared"
         },
         {
-          "type": "call",
-          "fn": "classify",
-          "args": [90],
-          "assert": "result === 'pass'",
-          "label": "classify(90) returns 'pass'"
+          "type": "sourceIncludes",
+          "pattern": "let\\s+isPlaying",
+          "label": "isPlaying variable declared"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "let\\s+correctAnswer",
+          "label": "correctAnswer variable declared"
         }
       ],
-      "explanation": "A function that hits no return statement returns undefined by default. Since the if only covers scores >= 60, anything below 60 falls through without hitting a return. The fix is to add else { return 'fail'; } — now every call to classify reaches a return and always gets a string back."
+      "lines": [
+        {
+          "id": "ln_0_0",
+          "text": "// Global state — lives outside every function",
+          "explanation": "These four variables are the game's memory. They are declared here, outside any function, so every function can read and update them. This is scope from s3-l4 — global variables are visible everywhere."
+        },
+        {
+          "id": "ln_0_1",
+          "text": "<<bk_0_0>> score         = <<bk_0_1>>;",
+          "explanation": "score tracks how many questions the player has answered correctly. It starts at 0 because no questions have been answered yet. It increases by 1 inside handleOutcome each time the player gets one right."
+        },
+        {
+          "id": "ln_0_2",
+          "text": "<<bk_0_2>> round         = <<bk_0_3>>;",
+          "explanation": "round tracks which question number the player is on. It starts at 1 — the player is already on round 1 when the game begins. Unlike score, it counts up regardless of right or wrong."
+        },
+        {
+          "id": "ln_0_3",
+          "text": "let isPlaying     = <<bk_0_4>>;",
+          "explanation": "isPlaying is a flag. When it is true, startRound will keep running. When handleOutcome gets a wrong answer, it sets isPlaying to false — and startRound will exit immediately the next time it is called."
+        },
+        {
+          "id": "ln_0_4",
+          "text": "let correctAnswer = <<bk_0_5>>;",
+          "explanation": "correctAnswer will hold the right answer for the current question. It starts at 0 as a placeholder. generateQuestion() returns the real answer each round, and startRound stores it here."
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_0_0",
+          "mode": "wordbank",
+          "answer": "let",
+          "instruction": "score will change every round. Drag the keyword for a variable that can be reassigned.",
+          "explanation": "let is for variables that change. score starts at 0 and increases, so let is the right choice. const would throw an error the moment the game tried to update it.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_0_1",
+          "mode": "wordbank",
+          "answer": "0",
+          "instruction": "No questions have been answered yet. Drag the starting value for score.",
+          "explanation": "0 is the right starting value — the player has not scored anything before the game begins.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_0_2",
+          "mode": "wordbank",
+          "answer": "let",
+          "instruction": "round also changes — same keyword as score. Drag it.",
+          "explanation": "round needs let for the same reason as score — it will be reassigned each time the player answers a question.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_0_3",
+          "mode": "wordbank",
+          "answer": "1",
+          "instruction": "The first question is round 1, not round 0. Drag the starting value.",
+          "explanation": "Rounds are shown to the player — '1' reads more naturally than '0'. score starts at 0 because no points have been earned. round starts at 1 because you are already playing.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_0_4",
+          "mode": "wordbank",
+          "answer": "true",
+          "instruction": "When the game starts, is the player playing? Drag the boolean that means yes.",
+          "explanation": "true means the game is active and startRound should keep going. Setting isPlaying = false inside handleOutcome is what stops everything.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_0_5",
+          "mode": "wordbank",
+          "answer": "0",
+          "instruction": "correctAnswer has no real value yet — the first question hasn't been generated. Drag a placeholder value.",
+          "explanation": "0 is just a safe placeholder. The real value gets set in startRound each round when generateQuestion() returns the answer.",
+          "lessonRefs": ["s3-l4"]
+        }
+      ]
     },
     {
-      "id": "c3",
-      "level": 3,
-      "difficulty": "tricky",
-      "title": "Scope escape",
-      "description": "The function makeMessage creates a greeting and the code tries to print it in uppercase outside the function. But it throws a ReferenceError because msg is local to makeMessage. Fix the code so the greeting can be used outside without moving the let declaration outside the function.",
-      "buggyCode": "function makeMessage() {\n    let msg = 'Hello from Curia!';\n}\n\nmakeMessage();\nconsole.log(msg.toUpperCase());",
-      "starterCode": "function makeMessage() {\n    let msg = 'Hello from Curia!';\n}\n\nmakeMessage();\nconsole.log(msg.toUpperCase());",
-      "hint": "You cannot reach inside a function to grab its local variables. Instead, make the function return the value and capture it on the outside: let msg = makeMessage();",
+      "title": "Step 2 — generateQuestion()",
+      "type": "practice",
+      "duration": "4 min",
+      "format": "final-project",
+      "lessonRefs": ["s3-l2"],
+      "tasks": [
+        "This function picks two random numbers, shows them on screen, and returns the correct answer.",
+        "The return value is the key — startRound will store it in correctAnswer so the game can check the player later.",
+        "Fill in the random number formula and the return statement."
+      ],
+      "hint": "Math.random() gives a decimal between 0 and 1. Math.floor() rounds it down to a whole number. Adding 1 shifts the range from 0–9 to 1–10.",
+      "codePrefix": "let score         = 0;\nlet round         = 1;\nlet isPlaying     = true;\nlet correctAnswer = 0;\n",
+      "tokenBank": [
+        { "id": "t1", "label": "return" },
+        { "id": "t2", "label": "Math.floor" },
+        { "id": "t3", "label": "Math.random()" },
+        { "id": "t4", "label": "10" },
+        { "id": "t5", "label": "1" },
+        { "id": "t6", "label": "a + b" },
+        { "id": "t7", "label": "console.log" }
+      ],
       "checks": [
         {
-          "type": "console",
-          "includes": "HELLO FROM CURIA!",
-          "label": "logs 'HELLO FROM CURIA!' in uppercase"
+          "type": "sourceIncludes",
+          "pattern": "function\\s+generateQuestion",
+          "label": "generateQuestion function defined"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "Math\\.floor\\s*\\(\\s*Math\\.random",
+          "label": "Math.floor(Math.random()) used"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "return\\s+a\\s*\\+\\s*b",
+          "label": "a + b returned"
         }
       ],
-      "explanation": "msg is declared inside makeMessage with let, so it only exists inside that function's curly braces. Trying to use it outside causes a ReferenceError. The fix: add return msg; inside the function, then capture it outside: let msg = makeMessage(); Now the value escapes through the return, and the local variable name no longer matters — the caller gives it its own name."
+      "lines": [
+        {
+          "id": "ln_1_0",
+          "text": "function generateQuestion() {"
+        },
+        {
+          "id": "ln_1_1",
+          "text": "    let a = <<bk_1_0>>(Math.random() * <<bk_1_1>>) + <<bk_1_2>>;",
+          "explanation": "This picks a random whole number from 1 to 10. Math.random() gives a decimal like 0.73. Multiplying by 10 gives 7.3. Math.floor rounds down to 7. Adding 1 shifts the range so the minimum is 1, not 0."
+        },
+        {
+          "id": "ln_1_2",
+          "text": "    let b = Math.floor(Math.random() * 10) + 1;",
+          "explanation": "Exactly the same pattern as a — a second independent random number between 1 and 10. a and b are local to this function. They only exist while generateQuestion is running."
+        },
+        {
+          "id": "ln_1_3",
+          "text": "    numA.textContent = a;",
+          "explanation": "numA is the DOM element that shows the first number on screen. Setting textContent to a updates what the player sees. numA was stored in a const at the top of the file."
+        },
+        {
+          "id": "ln_1_4",
+          "text": "    numB.textContent = b;",
+          "explanation": "Same pattern for the second number. After these two lines the question display reads something like '4 + 7 ='."
+        },
+        {
+          "id": "ln_1_5",
+          "text": "    <<bk_1_3>> <<bk_1_4>>;",
+          "explanation": "This is the most important line. return hands the correct answer back to whoever called generateQuestion. startRound stores this value in correctAnswer. Without return the caller gets undefined and the game can never check if the player was right."
+        },
+        {
+          "id": "ln_1_6",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_1_0",
+          "mode": "wordbank",
+          "answer": "Math.floor",
+          "instruction": "We need to round the random decimal down to a whole number. Drag the method that does this.",
+          "explanation": "Math.floor always rounds down — 3.9 becomes 3, 7.1 becomes 7. This gives us a clean whole number to show in the question.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_1_1",
+          "mode": "wordbank",
+          "answer": "10",
+          "instruction": "We want numbers from 1 to 10. Multiplying Math.random() by this sets the upper limit. Drag the right value.",
+          "explanation": "Math.random() * 10 gives a decimal from 0 up to 10. After Math.floor that becomes 0–9. Adding 1 at the end shifts it to 1–10.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_1_2",
+          "mode": "wordbank",
+          "answer": "1",
+          "instruction": "After Math.floor the range is 0–9. Adding this shifts it to 1–10. Drag the right value.",
+          "explanation": "Without + 1, random numbers would include 0 — and '0 + 3 =' is a bit easy. Adding 1 ensures the minimum is 1.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_1_3",
+          "mode": "wordbank",
+          "answer": "return",
+          "instruction": "This function needs to hand the correct answer back to startRound. Drag the keyword that sends a value back to the caller.",
+          "explanation": "return is the exit door. The function stops here and hands the value on the right back to whoever called it.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_1_4",
+          "mode": "wordbank",
+          "answer": "a + b",
+          "instruction": "What value should be returned? The correct answer is the sum of both numbers. Drag the expression.",
+          "explanation": "a + b is the answer the player needs to type. This is the value startRound will store in correctAnswer and later pass into checkResult.",
+          "lessonRefs": ["s3-l2"]
+        }
+      ]
+    },
+    {
+      "title": "Step 3 — checkResult()",
+      "type": "practice",
+      "duration": "3 min",
+      "format": "final-project",
+      "lessonRefs": ["s3-l3"],
+      "tasks": [
+        "checkResult compares the player's answer to the correct one and returns true or false.",
+        "You wrote this exact pattern in s3-l3 — here it is doing a real job.",
+        "Fill in the comparison and both return values."
+      ],
+      "hint": "Always use === not ==. Triple equals checks both the value and the type.",
+      "codePrefix": "let score         = 0;\nlet round         = 1;\nlet isPlaying     = true;\nlet correctAnswer = 0;\n\nfunction generateQuestion() {\n    let a = Math.floor(Math.random() * 10) + 1;\n    let b = Math.floor(Math.random() * 10) + 1;\n    numA.textContent = a;\n    numB.textContent = b;\n    return a + b;\n}\n",
+      "tokenBank": [
+        { "id": "t1", "label": "return" },
+        { "id": "t2", "label": "true" },
+        { "id": "t3", "label": "false" },
+        { "id": "t4", "label": "===" },
+        { "id": "t5", "label": "==" },
+        { "id": "t6", "label": "!==" }
+      ],
+      "checks": [
+        {
+          "type": "sourceIncludes",
+          "pattern": "function\\s+checkResult",
+          "label": "checkResult function defined"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "===",
+          "label": "strict equality used"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "return\\s+true",
+          "label": "returns true for a match"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "return\\s+false",
+          "label": "returns false for a non-match"
+        }
+      ],
+      "lines": [
+        {
+          "id": "ln_2_0",
+          "text": "function checkResult(playerAnswer, correctAns) {"
+        },
+        {
+          "id": "ln_2_1",
+          "text": "    if (playerAnswer <<bk_2_0>> correctAns) {",
+          "explanation": "The condition compares what the player typed to the right answer. === checks that both the value and the type match. '10' (string) and 10 (number) would not be equal with ===."
+        },
+        {
+          "id": "ln_2_2",
+          "text": "        <<bk_2_1>> <<bk_2_2>>;",
+          "explanation": "If the answers match, return true. The function stops here and hands true back to the caller. handleOutcome will receive this and increase the score."
+        },
+        {
+          "id": "ln_2_3",
+          "text": "    } else {"
+        },
+        {
+          "id": "ln_2_4",
+          "text": "        <<bk_2_3>> <<bk_2_4>>;",
+          "explanation": "If the answers do not match, return false. The function stops here and hands false back. handleOutcome will receive this, set isPlaying to false, and end the game."
+        },
+        {
+          "id": "ln_2_5",
+          "text": "    }"
+        },
+        {
+          "id": "ln_2_6",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_2_0",
+          "mode": "wordbank",
+          "answer": "===",
+          "instruction": "We need strict equality — same value and same type. Drag the correct comparison operator.",
+          "explanation": "Always use === in JavaScript. Double equals == does type coercion and can produce surprising results. Triple equals is predictable.",
+          "lessonRefs": ["s3-l3"]
+        },
+        {
+          "id": "bk_2_1",
+          "mode": "wordbank",
+          "answer": "return",
+          "instruction": "The answers matched — we need to send a value back to the caller. Drag the keyword.",
+          "explanation": "return sends the value on its right back to whoever called checkResult. Without it the caller would get undefined.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_2_2",
+          "mode": "wordbank",
+          "answer": "true",
+          "instruction": "The player got it right. Drag the boolean that means correct.",
+          "explanation": "true is returned when the answers match. handleOutcome checks if result === true and increases the score when it does.",
+          "lessonRefs": ["s3-l3"]
+        },
+        {
+          "id": "bk_2_3",
+          "mode": "wordbank",
+          "answer": "return",
+          "instruction": "The answers did not match — still need to send a value back. Drag the same keyword.",
+          "explanation": "Both branches of if/else need their own return. Only one branch ever runs — whichever return is reached first stops the function.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_2_4",
+          "mode": "wordbank",
+          "answer": "false",
+          "instruction": "The player got it wrong. Drag the boolean that means incorrect.",
+          "explanation": "false is returned when the answers do not match. handleOutcome receives this and sets isPlaying to false, ending the game.",
+          "lessonRefs": ["s3-l3"]
+        }
+      ]
+    },
+    {
+      "title": "Step 4 — handleOutcome()",
+      "type": "practice",
+      "duration": "4 min",
+      "format": "final-project",
+      "lessonRefs": ["s3-l3", "s3-l4"],
+      "tasks": [
+        "handleOutcome receives true or false from checkResult and acts on it.",
+        "If true: increase score and round, update the display, then queue the next question.",
+        "If false: stop the game and trigger the game-over screen.",
+        "Watch the scope rule — score, round, and isPlaying update without let."
+      ],
+      "hint": "When updating a global variable inside a function, never write let. That would create a new local variable and leave the global untouched.",
+      "codePrefix": "let score         = 0;\nlet round         = 1;\nlet isPlaying     = true;\nlet correctAnswer = 0;\n\nfunction generateQuestion() {\n    let a = Math.floor(Math.random() * 10) + 1;\n    let b = Math.floor(Math.random() * 10) + 1;\n    numA.textContent = a;\n    numB.textContent = b;\n    return a + b;\n}\n\nfunction checkResult(playerAnswer, correctAns) {\n    if (playerAnswer === correctAns) {\n        return true;\n    } else {\n        return false;\n    }\n}\n",
+      "tokenBank": [
+        { "id": "t1", "label": "score" },
+        { "id": "t2", "label": "round" },
+        { "id": "t3", "label": "isPlaying" },
+        { "id": "t4", "label": "true" },
+        { "id": "t5", "label": "false" },
+        { "id": "t6", "label": "startRound" },
+        { "id": "t7", "label": "showGameOver" }
+      ],
+      "checks": [
+        {
+          "type": "sourceIncludes",
+          "pattern": "function\\s+handleOutcome",
+          "label": "handleOutcome function defined"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "score\\s*=\\s*score\\s*\\+\\s*1",
+          "label": "score updated without let"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "isPlaying\\s*=\\s*false",
+          "label": "isPlaying set to false"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "setTimeout\\s*\\(\\s*startRound",
+          "label": "startRound queued with setTimeout"
+        }
+      ],
+      "lines": [
+        {
+          "id": "ln_3_0",
+          "text": "function handleOutcome(result) {"
+        },
+        {
+          "id": "ln_3_1",
+          "text": "    if (result === <<bk_3_0>>) {",
+          "explanation": "result holds the true or false that came back from checkResult. If it is true the player was correct — reward them. If false they were wrong — end the game."
+        },
+        {
+          "id": "ln_3_2",
+          "text": "        <<bk_3_1>> = <<bk_3_1>> + 1;",
+          "explanation": "score = score + 1 increases the global score by 1. No let here — that would create a local shadow and the real score would never change. This is the core scope rule from s3-l4."
+        },
+        {
+          "id": "ln_3_3",
+          "text": "        <<bk_3_2>> = <<bk_3_2>> + 1;",
+          "explanation": "round = round + 1 moves the game forward. Same global update pattern — no let."
+        },
+        {
+          "id": "ln_3_4",
+          "text": "        scoreDisplay.textContent = score;",
+          "explanation": "After updating score in the variable, push the new value to the screen so the player can see it."
+        },
+        {
+          "id": "ln_3_5",
+          "text": "        roundDisplay.textContent = round;",
+          "explanation": "Same for round — update the variable first, then push to the display."
+        },
+        {
+          "id": "ln_3_6",
+          "text": "        statusMessage.textContent = 'Correct!';",
+          "explanation": "Give the player immediate feedback in the status banner before the next question appears."
+        },
+        {
+          "id": "ln_3_7",
+          "text": "        setTimeout(<<bk_3_3>>, 800);",
+          "explanation": "Don't start the next round immediately — that would feel too fast. setTimeout waits 800 milliseconds then calls startRound. This gives the player a moment to read 'Correct!'."
+        },
+        {
+          "id": "ln_3_8",
+          "text": "    } else {"
+        },
+        {
+          "id": "ln_3_9",
+          "text": "        <<bk_3_4>> = <<bk_3_5>>;",
+          "explanation": "Setting isPlaying to false is what stops the game. startRound checks this flag first — if it is false, the function returns immediately and no new question is shown. No let here."
+        },
+        {
+          "id": "ln_3_10",
+          "text": "        statusMessage.textContent = 'Wrong!';",
+          "explanation": "Show 'Wrong!' before the game-over overlay appears so the player gets brief feedback first."
+        },
+        {
+          "id": "ln_3_11",
+          "text": "        wrongFlash.classList.add('active');",
+          "explanation": "Adding 'active' to wrongFlash triggers a CSS animation that briefly flashes the screen red — a clear visual signal that the answer was wrong."
+        },
+        {
+          "id": "ln_3_12",
+          "text": "        setTimeout(<<bk_3_6>>, 600);",
+          "explanation": "Wait 600ms before showing the game-over overlay. This lets the red flash animation play before the screen changes."
+        },
+        {
+          "id": "ln_3_13",
+          "text": "    }"
+        },
+        {
+          "id": "ln_3_14",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_3_0",
+          "mode": "wordbank",
+          "answer": "true",
+          "instruction": "The if branch should run when the player was correct. Drag the value result will equal in that case.",
+          "explanation": "checkResult returns true for a correct answer. result === true is what triggers the score increase.",
+          "lessonRefs": ["s3-l3"]
+        },
+        {
+          "id": "bk_3_1",
+          "mode": "wordbank",
+          "answer": "score",
+          "instruction": "The global variable that tracks points. Drag it — it appears on both sides of the assignment.",
+          "explanation": "score = score + 1 reads the current value, adds 1, and writes it back. No let — updating the global, not creating a new local variable.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_3_2",
+          "mode": "wordbank",
+          "answer": "round",
+          "instruction": "The global variable that tracks the question number. Same pattern as score. Drag it for both sides.",
+          "explanation": "round = round + 1 moves the game forward. Same scope rule — no let inside the function.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_3_3",
+          "mode": "wordbank",
+          "answer": "startRound",
+          "instruction": "After a correct answer, the game should start a new round. Drag the function that does this.",
+          "explanation": "startRound is passed to setTimeout without parentheses — we're handing it as a reference to call later, not calling it right now.",
+          "lessonRefs": ["s3-l1"]
+        },
+        {
+          "id": "bk_3_4",
+          "mode": "wordbank",
+          "answer": "isPlaying",
+          "instruction": "We need to stop the game. Drag the global flag that controls whether the game is running.",
+          "explanation": "isPlaying is the flag startRound checks at the top. Setting it here means the next call to startRound will exit immediately.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_3_5",
+          "mode": "wordbank",
+          "answer": "false",
+          "instruction": "We want to stop the game. Drag the boolean value that means 'no longer playing'.",
+          "explanation": "false tells startRound the game is over. No let — this updates the global isPlaying that was declared at the top of the file.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_3_6",
+          "mode": "wordbank",
+          "answer": "showGameOver",
+          "instruction": "After the wrong-answer flash, show the game-over screen. Drag the function that does this.",
+          "explanation": "showGameOver is called after a short delay so the red flash has time to play first.",
+          "lessonRefs": ["s3-l1"]
+        }
+      ]
+    },
+    {
+      "title": "Step 5 — startRound() and handleClick()",
+      "type": "practice",
+      "duration": "5 min",
+      "format": "final-project",
+      "lessonRefs": ["s3-l1", "s3-l2", "s3-l4"],
+      "tasks": [
+        "startRound is the conductor — it checks isPlaying, then calls generateQuestion and sets up the input.",
+        "handleClick fires when the player clicks Check. It reads the input, calls checkResult, and passes the result to handleOutcome.",
+        "Fill in the guard clause, the return value chain, and the event wiring."
+      ],
+      "hint": "The return value chain is: generateQuestion() returns the answer → startRound stores it in correctAnswer → handleClick passes it into checkResult. Each step uses what the previous one returned.",
+      "codePrefix": "let score         = 0;\nlet round         = 1;\nlet isPlaying     = true;\nlet correctAnswer = 0;\n\nfunction generateQuestion() {\n    let a = Math.floor(Math.random() * 10) + 1;\n    let b = Math.floor(Math.random() * 10) + 1;\n    numA.textContent = a;\n    numB.textContent = b;\n    return a + b;\n}\n\nfunction checkResult(playerAnswer, correctAns) {\n    if (playerAnswer === correctAns) {\n        return true;\n    } else {\n        return false;\n    }\n}\n\nfunction handleOutcome(result) {\n    if (result === true) {\n        score = score + 1;\n        round = round + 1;\n        scoreDisplay.textContent = score;\n        roundDisplay.textContent = round;\n        statusMessage.textContent = 'Correct!';\n        setTimeout(startRound, 800);\n    } else {\n        isPlaying = false;\n        statusMessage.textContent = 'Wrong!';\n        wrongFlash.classList.add('active');\n        setTimeout(showGameOver, 600);\n    }\n}\n",
+      "tokenBank": [
+        { "id": "t1", "label": "isPlaying" },
+        { "id": "t2", "label": "false" },
+        { "id": "t3", "label": "return" },
+        { "id": "t4", "label": "correctAnswer" },
+        { "id": "t5", "label": "generateQuestion()" },
+        { "id": "t6", "label": "checkResult" },
+        { "id": "t7", "label": "handleOutcome" },
+        { "id": "t8", "label": "result" },
+        { "id": "t9", "label": "playerAnswer" },
+        { "id": "t10", "label": "Number" }
+      ],
+      "checks": [
+        {
+          "type": "sourceIncludes",
+          "pattern": "function\\s+startRound",
+          "label": "startRound function defined"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "correctAnswer\\s*=\\s*generateQuestion\\s*\\(\\s*\\)",
+          "label": "generateQuestion return value stored in correctAnswer"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "function\\s+handleClick",
+          "label": "handleClick function defined"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "checkResult\\s*\\(\\s*playerAnswer\\s*,\\s*correctAnswer\\s*\\)",
+          "label": "checkResult called with both arguments"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "handleOutcome\\s*\\(\\s*result\\s*\\)",
+          "label": "result passed into handleOutcome"
+        }
+      ],
+      "lines": [
+        {
+          "id": "ln_4_0",
+          "text": "function startRound() {"
+        },
+        {
+          "id": "ln_4_1",
+          "text": "    if (<<bk_4_0>> === <<bk_4_1>>) { <<bk_4_2>>; }",
+          "explanation": "This guard clause checks the isPlaying flag. If the game is over, return exits immediately — nothing below runs. This is the early return pattern from s3-l2."
+        },
+        {
+          "id": "ln_4_2",
+          "text": "    statusMessage.textContent = 'Your turn!';",
+          "explanation": "Update the status banner to let the player know they can type their answer."
+        },
+        {
+          "id": "ln_4_3",
+          "text": "    answerInput.value = '';",
+          "explanation": "Clear the input box so the previous answer doesn't carry over to the next round."
+        },
+        {
+          "id": "ln_4_4",
+          "text": "    answerInput.disabled = false;",
+          "explanation": "Enable the input — the player can now type. It starts each round disabled so the player can't type before the question appears."
+        },
+        {
+          "id": "ln_4_5",
+          "text": "    checkBtn.disabled = false;",
+          "explanation": "Enable the Check button. Same pattern — it's disabled between rounds and re-enabled here."
+        },
+        {
+          "id": "ln_4_6",
+          "text": "    <<bk_4_3>> = <<bk_4_4>>;",
+          "explanation": "generateQuestion() picks the two numbers, shows them on screen, and returns the correct answer. That return value is stored in the global correctAnswer — the return value chain from s3-l2 in action."
+        },
+        {
+          "id": "ln_4_7",
+          "text": "    answerInput.focus();",
+          "explanation": "Move the cursor into the input box so the player can start typing immediately without clicking first."
+        },
+        {
+          "id": "ln_4_8",
+          "text": "}"
+        },
+        {
+          "id": "ln_4_9",
+          "text": ""
+        },
+        {
+          "id": "ln_4_10",
+          "text": "function handleClick() {"
+        },
+        {
+          "id": "ln_4_11",
+          "text": "    let playerAnswer = <<bk_4_5>>(answerInput.value);",
+          "explanation": "answerInput.value is always a string — even if the player typed '7', JavaScript sees the string '7'. Number() converts it to the number 7 so === works correctly inside checkResult."
+        },
+        {
+          "id": "ln_4_12",
+          "text": "    checkBtn.disabled = true;",
+          "explanation": "Disable the button immediately so the player can't click Check twice and trigger handleOutcome more than once."
+        },
+        {
+          "id": "ln_4_13",
+          "text": "    answerInput.disabled = true;",
+          "explanation": "Lock the input too — the answer is submitted and can't be changed."
+        },
+        {
+          "id": "ln_4_14",
+          "text": "    let <<bk_4_6>> = <<bk_4_7>>(<<bk_4_8>>, <<bk_4_9>>);",
+          "explanation": "checkResult is called with the player's answer and the correct answer. It returns true or false. That return value is stored in result so the next line can use it."
+        },
+        {
+          "id": "ln_4_15",
+          "text": "    <<bk_4_10>>(<<bk_4_11>>);",
+          "explanation": "Pass result straight into handleOutcome. This completes the chain: generateQuestion returns the answer → checkResult returns true/false → handleOutcome receives it and acts."
+        },
+        {
+          "id": "ln_4_16",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_4_0",
+          "mode": "wordbank",
+          "answer": "isPlaying",
+          "instruction": "The guard clause checks this flag first. Drag the variable being tested.",
+          "explanation": "isPlaying is set to false when the game ends. Checking it here means startRound exits immediately if called after game over.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_4_1",
+          "mode": "wordbank",
+          "answer": "false",
+          "instruction": "The game is over when this flag equals what? Drag the right boolean.",
+          "explanation": "When isPlaying is false the game is over. The guard clause reads: if the game is not playing, exit.",
+          "lessonRefs": ["s3-l4"]
+        },
+        {
+          "id": "bk_4_2",
+          "mode": "wordbank",
+          "answer": "return",
+          "instruction": "If the game is over, exit the function immediately. Drag the keyword that stops it.",
+          "explanation": "return with no value exits the function right there. Nothing below it runs.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_4_3",
+          "mode": "wordbank",
+          "answer": "correctAnswer",
+          "instruction": "The return value from generateQuestion needs to be stored in the global variable. Drag it.",
+          "explanation": "correctAnswer is the global that bridges generateQuestion and checkResult. startRound catches the return value here and handleClick uses it later.",
+          "lessonRefs": ["s3-l2", "s3-l4"]
+        },
+        {
+          "id": "bk_4_4",
+          "mode": "wordbank",
+          "answer": "generateQuestion()",
+          "instruction": "Call the function that picks two numbers and returns the correct answer. Drag it.",
+          "explanation": "generateQuestion() is called here and its return value stored immediately. This is the return-value pattern from s3-l2 doing real work.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_4_5",
+          "mode": "wordbank",
+          "answer": "Number",
+          "instruction": "The input value is always a string. Drag the function that converts it to a number.",
+          "explanation": "Number('7') returns 7. Without this, checkResult would compare '7' === 7 which is false — and the player would always be marked wrong.",
+          "lessonRefs": ["s3-l3"]
+        },
+        {
+          "id": "bk_4_6",
+          "mode": "wordbank",
+          "answer": "result",
+          "instruction": "We need a variable to hold what checkResult returns. Drag the name that will store true or false.",
+          "explanation": "result is a local variable inside handleClick. It captures the return value from checkResult so we can pass it into handleOutcome.",
+          "lessonRefs": ["s3-l2"]
+        },
+        {
+          "id": "bk_4_7",
+          "mode": "wordbank",
+          "answer": "checkResult",
+          "instruction": "Call the function that compares two answers and returns true or false. Drag its name.",
+          "explanation": "checkResult is the decision function from s3-l3. We call it here with the player's answer and the correct answer.",
+          "lessonRefs": ["s3-l3"]
+        },
+        {
+          "id": "bk_4_8",
+          "mode": "wordbank",
+          "answer": "playerAnswer",
+          "instruction": "The first argument is what the player typed. Drag the local variable that holds it.",
+          "explanation": "playerAnswer was just converted from a string to a number on the line above. This is the first thing checkResult expects.",
+          "lessonRefs": ["s3-l3"]
+        },
+        {
+          "id": "bk_4_9",
+          "mode": "wordbank",
+          "answer": "correctAnswer",
+          "instruction": "The second argument is the right answer for this round. Drag the global variable that holds it.",
+          "explanation": "correctAnswer is the global set in startRound when generateQuestion returned the answer. It has been waiting for exactly this moment.",
+          "lessonRefs": ["s3-l2", "s3-l4"]
+        },
+        {
+          "id": "bk_4_10",
+          "mode": "wordbank",
+          "answer": "handleOutcome",
+          "instruction": "Pass the result to the function that decides what happens next. Drag its name.",
+          "explanation": "handleOutcome acts on the true or false from checkResult — score up for correct, game over for wrong.",
+          "lessonRefs": ["s3-l3"]
+        },
+        {
+          "id": "bk_4_11",
+          "mode": "wordbank",
+          "answer": "result",
+          "instruction": "Pass the variable holding true or false into handleOutcome. Drag it.",
+          "explanation": "result holds the return value from checkResult. Passing it here completes the full chain from s3-l2.",
+          "lessonRefs": ["s3-l2"]
+        }
+      ]
     }
   ]
 }

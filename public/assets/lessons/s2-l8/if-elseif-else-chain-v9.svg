@@ -1,0 +1,87 @@
+<svg width="580" height="400" viewBox="0 0 580 400" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>if, else if, else chain — top to bottom evaluation</title>
+<desc>A flowchart showing JavaScript checking conditions top to bottom and stopping at the first true one.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<g transform="translate(-88, 0)">
+
+<!-- Section label -->
+<text x="378" y="24" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.07em">IF / ELSE IF / ELSE — FIRST MATCH WINS</text>
+
+<!-- ══ START ══ -->
+<rect x="205" y="36" width="170" height="36" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="290" y="54" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="12" font-weight="600" fill="#3C3489">score = 75</text>
+
+<!-- arrow down -->
+<line x1="290" y1="72" x2="290" y2="92" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- ══ CONDITION 1 ══ -->
+<path d="M290,100 Q366,100 370,124 Q374,148 290,148 Q210,148 210,124 Q214,100 290,100" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="290" y="118" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#2C2C2A">score</text>
+<text x="290" y="132" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#2C2C2A">>= 90?</text>
+
+<!-- yes → result A -->
+<line x1="370" y1="124" x2="436" y2="124" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="403" y="116" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#8B91A8">yes</text>
+<rect x="438" y="104" width="108" height="40" rx="8" fill="#3B6D11" stroke="#639922" stroke-width="0.5"/>
+<text x="492" y="118" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#EAF3DE">'A'</text>
+<text x="492" y="134" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#9FD86A">stops here</text>
+
+<!-- no → arrow down -->
+<line x1="290" y1="152" x2="290" y2="172" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="276" y="164" text-anchor="end" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#8B91A8">no</text>
+
+<!-- ══ HIGHLIGHT: score=75 fires here ══ -->
+<rect x="195" y="168" width="360" height="63" rx="12" fill="#1D9E7510" stroke="#1D9E75" stroke-width="1.5" stroke-dasharray="6 3"/>
+<text x="375" y="164" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="9" font-weight="600" fill="#1D9E75" letter-spacing="0.05em">score = 75 stops here</text>
+
+<!-- ══ CONDITION 2 ══ -->
+<path d="M290,180 Q366,180 370,204 Q374,228 290,228 Q210,228 210,204 Q214,180 290,180" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="290" y="198" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#2C2C2A">score</text>
+<text x="290" y="212" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#2C2C2A">>= 70?</text>
+
+<!-- yes → result B -->
+<line x1="370" y1="204" x2="436" y2="204" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="403" y="196" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#8B91A8">yes</text>
+<rect x="438" y="184" width="108" height="40" rx="8" fill="#085041" stroke="#1D9E75" stroke-width="0.5"/>
+<text x="492" y="198" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#E1F5EE">'B'</text>
+<text x="492" y="214" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#5DCAA5">stops here ✓</text>
+
+<!-- no → arrow down -->
+<line x1="290" y1="232" x2="290" y2="252" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="276" y="244" text-anchor="end" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#8B91A8">no</text>
+
+<!-- ══ CONDITION 3 ══ -->
+<path d="M290,260 Q366,260 370,284 Q374,308 290,308 Q210,308 210,284 Q214,260 290,260" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="290" y="278" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#2C2C2A">score</text>
+<text x="290" y="292" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="600" fill="#2C2C2A">>= 50?</text>
+
+<!-- yes → result C -->
+<line x1="370" y1="284" x2="436" y2="284" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="403" y="276" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#8B91A8">yes</text>
+<rect x="438" y="264" width="108" height="40" rx="8" fill="#633806" stroke="#854F0B" stroke-width="0.5"/>
+<text x="492" y="278" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#FAEEDA">'C'</text>
+<text x="492" y="294" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#FAC775">stops here</text>
+
+<!-- no → arrow down -->
+<line x1="290" y1="312" x2="290" y2="332" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="276" y="324" text-anchor="end" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#8B91A8">no</text>
+
+<!-- ══ ELSE ══ -->
+<rect x="210" y="334" width="160" height="40" rx="8" fill="#712B13" stroke="#D85A30" stroke-width="0.5"/>
+<text x="290" y="348" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="12" font-weight="600" fill="#FAECE7">else</text>
+<text x="290" y="364" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#F0997B">nothing matched — runs last</text>
+
+<!-- result F -->
+<line x1="370" y1="354" x2="436" y2="354" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="438" y="334" width="108" height="40" rx="8" fill="#712B13" stroke="#D85A30" stroke-width="0.5"/>
+<text x="492" y="348" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#FAECE7">'F'</text>
+<text x="492" y="364" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#F0997B">stops here</text>
+
+<!-- highlight arrow for score=75 path -->
+
+</g>
+</svg>

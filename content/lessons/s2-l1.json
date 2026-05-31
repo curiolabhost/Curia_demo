@@ -68,57 +68,277 @@
   ],
   "exercises": [
     {
-      "title": "Make your first variables",
+      "title": "What does 'let' do?",
       "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What does the word 'let' do in JavaScript?"],
+      "hint": "Think about what you're telling JavaScript to create.",
+      "options": [
+        { "id": "a", "label": "Runs the code immediately" },
+        { "id": "b", "label": "Creates a new variable", "code": "let count = 1;" },
+        { "id": "c", "label": "Prints a value to the console" },
+        { "id": "d", "label": "Adds two numbers together" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "'let' creates a new named container. Without it, there's nowhere to store the game's score, level, or playerName.",
+      "checks": []
+    },
+    {
+      "title": "What does this print?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Read the code. What appears in the console?"],
+      "hint": "Look at what value is stored inside count before the log runs.",
+      "codeSnippet": "let count = 5;\nconsole.log(count);",
+      "options": [
+        { "id": "a", "label": "count" },
+        { "id": "b", "label": "0" },
+        { "id": "c", "label": "5" },
+        { "id": "d", "label": "undefined" }
+      ],
+      "correctOptionId": "c",
+      "explanation": "console.log looks inside the variable and prints what it finds. count holds 5, so 5 is printed. Writing 'count' in quotes would print the word count, not the number.",
+      "checks": []
+    },
+    {
+      "title": "Correct or broken?",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Drag each line into the correct bucket."],
+      "hint": "Every variable needs: let, a name, an equals sign, and a value — in that order. JavaScript is also case-sensitive.",
+      "buckets": [
+        { "id": "correct", "label": "Correct JavaScript" },
+        { "id": "broken", "label": "Has a mistake" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "let score = 0;", "correctBucketId": "correct" },
+        { "id": "i2", "label": "let playerName = 'Alex';", "correctBucketId": "correct" },
+        { "id": "i3", "label": "console.log(score);", "correctBucketId": "correct" },
+        { "id": "i4", "label": "let = score 0;", "correctBucketId": "broken" },
+        { "id": "i5", "label": "lets count = 5;", "correctBucketId": "broken" },
+        { "id": "i6", "label": "let score = ;", "correctBucketId": "broken" },
+        { "id": "i7", "label": "Console.Log(score);", "correctBucketId": "broken" }
+      ],
+      "checks": [],
+      "explanation": "JavaScript is unforgiving about spelling and order. 'let' must be lowercase with no extra letters. console.log must be all lowercase. The value must exist after the equals sign."
+    },
+    {
+      "title": "Complete the variable",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the right tokens to declare playerName and set it to 'Alex'."],
+      "hint": "Text values need quotes around them. The keyword that creates a variable is three letters.",
+      "codeWithBlanks": [
+        "___BLANK___ playerName = ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "let" },
+        { "id": "t2", "label": "'Alex'" },
+        { "id": "t3", "label": "var" },
+        { "id": "t4", "label": "Alex" }
+      ],
+      "correctOrder": ["let", "'Alex'"],
+      "explanation": "'let' creates the variable. The text value 'Alex' needs quotes — without them, JavaScript would look for a variable named Alex and find nothing.",
+      "checks": []
+    },
+    {
+      "title": "Complete the console.log",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the right tokens to print the value inside score."],
+      "hint": "The variable name goes inside the parentheses without quotes. Quotes would print the word, not the value.",
+      "codeWithBlanks": [
+        "let score = 10;",
+        "___BLANK___(___BLANK___);"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "console.log" },
+        { "id": "t2", "label": "score" },
+        { "id": "t3", "label": "'score'" },
+        { "id": "t4", "label": "print" },
+        { "id": "t5", "label": "let" }
+      ],
+      "correctOrder": ["console.log", "score"],
+      "explanation": "console.log is the command. score without quotes tells JavaScript to look inside the container and print what it finds. 'score' in quotes would just print the text 'score'.",
+      "checks": []
+    },
+    {
+      "title": "Reassign without 'let'",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["score already exists on line 1. Drop the right token to change it to 99 on line 2."],
+      "hint": "You only use 'let' the very first time. After that, just write the name.",
+      "codeWithBlanks": [
+        "let score = 0;",
+        "___BLANK___ = 99;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "score" },
+        { "id": "t2", "label": "let score" },
+        { "id": "t3", "label": "let" },
+        { "id": "t4", "label": "count" }
+      ],
+      "correctOrder": ["score"],
+      "explanation": "Reassignment uses just the variable name — no 'let'. Using 'let' again would tell JavaScript to create a new variable with the same name, which causes an error.",
+      "checks": []
+    },
+    {
+      "title": "Type the keyword and value",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Type the missing keyword and value to declare level starting at 1."],
+      "hint": "The keyword that creates a new variable is three letters. The value is a number — no quotes needed.",
+      "hintBank": [
+        { "id": "h1", "label": "let" },
+        { "id": "h2", "label": "var" },
+        { "id": "h3", "label": "1" },
+        { "id": "h4", "label": "0" }
+      ],
+      "codeWithBlanks": [
+        "___BLANK___ level = ___BLANK___;"
+      ],
+      "blankPlaceholders": ["keyword", "value"],
+      "blankWidths": [5, 3],
+      "checks": [
+        { "type": "variable", "name": "level", "expected": 1, "label": "level equals 1" }
+      ],
+      "explanation": "'let' creates the variable. 1 is the value stored inside it. Together they give Simon Says a container to track which level the player is on."
+    },
+    {
+      "title": "Put the code in order",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": ["Drag these lines into the correct order so the code runs without errors."],
+      "hint": "You must declare a variable before you can use it. Logging after a change shows the new value.",
+      "codeLines": [
+        "let level = 1;",
+        "console.log('level:', level);",
+        "level = 2;",
+        "console.log('level:', level);"
+      ],
+      "checks": [
+        { "type": "variable", "name": "level", "expected": 2, "label": "level equals 2" },
+        { "type": "console", "includes": "2", "label": "2 is printed to the console" }
+      ],
+      "explanation": "The variable must exist before you log it. Logging before the change prints 1; logging after prints 2. That's why order matters — JavaScript runs top to bottom."
+    },
+    {
+      "title": "What prints second?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["There are two console.logs. What does the second one print?"],
+      "hint": "Follow the code top to bottom. What is count equal to by the time the second log runs?",
+      "codeSnippet": "let count = 3;\nconsole.log(count);\ncount = 8;\nconsole.log(count);",
+      "options": [
+        { "id": "a", "label": "3" },
+        { "id": "b", "label": "8" },
+        { "id": "c", "label": "11" },
+        { "id": "d", "label": "count" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "count starts as 3 (first log prints 3), then gets replaced by 8. The second log runs after the change, so it prints 8. Adding both values to get 11 is a common mistake — reassignment replaces, it does not add.",
+      "checks": []
+    },
+    {
+      "title": "Your Simon Says variables",
+      "type": "practice",
+      "format": "code-editor",
       "duration": "5 min",
       "tasks": [
-        "Declare a variable called age and set it to your age.",
-        "Declare a variable called pets and set it to how many pets you have.",
-        "Declare a variable called books and set it to how many books you own.",
-        "Run the code. Nothing will print yet — that comes next."
+        "Declare two variables: playerName (set to your name in quotes) and level (set to 1).",
+        "Add a console.log for each one. Hit Run.",
+        "You should see both values printed in the console."
       ],
-      "hint": "Every variable starts with the word 'let'. Don't forget the semicolon at the end of each line.",
-      "starterCode": "// Variable 1 — your age\nlet age = 0;\n\n// Variable 2 — declare a variable called pets and set it to how many pets you have\n\n// Variable 3 — declare a variable called books and set it to how many books you own\n",
+      "hint": "Strings need quotes: let playerName = 'Alex'; Numbers don't: let level = 1;",
+      "starterCode": "// Declare playerName (your name in quotes)\n\n// Declare level (start at 1)\n\n// Log both below\n\n",
+      "steps": [
+        {
+          "text": "Declare let playerName = 'your name'; and let level = 1; Hit Run.",
+          "completesOn": "run",
+          "focusRange": [1, 4],
+          "checks": [
+            { "type": "variable", "name": "playerName", "expected": null, "label": "playerName exists" },
+            { "type": "variable", "name": "level", "expected": null, "label": "level exists" },
+            { "type": "noError", "label": "code runs without errors" }
+          ]
+        },
+        {
+          "text": "The game now has containers for the player's name and their current level.",
+          "completesOn": "auto",
+          "autoDelayMs": 1500
+        },
+        {
+          "text": "Now add console.log(playerName); and console.log(level); below the variables. Hit Run.",
+          "completesOn": "run",
+          "focusRange": [5, 7],
+          "checks": [
+            { "type": "consoleNonEmpty", "label": "something is printed" },
+            { "type": "sourceIncludes", "pattern": "console\\.log\\s*\\(\\s*playerName\\s*\\)", "label": "playerName is logged" },
+            { "type": "sourceIncludes", "pattern": "console\\.log\\s*\\(\\s*level\\s*\\)", "label": "level is logged" }
+          ]
+        },
+        {
+          "text": "You built the starting memory for a Simon Says game!",
+          "completesOn": "auto",
+          "autoDelayMs": 1500
+        }
+      ],
       "checks": [
-        { "type": "variable", "name": "age", "expected": null, "label": "a variable called 'age' exists" },
-        { "type": "variable", "name": "pets", "expected": null, "label": "a variable called 'pets' exists" },
-        { "type": "variable", "name": "books", "expected": null, "label": "a variable called 'books' exists" }
+        { "type": "variable", "name": "playerName", "expected": null, "label": "playerName exists" },
+        { "type": "variable", "name": "level", "expected": null, "label": "level exists" },
+        { "type": "consoleNonEmpty", "label": "something is printed" }
       ]
     },
     {
-      "title": "Print your variables",
+      "title": "Watch a variable change",
       "type": "practice",
-      "carryFrom": 0,
+      "format": "code-editor",
       "duration": "5 min",
       "tasks": [
-        "Under each variable, add a console.log that prints it with a label.",
-        "For age: console.log('age:', age)",
-        "Do the same for pets and books.",
-        "Run the code — you should see all 3 values in the console."
+        "Hit Run. You'll see count printed twice — both times it says 1.",
+        "Write count = 10; on the empty line. Hit Run.",
+        "Now you'll see 1 first, then 10. The variable changed mid-program!"
       ],
-      "hint": "The label goes inside quotes. Then a comma. Then the variable name — no quotes on the variable name.",
-      "starterCode": "let age = 14;\nconsole.log('age:', age);\n\nlet pets = 0;\n// add console.log for pets here\n\nlet books = 0;\n// add console.log for books here\n",
-      "checks": [
-        { "type": "console", "includes": "age:", "label": "logged age to the console" },
-        { "type": "console", "includes": "pets:", "label": "logged pets to the console" },
-        { "type": "console", "includes": "books:", "label": "logged books to the console" }
-      ]
-    },
-    {
-      "title": "Change a variable's value",
-      "type": "practice",
-      "duration": "4 min",
-      "tasks": [
-        "Declare a variable called score and set it to 10.",
-        "Log score. Then on the next line, change score to 99 — no 'let' this time.",
-        "Log score again. You should see two different numbers printed.",
-        "Why no 'let' the second time? Discuss."
+      "hint": "Write count = 10; — no 'let' this time. count already exists.",
+      "starterCode": "let count = 1;\nconsole.log('start:', count);\n\n// Change count to 10 here\n\n\nconsole.log('now:', count);",
+      "steps": [
+        {
+          "text": "Hit Run. Read the console — count prints the same value twice because nothing has changed yet.",
+          "completesOn": "run",
+          "focusRange": [1, 7],
+          "checks": [
+            { "type": "consoleNonEmpty", "label": "something printed" }
+          ]
+        },
+        {
+          "text": "Write count = 10; on the empty line between the two logs. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 4,
+          "focusRange": [3, 6],
+          "checks": [
+            { "type": "variable", "name": "count", "expected": 10, "label": "count equals 10" },
+            { "type": "console", "includes": "10", "label": "10 is printed" },
+            { "type": "sourceIncludes", "pattern": "count\\s*=\\s*10", "label": "count = 10 is written" }
+          ]
+        },
+        {
+          "text": "You see 1 first, then 10. The variable changed and console.log caught it both times!",
+          "completesOn": "auto",
+          "autoDelayMs": 1500
+        }
       ],
-      "hint": "You only use 'let' when creating a variable for the first time. After that, just write the name.",
-      "starterCode": "let score = 10;\nconsole.log('score starts at:', score);\n\n// Change score to 99 here (no 'let'!)\n\nconsole.log('score is now:', score);\n",
       "checks": [
-        { "type": "variable", "name": "score", "expected": 99, "label": "score was changed to 99" },
-        { "type": "console", "includes": "99", "label": "99 was printed to the console" }
+        { "type": "variable", "name": "count", "expected": 10, "label": "count was changed to 10" },
+        { "type": "console", "includes": "10", "label": "10 is printed to the console" }
       ]
     }
   ]

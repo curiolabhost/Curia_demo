@@ -56,69 +56,317 @@
   ],
   "exercises": [
     {
-      "title": "Build a name tag",
+      "title": "Spot the string",
       "type": "practice",
-      "duration": "5 min",
-      "tasks": [
-        "Declare variables for your first name and last name.",
-        "Join them together into a variable called fullName with a space in between.",
-        "Log fullName.",
-        "Log the length of both fullName and firstName. Which is longer, and by how much?"
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Which of these four values is a string?"],
+      "hint": "One thing makes a value a string — look for it in each option.",
+      "options": [
+        { "id": "a", "label": "42" },
+        { "id": "b", "label": "true" },
+        { "id": "c", "label": "'hello'" },
+        { "id": "d", "label": "score" }
       ],
-      "hint": "Don't forget the space: firstName + ' ' + lastName",
-      "starterCode": "let firstName = 'Your';\nlet lastName = 'Name';\n\n// Build fullName\n\n\nconsole.log(fullName);\nconsole.log('Length:', fullName.length);\n",
+      "correctOptionId": "c",
+      "explanation": "Quotes — single or double — are what turn a value into a string. 42 is a number, true is a boolean, and score is a variable name, not the value stored inside it.",
+      "checks": []
+    },
+    {
+      "title": "What does + print here?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Read the code. What does it print to the console?"],
+      "hint": "Is there a string on either side of the +?",
+      "codeSnippet": "let score = 100;\nconsole.log('Your score: ' + score);",
+      "options": [
+        { "id": "a", "label": "an error — you can't join strings and numbers" },
+        { "id": "b", "label": "Your score: 100" },
+        { "id": "c", "label": "Your score: score" },
+        { "id": "d", "label": "100" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "When a string is on either side of +, JavaScript joins everything as text. 'Your score: ' is a string, so + turns 100 into text and joins it. This is how you build messages in Simon Says.",
+      "checks": []
+    },
+    {
+      "title": "String or Number?",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Drag each value into the correct bucket."],
+      "hint": "Quotes make a string. No quotes on a number means it's a real number. Watch out for traps.",
+      "buckets": [
+        { "id": "string", "label": "String" },
+        { "id": "number", "label": "Number" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "'Jordan'", "correctBucketId": "string" },
+        { "id": "i2", "label": "42", "correctBucketId": "number" },
+        { "id": "i3", "label": "'100'", "correctBucketId": "string" },
+        { "id": "i4", "label": "0", "correctBucketId": "number" },
+        { "id": "i5", "label": "'Score: 10'", "correctBucketId": "string" },
+        { "id": "i6", "label": "3.14", "correctBucketId": "number" },
+        { "id": "i7", "label": "'0'", "correctBucketId": "string" }
+      ],
+      "checks": [],
+      "explanation": "The quotes are the only thing that matters. '100' and '0' look like numbers but they're strings — the quotes make them text. This is exactly why '5' + 5 gives '55' instead of 10."
+    },
+    {
+      "title": "Wrap it in backticks",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the right quotes to turn this into a working template literal."],
+      "hint": "Template literals need a special quote — not single, not double. It's the key at the top-left of your keyboard.",
+      "codeWithBlanks": [
+        "let playerName = 'Alex';",
+        "let level = 3;",
+        "let message = ___BLANK___Welcome, ${playerName}! Level: ${level}.___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "`" },
+        { "id": "t2", "label": "'" },
+        { "id": "t3", "label": "\"" }
+      ],
+      "correctOrder": ["`", "`"],
+      "explanation": "Template literals must start and end with backticks (`). Single quotes and double quotes don't allow ${...} — they'd print it literally as '${playerName}' instead of the variable's value.",
+      "checks": []
+    },
+    {
+      "title": "Add the missing space",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop the right token so fullName has a space between first and last name."],
+      "hint": "JavaScript won't add spaces on its own. You need to include a space character as its own piece.",
+      "codeWithBlanks": [
+        "let firstName = 'Jordan';",
+        "let lastName = 'Lee';",
+        "let fullName = firstName + ___BLANK___ + lastName;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "' '" },
+        { "id": "t2", "label": "''" },
+        { "id": "t3", "label": "'-'" },
+        { "id": "t4", "label": "lastName" }
+      ],
+      "correctOrder": ["' '"],
+      "explanation": "' ' is a string that contains a single space. Without it, you'd get 'JordanLee'. JavaScript joins exactly what you give it — no automatic spacing.",
+      "checks": []
+    },
+    {
+      "title": "Put the greeting in order",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": ["Drag these lines into the correct order so the greeting prints correctly."],
+      "hint": "You have to declare a variable before you can use it. Which line must come first?",
+      "codeLines": [
+        "let playerName = 'Sam';",
+        "let score = 0;",
+        "let greeting = 'Hello, ' + playerName + '!';",
+        "let message = greeting + ' Your score: ' + score;",
+        "console.log(message);"
+      ],
       "checks": [
-        { "type": "variable", "name": "fullName", "expected": null, "label": "a variable called 'fullName' exists" },
-        { "type": "console", "includes": "Length:", "label": "logged the length to the console" }
+        { "type": "console", "includes": "Hello, Sam! Your score: 0", "label": "correct greeting is printed" }
+      ],
+      "explanation": "Variables must be declared before they're used. greeting uses playerName, and message uses both greeting and score — so all three variables must be declared first."
+    },
+    {
+      "title": "Fill in the template",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Type the template expressions to insert the player name and score."],
+      "hint": "Inside a template literal, you drop variables in with ${ } — put the variable name inside the curly braces.",
+      "hintBank": [
+        { "id": "h1", "label": "${name}" },
+        { "id": "h2", "label": "${score}" },
+        { "id": "h3", "label": "$name" },
+        { "id": "h4", "label": "$(score)" }
+      ],
+      "codeWithBlanks": [
+        "let name = 'Alex';",
+        "let score = 150;",
+        "let message = `Player: ___BLANK___, Score: ___BLANK___`;",
+        "console.log(message);"
+      ],
+      "blankPlaceholders": ["name expression", "score expression"],
+      "blankWidths": [7, 9],
+      "checks": [
+        { "type": "console", "includes": "Alex", "label": "name appears in the output" },
+        { "type": "console", "includes": "150", "label": "score appears in the output" }
+      ],
+      "explanation": "${name} and ${score} are the correct expressions. The dollar sign and curly braces are both required — $name and $(score) won't work."
+    },
+    {
+      "title": "Trace the output",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Follow the code step by step. What does the console print?"],
+      "hint": "JavaScript reads left to right. What happens the moment it hits a string?",
+      "codeSnippet": "let a = 10;\nlet b = 20;\nconsole.log('Total: ' + a + b);",
+      "options": [
+        { "id": "a", "label": "Total: 30" },
+        { "id": "b", "label": "Total: 1020" },
+        { "id": "c", "label": "Total: a + b" },
+        { "id": "d", "label": "Total: 10 20" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "JavaScript reads left to right. 'Total: ' + 10 joins as 'Total: 10' (a string). Then 'Total: 10' + 20 joins again as 'Total: 1020'. Once a string enters the chain, every + after it joins instead of adds. Fix: 'Total: ' + (a + b).",
+      "checks": []
+    },
+    {
+      "title": "Measure the word",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Type the property that gives you how many characters are in a string."],
+      "hint": "Every string has a built-in property for this. You've seen it in the lesson.",
+      "hintBank": [
+        { "id": "h1", "label": "length" },
+        { "id": "h2", "label": "size" },
+        { "id": "h3", "label": "count" },
+        { "id": "h4", "label": "chars" }
+      ],
+      "codeWithBlanks": [
+        "let playerName = 'Jordan';",
+        "let nameLength = playerName.___BLANK___;",
+        "console.log('Characters:', nameLength);"
+      ],
+      "blankPlaceholders": ["property"],
+      "blankWidths": [8],
+      "checks": [
+        { "type": "variable", "name": "nameLength", "expected": 6, "label": "nameLength equals 6" }
+      ],
+      "explanation": "Every string has a built-in .length property. 'Jordan' has 6 characters, so playerName.length is 6. You can use this in Simon Says to check if a player typed a response that's long enough."
+    },
+    {
+      "title": "Build a welcome message",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Hit Run — see the blank message that prints.",
+        "Build message using + to join the pieces: 'Welcome, ' + playerName + '! Your score is ' + score + '.'",
+        "Hit Run. The console should print: Welcome, Sam! Your score is 0."
+      ],
+      "hint": "Join each piece with + between them. Don't forget the space after the comma and the period at the end.",
+      "starterCode": "let playerName = 'Sam';\nlet score = 0;\n\n// Build the welcome message\nlet message = '';\n\nconsole.log(message);\n",
+      "steps": [
+        {
+          "text": "Hit Run — see the blank message that prints.",
+          "completesOn": "run",
+          "focusRange": [1, 7],
+          "checks": [
+            { "type": "noError", "label": "code runs without errors" }
+          ]
+        },
+        {
+          "text": "Build message by joining the pieces with +. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 5,
+          "checks": [
+            { "type": "console", "includes": "Welcome, Sam", "label": "welcome message is printed" },
+            { "type": "console", "includes": "score is 0", "label": "score appears in message" }
+          ]
+        },
+        {
+          "text": "Your message is live. Change playerName to your own name and run it again!",
+          "completesOn": "auto",
+          "autoDelayMs": 1800
+        }
+      ],
+      "checks": [
+        { "type": "console", "includes": "Welcome", "label": "welcome message printed" },
+        { "type": "console", "includes": "Sam", "label": "player name appears in output" }
       ]
     },
     {
-      "title": "Template literals",
+      "title": "Fix the broken template literal",
       "type": "practice",
-      "duration": "6 min",
+      "format": "code-editor",
+      "duration": "4 min",
       "tasks": [
-        "Declare variables: name (your name), age (your age), city (your city).",
-        "Using template literals (backticks), build a sentence: 'Hi! I'm [name], I'm [age] years old, and I live in [city].'",
-        "Log it.",
-        "Now change your city and log it again. The sentence updates automatically.",
-        "Challenge: add a 4th variable for your favorite food and include it in the sentence."
+        "Hit Run and read the console. The output should surprise you.",
+        "Find what's wrong: ${name} and ${level} are printing literally instead of inserting the values.",
+        "Fix the quotes on line 3. Hit Run and confirm the correct output."
       ],
-      "hint": "Template literals use the backtick key, found in the top-left of your keyboard, same key as ~",
-      "starterCode": "let name = 'Alex';\nlet age = 13;\nlet city = 'Atlanta';\n\n// Build your sentence with a template literal\nlet intro = ``;\n\nconsole.log(intro);\n",
+      "hint": "Template literals need backticks, not single quotes. Check what kind of quotes surround the message on line 3.",
+      "starterCode": "let name = 'Alex';\nlet level = 5;\nlet message = 'My name is ${name} and I am on level ${level}.';\nconsole.log(message);\n",
+      "steps": [
+        {
+          "text": "Hit Run and read the console. Notice ${name} and ${level} are printing literally.",
+          "completesOn": "run",
+          "focusRange": [1, 4],
+          "checks": [
+            { "type": "noError", "label": "code runs without errors" }
+          ]
+        },
+        {
+          "text": "Fix line 3: change the single quotes to backticks so the template literal works. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 3,
+          "checks": [
+            { "type": "console", "includes": "My name is Alex", "label": "name is inserted correctly" },
+            { "type": "console", "includes": "level 5", "label": "level is inserted correctly" }
+          ]
+        },
+        {
+          "text": "The backtick is the only quote that activates ${...}. Single and double quotes treat it as plain text.",
+          "completesOn": "auto",
+          "autoDelayMs": 2000
+        }
+      ],
       "checks": [
-        { "type": "variable", "name": "intro", "expected": null, "label": "a variable called 'intro' exists" },
-        { "type": "console", "includes": "", "label": "something is logged to the console" }
+        { "type": "console", "includes": "My name is Alex and I am on level 5.", "label": "correct message is printed" }
       ]
     },
     {
-      "title": "String + number trap",
-      "type": "predict",
+      "title": "Build the Simon Says intro",
+      "type": "practice",
+      "format": "code-editor",
       "duration": "5 min",
       "tasks": [
-        "Before running: predict the output of each console.log below.",
-        "Write your predictions down.",
-        "Run the code and see which ones surprised you.",
-        "Explain in your own words why '5' + 5 doesn't give you 10."
+        "Fill in the template literal to build: 'Ready, Jordan? Level 1 starts now. You have 3 lives.'",
+        "Use ${playerName}, ${level}, and ${lives} inside the backticks.",
+        "Hit Run to confirm. Then change playerName to your own name."
       ],
-      "hint": "The + sign has two jobs: add numbers AND join strings. Which one it uses depends on the types involved.",
-      "starterCode": "console.log(5 + 5);\nconsole.log('5' + 5);\nconsole.log('5' + '5');\nconsole.log('Score: ' + 100);\nconsole.log(10 + 20 + ' points');\nconsole.log('Points: ' + 10 + 20);\n"
-    },
-    {
-      "title": "Username generator",
-      "type": "practice",
-      "duration": "7 min",
-      "tasks": [
-        "Declare firstName, lastName, and a lucky number.",
-        "Build a username by combining the first 3 characters aren't available yet. Just use the full firstName + lastName + luckyNumber.",
-        "Log: 'Your username is: ' + username",
-        "Log the length of the username.",
-        "Challenge: using a template literal, build a welcome message: 'Welcome, [username]! Your username is [length] characters long.'"
+      "hint": "Start inside the backticks: `Ready, ${playerName}? Level ${level} starts now. You have ${lives} lives.`",
+      "starterCode": "let playerName = 'Jordan';\nlet level = 1;\nlet lives = 3;\n\n// Build the Simon Says intro with a template literal\nlet intro = ``;\n\nconsole.log(intro);\n",
+      "steps": [
+        {
+          "text": "Fill in the template literal between the backticks. Use ${playerName}, ${level}, and ${lives}. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 6,
+          "checks": [
+            { "type": "console", "includes": "Jordan", "label": "player name appears in intro" },
+            { "type": "console", "includes": "1", "label": "level appears in intro" },
+            { "type": "console", "includes": "3", "label": "lives appears in intro" }
+          ]
+        },
+        {
+          "text": "Now change playerName to your own name on line 1. Hit Run and see the intro update automatically.",
+          "completesOn": "run",
+          "focusLine": 1,
+          "checks": [
+            { "type": "variableNotEquals", "name": "playerName", "value": "Jordan", "label": "playerName was changed" },
+            { "type": "consoleNonEmpty", "label": "intro is still printed" }
+          ]
+        },
+        {
+          "text": "That's the power of template literals — one change to the variable, the whole message updates.",
+          "completesOn": "auto",
+          "autoDelayMs": 2000
+        }
       ],
-      "hint": "Joining strings and numbers with + works fine: 'Jordan' + 7 gives 'Jordan7'",
-      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet luckyNumber = 7;\n\n// Build username\nlet username = '';\n\nconsole.log('Your username is:', username);\nconsole.log('Length:', username.length);\n\n// Challenge: welcome message with template literal\n",
       "checks": [
-        { "type": "variable", "name": "username", "expected": null, "label": "a variable called 'username' exists" },
-        { "type": "console", "includes": "username", "label": "logged the username message" }
+        { "type": "variable", "name": "intro", "expected": null, "label": "intro variable exists" },
+        { "type": "consoleNonEmpty", "label": "intro is printed to the console" }
       ]
     }
   ],

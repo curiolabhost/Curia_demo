@@ -4,9 +4,10 @@
   "title": "Comparisons",
   "content": [
     {
-      "heading": "Comparisons — asking yes or no questions",
+      "heading": "Comparisons: Using yes or no questions to make decisions",
       "blocks": [
-        { "kind": "p", "text": "Every decision a program makes comes down to a question with a yes or no answer. Is the score high enough? Is the player alive? Is this the right answer? Comparison operators ask those questions. The answer is always a boolean: true or false." },
+        { "kind": "p", "text": "In the world of coding, computers aren't actually that smart—they are just really good at following rules! Every time a character jumps in a game or a door opens in a story, the computer is acting like a Robot Judge asking a simple question." },
+        {"kind": "p", "text": "The Robot Judge doesn't give long, rambling answers. It only knows two words: True (Yes!) or False (No!). We call these **Boolean** answers, but you can just think of them as a light switch that is either ON or OFF." },
         { "kind": "table", "headers": ["Operator", "Meaning", "Example", "Result"], "rows": [
           ["===", "exactly equal (value AND type)", "5 === 5", "true"],
           ["!==", "NOT equal", "5 !== 3", "true"],

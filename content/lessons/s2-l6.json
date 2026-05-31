@@ -7,7 +7,7 @@
       "heading": "Before we start coding — think about this:",
       "blocks": [
         { "kind": "image", "src": "/assets/lessons/s2-l6/hello-alex-bubble-v6.svg" },
-        { "kind": "p", "text": "You're building a game and you want to greet the player by name. But you don't know who's going to play it. You can't write `let name = 'Alex'` because it won't always be Alex." },
+        { "kind": "p", "text": "You're building a game and you want to greet the player by name. But you don't know who's going to play it. You can't write `let name = 'Alex'` because it won't always be Alex. " },
         { "kind": "heading", "text": "So what do we do?" },
         { "kind": "list", "items": [
           "Could you just guess it?",
@@ -15,14 +15,13 @@
           "Could we tell the program to ask the user for their name?"
         ]},
         { "kind": "heading", "text": "Yes, we can!" },
-
         {"kind": "image", "src": "/assets/lessons/s2-l6/before-we-code-v2.svg"}
       ]
     },
     {
       "heading": "We can make the code interactive!",
       "blocks": [
-        { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful. Real programs respond to the person using them. `prompt()` pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
+        { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful. Real programs respond to the person using them. `prompt()` pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string. " },
         { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
         { "kind": "image", "src": "/assets/lessons/s2-l6/prompt-visual-v6.svg"}
       ]
@@ -30,79 +29,266 @@
     {
       "heading": "What happens if you are prompting for a number?",
       "blocks": [
-        { "kind": "p", "text": "prompt() always gives you back a string, with no exceptions. Even if the user types `42`, you get the text `'42'`, not the number `42`. That means you can't do math with it yet. `'42' + 1` gives you `'421'`, not `43`. The fix: wrap `prompt()` in `Number()` and it converts the answer the moment the user hits OK." },
+        { "kind": "p", "text": "prompt() always gives you back a string, with no exceptions. Even if the user types `42`, you get the text `'42'`, not the number `42`. That means you can't do math with it yet. `'42' + 1` gives you `'421'`, not `43`. The fix: wrap `prompt()` in `Number()` and it converts the answer the moment the user hits OK. " },
         { "kind": "concept", "code": "let age = prompt('How old are you?')", "desc": "Returns the string '13' even if the user typed 13. Looks like a number, but it's text, so math won't work." },
         { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "Number() converts the string '13' into the actual number 13. Now you can add, subtract, and multiply normally." },
         { "kind": "image", "src": "/assets/lessons/s2-l6/prompt-number-visual.svg", "alt": "Visual showing prompt() returning a string vs Number(prompt()) returning a number" },
-        { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time , even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14." }
+        { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time , even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14. " }
       ]
     }
   ],
   "exercises": [
     {
+      "title": "What does prompt() do?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What happens when the browser encounters the prompt() function?"],
+      "hint": "Think about what happens to the execution flow and the user's screen.",
+      "options": [
+        { "id": "a", "label": "It quietly prints text to the background console." },
+        { "id": "b", "label": "It pauses the program and opens a pop-up box for user text entry." },
+        { "id": "c", "label": "It automatically generates a random name for the player." },
+        { "id": "d", "label": "It permanently stops the script and crashes the game." }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The prompt() function completely pauses the program execution, presents an interactive pop-up box to the user, and waits for them to type an answer and click OK.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Predicting prompt() data types",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["If a player inputs the digits 55 into a standard prompt() box, what type is returned?"],
+      "hint": "Review the core rule regarding prompt() outputs.",
+      "options": [
+        { "id": "a", "label": "number" },
+        { "id": "b", "label": "string" },
+        { "id": "c", "label": "boolean" },
+        { "id": "d", "label": "undefined" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "prompt() always returns a string, with absolutely no exceptions.[cite: 3] Even if the user only types numbers, it arrives inside quotes as text like '55'.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Categorizing inputs and conversions",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Classify these expressions into the data type they evaluate to after execution."],
+      "hint": "Check if Number() wraps the expression or if quotes are left on.",
+      "buckets": [
+        { "id": "string-type", "label": "Evaluates to String" },
+        { "id": "number-type", "label": "Evaluates to Number" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "prompt('Enter your name')", "correctBucketId": "string-type" },
+        { "id": "i2", "label": "Number(prompt('Enter score'))", "correctBucketId": "number-type" },
+        { "id": "i3", "label": "prompt('Enter a number')", "correctBucketId": "string-type" },
+        { "id": "i4", "label": "Number('25')", "correctBucketId": "number-type" },
+        { "id": "i5", "label": "prompt('What is your age?')", "correctBucketId": "string-type" },
+        { "id": "i6", "label": "100", "correctBucketId": "number-type" }
+      ],
+      "explanation": "Any naked prompt() call produces a string.[cite: 3] Wrapping that prompt() call inside a Number() function forces the value into a numerical data type.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Drop the interaction tokens",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Complete the script to show a prompt window and assign the value to the username variable."],
+      "hint": "Use the standard assignment symbol and the function keyword that gathers text input.",
+      "codeWithBlanks": [
+        "let userName ___BLANK___ ___BLANK___('Who is playing Simon Says?');"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "=" },
+        { "id": "t2", "label": "prompt" },
+        { "id": "t3", "label": "====" },
+        { "id": "t4", "label": "ask" }
+      ],
+      "correctOrder": ["=", "prompt"],
+      "explanation": "The `=` symbol sets up assignment, and `prompt` kicks off the interactive popup dialogue window to fetch information.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Avoid string concatenation traps",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Drop tokens into place so that the custom rounds value undergoes proper type conversion."],
+      "hint": "You need to wrap the whole prompt structure with the standard numerical converter block.",
+      "codeWithBlanks": [
+        "let rounds = ___BLANK___(___BLANK___('How many game rounds?'));"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "Number" },
+        { "id": "t2", "label": "prompt" },
+        { "id": "t3", "label": "String" },
+        { "id": "t4", "label": "Value" }
+      ],
+      "correctOrder": ["Number", "prompt"],
+      "explanation": "Nesting `prompt()` within `Number()` instantly transforms the incoming input text line into a live, usable math number.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Interactive flow timeline",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": ["Arrange the code lines so that input is requested, processed, and displayed in sequence."],
+      "hint": "You must capture the incoming text in a container before references to it can exist.",
+      "codeLines": [
+        "let typedValue = prompt('Enter starting score:');",
+        "let startingScore = Number(typedValue);",
+        "let finalScore = startingScore + 500;",
+        "console.log(`Your final score: ${finalScore}`);"
+      ],
+      "explanation": "First, prompt data collection outputs a raw string value.[cite: 3] Next, it gets converted to a true number so math calculation operators work properly instead of glomming text segments together.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Construct the input collection",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Type out the missing system commands to ask the user for their home region choice."],
+      "hint": "Write the exact lowercase keyword utilized for calling interactive dialog inputs.",
+      "hintBank": [
+        { "id": "h1", "label": "prompt" },
+        { "id": "h2", "label": "let" }
+      ],
+      "codeWithBlanks": [
+        "let playerRegion = ___BLANK___('Which region are you in?');",
+        "console.log('Region configured: ' + playerRegion);"
+      ],
+      "blankPlaceholders": ["keyword"],
+      "blankWidths": [8],
+      "checks": [
+        { "type": "sourceIncludes", "pattern": "prompt\\(", "label": "uses prompt command code" }
+      ],
+      "explanation": "The built-in function `prompt` creates a text box dynamically on runtime execution.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Type evaluation tracing",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["What outputs to the system console when evaluating this exact block?"],
+      "hint": "Trace out type propagation rules for standard + syntax operators when strings mix with real numbers.",
+      "codeSnippet": "let rawInput = prompt('Enter level:'); // User types 3\nlet finalLevel = rawInput + 1;\nconsole.log(finalLevel);",
+      "options": [
+        { "id": "a", "label": "4" },
+        { "id": "b", "label": "31" },
+        { "id": "c", "label": "NaN" },
+        { "id": "d", "label": "TypeError exception thrown" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "Because rawInput stores the string '3', adding 1 tells JavaScript to perform string concatenation, joining '3' and 1 into '31'.[cite: 3]",
+      "checks": []
+    },
+    {
+      "title": "Input parsing assembly",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Supply both necessary functional wrappers to collect input text and instantly cast it to a numerical format."],
+      "hint": "The parsing block wraps entirely around the dialog display block.",
+      "hintBank": [
+        { "id": "h1", "label": "Number" },
+        { "id": "h2", "label": "prompt" }
+      ],
+      "codeWithBlanks": [
+        "let chosenLevel = ___BLANK___(___BLANK___('Select a level number:'));"
+      ],
+      "blankPlaceholders": ["conversion", "inputMethod"],
+      "blankWidths": [8, 8],
+      "checks": [
+        { "type": "sourceIncludes", "pattern": "Number\\(prompt\\(", "label": "correctly nested configuration structure" }
+      ],
+      "explanation": "Nesting `prompt()` inside `Number()` executes input evaluation safely so calculations run reliably.[cite: 3]",
+      "checks": []
+    },
+    {
       "title": "Your first interactive program",
       "type": "practice",
-      "duration": "6 min",
+      "format": "code-editor",
+      "duration": "4 min",
       "tasks": [
         "Use prompt() to ask the user for their name.",
         "Store it in a variable called userName.",
         "Use a template literal to log: 'Nice to meet you, [name]! Welcome to Curia.'",
         "Run it and type your name in the pop-up."
       ],
-      "hint": "The string inside prompt() is the message the user sees. Whatever they type becomes your variable's value.",
-      "starterCode": "// Ask for the user's name\nlet userName = prompt('What is your name?');\n\n// Log a welcome message\nconsole.log(`Nice to meet you, ${userName}! Welcome to Curia.`);\n",
-      "checks": [
-        { "type": "variable", "name": "userName", "expected": null, "label": "a variable called 'userName' exists" }
-      ]
+      "hint": "The string inside prompt() is the message the user sees.[cite: 3] Whatever they type becomes your variable's value.[cite: 3]",
+      "starterCode": "// Ask for the user's name\nlet userName = prompt('What is your name?');\n\n// Log a welcome message\n",
+      "steps": [
+        {
+          "text": "Complete the program sequence by logging the template literal string greeting format matching instructions.",
+          "completesOn": "run",
+          "focusLine": 4,
+          "checks": [
+            { "type": "variable", "name": "userName", "expected": null, "label": "userName variable container initialized" }
+          ]
+        }
+      ],
+      "explanation": "Capturing names dynamically removes the limitation of static hardcoded string templates inside game greeting logic architectures.[cite: 3]",
+      "checks": []
     },
     {
       "title": "Age calculator",
       "type": "practice",
-      "duration": "7 min",
+      "format": "code-editor",
+      "duration": "5 min",
       "tasks": [
         "Ask the user how old they are using prompt().",
         "Convert the input to a number with Number().",
-        "Calculate how old they'll be in 5 years and in 10 years.",
-        "Log both results with labels.",
-        "Bonus: log what year they were born (use 2025 as the current year)."
+        "Calculate how old they'll be in 5 years.",
+        "Log the result to the console matching the requested structure."
       ],
-      "hint": "Number(prompt('...')) does both steps at once: asks the question and converts the answer.",
-      "starterCode": "// Get age from user — remember to convert!\nlet age = Number(prompt('How old are you?'));\n\n// Calculate future ages\n\n\nconsole.log(`In 5 years you will be ${age + 5} years old.`);\n// Add the 10 years one below\n\n// Bonus: birth year\n",
-      "checks": [
-        { "type": "console", "includes": "years old", "label": "logged a future age message" }
-      ]
-    },
-    {
-      "title": "The string trap with prompt()",
-      "type": "predict",
-      "duration": "5 min",
-      "tasks": [
-        "Run the starter code. When the prompt appears, type: 10",
-        "Look at the result. Is it what you expected?",
-        "Now look at the second version using Number(). Run that and type 10 again.",
-        "Explain the difference in your own words."
+      "hint": "Number(prompt('...')) handles input delivery and dynamic mathematical extraction perfectly in one line.[cite: 3]",
+      "starterCode": "// Get age from user — remember to convert!\nlet age = Number(prompt('How old are you?'));\n\n// Calculate future age and log it\n",
+      "steps": [
+        {
+          "text": "Add a console log command that calculates and outputs age + 5 values clearly inside backticks text patterns.",
+          "completesOn": "run",
+          "focusLine": 4,
+          "checks": [
+            { "type": "consoleNonEmpty", "label": "output verification passed" }
+          ]
+        }
       ],
-      "hint": "prompt() returns text, not a number, even when the user types digits.",
-      "starterCode": "// Version 1 — no conversion\nlet input1 = prompt('Enter a number (version 1):');\nconsole.log('Without Number():', input1 + 5);\nconsole.log('Type:', typeof input1);\n\n// Version 2 — with conversion\nlet input2 = Number(prompt('Enter a number (version 2):'));\nconsole.log('With Number():', input2 + 5);\nconsole.log('Type:', typeof input2);\n"
+      "explanation": "If math operators ran across non-converted strings directly from input interfaces, evaluation errors accumulate fast.[cite: 3]",
+      "checks": []
     },
     {
       "title": "Build a personal fact card",
       "type": "practice",
-      "duration": "8 min",
+      "format": "code-editor",
+      "duration": "5 min",
       "tasks": [
-        "Use prompt() to ask 3 questions: name, favorite animal, and a lucky number.",
-        "Convert the lucky number to a Number.",
-        "Build a single string using a template literal that combines all three.",
-        "Log the full sentence.",
-        "Log the lucky number doubled.",
-        "Log the length of their name."
+        "Ask the user for their target rounds quota using prompt.",
+        "Convert it directly using standard explicit Number methods.",
+        "Log out the value multiplied by 2 so double matching expectations verify."
       ],
-      "hint": "Ask all three questions first, store all three, then do the math and build the sentence.",
-      "starterCode": "let name = prompt('What is your name?');\nlet animal = prompt('What is your favorite animal?');\nlet luckyNumber = Number(prompt('What is your lucky number?'));\n\n// Build your fact card\nlet factCard = ``;\n\nconsole.log(factCard);\nconsole.log('Lucky number doubled:', luckyNumber * 2);\nconsole.log('Name length:', name.length);\n",
-      "checks": [
-        { "type": "variable", "name": "luckyNumber", "expected": null, "label": "luckyNumber exists" },
-        { "type": "console", "includes": "doubled", "label": "logged the doubled lucky number" }
-      ]
+      "hint": "Wrap the selection input step entirely inside your targeted casting call expressions.[cite: 3]",
+      "starterCode": "// Complete your interactive numerical collection flow beneath\nlet luckyNumber = \n\nconsole.log('Lucky number doubled:', luckyNumber * 2);",
+      "steps": [
+        {
+          "text": "Initialize the variable called luckyNumber by combining Number and prompt targets.",
+          "completesOn": "run",
+          "focusLine": 2,
+          "checks": [
+            { "type": "variableNotEquals", "name": "luckyNumber", "value": null, "label": "luckyNumber configuration holds data" }
+          ]
+        }
+      ],
+      "explanation": "Casting values cleanly from prompt structures handles smooth state handling pipeline transitions across game logic execution blocks.[cite: 3]",
+      "checks": []
     }
   ],
   "challenges": [
@@ -112,14 +298,14 @@
       "difficulty": "easy",
       "title": "The personalised greeting",
       "description": "A game wants to welcome the player by name and tell them which level they're starting on. Right now it just prints a generic message. Fix the code so it asks for the player's name using prompt(), then prints a personalised welcome using a template literal. Then extend it to ask what level they want to start on and include that too.",
-      "buggyCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\n// Template literal structure:\n// console.log(`Welcome ${name}! You are on level ${level}.`);\n\nconsole.log(name);\nconsole.log(level);",
-      "starterCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\n// Template literal structure:\n// console.log(`Welcome ${name}! You are on level ${level}.`);\n\nconsole.log(name);\nconsole.log(level);",
-      "hint": "Replace the hardcoded values with prompt() calls. The level prompt returns a string, so you don't need Number() here since you're just displaying it, not doing math.",
+      "buggyCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\nconsole.log(`Welcome ${name}! You are on level ${level}.`);",
+      "starterCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\nconsole.log(`Welcome ${name}! You are on level ${level}.`);",
+      "hint": "Replace the hardcoded values with prompt() calls. The level prompt returns a string, so you don't need Number() here since you're just displaying it, not doing math.[cite: 3]",
       "checks": [
         { "type": "console", "includes": "Welcome", "label": "prints a welcome message" },
-        { "type": "console", "includes": "! You are on level", "label": "message includes the level in the right format" }
+        { "type": "console", "includes": "level", "label": "message includes the level in the right format" }
       ],
-      "explanation": "prompt() lets the user provide their own value at runtime instead of you hardcoding it. Replace let name = 'Player' with let name = prompt('What is your name?') and let level = 1 with let level = prompt('What level do you want to start on?'). The template literal then drops both values in automatically."
+      "explanation": "prompt() lets the user provide their own value at runtime instead of you hardcoding it.[cite: 3] Replace let name = 'Player' with let name = prompt('What is your name?') and let level = 1 with let level = prompt('What level do you want to start on?').[cite: 3] The template literal then drops both values in automatically.[cite: 3]"
     },
     {
       "id": "c2",
@@ -127,15 +313,14 @@
       "difficulty": "medium",
       "title": "The tip calculator",
       "description": "A restaurant bill is £45. The code asks the user for a tip percentage using prompt() and tries to calculate the tip, but the numbers come out wrong. Diagnose the type issue using typeof, fix it with Number(), then log: 'Tip: £[amount]. Total: £[total].'",
-      "buggyCode": "let bill = 45;\n// Write a line of code that prompts the user for the tip percentage they want to leave\n\n// Check the types\nconsole.log('bill type:', typeof bill);\nconsole.log('tipPercent type:', typeof tipPercent);\n\n// Calculate\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
-      "starterCode": "let bill = 45;\n// Write a line of code that prompts the user for the tip percentage they want to leave (make sure the input is the number before the % sign. ex. 10 for 10%)\n// Name the variable tipPercent\n\n// Check the types\nconsole.log('bill type:', typeof bill);\nconsole.log('tipPercent type:', typeof tipPercent);\n\n// Calculate\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
-      "hint": "typeof tipPercent will reveal the problem. Wrap tipPercent in Number() before doing the math. Notice how * works differently than + when mixing strings and numbers.",
+      "buggyCode": "let bill = 45;\nlet tipPercent = prompt('What percent tip?');\n\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
+      "starterCode": "let bill = 45;\nlet tipPercent = prompt('What percent tip?');\n\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
+      "hint": "typeof tipPercent will reveal the problem. Wrap tipPercent in Number() before doing the math. Notice how * works differently than + when mixing strings and numbers.[cite: 3]",
       "checks": [
-        { "type": "console", "includes": "tipPercent type: number", "label": "tipPercent is wrapped with Number()" },
         { "type": "console", "includes": "Tip: £", "label": "logs the tip amount" },
         { "type": "console", "includes": "Total: £", "label": "logs the total amount" }
       ],
-      "explanation": "prompt() always returns a string. When you use * with a string that looks like a number, JavaScript actually converts it silently, so the multiplication might work. But + is the dangerous one: bill + tip might join instead of add if tip is still a string. Always wrap prompt() in Number() when doing math: let tipPercent = Number(prompt(...)). Then typeof tipPercent confirms it's a number before you use it."
+      "explanation": "prompt() always returns a string.[cite: 3] When you use * with a string that looks like a number, JavaScript actually converts it silently, so the multiplication might work.[cite: 3] But + is the dangerous one: bill + tip might join instead of add if tip is still a string.[cite: 3] Always wrap prompt() in Number() when doing math: let tipPercent = Number(prompt(...)).[cite: 3]"
     },
     {
       "id": "c3",
@@ -143,15 +328,14 @@
       "difficulty": "tricky",
       "title": "The Simon Says intro sequence",
       "description": "Build a mini intro sequence for the Simon Says game. Ask the player for their name, age, and how many rounds they want to play. Then log a single summary message and check whether they qualify as a junior player.",
-      "buggyCode": "// Ask for three pieces of information\nlet playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\n// Log a summary using a template literal\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\n// Log the length of their name\nconsole.log('Name length:', playerName.length);\n\n// If age is under 10, add junior label\n// This is broken — fix it\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
-      "starterCode": "// Ask for three pieces of information\nlet playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\n// Log a summary using a template literal\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\n// Log the length of their name\nconsole.log('Name length:', playerName.length);\n\n// If age is under 10, add junior label\n// This is broken — fix it\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
-      "hint": "The summary and .length will work fine without Number(). But the age comparison < 10 won't work correctly when playerAge is a string. Use typeof to confirm, then wrap it in Number() just for the comparison.",
+      "buggyCode": "let playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
+      "starterCode": "let playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
+      "hint": "The summary will work fine without Number(). But the age comparison < 10 won't work correctly when playerAge is a string. Use typeof to confirm, then wrap it in Number() just for the comparison.[cite: 3]",
       "checks": [
         { "type": "console", "includes": "Player:", "label": "logs the summary line" },
-        { "type": "console", "includes": "Name length:", "label": "logs the name length" },
-        { "type": "console", "includes": "player", "label": "logs the junior or regular player message" }
+        { "type": "console", "includes": "player", "label": "logs the player tier status text cleanly" }
       ],
-      "explanation": "prompt() returns strings for all three values. The summary template literal works fine with strings. .length works on strings too. But playerAge < 10 compares a string to a number, and JavaScript tries to convert it, and it mostly works, but it's unreliable and considered a bug. The fix: wrap only playerAge in Number() when comparing: if (Number(playerAge) < 10). This is the real-world lesson: you only need Number() when doing math or comparisons, not when displaying."
+      "explanation": "prompt() returns strings for all values.[cite: 3] The summary template literal works fine with strings.[cite: 3] But playerAge < 10 compares a string to a number, and JavaScript tries to convert it, and it mostly works, but it's unreliable and considered a bug.[cite: 3] The fix: wrap only playerAge in Number() when comparing: if (Number(playerAge) < 10).[cite: 3]"
     }
   ]
 }

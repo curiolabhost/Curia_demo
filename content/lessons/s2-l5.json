@@ -6,18 +6,45 @@
     {
       "heading": "Data Types — what kind of thing is this?",
       "blocks": [
-        { "kind": "p", "text": "Every value in JavaScript has a type. The type determines what you can do with it. You can't do math with text, and you can't use string methods on a number. " },
-        { "kind": "image", "src": "/assets/lessons/s2-l5/js-types-table-v3.svg", "alt": "The different JavaScript Types Table" },
-        { "kind": "callout", "variant": "warn", "label": "Remember!", "text": "Knowing the types helps you avoid bugs that seem totally random but have a very simple cause." }
+        {
+          "kind": "p",
+          "text": "Every value in JavaScript has a type. The type determines what you can do with it. You can't do math with text, and you can't use string methods on a number. "
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l5/js-types-table-v3.svg",
+          "alt": "The different JavaScript Types Table"
+        },
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "Remember!",
+          "text": "Knowing the types helps you avoid bugs that seem totally random but have a very simple cause."
+        }
       ]
     },
     {
       "heading": "How to check types?",
       "blocks": [
-        { "kind": "p", "text": "You can check the type of a value using the `typeof` operator." },
-        { "kind": "image", "src": "/assets/lessons/s2-l5/typeof-visual.svg"},
-        { "kind": "concept", "code": "typeof variableName", "desc": "The typeof operator tells you what the type is for 'variableName'. It returns a string of the name of the type: 'number', 'string', or 'boolean'." },
-        { "kind": "callout", "variant": "danger", "label": "The most common beginner trap", "text": "If a number comes from user input or an HTML field, it arrives as a STRING. So '5' + 5 gives you '55'. Always check your types when math isn't working the way you expect." }
+        {
+          "kind": "p",
+          "text": "You can check the type of a value using the `typeof` operator."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l5/typeof-visual.svg"
+        },
+        {
+          "kind": "concept",
+          "code": "typeof variableName",
+          "desc": "The typeof operator tells you what the type is for 'variableName'. It returns a string of the name of the type: 'number', 'string', or 'boolean'."
+        },
+        {
+          "kind": "callout",
+          "variant": "danger",
+          "label": "The most common beginner trap",
+          "text": "If a number comes from a text input, it might arrive as a 'string'. '100' + 1 is '1001', not 101!"
+        }
       ]
     }
   ],
@@ -27,16 +54,30 @@
       "type": "practice",
       "format": "multiple-choice",
       "duration": "1 min",
-      "tasks": ["What is the data type of this value: '100'?"],
+      "tasks": [
+        "What is the data type of this value: '100'?"
+      ],
       "hint": "Look closely. Does this value have quotes around it?",
       "options": [
-        { "id": "a", "label": "number" },
-        { "id": "b", "label": "string" },
-        { "id": "c", "label": "boolean" },
-        { "id": "d", "label": "undefined" }
+        {
+          "id": "a",
+          "label": "number"
+        },
+        {
+          "id": "b",
+          "label": "string"
+        },
+        {
+          "id": "c",
+          "label": "boolean"
+        },
+        {
+          "id": "d",
+          "label": "undefined"
+        }
       ],
       "correctOptionId": "b",
-      "explanation": "'100' has quotes, which makes it a string — not a number. typeof '100' returns 'string'. This is the same trap that breaks game math when scores come from text fields.",
+      "explanation": "'100' has quotes, which makes it a string—not a number. In Simon Says, if a score comes from a text input, it often arrives as a string and needs conversion.",
       "checks": []
     },
     {
@@ -44,17 +85,31 @@
       "type": "practice",
       "format": "multiple-choice",
       "duration": "1 min",
-      "tasks": ["What does this line print?"],
-      "hint": "typeof always returns a string — the name of the type, in lowercase.",
+      "tasks": [
+        "What does this line print?"
+      ],
+      "hint": "typeof always returns a string—the name of the type, in lowercase.",
       "codeSnippet": "console.log(typeof true);",
       "options": [
-        { "id": "a", "label": "true" },
-        { "id": "b", "label": "boolean" },
-        { "id": "c", "label": "string" },
-        { "id": "d", "label": "1" }
+        {
+          "id": "a",
+          "label": "true"
+        },
+        {
+          "id": "b",
+          "label": "boolean"
+        },
+        {
+          "id": "c",
+          "label": "string"
+        },
+        {
+          "id": "d",
+          "label": "1"
+        }
       ],
       "correctOptionId": "b",
-      "explanation": "typeof always returns a string — the name of the type. The boolean value true has type 'boolean'. It won't return true or 1.",
+      "explanation": "The `typeof` operator always returns a string naming the type. Since `true` is a boolean, it returns 'boolean'. This helps us verify our game logic variables are valid booleans.",
       "checks": []
     },
     {
@@ -62,34 +117,68 @@
       "type": "practice",
       "format": "sort-buckets",
       "duration": "3 min",
-      "tasks": ["Drag each value into the correct type bucket."],
-      "hint": "Quotes always make a string. true and false without quotes are booleans. A declared but unassigned variable is undefined.",
+      "tasks": [
+        "Drag each value into the correct type bucket."
+      ],
+      "hint": "Quotes always make a string. true and false without quotes are booleans.",
       "buckets": [
-        { "id": "string", "label": "String" },
-        { "id": "number", "label": "Number" },
-        { "id": "boolean", "label": "Boolean" },
-        { "id": "undefined", "label": "Undefined" }
+        {
+          "id": "string",
+          "label": "String"
+        },
+        {
+          "id": "number",
+          "label": "Number"
+        },
+        {
+          "id": "boolean",
+          "label": "Boolean"
+        }
       ],
       "bucketItems": [
-        { "id": "i1", "label": "42", "correctBucketId": "number" },
-        { "id": "i2", "label": "'hello'", "correctBucketId": "string" },
-        { "id": "i3", "label": "true", "correctBucketId": "boolean" },
-        { "id": "i4", "label": "'false'", "correctBucketId": "string" },
-        { "id": "i5", "label": "3.14", "correctBucketId": "number" },
-        { "id": "i6", "label": "false", "correctBucketId": "boolean" },
-        { "id": "i7", "label": "undefined", "correctBucketId": "undefined" },
-        { "id": "i8", "label": "'42'", "correctBucketId": "string" }
+        {
+          "id": "i1",
+          "label": "42",
+          "correctBucketId": "number"
+        },
+        {
+          "id": "i2",
+          "label": "'hello'",
+          "correctBucketId": "string"
+        },
+        {
+          "id": "i3",
+          "label": "true",
+          "correctBucketId": "boolean"
+        },
+        {
+          "id": "i4",
+          "label": "'false'",
+          "correctBucketId": "string"
+        },
+        {
+          "id": "i5",
+          "label": "3.14",
+          "correctBucketId": "number"
+        },
+        {
+          "id": "i6",
+          "label": "'42'",
+          "correctBucketId": "string"
+        }
       ],
-      "checks": [],
-      "explanation": "'false' in quotes is a string — it just looks like a boolean. '42' in quotes is a string — it just looks like a number. The quotes are always the deciding factor."
+      "explanation": "'false' in quotes is a string, not a boolean. This is a common trap when receiving data from users in game menus.",
+      "checks": []
     },
     {
       "title": "Drop the typeof keyword",
       "type": "practice",
       "format": "fill-blank",
       "duration": "2 min",
-      "tasks": ["Drop the correct keyword to check the type of each variable."],
-      "hint": "The operator that checks types is two words joined together. Check the spelling carefully.",
+      "tasks": [
+        "Drop the correct keyword to check the type of each variable."
+      ],
+      "hint": "The operator that checks types is one word, all lowercase.",
       "codeWithBlanks": [
         "let score = 250;",
         "let playerName = 'Jordan';",
@@ -97,13 +186,28 @@
         "console.log(___BLANK___ playerName);"
       ],
       "tokenBank": [
-        { "id": "t1", "label": "typeof" },
-        { "id": "t2", "label": "type" },
-        { "id": "t3", "label": "typeOf" },
-        { "id": "t4", "label": "getType" }
+        {
+          "id": "t1",
+          "label": "typeof"
+        },
+        {
+          "id": "t2",
+          "label": "type"
+        },
+        {
+          "id": "t3",
+          "label": "typeOf"
+        },
+        {
+          "id": "t4",
+          "label": "getType"
+        }
       ],
-      "correctOrder": ["typeof", "typeof"],
-      "explanation": "The operator is typeof — one word, all lowercase. 'type', 'typeOf', and 'getType' don't exist in JavaScript and will throw an error.",
+      "correctOrder": [
+        "typeof",
+        "typeof"
+      ],
+      "explanation": "The operator is `typeof`. Using 'type' or 'getType' would cause a ReferenceError in your game code.",
       "checks": []
     },
     {
@@ -111,23 +215,43 @@
       "type": "practice",
       "format": "fill-blank",
       "duration": "2 min",
-      "tasks": ["Drop the correct value for each variable so it has the right type: score = number, playerName = string, isGameOver = boolean."],
-      "hint": "Numbers have no quotes. Strings have quotes. Booleans are just true or false, no quotes.",
+      "tasks": [
+        "Drop the correct value for each variable so it has the right type: score (number), playerName (string), isGameOver (boolean)."
+      ],
+      "hint": "Numbers have no quotes. Strings have quotes. Booleans are true or false with no quotes.",
       "codeWithBlanks": [
         "let score = ___BLANK___;",
         "let playerName = ___BLANK___;",
         "let isGameOver = ___BLANK___;"
       ],
       "tokenBank": [
-        { "id": "t1", "label": "100" },
-        { "id": "t2", "label": "'Alex'" },
-        { "id": "t3", "label": "false" },
-        { "id": "t4", "label": "'100'" },
-        { "id": "t5", "label": "'false'" },
-        { "id": "t6", "label": "Alex" }
+        {
+          "id": "t1",
+          "label": "100"
+        },
+        {
+          "id": "t2",
+          "label": "'Alex'"
+        },
+        {
+          "id": "t3",
+          "label": "false"
+        },
+        {
+          "id": "t4",
+          "label": "'100'"
+        },
+        {
+          "id": "t5",
+          "label": "'false'"
+        }
       ],
-      "correctOrder": ["100", "'Alex'", "false"],
-      "explanation": "'100' looks like a number but is a string. 'false' looks like a boolean but is a string. Alex without quotes would be an undefined variable reference. The correct picks are 100 (number), 'Alex' (string), and false (boolean).",
+      "correctOrder": [
+        "100",
+        "'Alex'",
+        "false"
+      ],
+      "explanation": "If `isGameOver` was `'false'` (a string), the game logic might treat it as 'truthy' and end the game early. Always use the literal boolean values.",
       "checks": []
     },
     {
@@ -135,99 +259,138 @@
       "type": "practice",
       "format": "drag-reorder",
       "duration": "3 min",
-      "tasks": ["Put these lines in the correct order so each variable is declared before its typeof is logged."],
-      "hint": "You must declare a variable before you can use typeof on it.",
+      "tasks": [
+        "Put these lines in order so variables are declared before their types are logged."
+      ],
+      "hint": "A variable must exist before you can check what it is.",
       "codeLines": [
         "let level = 1;",
-        "let playerName = 'Sam';",
         "let isGameOver = false;",
         "console.log(typeof level);",
-        "console.log(typeof playerName);",
         "console.log(typeof isGameOver);"
       ],
-      "checks": [
-        { "type": "console", "includes": "number", "label": "number is logged" },
-        { "type": "console", "includes": "string", "label": "string is logged" },
-        { "type": "console", "includes": "boolean", "label": "boolean is logged" }
-      ],
-      "explanation": "Each variable must be declared with let before typeof can be used on it. Declarations always come first, then the typeof logs."
+      "explanation": "In JavaScript, order matters. We declare our Simon Says state variables first, then we can use `typeof` to inspect them.",
+      "checks": []
     },
     {
       "title": "Type the typeof expressions",
       "type": "practice",
       "format": "fill-blank-typed",
       "duration": "2 min",
-      "tasks": ["Type the variable name inside each typeof call so it logs the type of each game variable."],
-      "hint": "typeof takes the variable name right after it — no parentheses needed. typeof score, typeof playerName.",
+      "tasks": [
+        "Type the variable name inside each typeof call."
+      ],
+      "hint": "The variable name goes directly after the typeof keyword.",
       "hintBank": [
-        { "id": "h1", "label": "score" },
-        { "id": "h2", "label": "playerName" },
-        { "id": "h3", "label": "isGameOver" },
-        { "id": "h4", "label": "typeof" }
+        {
+          "id": "h1",
+          "label": "score"
+        },
+        {
+          "id": "h2",
+          "label": "playerName"
+        }
       ],
       "codeWithBlanks": [
         "let score = 250;",
         "let playerName = 'Jordan';",
-        "let isGameOver = true;",
-        "",
-        "console.log(typeof ___BLANK___);",
         "console.log(typeof ___BLANK___);",
         "console.log(typeof ___BLANK___);"
       ],
-      "blankPlaceholders": ["number var", "string var", "boolean var"],
-      "blankWidths": [7, 11, 11],
-      "checks": [
-        { "type": "console", "includes": "number", "label": "number is logged" },
-        { "type": "console", "includes": "string", "label": "string is logged" },
-        { "type": "console", "includes": "boolean", "label": "boolean is logged" }
+      "blankPlaceholders": [
+        "variable",
+        "variable"
       ],
-      "explanation": "typeof score logs 'number', typeof playerName logs 'string', typeof isGameOver logs 'boolean'. These are the three types you'll use constantly in Simon Says."
+      "blankWidths": [
+        10,
+        10
+      ],
+      "checks": [
+        {
+          "type": "console",
+          "includes": "number",
+          "label": "number is logged"
+        },
+        {
+          "type": "console",
+          "includes": "string",
+          "label": "string is logged"
+        }
+      ],
+      "explanation": "By typing the variable names, you're telling the program which piece of Simon Says data you want to inspect.",
+      "checks": []
     },
     {
       "title": "Does 'true' equal true?",
       "type": "practice",
       "format": "multiple-choice",
       "duration": "2 min",
-      "tasks": ["What does this code print?"],
-      "hint": "=== checks both the value AND the type. Are these two things the same type?",
+      "tasks": [
+        "What does this code print?"
+      ],
+      "hint": "=== checks both the value AND the type.",
       "codeSnippet": "let isGameOver = 'true';\nconsole.log(isGameOver === true);",
       "options": [
-        { "id": "a", "label": "true — they look the same" },
-        { "id": "b", "label": "false — different types" },
-        { "id": "c", "label": "an error" },
-        { "id": "d", "label": "'true'" }
+        {
+          "id": "a",
+          "label": "true — they look the same"
+        },
+        {
+          "id": "b",
+          "label": "false — different types"
+        }
       ],
       "correctOptionId": "b",
-      "explanation": "=== checks both value and type. 'true' is a string and true is a boolean — different types, so === returns false. This is exactly why isGameOver = 'true' would silently break a game-over check. Remove the quotes to get the actual boolean.",
+      "explanation": "A string `'true'` is not the same as the boolean `true`. Using the wrong type is the most common reason Simon Says levels don't end when they should.",
       "checks": []
     },
     {
-      "title": "Fix the types",
+      "title": "Correct the assignments",
       "type": "practice",
       "format": "fill-blank-typed",
       "duration": "2 min",
-      "tasks": ["Both variables have the wrong type. Fix them by typing the correct values — isGameOver should be a boolean, score should be a number."],
-      "hint": "Remove the quotes to turn a string into its real type. false with no quotes is a boolean. 250 with no quotes is a number.",
+      "tasks": [
+        "Assign the correct literals so score is a number and isGameOver is a boolean."
+      ],
+      "hint": "Remove the quotes!",
       "hintBank": [
-        { "id": "h1", "label": "false" },
-        { "id": "h2", "label": "'false'" },
-        { "id": "h3", "label": "250" },
-        { "id": "h4", "label": "'250'" }
+        {
+          "id": "h1",
+          "label": "500"
+        },
+        {
+          "id": "h2",
+          "label": "true"
+        }
       ],
       "codeWithBlanks": [
-        "let isGameOver = 'false';",
-        "let score = '250';",
-        "",
-        "isGameOver = ___BLANK___;",
-        "score = ___BLANK___;"
+        "let score = ___BLANK___;",
+        "let isGameOver = ___BLANK___;"
       ],
-      "blankPlaceholders": ["boolean value", "number value"],
-      "blankWidths": [5, 5],
+      "blankPlaceholders": [
+        "number",
+        "boolean"
+      ],
+      "blankWidths": [
+        5,
+        5
+      ],
       "checks": [
-        { "type": "variable", "name": "isGameOver", "expected": false, "label": "isGameOver is boolean false" },
-        { "type": "variable", "name": "score", "expected": 250, "label": "score is number 250" }
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 500,
+          "label": "score is 500"
+        },
+        {
+          "type": "variable",
+          "name": "isGameOver",
+          "expected": true,
+          "label": "isGameOver is true"
+        }
       ],
-      "explanation": "Reassigning without quotes converts the variables from strings to their correct types. false (no quotes) is a boolean. 250 (no quotes) is a number. typeof would now return 'boolean' and 'number' instead of 'string'."
+      "explanation": "Writing literals without quotes ensures the computer treats them as the correct data type for game math and logic.",
+      "checks": []
     },
     {
       "title": "Find the type bug",
@@ -235,39 +398,43 @@
       "format": "code-editor",
       "duration": "4 min",
       "tasks": [
-        "Hit Run — see what typeof prints for each variable.",
-        "One variable has the wrong type. Find it using the typeof output.",
-        "Fix that variable so it has the correct type. Hit Run to confirm."
+        "Use the typeof output to find the variable with the wrong type.",
+        "Fix it so score is a number. Hit Run."
       ],
-      "hint": "score should be a number. If typeof says 'string', remove the quotes from its value on line 2.",
-      "starterCode": "let level = 3;\nlet score = '120';\nlet isGameOver = false;\nlet playerName = 'Alex';\n\nconsole.log('level:', typeof level);\nconsole.log('score:', typeof score);\nconsole.log('isGameOver:', typeof isGameOver);\nconsole.log('playerName:', typeof playerName);\n",
+      "hint": "Look for quotes on line 2.",
+      "starterCode": "let score = '120';\nconsole.log(typeof score);",
       "steps": [
         {
-          "text": "Hit Run — read the typeof output for each variable. Which one looks wrong?",
+          "text": "Run the code to see that score is currently a string.",
           "completesOn": "run",
-          "focusRange": [1, 9],
           "checks": [
-            { "type": "noError", "label": "code runs without errors" }
+            {
+              "type": "noError",
+              "label": "code runs"
+            }
           ]
         },
         {
-          "text": "score shows 'string' but it should be a number. Fix line 2: remove the quotes from 120. Hit Run.",
+          "text": "Remove the quotes from '120' on line 1 so it becomes a number.",
           "completesOn": "run",
-          "focusLine": 2,
+          "focusLine": 1,
           "checks": [
-            { "type": "variable", "name": "score", "expected": 120, "label": "score is now the number 120" },
-            { "type": "console", "includes": "number", "label": "typeof score now shows number" }
+            {
+              "type": "variable",
+              "name": "score",
+              "expected": 120,
+              "label": "score is number"
+            },
+            {
+              "type": "console",
+              "includes": "number",
+              "label": "logs number"
+            }
           ]
-        },
-        {
-          "text": "typeof now shows 'number' for score. Quotes were the only difference — and they change everything.",
-          "completesOn": "auto",
-          "autoDelayMs": 2000
         }
       ],
-      "checks": [
-        { "type": "variable", "name": "score", "expected": 120, "label": "score is the number 120" }
-      ]
+      "explanation": "Removing quotes is the simplest way to fix 'Type Errors' in your Simon Says score tracking.",
+      "checks": []
     },
     {
       "title": "Fix the broken addition",
@@ -275,39 +442,37 @@
       "format": "code-editor",
       "duration": "4 min",
       "tasks": [
-        "Hit Run and read the output. The total shows '5010' instead of 60.",
-        "The typeof output tells you why — playerInput is a string, not a number.",
-        "Fix it: wrap playerInput in Number() when building total. Hit Run to confirm total is 60."
+        "Convert the string input to a number so the total is 60."
       ],
-      "hint": "Number('50') converts the string '50' to the number 50. Use it when you know a value should be a number.",
-      "starterCode": "let playerInput = '50';\nlet bonus = 10;\n\nlet total = playerInput + bonus;\nconsole.log('Total:', total);\nconsole.log('typeof playerInput:', typeof playerInput);\n\n// Fix total here using Number()\n",
+      "hint": "Use Number(playerInput) to convert the type.",
+      "starterCode": "let playerInput = '50';\nlet bonus = 10;\nlet total = playerInput + bonus;\nconsole.log(total);",
       "steps": [
         {
-          "text": "Hit Run. See '5010' printed — playerInput is a string, so + joined instead of added.",
+          "text": "Run the code. Notice it logs '5010' because it's adding a string to a number.",
           "completesOn": "run",
-          "focusRange": [1, 6],
           "checks": [
-            { "type": "noError", "label": "code runs without errors" }
+            {
+              "type": "noError",
+              "label": "code runs"
+            }
           ]
         },
         {
-          "text": "Fix total: change line 4 to: let total = Number(playerInput) + bonus; Hit Run.",
+          "text": "Update line 3 to: let total = Number(playerInput) + bonus;",
           "completesOn": "run",
-          "focusLine": 4,
+          "focusLine": 3,
           "checks": [
-            { "type": "variable", "name": "total", "expected": 60, "label": "total is now 60" },
-            { "type": "console", "includes": "60", "label": "60 is printed" }
+            {
+              "type": "variable",
+              "name": "total",
+              "expected": 60,
+              "label": "total is 60"
+            }
           ]
-        },
-        {
-          "text": "Number() is your escape hatch whenever a value arrives as a string but needs to be treated as a number.",
-          "completesOn": "auto",
-          "autoDelayMs": 2000
         }
       ],
-      "checks": [
-        { "type": "variable", "name": "total", "expected": 60, "label": "total equals 60" }
-      ]
+      "explanation": "The `Number()` function is your 'escape hatch' when user input arrives as a string but needs to be added to a game score.",
+      "checks": []
     },
     {
       "title": "Build the type report",
@@ -315,94 +480,58 @@
       "format": "code-editor",
       "duration": "5 min",
       "tasks": [
-        "Use a template literal to log each variable's value and its type.",
-        "Format: 'playerName: Jordan (type: string)'",
-        "Do this for all four Simon Says variables. Hit Run when all four are logged."
+        "Log the variable and its type using a template literal."
       ],
-      "hint": "Combine template literals with typeof: `score: ${score} (type: ${typeof score})`",
-      "starterCode": "let playerName = 'Jordan';\nlet score = 0;\nlet level = 1;\nlet isGameOver = false;\n\n// Log each variable's value AND type using a template literal\n// Format: 'playerName: Jordan (type: string)'\n\n",
+      "hint": "Combine ${} with typeof.",
+      "starterCode": "let playerName = 'Jordan';\nlet score = 0;",
       "steps": [
         {
-          "text": "Log playerName with its type. Write: console.log(`playerName: ${playerName} (type: ${typeof playerName})`); Hit Run.",
+          "text": "Log: console.log(`playerName: ${playerName} (type: ${typeof playerName})`);",
           "completesOn": "run",
-          "focusLine": 8,
+          "focusLine": 3,
           "checks": [
-            { "type": "console", "includes": "playerName: Jordan (type: string)", "label": "playerName logged with type" }
+            {
+              "type": "console",
+              "includes": "type: string",
+              "label": "string logged"
+            }
           ]
         },
         {
-          "text": "Add the same for score and level. Hit Run.",
+          "text": "Now do the same for the score variable. Hit Run.",
           "completesOn": "run",
-          "focusRange": [8, 10],
+          "focusLine": 4,
           "checks": [
-            { "type": "console", "includes": "type: number", "label": "number type appears in output" }
+            {
+              "type": "console",
+              "includes": "type: number",
+              "label": "number logged"
+            }
           ]
-        },
-        {
-          "text": "Add isGameOver. Hit Run to confirm all four variables are logged.",
-          "completesOn": "run",
-          "focusRange": [10, 12],
-          "checks": [
-            { "type": "console", "includes": "type: boolean", "label": "boolean type appears in output" },
-            { "type": "console", "includes": "isGameOver", "label": "isGameOver is logged" }
-          ]
-        },
-        {
-          "text": "You can now inspect any variable's type at a glance — a key debugging skill for Simon Says and beyond.",
-          "completesOn": "auto",
-          "autoDelayMs": 2000
         }
       ],
-      "checks": [
-        { "type": "console", "includes": "string", "label": "string type appears in output" },
-        { "type": "console", "includes": "number", "label": "number type appears in output" },
-        { "type": "console", "includes": "boolean", "label": "boolean type appears in output" }
-      ]
+      "explanation": "This report style is a professional way to debug your Simon Says game state when things act weird.",
+      "checks": []
     }
   ],
   "challenges": [
     {
-      "id": "c1",
-      "level": 1,
-      "difficulty": "easy",
-      "title": "The scoreboard display",
-      "description": "A game needs to display a player's name and score. Right now it's just printing two separate values. Fix the code so it prints exactly: 'Jordan - 340 pts', first using + concatenation, then using a template literal.",
-      "buggyCode": "let playerName = 'Jordan';\nlet score = 340;\n\n// Version 1: using +\nlet display1 = playerName + score;\nconsole.log('concat:', display1);\n\n// Version 2: using a template literal\nlet display2 = `${playerName}${score}`;\nconsole.log('template:', display2);",
-      "starterCode": "let playerName = 'Jordan';\nlet score = 340;\n\n// Version 1: using +\nlet display1 = playerName + score;\nconsole.log('concat:', display1);\n\n// Version 2: using a template literal\nlet display2 = `${playerName}${score}`;\nconsole.log('template:', display2);",
-      "hint": "The output should be 'Jordan - 340 pts'. You need the dash, the spaces, and the word 'pts'. None of those are in the variables.",
-      "checks": [
-        { "type": "console", "includes": "concat: Jordan - 340 pts", "label": "concatenation prints 'Jordan - 340 pts'" },
-        { "type": "console", "includes": "template: Jordan - 340 pts", "label": "template literal prints 'Jordan - 340 pts'" }
+      "title": "Mystery Types",
+      "duration": "5 min",
+      "tasks": [
+        "Run the code to see what JavaScript thinks of these special cases.",
+        "Fix the code so isGameOver is a real boolean."
       ],
-      "explanation": "Variables only contain what you put in them. The dash, spaces, and 'pts' are not stored anywhere. You have to add them yourself. With +: playerName + ' - ' + score + ' pts'. With a template literal: `${playerName} - ${score} pts`."
-    },
-    {
-      "id": "c2",
-      "level": 2,
-      "difficulty": "medium",
-      "title": "The broken name badge machine",
-      "description": "A school event needs name badges. Each badge should say: 'Hi, my name is Jordan Lee and I am from Atlanta.' But the machine is printing 'Hi, my name is JordanLeeAtlanta', with no spaces or punctuation. Find what's wrong and fix it.",
-      "buggyCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\n\nlet badge = 'Hi, my name is ' + firstName + lastName + ' and I am from ' + city + '.';\nconsole.log(badge);",
-      "starterCode": "let firstName = 'Jordan';\nlet lastName = 'Lee';\nlet city = 'Atlanta';\n\nlet badge = 'Hi, my name is ' + firstName + lastName + ' and I am from ' + city + '.';\nconsole.log(badge);",
-      "hint": "When you join strings with +, JavaScript adds no spaces for you. Every space has to be written explicitly.",
-      "checks": [
-        { "type": "console", "includes": "Hi, my name is Jordan Lee and I am from Atlanta.", "label": "prints the correct badge text" }
-      ],
-      "explanation": "firstName + lastName joins them with nothing in between, giving 'JordanLee'. You need a space between them: firstName + ' ' + lastName. Always check every join point for missing spaces."
-    },
-    {
-      "id": "c3",
-      "level": 3,
-      "difficulty": "tricky",
-      "title": "The game state inspector",
-      "description": "A Simon Says game has four variables. The game never ends even when isGameOver should be true. When you log isGameOver it prints true, but the game keeps going. Use typeof to inspect all four variables and find the one that isn't the type you'd expect. Then fix it.",
-      "buggyCode": "let level = 3;\nlet score = 120;\nlet isGameOver = 'true';\nlet playerName = 'Alex';\n\n// The game checks this condition to stop\nif (isGameOver === true) {\n  console.log('Game over! Final score:', score);\n} else {\n  console.log('Still playing...');\n}\n\n// Use typeof to inspect all four variables\nconsole.log('level:', typeof level);\nconsole.log('score:', typeof score);\nconsole.log('isGameOver:', typeof isGameOver);\nconsole.log('playerName:', typeof playerName);",
-      "starterCode": "let level = 3;\nlet score = 120;\nlet isGameOver = 'true';\nlet playerName = 'Alex';\n\n// The game checks this condition to stop\nif (isGameOver === true) {\n  console.log('Game over! Final score:', score);\n} else {\n  console.log('Still playing...');\n}\n\n// Use typeof to inspect all four variables\nconsole.log('level:', typeof level);\nconsole.log('score:', typeof score);\nconsole.log('isGameOver:', typeof isGameOver);\nconsole.log('playerName:', typeof playerName);",
+      "starterCode": "let score = 120;\nlet isGameOver = 'true';\nlet playerName = 'Alex';\n\n// The game checks this condition to stop\nif (isGameOver === true) {\n  console.log('Game over! Final score:', score);\n} else {\n  console.log('Still playing...');\n}\n\n// Use typeof to inspect all four variables\nconsole.log('score:', typeof score);\nconsole.log('isGameOver:', typeof isGameOver);\nconsole.log('playerName:', typeof playerName);",
       "hint": "=== checks both the value AND the type. 'true' and true look the same when logged, but typeof will reveal the difference.",
       "checks": [
-        { "type": "console", "includes": "Game over! Final score: 120", "label": "prints the game over message" }
+        {
+          "type": "console",
+          "includes": "Game over! Final score: 120",
+          "label": "prints the game over message"
+        }
       ],
-      "explanation": "isGameOver is set to 'true' in quotes, making it a string, not a boolean. The condition isGameOver === true fails because 'true' (string) is not the same as true (boolean). typeof isGameOver returns 'string', which reveals the bug. Fix: remove the quotes so isGameOver = true."
+      "explanation": "isGameOver is set to 'true' in quotes, making it a string, not a boolean. The condition isGameOver === true fails because 'true' (string) is not the same as true (boolean)."
     }
   ]
 }

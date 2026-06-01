@@ -60,6 +60,7 @@ model StudentMembership {
   finalProjectProgress FinalProjectProgress[]
   codeEditorState      CodeEditorState[]
   liveResponses        LiveResponse[]
+  liveParticipants     LiveParticipant[]
 
   @@unique([userId, classroomId])
   @@unique([classroomId, studentKey])
@@ -225,7 +226,7 @@ model SlidesDeck {
 }
 
 model LiveSession {
-  id                     String    @id
+  id                     String    @id @default(cuid())
   classroomId            String
   instructorMembershipId String
   lessonId               String
@@ -233,23 +234,42 @@ model LiveSession {
   currentSlideIndex      Int?
   currentExerciseIndex   Int?
   pollOpen               Boolean   @default(false)
-  status                 String
+  phase                  String    @default("idle")
+  pollEndsAt             DateTime?
+  pollDurationSeconds    Int?
+  status                 String    @default("active")
   startedAt              DateTime  @default(now())
   endedAt                DateTime?
 
   classroom            Classroom       @relation(fields: [classroomId], references: [id], onDelete: Cascade)
   instructorMembership AdminMembership @relation(fields: [instructorMembershipId], references: [id], onDelete: Cascade)
 
-  responses LiveResponse[]
+  responses    LiveResponse[]
+  participants LiveParticipant[]
+}
+
+model LiveParticipant {
+  id            String   @id @default(cuid())
+  liveSessionId String
+  membershipId  String
+  joinedAt      DateTime @default(now())
+  lastSeenAt    DateTime @default(now())
+
+  liveSession LiveSession       @relation(fields: [liveSessionId], references: [id], onDelete: Cascade)
+  membership  StudentMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([liveSessionId, membershipId])
 }
 
 model LiveResponse {
-  id            String   @id
+  id            String   @id @default(cuid())
   liveSessionId String
   membershipId  String
   lessonId      String
   exerciseIndex Int
   isCorrect     Boolean
+  answer        Json?
+  score         Int      @default(0)
   submittedAt   DateTime @default(now())
 
   liveSession LiveSession       @relation(fields: [liveSessionId], references: [id], onDelete: Cascade)

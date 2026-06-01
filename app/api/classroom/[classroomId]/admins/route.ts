@@ -19,6 +19,11 @@ export async function GET(
         isOwner: true,
         joinedAt: true,
         userId: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        inviteStatus: true,
+        inviteSentAt: true,
         user: { select: { firstName: true, lastName: true, username: true } },
       },
     })
@@ -28,9 +33,12 @@ export async function GET(
       isOwner: m.isOwner,
       claimed: m.userId !== null,
       joinedAt: m.joinedAt ? m.joinedAt.toISOString() : null,
-      firstName: m.user?.firstName ?? null,
-      lastName: m.user?.lastName ?? null,
+      firstName: m.user?.firstName ?? m.firstName ?? null,
+      lastName: m.user?.lastName ?? m.lastName ?? null,
       username: m.user?.username ?? null,
+      email: m.email,
+      inviteStatus: m.inviteStatus,
+      inviteSentAt: m.inviteSentAt ? m.inviteSentAt.toISOString() : null,
     }))
     return NextResponse.json({ ok: true, admins })
   } catch {

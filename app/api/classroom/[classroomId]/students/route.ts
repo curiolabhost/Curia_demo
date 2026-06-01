@@ -13,6 +13,9 @@ type StudentEntry = {
   studentKey: string
   claimed: boolean
   joinedAt: string | null
+  email: string | null
+  inviteStatus: string
+  inviteSentAt: string | null
 }
 
 function jsonError(status: number, error: string): NextResponse {
@@ -46,6 +49,9 @@ export async function GET(
         lastName: true,
         studentKey: true,
         joinedAt: true,
+        email: true,
+        inviteStatus: true,
+        inviteSentAt: true,
         user: { select: { firstName: true, lastName: true, username: true } },
       },
     })
@@ -64,6 +70,9 @@ export async function GET(
         studentKey: m.studentKey,
         claimed,
         joinedAt: m.joinedAt ? m.joinedAt.toISOString() : null,
+        email: m.email,
+        inviteStatus: m.inviteStatus,
+        inviteSentAt: m.inviteSentAt ? m.inviteSentAt.toISOString() : null,
       }
     })
 

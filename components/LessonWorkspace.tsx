@@ -1,6 +1,7 @@
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import type { LayoutMode } from '@/lib/useLayoutMode'
+import type { LiveState } from '@/lib/useLiveSession'
 import { RightPanel } from './RightPanel'
 
 type LessonWorkspaceProps = {
@@ -28,6 +29,8 @@ type LessonWorkspaceProps = {
   answerKeyMode?: boolean
   classroomId?: string | null
   role?: string
+  live?: LiveState | null
+  liveRespond?: (exerciseIndex: number, isCorrect: boolean, answer?: unknown) => void
 }
 
 export function LessonWorkspace({
@@ -52,6 +55,8 @@ export function LessonWorkspace({
   answerKeyMode = false,
   classroomId = null,
   role = undefined,
+  live = null,
+  liveRespond,
 }: LessonWorkspaceProps) {
   return (
     <RightPanel
@@ -76,6 +81,8 @@ export function LessonWorkspace({
       answerKeyMode={answerKeyMode}
       classroomId={classroomId}
       role={role}
+      live={live}
+      liveRespond={liveRespond}
     />
   )
 }

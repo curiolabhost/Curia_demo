@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 import { generateStudentKey } from '@/lib/keys'
+import { generateInviteToken } from '@/lib/invite'
 
 export const runtime = 'nodejs'
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function jsonError(status: number, error: string): NextResponse {
   return NextResponse.json({ ok: false, error }, { status })
@@ -39,6 +42,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return jsonError(400, 'missing_fields')
   }
 
+  // Email is optional. When present it must be a plausible address; when absent
+  // the seat is created with a key for manual sharing (legacy behavior).
+  let email: string | null = null
+  if (body.email !== undefined && body.email !== null && body.email !== '') {
+    if (typeof body.email !== 'string' || !EMAIL_RE.test(body.email.trim())) {
+      return jsonError(400, 'invalid_email')
+    }
+    email = body.email.trim()
+  }
+
   try {
     const membership = await prisma.adminMembership.findFirst({
       where: { classroomId, userId: session.userId },
@@ -47,12 +60,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     if (!membership) return jsonError(403, 'forbidden')
 
     const studentKey = generateStudentKey()
+    // A token is minted up-front when an email is given so the seat is ready to
+    // preview & send. The email itself is NOT sent here — sending happens only
+    // after the instructor reviews the draft (see /api/classroom/invite/*).
+    const inviteToken = email ? generateInviteToken() : null
     const created = await prisma.studentMembership.create({
       data: {
         classroomId,
         studentKey,
         firstName,
         lastName,
+        email,
+        inviteToken,
       },
       select: { id: true, firstName: true, lastName: true, studentKey: true },
     })
@@ -64,6 +83,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         firstName: created.firstName ?? firstName,
         lastName: created.lastName ?? lastName,
         studentKey: created.studentKey,
+        email,
       },
       { status: 201 }
     )

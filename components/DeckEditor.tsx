@@ -19,6 +19,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import type { Lesson } from '@/lib/lessons'
 import type { Deck, SlideItem } from '@/lib/deckTypes'
+import { DEFAULT_LIVE_SECONDS, isLiveSupportedFormat } from '@/lib/deckTypes'
 import { LessonContent } from '@/components/LessonContent'
 import { ExercisePrompt } from '@/components/ExercisePrompt'
 import { panelRegistry } from '@/components/exercise-panels'
@@ -179,6 +180,9 @@ function SlideStripItem({
       >
         <span
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
             fontFamily: 'var(--mono)',
             fontSize: '10px',
             color: 'var(--text3)',
@@ -186,6 +190,17 @@ function SlideStripItem({
           }}
         >
           {typeLabel}
+          {item.type === 'exercise' && item.live?.enabled ? (
+            <span
+              style={{
+                color: 'var(--accent)',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+              }}
+            >
+              ⚡ LIVE
+            </span>
+          ) : null}
         </span>
         <span
           style={{
@@ -301,6 +316,42 @@ export function DeckEditor({
     if (enabledCount === 0) return
     onPresent(deck)
   }
+
+  const handleLiveToggle = (index: number) => {
+    const next = deck.map((s, i) => {
+      if (i !== index || s.type !== 'exercise') return s
+      const enabled = !s.live?.enabled
+      return {
+        ...s,
+        live: { enabled, seconds: s.live?.seconds ?? DEFAULT_LIVE_SECONDS },
+      }
+    })
+    onSave(next)
+    setSelectedIndex(index)
+  }
+
+  const handleLiveSeconds = (index: number, seconds: number) => {
+    const clamped = Math.max(5, Math.min(600, Math.round(seconds)))
+    const next = deck.map((s, i) => {
+      if (i !== index || s.type !== 'exercise') return s
+      return { ...s, live: { enabled: s.live?.enabled ?? true, seconds: clamped } }
+    })
+    onSave(next)
+  }
+
+  const selectedLiveExercise =
+    selectedIndex !== null &&
+    selectedIndex < deck.length &&
+    deck[selectedIndex].type === 'exercise'
+      ? (() => {
+          const it = deck[selectedIndex]
+          const ex = lesson.exercises[it.index]
+          const format = ex?.format ?? ''
+          return isLiveSupportedFormat(format)
+            ? { index: selectedIndex, item: it as Extract<SlideItem, { type: 'exercise' }> }
+            : null
+        })()
+      : null
 
   const selectedItem =
     selectedIndex !== null && selectedIndex < deck.length
@@ -518,12 +569,101 @@ export function DeckEditor({
             overflow: 'auto',
             background: '#f0f0f0',
             display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
             padding: '40px',
+            gap: '16px',
             boxSizing: 'border-box',
           }}
         >
+          {selectedLiveExercise ? (
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '900px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                background: selectedLiveExercise.item.live?.enabled
+                  ? 'var(--accent-dim)'
+                  : 'var(--surface)',
+                border: `1.5px solid ${
+                  selectedLiveExercise.item.live?.enabled ? 'var(--accent)' : 'var(--border2)'
+                }`,
+                borderRadius: '8px',
+                boxSizing: 'border-box',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => handleLiveToggle(selectedLiveExercise.index)}
+                aria-pressed={selectedLiveExercise.item.live?.enabled ?? false}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'var(--sans)',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  background: selectedLiveExercise.item.live?.enabled
+                    ? 'var(--accent)'
+                    : 'var(--border2)',
+                  color: selectedLiveExercise.item.live?.enabled
+                    ? 'var(--white)'
+                    : 'var(--text2)',
+                }}
+              >
+                ⚡ Live Pulse {selectedLiveExercise.item.live?.enabled ? 'on' : 'off'}
+              </button>
+              <span style={{ fontSize: '13px', color: 'var(--text2)', fontFamily: 'var(--sans)' }}>
+                {selectedLiveExercise.item.live?.enabled
+                  ? 'Students answer live against a timer when you present this slide.'
+                  : 'Turn on to run this exercise as a live Kahoot-style round.'}
+              </span>
+              {selectedLiveExercise.item.live?.enabled ? (
+                <label
+                  style={{
+                    marginLeft: 'auto',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '13px',
+                    color: 'var(--text2)',
+                    fontFamily: 'var(--sans)',
+                  }}
+                >
+                  Timer
+                  <input
+                    type="number"
+                    min={5}
+                    max={600}
+                    value={selectedLiveExercise.item.live?.seconds ?? DEFAULT_LIVE_SECONDS}
+                    onChange={(e) =>
+                      handleLiveSeconds(selectedLiveExercise.index, Number(e.target.value))
+                    }
+                    style={{
+                      width: '64px',
+                      padding: '4px 6px',
+                      borderRadius: '6px',
+                      border: '1px solid var(--border2)',
+                      background: 'var(--surface)',
+                      color: 'var(--text)',
+                      fontFamily: 'var(--mono)',
+                      fontSize: '13px',
+                    }}
+                  />
+                  sec
+                </label>
+              ) : null}
+            </div>
+          ) : null}
+
           {selectedItem ? (
             <div
               style={{

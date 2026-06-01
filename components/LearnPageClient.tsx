@@ -24,6 +24,9 @@ import { LessonWorkspace } from './LessonWorkspace'
 import { NavOverlay } from './NavOverlay'
 import { Sidebar } from './Sidebar'
 import { SlideshowView } from './SlideshowView'
+import { FocusEditorView } from './FocusEditorView'
+import { PulseStudentBar } from './PulseStudentBar'
+import { useLiveSession } from '@/lib/useLiveSession'
 import { TopBar } from './TopBar'
 
 type ImpersonationState = {
@@ -63,6 +66,7 @@ export function LearnPageClient({
     searchParams?.get('view') === 'slide' ? 'slideshow' : 'normal',
   )
   const [deckEditorOpen, setDeckEditorOpen] = useState(false)
+  const [focusExerciseIndex, setFocusExerciseIndex] = useState<number | null>(null)
   const deckLesson = useMemo<Lesson>(
     () =>
       activeLesson ?? {
@@ -78,6 +82,39 @@ export function LearnPageClient({
   const { classroomId, isReady: classroomReady, isImpersonating, role } = classroomContext
   const isInstructorPreview = role === 'ADMIN' && !isImpersonating && !!classroomId
   const { deck, saveDeck, saving } = useDeck(deckLesson, classroomId)
+  const pulse = useLiveSession({
+    classroomId: classroomId ?? '',
+    role: role === 'ADMIN' ? 'ADMIN' : 'STUDENT',
+    enabled: !!classroomId && (role === 'ADMIN' || role === 'STUDENT'),
+  })
+  const liveForStudent = role === 'STUDENT' ? pulse.live : null
+  const [followingEditor, setFollowingEditor] = useState(false)
+
+  const openInEditor = useCallback(
+    (idx: number) => {
+      setFollowingEditor(false)
+      setFocusExerciseIndex(idx)
+      if (role === 'ADMIN') pulse.focusEditor(activeLessonId, idx)
+    },
+    [role, pulse, activeLessonId],
+  )
+  const exitFocusEditor = useCallback(() => {
+    setFollowingEditor(false)
+    setFocusExerciseIndex(null)
+    if (role === 'ADMIN') pulse.exitFocus()
+  }, [role, pulse])
+  const followEditor = useCallback((idx: number) => {
+    setFollowingEditor(true)
+    setFocusExerciseIndex(idx)
+  }, [])
+
+  // Student auto-returns from the followed editor when the teacher closes it.
+  useEffect(() => {
+    if (role === 'STUDENT' && followingEditor && pulse.live?.currentSlideType !== 'editor') {
+      setFollowingEditor(false)
+      setFocusExerciseIndex(null)
+    }
+  }, [role, followingEditor, pulse.live?.currentSlideType])
   const [impersonationState, setImpersonationState] = useState<ImpersonationState | null>(null)
   const [progressRows, setProgressRows] = useState<LessonProgressRow[]>([])
   const [resumeIndex, setResumeIndex] = useState<number | null>(null)
@@ -327,6 +364,22 @@ export function LearnPageClient({
     )
   }
 
+  if (focusExerciseIndex !== null && activeLesson) {
+    return (
+      <FocusEditorView
+        lesson={activeLesson}
+        allLessons={lessons}
+        exerciseIndex={focusExerciseIndex}
+        classroomId={classroomId}
+        role={role ?? undefined}
+        isReadOnly={isReadOnly}
+        live={liveForStudent}
+        liveRespond={pulse.respond}
+        onExit={exitFocusEditor}
+      />
+    )
+  }
+
   if (viewMode === 'slideshow' && activeLesson) {
     return (
       <SlideshowView
@@ -335,6 +388,12 @@ export function LearnPageClient({
         pageIndex={slideshowPageIndex}
         onPageChange={setSlideshowPageIndex}
         onExit={handleToggleSlideshow}
+        classroomId={classroomId}
+        isInstructor={isInstructorPreview}
+        live={liveForStudent}
+        role={role ?? undefined}
+        liveRespond={pulse.respond}
+        onOpenInEditor={openInEditor}
       />
     )
   }
@@ -370,6 +429,15 @@ export function LearnPageClient({
 
   return (
     <>
+      {role === 'STUDENT' && classroomId && activeLesson && !isReadOnly ? (
+        <PulseStudentBar
+          live={pulse.live}
+          join={pulse.join}
+          lesson={activeLesson}
+          activeExerciseIndex={activeExerciseIndex}
+          onFollowEditor={followEditor}
+        />
+      ) : null}
       {isInstructorPreview && (
         <InstructorPreviewBanner
           onExit={() => {
@@ -496,6 +564,8 @@ export function LearnPageClient({
               answerKeyMode={answerKeyMode}
               classroomId={classroomId}
               role={role ?? undefined}
+              live={liveForStudent}
+              liveRespond={pulse.respond}
             />
           ) : (
             <div className="right-panel">

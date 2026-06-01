@@ -21,6 +21,9 @@ type Student = {
   studentKey: string
   claimed: boolean
   joinedAt: string | null
+  email: string | null
+  inviteStatus: string
+  inviteSentAt: string | null
 }
 
 type LessonSummary = {
@@ -46,6 +49,9 @@ type Admin = {
   firstName: string | null
   lastName: string | null
   username: string | null
+  email: string | null
+  inviteStatus: string
+  inviteSentAt: string | null
 }
 
 type ClassroomEntry = {
@@ -71,6 +77,20 @@ function formatDate(value: string | null): string {
   }
 }
 
+function formatDateTime(value: string | null): string {
+  if (!value) return '-'
+  try {
+    return new Date(value).toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  } catch {
+    return '-'
+  }
+}
+
 export default function InstructorClassroomPage() {
   const params = useParams<{ classroomId: string }>()
   const router = useRouter()
@@ -85,6 +105,7 @@ export default function InstructorClassroomPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [newFirstName, setNewFirstName] = useState('')
   const [newLastName, setNewLastName] = useState('')
+  const [newEmail, setNewEmail] = useState('')
   const [addError, setAddError] = useState<string | null>(null)
   const [addSuccess, setAddSuccess] = useState<string | null>(null)
   const [addSubmitting, setAddSubmitting] = useState(false)
@@ -93,8 +114,25 @@ export default function InstructorClassroomPage() {
   const [showAddAdminForm, setShowAddAdminForm] = useState(false)
   const [newAdminFirstName, setNewAdminFirstName] = useState('')
   const [newAdminLastName, setNewAdminLastName] = useState('')
+  const [newAdminEmail, setNewAdminEmail] = useState('')
   const [addAdminError, setAddAdminError] = useState<string | null>(null)
   const [addAdminSuccess, setAddAdminSuccess] = useState<string | null>(null)
+
+  const [resendBusy, setResendBusy] = useState<string | null>(null)
+  const [resendNotice, setResendNotice] = useState<string | null>(null)
+
+  // Invite draft preview shown before anything is actually emailed.
+  const [preview, setPreview] = useState<{
+    membershipId: string
+    role: 'STUDENT' | 'ADMIN'
+    to: string
+    subject: string
+    html: string
+    link: string
+  } | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState<string | null>(null)
+  const [sending, setSending] = useState(false)
 
   async function fetchStudents(): Promise<Student[]> {
     const res = await fetch(`/api/classroom/${classroomId}/students`, {
@@ -185,6 +223,7 @@ export default function InstructorClassroomPage() {
 
   function mapAddError(code: string): string {
     if (code === 'missing_fields') return 'Please fill in both names.'
+    if (code === 'invalid_email') return 'Please enter a valid email address.'
     if (code === 'forbidden') return 'You do not have permission.'
     return 'Something went wrong.'
   }
@@ -194,6 +233,7 @@ export default function InstructorClassroomPage() {
     setAddSuccess(null)
     setAddSubmitting(true)
     try {
+      const email = newEmail.trim()
       const res = await fetch('/api/classroom/add-student', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -201,6 +241,7 @@ export default function InstructorClassroomPage() {
           classroomId,
           firstName: newFirstName,
           lastName: newLastName,
+          email: email || undefined,
         }),
       })
       const data = await res.json()
@@ -208,11 +249,20 @@ export default function InstructorClassroomPage() {
         setAddError(mapAddError(data?.error ?? ''))
         return
       }
-      setAddSuccess(`Student added. Their key is: ${data.studentKey}`)
+      setAddSuccess(
+        email
+          ? `Seat created (key: ${data.studentKey}). Review the invite draft, then send.`
+          : `Seat created. Their key is: ${data.studentKey}`
+      )
       setNewFirstName('')
       setNewLastName('')
+      setNewEmail('')
       const list = await fetchStudents()
       setStudents(list)
+      // Open the draft preview instead of sending automatically.
+      if (email && data.membershipId) {
+        void openInvitePreview(data.membershipId, 'STUDENT', email)
+      }
     } catch {
       setAddError('Something went wrong.')
     } finally {
@@ -228,6 +278,7 @@ export default function InstructorClassroomPage() {
     setAddAdminError(null)
     setAddAdminSuccess(null)
     try {
+      const email = newAdminEmail.trim()
       const res = await fetch('/api/classroom/add-admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -235,22 +286,32 @@ export default function InstructorClassroomPage() {
           classroomId,
           firstName: newAdminFirstName.trim(),
           lastName: newAdminLastName.trim(),
+          email: email || undefined,
         }),
       })
       const data = await res.json()
       if (res.ok && data.ok) {
-        setAddAdminSuccess(`Admin added. Their key is: ${data.adminKey}`)
+        setAddAdminSuccess(
+          email
+            ? `Seat created (key: ${data.adminKey}). Review the invite draft, then send.`
+            : `Seat created. Their key is: ${data.adminKey}`
+        )
         setNewAdminFirstName('')
         setNewAdminLastName('')
+        setNewAdminEmail('')
         try {
           const list = await fetchAdmins()
           setAdmins(list)
         } catch {
           // ignore refresh failure
         }
+        if (email && data.membershipId) {
+          void openInvitePreview(data.membershipId, 'ADMIN', email)
+        }
       } else {
         const errorMap: Record<string, string> = {
           missing_fields: 'Please fill in both names.',
+          invalid_email: 'Please enter a valid email address.',
           forbidden: 'You do not have permission to add admins.',
           not_owner: 'You do not have permission to add admins.',
           server_error: 'Something went wrong. Please try again.',
@@ -260,6 +321,103 @@ export default function InstructorClassroomPage() {
     } catch {
       setAddAdminError('Something went wrong. Please try again.')
     }
+  }
+
+  const previewErrorMap: Record<string, string> = {
+    no_email: 'No email on file — enter one to send.',
+    already_claimed: 'This seat has already been claimed.',
+    forbidden: 'You do not have permission.',
+    not_owner: 'Only the owner can invite instructors.',
+    invalid_email: 'Please enter a valid email address.',
+  }
+
+  // Fetch the rendered draft and open the preview modal. Nothing is sent here.
+  async function openInvitePreview(
+    membershipId: string,
+    role: 'STUDENT' | 'ADMIN',
+    existingEmail: string | null
+  ) {
+    setResendNotice(null)
+    setPreviewError(null)
+    let email = existingEmail
+    if (!email) {
+      const entered = window.prompt('Email address to send this invite to:')
+      if (!entered) return
+      email = entered.trim()
+    }
+    setResendBusy(membershipId)
+    setPreviewLoading(true)
+    setPreview(null)
+    try {
+      const res = await fetch('/api/classroom/invite/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ membershipId, role, email }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) {
+        setPreview({
+          membershipId,
+          role,
+          to: data.to,
+          subject: data.subject,
+          html: data.html,
+          link: data.link,
+        })
+      } else {
+        setResendNotice(previewErrorMap[data.error] ?? 'Could not build the invite preview.')
+      }
+    } catch {
+      setResendNotice('Could not build the invite preview.')
+    } finally {
+      setResendBusy(null)
+      setPreviewLoading(false)
+    }
+  }
+
+  // Confirm-and-send from the preview modal.
+  async function handleConfirmSend() {
+    if (!preview || sending) return
+    setSending(true)
+    setPreviewError(null)
+    try {
+      const res = await fetch('/api/classroom/invite/resend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          membershipId: preview.membershipId,
+          role: preview.role,
+          email: preview.to,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) {
+        setResendNotice(`Invite sent to ${data.email}.`)
+        setPreview(null)
+        try {
+          if (preview.role === 'STUDENT') setStudents(await fetchStudents())
+          else setAdmins(await fetchAdmins())
+        } catch {
+          // ignore refresh failure
+        }
+      } else if (data.error === 'email_send_failed') {
+        setPreviewError(`Email provider rejected the send: ${data.detail ?? 'unknown error'}`)
+      } else if (data.error === 'email_not_configured') {
+        setPreviewError("Email isn't configured yet on the server.")
+      } else {
+        setPreviewError(previewErrorMap[data.error] ?? 'Could not send invite.')
+      }
+    } catch {
+      setPreviewError('Could not send invite.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  function inviteStatusLabel(claimed: boolean, status: string): string {
+    if (claimed) return 'Registered'
+    if (status === 'sent') return 'Invited'
+    return 'Pending'
   }
 
   async function handleEnterLessons() {
@@ -369,6 +527,12 @@ export default function InstructorClassroomPage() {
               )}
             </div>
 
+            {resendNotice && (
+              <div className="ic-form-success" style={{ marginBottom: 16 }}>
+                {resendNotice}
+              </div>
+            )}
+
             <section className="ic-section">
               <div className="ic-section-header">
                 <h2 className="ic-section-title">Students</h2>
@@ -397,7 +561,8 @@ export default function InstructorClassroomPage() {
                   </button>
                   <div className="ic-add-form-title">Add a student seat</div>
                   <div className="ic-add-form-sub">
-                    A student key will be generated automatically
+                    A student key will be generated automatically. Add an email to send an
+                    invite — the student enters the key to confirm.
                   </div>
 
                   <label htmlFor="ic-first-name">First name</label>
@@ -416,13 +581,22 @@ export default function InstructorClassroomPage() {
                     onChange={(e) => setNewLastName(e.target.value)}
                   />
 
+                  <label htmlFor="ic-email">Email (optional)</label>
+                  <input
+                    id="ic-email"
+                    type="email"
+                    placeholder="student@example.com"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                  />
+
                   <button
                     type="button"
                     className="ic-add-form-submit"
                     onClick={handleAddSubmit}
                     disabled={addSubmitting}
                   >
-                    Add student
+                    {newEmail.trim() ? 'Add & preview invite' : 'Add student'}
                   </button>
                   {addError && <div className="ic-form-error">{addError}</div>}
                   {addSuccess && (
@@ -443,6 +617,7 @@ export default function InstructorClassroomPage() {
                       <th>Username</th>
                       <th>Student key</th>
                       <th>Status</th>
+                      <th>Invite</th>
                       <th>Joined</th>
                       <th>Progress</th>
                       <th>Actions</th>
@@ -469,8 +644,41 @@ export default function InstructorClassroomPage() {
                             </span>
                           ) : (
                             <span className="ic-status-pill pending">
-                              Pending
+                              {inviteStatusLabel(student.claimed, student.inviteStatus)}
                             </span>
+                          )}
+                        </td>
+                        <td>
+                          {student.claimed ? (
+                            <span className="ic-muted">-</span>
+                          ) : (
+                            <div className="ic-invite-cell">
+                              {student.inviteStatus === 'sent' && (
+                                <div className="ic-invite-meta">
+                                  Sent to {student.email ?? '—'}
+                                  <br />
+                                  {formatDateTime(student.inviteSentAt)}
+                                </div>
+                              )}
+                              <button
+                                type="button"
+                                className="ic-impersonate-btn"
+                                disabled={resendBusy === student.membershipId}
+                                onClick={() =>
+                                  openInvitePreview(
+                                    student.membershipId,
+                                    'STUDENT',
+                                    student.email
+                                  )
+                                }
+                              >
+                                {resendBusy === student.membershipId
+                                  ? 'Loading…'
+                                  : student.inviteStatus === 'sent'
+                                    ? 'Preview & resend'
+                                    : 'Preview & send'}
+                              </button>
+                            </div>
                           )}
                         </td>
                         <td>
@@ -537,7 +745,8 @@ export default function InstructorClassroomPage() {
                       marginBottom: '20px',
                     }}
                   >
-                    An admin key will be generated. Share it along with the classroom join code.
+                    An admin key will be generated. Add an email to send an invite — the
+                    instructor enters the key to confirm. Otherwise share the key manually.
                   </p>
 
                   <label htmlFor="ic-admin-first-name">First name</label>
@@ -558,13 +767,22 @@ export default function InstructorClassroomPage() {
                     placeholder="Last name"
                   />
 
+                  <label htmlFor="ic-admin-email">Email (optional)</label>
+                  <input
+                    id="ic-admin-email"
+                    type="email"
+                    value={newAdminEmail}
+                    onChange={(e) => setNewAdminEmail(e.target.value)}
+                    placeholder="instructor@example.com"
+                  />
+
                   <button
                     type="button"
                     className="ic-add-btn"
                     style={{ width: '100%', marginTop: '4px' }}
                     onClick={handleAddAdmin}
                   >
-                    Add instructor
+                    {newAdminEmail.trim() ? 'Add & preview invite' : 'Add instructor'}
                   </button>
                   {addAdminError !== null && (
                     <p
@@ -605,6 +823,7 @@ export default function InstructorClassroomPage() {
                       <th>Admin key</th>
                       <th>Role</th>
                       <th>Status</th>
+                      <th>Invite</th>
                       <th>Joined</th>
                     </tr>
                   </thead>
@@ -612,7 +831,7 @@ export default function InstructorClassroomPage() {
                     {admins.map((admin) => (
                       <tr key={admin.membershipId}>
                         <td>
-                          {admin.claimed && (admin.firstName || admin.lastName) ? (
+                          {admin.firstName || admin.lastName ? (
                             `${admin.firstName ?? ''} ${admin.lastName ?? ''}`.trim()
                           ) : (
                             <span className="ic-muted">(pending)</span>
@@ -637,7 +856,38 @@ export default function InstructorClassroomPage() {
                           {admin.claimed ? (
                             <span className="ic-status-pill registered">Registered</span>
                           ) : (
-                            <span className="ic-status-pill pending">Pending</span>
+                            <span className="ic-status-pill pending">
+                              {inviteStatusLabel(admin.claimed, admin.inviteStatus)}
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          {admin.claimed || admin.isOwner ? (
+                            <span className="ic-muted">-</span>
+                          ) : (
+                            <div className="ic-invite-cell">
+                              {admin.inviteStatus === 'sent' && (
+                                <div className="ic-invite-meta">
+                                  Sent to {admin.email ?? '—'}
+                                  <br />
+                                  {formatDateTime(admin.inviteSentAt)}
+                                </div>
+                              )}
+                              <button
+                                type="button"
+                                className="ic-impersonate-btn"
+                                disabled={resendBusy === admin.membershipId}
+                                onClick={() =>
+                                  openInvitePreview(admin.membershipId, 'ADMIN', admin.email)
+                                }
+                              >
+                                {resendBusy === admin.membershipId
+                                  ? 'Loading…'
+                                  : admin.inviteStatus === 'sent'
+                                    ? 'Preview & resend'
+                                    : 'Preview & send'}
+                              </button>
+                            </div>
                           )}
                         </td>
                         <td>
@@ -656,6 +906,89 @@ export default function InstructorClassroomPage() {
           </>
         ) : null}
       </main>
+
+      {(preview || previewLoading) && (
+        <div
+          className="ic-modal-overlay"
+          onClick={() => {
+            if (!sending) {
+              setPreview(null)
+              setPreviewError(null)
+            }
+          }}
+        >
+          <div className="ic-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ic-modal-header">
+              <h3 className="ic-modal-title">Review invite before sending</h3>
+              <button
+                type="button"
+                className="ic-add-form-close"
+                aria-label="Close"
+                disabled={sending}
+                onClick={() => {
+                  setPreview(null)
+                  setPreviewError(null)
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {previewLoading || !preview ? (
+              <div className="ic-empty-state">Building preview…</div>
+            ) : (
+              <>
+                <div className="ic-modal-fields">
+                  <div>
+                    <label>To</label>
+                    <span>{preview.to}</span>
+                  </div>
+                  <div>
+                    <label>Subject</label>
+                    <span>{preview.subject}</span>
+                  </div>
+                  <div>
+                    <label>Invite link</label>
+                    <span className="ic-modal-link">{preview.link}</span>
+                  </div>
+                </div>
+
+                <div className="ic-modal-preview-label">Email body</div>
+                <iframe
+                  className="ic-modal-iframe"
+                  title="Invite email preview"
+                  sandbox=""
+                  srcDoc={preview.html}
+                />
+
+                {previewError && <div className="ic-form-error">{previewError}</div>}
+
+                <div className="ic-modal-actions">
+                  <button
+                    type="button"
+                    className="ic-signout-btn"
+                    disabled={sending}
+                    onClick={() => {
+                      setPreview(null)
+                      setPreviewError(null)
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="ic-add-btn"
+                    disabled={sending}
+                    onClick={handleConfirmSend}
+                  >
+                    {sending ? 'Sending…' : `Send to ${preview.to}`}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

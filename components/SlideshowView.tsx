@@ -6,6 +6,10 @@ import type { Deck } from '@/lib/deckTypes'
 import { LessonContent } from './LessonContent'
 import { ExercisePrompt } from '@/components/ExercisePrompt'
 import { panelRegistry } from '@/components/exercise-panels'
+import { PulseTeacherPanel } from './PulseTeacherPanel'
+import { DEFAULT_LIVE_SECONDS, isLiveSupportedFormat } from '@/lib/deckTypes'
+import type { LiveState } from '@/lib/useLiveSession'
+import { recordExerciseCorrect } from '@/lib/recordCorrect'
 
 type SlideshowViewProps = {
   lesson: Lesson
@@ -13,6 +17,12 @@ type SlideshowViewProps = {
   pageIndex: number
   onPageChange: (index: number) => void
   onExit: () => void
+  classroomId?: string | null
+  isInstructor?: boolean
+  live?: LiveState | null
+  role?: string
+  liveRespond?: (exerciseIndex: number, isCorrect: boolean, answer?: unknown) => void
+  onOpenInEditor?: (exerciseIndex: number) => void
 }
 
 function ChevronLeft({ size = 16 }: { size?: number }) {
@@ -97,11 +107,25 @@ export function SlideshowView({
   pageIndex,
   onPageChange,
   onExit,
+  classroomId,
+  isInstructor = false,
+  live = null,
+  role,
+  liveRespond,
+  onOpenInEditor,
 }: SlideshowViewProps) {
   const enabledSlides = deck.filter((s) => s.enabled)
   const totalPages = enabledSlides.length
   const safeIndex = totalPages > 0 ? Math.max(0, Math.min(pageIndex, totalPages - 1)) : 0
   const currentSlide = totalPages > 0 ? enabledSlides[safeIndex] : null
+  const isLiveSlide =
+    !isInstructor &&
+    !!live &&
+    live.phase !== 'idle' &&
+    !!currentSlide &&
+    currentSlide.type === 'exercise' &&
+    live.lessonId === lesson.id &&
+    live.currentExerciseIndex === currentSlide.index
   const isFirst = safeIndex === 0
   const isLast = totalPages === 0 ? true : safeIndex >= totalPages - 1
 
@@ -180,25 +204,93 @@ export function SlideshowView({
     ) : null
   } else {
     const exercise = lesson.exercises[currentSlide.index]
+    // Quick (self-contained) formats are fully playable on the slide; heavier
+    // code/final-project formats stay a static preview (Step 2 adds an editor).
+    const exFormat = exercise?.format ?? ''
+    const interactive = !!exercise && isLiveSupportedFormat(exFormat)
+    const exerciseIndex = currentSlide.index
+
+    const handleSlideCorrect = () => {
+      recordExerciseCorrect({
+        classroomId: classroomId ?? null,
+        lessonId: lesson.id,
+        exerciseIndex,
+        format: exFormat,
+        role,
+      })
+      if (isLiveSlide && live?.phase === 'running') {
+        liveRespond?.(exerciseIndex, true)
+      }
+    }
+    const handleSlideComplete = () => {
+      // The panel's "Next" advances the slideshow, not the exercise index.
+      if (!isLast) onPageChange(safeIndex + 1)
+    }
+
     slideBody = exercise ? (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', pointerEvents: 'none' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          overflow: 'hidden',
+          ...(interactive ? {} : { pointerEvents: 'none' as const }),
+        }}
+      >
         <ExercisePrompt
           exercises={lesson.exercises}
-          activeIndex={currentSlide.index}
+          activeIndex={exerciseIndex}
           hintVisible={false}
         />
-        <div style={{ flex: 1, padding: '16px 24px', overflow: 'hidden', boxSizing: 'border-box' as const }}>
+        <div style={{ flex: 1, padding: '16px 24px', overflow: 'auto', boxSizing: 'border-box' as const }}>
           {(() => {
-            const Panel = panelRegistry[exercise.format as keyof typeof panelRegistry]
-            return Panel ? (
-              <Panel
-                exercise={exercise}
-                onComplete={() => {}}
-                onCorrect={() => {}}
-              />
-            ) : (
+            const Panel = panelRegistry[exFormat as keyof typeof panelRegistry]
+            if (Panel && interactive) {
+              return (
+                <Panel
+                  exercise={exercise}
+                  onComplete={handleSlideComplete}
+                  onCorrect={handleSlideCorrect}
+                />
+              )
+            }
+            const canOpenEditor =
+              !!onOpenInEditor && (exFormat === 'code-editor' || exFormat === 'final-project')
+            const openEditorButton = canOpenEditor ? (
+              <div style={{ textAlign: 'center', marginBottom: 16, pointerEvents: 'auto' }}>
+                <button
+                  type="button"
+                  onClick={() => onOpenInEditor!(exerciseIndex)}
+                  style={{
+                    background: 'var(--accent)',
+                    color: 'var(--white)',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '10px 20px',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    fontFamily: 'var(--sans)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Open in editor →
+                </button>
+              </div>
+            ) : null
+            if (Panel) {
+              // Static preview for non-interactive formats (code/final-project),
+              // with an escape hatch into the full-screen editor.
+              return (
+                <>
+                  {openEditorButton}
+                  <Panel exercise={exercise} onComplete={() => {}} onCorrect={() => {}} />
+                </>
+              )
+            }
+            return (
               <div style={{ color: 'var(--text3)', fontSize: '14px', textAlign: 'center', paddingTop: '40px' }}>
-                {exercise.format} exercise
+                {openEditorButton}
+                {exFormat} exercise
               </div>
             )
           })()}
@@ -223,6 +315,7 @@ export function SlideshowView({
       <div style={{ flex: 1, minHeight: 0, width: '100%' }} />
 
       <div
+        className={isLiveSlide ? `is-live is-live--${live?.phase}` : undefined}
         style={{
           width: '100%',
           aspectRatio: '16 / 9',
@@ -331,6 +424,19 @@ export function SlideshowView({
           Exit slideshow
         </button>
       </div>
+
+      {isInstructor &&
+      classroomId &&
+      currentSlide &&
+      currentSlide.type === 'exercise' &&
+      currentSlide.live?.enabled ? (
+        <PulseTeacherPanel
+          classroomId={classroomId}
+          lesson={lesson}
+          exerciseIndex={currentSlide.index}
+          seconds={currentSlide.live.seconds ?? DEFAULT_LIVE_SECONDS}
+        />
+      ) : null}
     </div>
   )
 }

@@ -52,6 +52,11 @@ model StudentMembership {
   lastLessonId String?
   joinedAt     DateTime?
 
+  email        String?
+  inviteToken  String?   @unique
+  inviteSentAt DateTime?
+  inviteStatus String    @default("none")
+
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
 
@@ -73,6 +78,13 @@ model AdminMembership {
   adminKey    String
   isOwner     Boolean   @default(false)
   joinedAt    DateTime?
+
+  email        String?
+  firstName    String?
+  lastName     String?
+  inviteToken  String?   @unique
+  inviteSentAt DateTime?
+  inviteStatus String    @default("none")
 
   user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)

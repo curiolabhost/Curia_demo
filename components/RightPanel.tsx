@@ -5,16 +5,16 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
 import type { Lesson } from '@/lib/lessons'
 import type { LayoutMode } from '@/lib/useLayoutMode'
+import type { LiveState } from '@/lib/useLiveSession'
 import {
-  postExerciseProgress,
   postLessonProgress,
   getExerciseProgress,
-  postAdminExerciseProgress,
   postAdminLessonProgress,
   getAdminExerciseProgress,
   getCodeProgress,
 } from '@/lib/progressClient'
 import { loadCode } from '@/lib/storage'
+import { recordExerciseCorrect } from '@/lib/recordCorrect'
 import { runInSandbox, type CheckResult, type LogEntry } from '@/lib/sandbox'
 import { BottomBar } from './BottomBar'
 import { ChallengePrompt } from './ChallengePrompt'
@@ -64,6 +64,10 @@ type RightPanelProps = {
   answerKeyMode?: boolean
   classroomId?: string | null
   role?: string
+  live?: LiveState | null
+  liveRespond?: (exerciseIndex: number, isCorrect: boolean, answer?: unknown) => void
+  focusMode?: boolean
+  onExitFocus?: () => void
 }
 
 function isInsideEditor(target: EventTarget | null): boolean {
@@ -101,6 +105,10 @@ export function RightPanel({
   answerKeyMode = false,
   classroomId = null,
   role = undefined,
+  live = null,
+  liveRespond,
+  focusMode = false,
+  onExitFocus,
 }: RightPanelProps) {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>(initialMode ?? 'exercises')
@@ -140,6 +148,13 @@ export function RightPanel({
   const [completedExerciseIndices, setCompletedExerciseIndices] = useState<Set<number>>(
     new Set(),
   )
+
+  // A Pulse round is live on the exact exercise the student is viewing.
+  const isLiveHere =
+    !!live &&
+    live.phase !== 'idle' &&
+    live.lessonId === renderedLesson.id &&
+    live.currentExerciseIndex === renderedExerciseIndex
 
   const challenges = renderedLesson.challenges ?? []
   const activeExercise = renderedLesson.exercises[renderedExerciseIndex]
@@ -669,17 +684,29 @@ export function RightPanel({
   const handlePanelCorrect = useCallback(() => {
     if (isReadOnly) return
     if (!classroomId) return
-    const lessonId = renderedLesson.id
     const completedIndex = renderedExerciseIndex
-    const completedFormat = activeExercise?.format ?? 'multiple-choice'
-    const postEx = role === 'ADMIN' ? postAdminExerciseProgress : postExerciseProgress
-    postEx(classroomId, lessonId, completedIndex, {
-      format: completedFormat,
-      answerState: {},
-      completed: true,
-      completedAt: new Date().toISOString(),
-    }).catch(() => {})
-  }, [isReadOnly, classroomId, renderedLesson.id, renderedExerciseIndex, activeExercise?.format, role])
+    recordExerciseCorrect({
+      classroomId,
+      lessonId: renderedLesson.id,
+      exerciseIndex: completedIndex,
+      format: activeExercise?.format ?? 'multiple-choice',
+      role,
+    })
+    // If a Pulse round is live on this exercise, lock in the answer.
+    if (isLiveHere && live?.phase === 'running') {
+      liveRespond?.(completedIndex, true)
+    }
+  }, [
+    isReadOnly,
+    classroomId,
+    renderedLesson.id,
+    renderedExerciseIndex,
+    activeExercise?.format,
+    role,
+    isLiveHere,
+    live?.phase,
+    liveRespond,
+  ])
 
   const handlePanelComplete = useCallback((correct: boolean) => {
     if (isReadOnly) return
@@ -860,11 +887,37 @@ export function RightPanel({
     </div>
   )
 
+  // In focus mode the panel is locked to a single exercise (full-screen editor
+  // launched from a slide), so the mode tabs / nav are replaced by a back button.
+  const focusBar = (
+    <div className="mode-tab-bar">
+      <button
+        type="button"
+        className="home-mode-btn"
+        onClick={onExitFocus}
+        aria-label="Back to slides"
+        title="Back to slides"
+      >
+        {'←'}
+      </button>
+      <span className="home-mode-divider" aria-hidden />
+      <span style={{ fontFamily: 'var(--sans)', fontSize: 13, fontWeight: 600, color: 'var(--text2)' }}>
+        Exercise {renderedExerciseIndex + 1}
+      </span>
+      <span style={{ flex: 1 }} aria-hidden />
+      <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 12 }}>Back to slides ↩</span>
+    </div>
+  )
+  const topBar = focusMode ? focusBar : modeTabBar
+
   return (
-    <div className="right-panel" style={rightPanelStyle}>
+    <div
+      className={`right-panel${isLiveHere ? ` is-live is-live--${live?.phase}` : ''}`}
+      style={rightPanelStyle}
+    >
       {showHome ? (
         <>
-          <div>{modeTabBar}</div>
+          <div>{topBar}</div>
           <HomeView
             allLessons={allLessons}
             activeLessonId={lesson.id}
@@ -876,7 +929,7 @@ export function RightPanel({
       ) : (
         <>
           <div>
-            {modeTabBar}
+            {topBar}
 
             {isFinalProject ? null : mode === 'exercises' ? (
               activeExercise ? (() => {

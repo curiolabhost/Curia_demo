@@ -1,0 +1,60 @@
+<svg width="580" height="390" viewBox="0 0 580 390" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Scope — global vs local variables</title>
+<desc>A visual showing global variables visible everywhere versus local variables only visible inside their function.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- Section label -->
+<text x="290" y="24" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.07em">SCOPE — WHAT CAN EACH PART OF YOUR CODE SEE?</text>
+
+<!-- ══ GLOBAL SCOPE OUTER BOX — extended to bottom ══ -->
+<rect x="20" y="36" width="540" height="340" rx="12" fill="#E6F1FB" fill-opacity="0.2" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="7 4"/>
+<text x="40" y="56" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#185FA5" letter-spacing="0.06em">GLOBAL SCOPE — visible to everything</text>
+
+<!-- global variable: level -->
+<rect x="40" y="64" width="500" height="36" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="290" y="82" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="600" fill="#0C447C">let level = 1;</text>
+
+<!-- global variable: playerClicks -->
+<rect x="40" y="108" width="500" height="36" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="290" y="126" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="600" fill="#0C447C">let playerClicks = [];</text>
+
+<!-- label — sits between globals and arrows, well clear of both -->
+<text x="290" y="160" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="10" fill="#4A5068">both functions can read and change these</text>
+
+<!-- arrows — start below label, end above function labels -->
+<line x1="170" y1="152" x2="170" y2="186" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="410" y1="152" x2="410" y2="186" stroke="#185FA5" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- ══ LEFT FUNCTION: startRound ══ -->
+<rect x="40" y="208" width="230" height="148" rx="10" fill="#FAEEDA" fill-opacity="0.4" stroke="#854F0B" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="155" y="200" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#854F0B" letter-spacing="0.05em">FUNCTION: startRound()</text>
+
+<!-- function name pill -->
+<rect x="58" y="220" width="194" height="36" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="155" y="238" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="600" fill="#633806">startRound() { }</text>
+
+<!-- local block -->
+<rect x="58" y="268" width="194" height="72" rx="8" fill="#633806" stroke="#854F0B" stroke-width="0.5"/>
+<text x="155" y="291" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#FAC775">let message = ...</text>
+<line x1="78" y1="307" x2="232" y2="307" stroke="#854F0B" stroke-width="0.5" opacity="0.4"/>
+<text x="155" y="325" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#EF9F27">LOCAL — only visible here</text>
+
+<!-- ══ RIGHT FUNCTION: checkResult ══ -->
+<rect x="310" y="208" width="230" height="148" rx="10" fill="#EEEDFE" fill-opacity="0.4" stroke="#534AB7" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="425" y="200" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#534AB7" letter-spacing="0.05em">FUNCTION: checkResult()</text>
+
+<!-- function name pill -->
+<rect x="326" y="220" width="198" height="36" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="425" y="238" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="13" font-weight="600" fill="#3C3489">checkResult() { }</text>
+
+<!-- local block -->
+<rect x="326" y="268" width="198" height="72" rx="8" fill="#2E2848" stroke="#534AB7" stroke-width="0.5"/>
+<text x="425" y="291" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#AFA9EC">let result = ...</text>
+<line x1="346" y1="307" x2="504" y2="307" stroke="#534AB7" stroke-width="0.5" opacity="0.4"/>
+<text x="425" y="325" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#A98EFF">LOCAL — only visible here</text>
+
+</svg>

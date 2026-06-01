@@ -1669,16 +1669,12 @@ export function FinalProjectPanel({
               code={editedHtml}
               language="html"
               onChange={(val) => setEditedHtml(val)}
-              readOnly={!allDone}
-              readOnlyMessage="Complete all script.js blocks to edit this file"
             />
           ) : (
             <PrismEditor
               code={editedCss}
               language="css"
               onChange={(val) => setEditedCss(val)}
-              readOnly={!allDone}
-              readOnlyMessage="Complete all script.js blocks to edit this file"
             />
           )}
         </div>
@@ -2213,16 +2209,12 @@ export function FinalProjectTablet({
               code={editedHtml}
               language="html"
               onChange={(val) => setEditedHtml(val)}
-              readOnly={!allDone}
-              readOnlyMessage="Complete all script.js blocks to edit this file"
             />
           ) : (
             <PrismEditor
               code={editedCss}
               language="css"
               onChange={(val) => setEditedCss(val)}
-              readOnly={!allDone}
-              readOnlyMessage="Complete all script.js blocks to edit this file"
             />
           )}
         </div>

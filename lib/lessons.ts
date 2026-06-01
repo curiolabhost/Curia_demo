@@ -1,7 +1,6 @@
 import s1l1 from '@/content/lessons/s1-l1.json'
 import s1l2 from '@/content/lessons/s1-l2.json'
 
-import s2l0 from '@/content/lessons/s2-l0.json'
 import s2l1 from '@/content/lessons/s2-l1.json'
 import s2l2 from '@/content/lessons/s2-l2.json'
 import s2l3 from '@/content/lessons/s2-l3.json'
@@ -10,16 +9,25 @@ import s2l5 from '@/content/lessons/s2-l5.json'
 import s2l6 from '@/content/lessons/s2-l6.json'
 import s2l7 from '@/content/lessons/s2-l7.json'
 import s2l8 from '@/content/lessons/s2-l8.json'
+import s2l9 from '@/content/lessons/s2-l9.json'
 
 import s3l1 from '@/content/lessons/s3-l1.json'
 import s3l2 from '@/content/lessons/s3-l2.json'
 import s3l3 from '@/content/lessons/s3-l3.json'
+import s3l4 from '@/content/lessons/s3-l4.json'
+import s3l5 from '@/content/lessons/s3-l5.json'
 import s4l1 from '@/content/lessons/s4-l1.json'
 import s4l2 from '@/content/lessons/s4-l2.json'
 import s4l3 from '@/content/lessons/s4-l3.json'
+import s4l4 from '@/content/lessons/s4-l4.json'
+import s4l5 from '@/content/lessons/s4-l5.json'
+import s4l6 from '@/content/lessons/s4-l6.json'
 import s5l1 from '@/content/lessons/s5-l1.json'
 import s5l2 from '@/content/lessons/s5-l2.json'
 import s5l3 from '@/content/lessons/s5-l3.json'
+import s5l4 from '@/content/lessons/s5-l4.json'
+import s5l5 from '@/content/lessons/s5-l5.json'
+import s5l6 from '@/content/lessons/s5-l6.json'
 
 import s6l1 from '@/content/lessons/s6-l1.json'
 
@@ -45,6 +53,7 @@ export type ContentBlock =
   | { kind: 'diagram'; variant: string }
   | { kind: 'embed'; src: string; height?: number; caption?: string }
   | { kind: 'interactive'; component: string }
+  | { kind: 'interactive-table'; headers: string[]; rows: { meaning: string; example: string; answer: string }[] }
 
 export type Check =
   | { type: 'variable'; name: string; expected: unknown; label?: string }
@@ -211,10 +220,10 @@ export type Lesson = {
 
 const lessons: Lesson[] = [
   s1l1, s1l2,
-  s2l0, s2l1, s2l2, s2l3, s2l4, s2l5, s2l6, s2l7, s2l8,
-  s3l1, s3l2, s3l3,
-  s4l1, s4l2, s4l3,
-  s5l1, s5l2, s5l3,
+  s2l1, s2l2, s2l3, s2l4, s2l5, s2l6, s2l7, s2l8, s2l9,
+  s3l1, s3l2, s3l3, s3l4, s3l5,
+  s4l1, s4l2, s4l3, s4l4, s4l5, s4l6,
+  s5l1, s5l2, s5l3, s5l4, s5l5, s5l6,
   s6l1,
 ] as Lesson[]
 

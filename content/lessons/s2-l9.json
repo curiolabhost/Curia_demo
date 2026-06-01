@@ -1,0 +1,638 @@
+{
+  "id": "s2-l9",
+  "session": "Session 2",
+  "title": "Capstone 2: Mad Libs",
+  "finalProject": {
+    "htmlTemplate": "<div class=\"card\">\n  <div class=\"tag\">✨ Mad Libs</div>\n  <h1>Simon Says Edition</h1>\n  <p class=\"subtitle\">Fill in the blanks to generate your silly story.</p>\n\n  <div class=\"story-box\">\n    <p class=\"story-text empty\" id=\"story-output\">\n      Your story will appear here once you fill in the blanks and hit Generate.\n    </p>\n  </div>\n\n  <div class=\"inputs\">\n    <div class=\"input-group\">\n      <label class=\"label-adjective\">Adjective</label>\n      <input id=\"adjective\" type=\"text\" placeholder=\"e.g. clumsy\"/>\n    </div>\n    <div class=\"input-group\">\n      <label class=\"label-name\">Robot Name</label>\n      <input id=\"robotName\" type=\"text\" placeholder=\"e.g. Beepsworth\"/>\n    </div>\n    <div class=\"input-group\">\n      <label class=\"label-noun\">Noun</label>\n      <input id=\"noun\" type=\"text\" placeholder=\"e.g. spatula\"/>\n    </div>\n    <div class=\"input-group\">\n      <label class=\"label-color\">Color</label>\n      <input id=\"color\" type=\"text\" placeholder=\"e.g. neon green\"/>\n    </div>\n    <div class=\"input-group\">\n      <label class=\"label-exclamation\">Exclamation</label>\n      <input id=\"exclamation\" type=\"text\" placeholder=\"e.g. BEEP!\"/>\n    </div>\n    <div class=\"input-group\">\n      <label class=\"label-count\">Number of Squares</label>\n      <input id=\"squareCount\" type=\"number\" placeholder=\"e.g. 5\" min=\"1\"/>\n    </div>\n  </div>\n\n  <button class=\"btn\" onclick=\"generate()\">✨ Generate Story</button>\n  <div class=\"ending\" id=\"ending\"></div>\n</div>\n",
+    "cssTemplate": "@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap');\n\n* { box-sizing: border-box; margin: 0; padding: 0; }\n\nbody {\n  font-family: 'DM Sans', system-ui, sans-serif;\n  background: #0F0E17;\n  min-height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  padding: 2rem 1rem;\n}\n\n.card {\n  background: #1A1831;\n  border-radius: 20px;\n  padding: 2rem 2.25rem 2.5rem;\n  max-width: 520px;\n  width: 100%;\n  border: 1.5px solid #2E2B4A;\n  box-shadow: 0 0 60px rgba(138, 99, 255, 0.12);\n}\n\n.tag {\n  display: inline-block;\n  font-size: 11px;\n  font-weight: 700;\n  letter-spacing: 0.1em;\n  text-transform: uppercase;\n  background: #8A63FF22;\n  color: #A98EFF;\n  border: 1px solid #8A63FF44;\n  border-radius: 99px;\n  padding: 4px 12px;\n  margin-bottom: 1rem;\n}\n\nh1 {\n  font-size: 1.6rem;\n  font-weight: 700;\n  color: #F5F0FF;\n  margin-bottom: 0.4rem;\n  line-height: 1.2;\n}\n\n.subtitle {\n  font-size: 13px;\n  color: #6B6882;\n  margin-bottom: 1.75rem;\n}\n\n.story-box {\n  background: #13122A;\n  border: 1.5px solid #2E2B4A;\n  border-radius: 12px;\n  padding: 1.25rem 1.5rem;\n  margin-bottom: 1.5rem;\n  min-height: 80px;\n  display: flex;\n  align-items: center;\n}\n\n.story-text {\n  font-size: 15px;\n  line-height: 1.75;\n  color: #C8C3E8;\n}\n\n.story-text.empty {\n  color: #3D3A5C;\n  font-style: italic;\n  font-size: 14px;\n}\n\n.blank {\n  display: inline-block;\n  font-family: 'IBM Plex Mono', monospace;\n  font-size: 14px;\n  font-weight: 500;\n  padding: 1px 8px;\n  border-radius: 6px;\n  margin: 0 2px;\n}\n\n.blank-adjective   { background: #FF6B9D22; color: #FF6B9D; border: 1px solid #FF6B9D44; }\n.blank-name        { background: #FFD93D22; color: #FFD93D; border: 1px solid #FFD93D44; }\n.blank-noun        { background: #6BCB7722; color: #6BCB77; border: 1px solid #6BCB7744; }\n.blank-color       { background: #4ECDC422; color: #4ECDC4; border: 1px solid #4ECDC444; }\n.blank-exclamation { background: #FF922B22; color: #FF922B; border: 1px solid #FF922B44; }\n.blank-count       { background: #A98EFF22; color: #A98EFF; border: 1px solid #A98EFF44; }\n\n.inputs {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 10px;\n  margin-bottom: 1.5rem;\n}\n\n.input-group {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n}\n\n.input-group label {\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n}\n\n.input-group input {\n  background: #13122A;\n  border: 1.5px solid #2E2B4A;\n  border-radius: 8px;\n  padding: 8px 12px;\n  font-size: 13px;\n  font-family: 'DM Sans', sans-serif;\n  color: #F5F0FF;\n  outline: none;\n  transition: border-color 0.15s;\n}\n\n.input-group input:focus { border-color: #8A63FF; }\n.input-group input::placeholder { color: #3D3A5C; }\n\n.label-adjective   { color: #FF6B9D; }\n.label-name        { color: #FFD93D; }\n.label-noun        { color: #6BCB77; }\n.label-color       { color: #4ECDC4; }\n.label-exclamation { color: #FF922B; }\n.label-count       { color: #A98EFF; }\n\n.btn {\n  width: 100%;\n  padding: 12px;\n  background: linear-gradient(135deg, #8A63FF, #5E3FCC);\n  color: #fff;\n  font-family: 'DM Sans', sans-serif;\n  font-size: 15px;\n  font-weight: 700;\n  border: none;\n  border-radius: 10px;\n  cursor: pointer;\n  transition: opacity 0.15s, transform 0.1s;\n  letter-spacing: 0.02em;\n}\n\n.btn:hover { opacity: 0.9; transform: translateY(-1px); }\n.btn:active { transform: translateY(0); }\n\n.ending {\n  margin-top: 1rem;\n  padding: 0.75rem 1rem;\n  border-radius: 10px;\n  font-size: 13px;\n  font-weight: 500;\n  display: none;\n  line-height: 1.5;\n}\n\n.ending.dramatic {\n  background: #FF6B9D18;\n  border: 1px solid #FF6B9D44;\n  color: #FF6B9D;\n}\n\n.ending.calm {\n  background: #6BCB7718;\n  border: 1px solid #6BCB7744;\n  color: #6BCB77;\n}\n"
+  },
+  "content": [
+    {
+      "heading": "Put it all together — Mad Libs",
+      "blocks": [
+        {
+          "kind": "p",
+          "text": "You've learned variables, strings, template literals, prompt(), comparisons, and conditionals. Now you're going to use all of them at once to build a Mad Libs game. The program will ask the player for a few words, then drop them into a silly Simon Says story."
+        },
+        {
+          "kind": "callout",
+          "variant": "info",
+          "label": "What you're building",
+          "text": "A program that asks the player for 6 words using prompt(), stores them in variables, assembles them into a story using a template literal, and changes the ending based on one of the answers using an if/else."
+        }
+      ]
+    }
+  ],
+  "challenges": [
+    {
+      "title": "Try it yourself",
+      "type": "practice",
+      "duration": "10 min",
+      "format": "code-editor",
+      "tasks": [
+        "Write your own Mad Libs story from scratch.",
+        "Pick a theme — it could be about anything: a school day, a pizza disaster, an alien visit.",
+        "Use at least 4 prompt() calls, a template literal, and one if/else.",
+        "There are no checks here — just make something you're proud of."
+      ],
+      "hint": "Start with the variables, then the prompts, then the template literal, then the if/else. Same four steps as before.",
+      "starterCode": "// Step 1: declare your variables (use let)\n// Example: let animal = '';\n\n\n\n// Step 2: use prompt() to ask the player for each one\n// Example: animal = prompt('Enter an animal:');\n\n\n\n// Step 3: build your story using a template literal\n// Example: let story = `Once there was a ${animal}...`;\n\n\n\n// Step 4: add an if/else for a twist ending\n// Example: if (someVariable > 5) { console.log('Wow!'); } else { console.log('Not bad.'); }\n\n\n",
+      "checks": []
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Step 1 — Declare your variables",
+      "type": "practice",
+      "duration": "3 min",
+      "format": "final-project",
+      "lessonRefs": [
+        "s2-l1",
+        "s2-l2"
+      ],
+      "tasks": [
+        "Every piece of information in the story needs a home.",
+        "Declare one variable for each blank in the story.",
+        "Fill in the missing keywords and values."
+      ],
+      "hint": "Use let for every variable. Strings start empty with ''. The number starts at 0.",
+      "tokenBank": [
+        {
+          "id": "t1",
+          "label": "let"
+        },
+        {
+          "id": "t2",
+          "label": "const"
+        },
+        {
+          "id": "t3",
+          "label": "''"
+        },
+        {
+          "id": "t4",
+          "label": "0"
+        },
+        {
+          "id": "t5",
+          "label": "true"
+        },
+        {
+          "id": "t6",
+          "label": "var"
+        }
+      ],
+      "checks": [
+        {
+          "type": "sourceIncludes",
+          "pattern": "let\\s+adjective",
+          "label": "adjective variable declared"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "let\\s+robotName",
+          "label": "robotName variable declared"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "let\\s+noun",
+          "label": "noun variable declared"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "let\\s+color",
+          "label": "color variable declared"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "let\\s+exclamation",
+          "label": "exclamation variable declared"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "let\\s+squareCount",
+          "label": "squareCount variable declared"
+        }
+      ],
+      "lines": [
+        {
+          "id": "ln_0_0",
+          "text": "// The six blanks in our story",
+          "explanation": "Each variable here will hold one word from the player. We declare them all up front before asking for any input — this is good practice so every variable exists before it is used."
+        },
+        {
+          "id": "ln_0_1",
+          "text": "<<bk_0_0>> adjective    = <<bk_0_1>>;",
+          "explanation": "adjective will hold a descriptive word like 'clumsy' or 'sparkling'. It starts empty because we haven't asked the player yet."
+        },
+        {
+          "id": "ln_0_2",
+          "text": "<<bk_0_2>> robotName    = '';",
+          "explanation": "robotName will hold the name the player gives the robot. It's a string so it starts as an empty string."
+        },
+        {
+          "id": "ln_0_3",
+          "text": "let noun          = '';",
+          "explanation": "noun will hold any object — 'banana', 'spatula', 'calculator'. Anything goes in Mad Libs."
+        },
+        {
+          "id": "ln_0_4",
+          "text": "let color         = '';",
+          "explanation": "color will hold the color of the flashing square — 'neon green', 'electric blue', whatever the player picks."
+        },
+        {
+          "id": "ln_0_5",
+          "text": "let exclamation   = '';",
+          "explanation": "exclamation is something the robot shouts — 'BEEP!', 'OH NO!', 'BANANA!'. The sillier the better."
+        },
+        {
+          "id": "ln_0_6",
+          "text": "<<bk_0_3>> squareCount = <<bk_0_4>>;",
+          "explanation": "squareCount is a number — how many squares light up at once. It starts at 0 and will be replaced by whatever the player types. We'll use this number in the if/else at the end."
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_0_0",
+          "mode": "wordbank",
+          "answer": "let",
+          "instruction": "Drag the keyword that creates a new variable.",
+          "explanation": "let is the keyword that creates a new variable in JavaScript. const would work too but we use let here because the values will change when we assign the prompt() results.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_1",
+          "mode": "wordbank",
+          "answer": "''",
+          "instruction": "adjective will hold a string. Drag the starting value for an empty string.",
+          "explanation": "An empty string '' is the right starting value for a text variable. It means 'nothing yet' — we'll fill it in the next step when we call prompt().",
+          "lessonRefs": [
+            "s2-l4"
+          ]
+        },
+        {
+          "id": "bk_0_2",
+          "mode": "wordbank",
+          "answer": "let",
+          "instruction": "Same keyword as line 2 — drag it again.",
+          "explanation": "Every variable declaration starts with let. The pattern is always the same: let, name, =, value.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_3",
+          "mode": "type",
+          "answer": "let",
+          "instruction": "Type the keyword that creates a new variable.",
+          "explanation": "You've dragged it twice — now type it. let is the keyword for declaring a new variable in JavaScript.",
+          "lessonRefs": [
+            "s2-l1"
+          ]
+        },
+        {
+          "id": "bk_0_4",
+          "mode": "wordbank",
+          "answer": "0",
+          "instruction": "squareCount is a number, not a string. Drag the correct starting value for a number variable.",
+          "explanation": "Numbers don't use quotes. 0 is the right starting value — no quotes, just the digit. If you wrote '0' it would be a string and the math later would break.",
+          "lessonRefs": [
+            "s2-l5"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Step 2 — Ask the player",
+      "type": "practice",
+      "duration": "4 min",
+      "format": "final-project",
+      "lessonRefs": [
+        "s2-l6"
+      ],
+      "tasks": [
+        "Now fill each variable with a real answer from the player.",
+        "Use prompt() for the text answers.",
+        "Wrap squareCount in Number() so you can use it in math later."
+      ],
+      "hint": "prompt() always returns a string. Number(prompt('...')) converts it to a number straight away.",
+      "codePrefix": "let adjective    = '';\nlet robotName    = '';\nlet noun         = '';\nlet color        = '';\nlet exclamation  = '';\nlet squareCount  = 0;\n",
+      "tokenBank": [
+        {
+          "id": "t1",
+          "label": "prompt"
+        },
+        {
+          "id": "t2",
+          "label": "Number"
+        },
+        {
+          "id": "t3",
+          "label": "console.log"
+        },
+        {
+          "id": "t4",
+          "label": "alert"
+        },
+        {
+          "id": "t5",
+          "label": "let"
+        }
+      ],
+      "checks": [
+        {
+          "type": "sourceIncludes",
+          "pattern": "prompt\\s*\\(",
+          "label": "prompt() is used"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "Number\\s*\\(",
+          "label": "Number() wraps the squareCount prompt"
+        }
+      ],
+      "lines": [
+        {
+          "id": "ln_1_0",
+          "text": "// Ask the player for each word",
+          "explanation": "We call prompt() once for each variable. Each call pauses the program, shows a pop-up, and stores whatever the player types back into the variable."
+        },
+        {
+          "id": "ln_1_1",
+          "text": "adjective   = <<bk_1_0>>('Enter an adjective (e.g. clumsy, sparkly):');",
+          "explanation": "prompt() returns a string — whatever the player typed. We store it straight into adjective. No let this time because adjective already exists from Step 1."
+        },
+        {
+          "id": "ln_1_2",
+          "text": "robotName   = prompt('Give the robot a name:');",
+          "explanation": "Same pattern. prompt() asks the question, the player types an answer, and the string comes back into robotName."
+        },
+        {
+          "id": "ln_1_3",
+          "text": "noun        = prompt('Enter a random noun (e.g. banana, spatula):');",
+          "explanation": "Any noun works here. The sillier the better — that's the whole point of Mad Libs."
+        },
+        {
+          "id": "ln_1_4",
+          "text": "color       = prompt('Enter a color:');",
+          "explanation": "This will be the color of the flashing square in our story. 'Neon pink' or 'electric avocado' are both valid answers."
+        },
+        {
+          "id": "ln_1_5",
+          "text": "exclamation = prompt('What does the robot shout? (e.g. BEEP, OH NO):');",
+          "explanation": "exclamation gets whatever the player shouts. All caps optional but encouraged."
+        },
+        {
+          "id": "ln_1_6",
+          "text": "squareCount = <<bk_1_1>>(<<bk_1_2>>('How many squares lit up? Enter a number:'));",
+          "explanation": "squareCount needs to be a number so we can use it in an if/else later. We wrap prompt() in Number() to convert the string the player typed into an actual number."
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_1_0",
+          "mode": "wordbank",
+          "answer": "prompt",
+          "instruction": "Drag the function that shows a pop-up and asks the player to type something.",
+          "explanation": "prompt() is the function that pauses the program, shows a message in a pop-up box, and returns whatever the player typed as a string.",
+          "lessonRefs": [
+            "s2-l6"
+          ]
+        },
+        {
+          "id": "bk_1_1",
+          "mode": "wordbank",
+          "answer": "Number",
+          "instruction": "squareCount needs to be a number for the if/else in Step 4. Drag the function that converts a string to a number.",
+          "explanation": "Number() takes a string like '5' and converts it to the actual number 5. Without this, squareCount would be the string '5' and the comparison squareCount > 3 might not work as expected.",
+          "lessonRefs": [
+            "s2-l6"
+          ]
+        },
+        {
+          "id": "bk_1_2",
+          "mode": "wordbank",
+          "answer": "prompt",
+          "instruction": "Drag prompt again — it goes inside Number() as the thing being converted.",
+          "explanation": "Number(prompt('...')) is a common pattern: ask the player, get a string back, convert it to a number in one step. The prompt() call happens first, then Number() wraps the result.",
+          "lessonRefs": [
+            "s2-l6"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Step 3 — Build the story",
+      "type": "practice",
+      "duration": "5 min",
+      "format": "final-project",
+      "lessonRefs": [
+        "s2-l4"
+      ],
+      "tasks": [
+        "Now drop all six variables into the story using a template literal.",
+        "A template literal uses backticks (`) and ${} to slot variables in.",
+        "Fill in the missing variable names inside the ${} gaps."
+      ],
+      "hint": "The variable name goes inside ${}. No quotes around it — it's a variable, not a string.",
+      "codePrefix": "let adjective    = '';\nlet robotName    = '';\nlet noun         = '';\nlet color        = '';\nlet exclamation  = '';\nlet squareCount  = 0;\n\nadjective   = prompt('Enter an adjective (e.g. clumsy, sparkly):');\nrobotName   = prompt('Give the robot a name:');\nnoun        = prompt('Enter a random noun (e.g. banana, spatula):');\ncolor       = prompt('Enter a color:');\nexclamation = prompt('What does the robot shout? (e.g. BEEP, OH NO):');\nsquareCount = Number(prompt('How many squares lit up? Enter a number:'));\n",
+      "tokenBank": [
+        {
+          "id": "t1",
+          "label": "adjective"
+        },
+        {
+          "id": "t2",
+          "label": "robotName"
+        },
+        {
+          "id": "t3",
+          "label": "noun"
+        },
+        {
+          "id": "t4",
+          "label": "color"
+        },
+        {
+          "id": "t5",
+          "label": "exclamation"
+        },
+        {
+          "id": "t6",
+          "label": "squareCount"
+        },
+        {
+          "id": "t7",
+          "label": "name"
+        },
+        {
+          "id": "t8",
+          "label": "word"
+        }
+      ],
+      "checks": [
+        {
+          "type": "sourceIncludes",
+          "pattern": "\\$\\{adjective\\}",
+          "label": "adjective dropped into template literal"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "\\$\\{robotName\\}",
+          "label": "robotName dropped into template literal"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "\\$\\{noun\\}",
+          "label": "noun dropped into template literal"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "\\$\\{color\\}",
+          "label": "color dropped into template literal"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "\\$\\{exclamation\\}",
+          "label": "exclamation dropped into template literal"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "\\$\\{squareCount\\}",
+          "label": "squareCount dropped into template literal"
+        }
+      ],
+      "lines": [
+        {
+          "id": "ln_2_0",
+          "text": "// Build the story using a template literal",
+          "explanation": "A template literal is a string wrapped in backticks (`) instead of quotes. Inside it, ${} is a gap where a variable gets dropped in. JavaScript replaces each ${variableName} with the actual value stored in that variable."
+        },
+        {
+          "id": "ln_2_1",
+          "text": "let story = `One day, a ${<<bk_2_0>>} robot named ${<<bk_2_1>>} decided to play Simon Says.`,",
+          "explanation": "The template literal starts here. ${adjective} will be replaced by whatever the player typed for their adjective. ${robotName} will be replaced by the robot's name."
+        },
+        {
+          "id": "ln_2_2",
+          "text": "  `The robot pressed a ${<<bk_2_2>>} to start the game.`,",
+          "explanation": "story is an array of sentence strings. Each line is one sentence. ${noun} drops the player's noun right into the sentence."
+        },
+        {
+          "id": "ln_2_3",
+          "text": "  `The first square lit up ${<<bk_2_3>>} and the robot shouted '${<<bk_2_4>>}!'`,",
+          "explanation": "Two variables in one sentence — ${color} and ${exclamation}. The order inside the template literal is what decides where each word appears in the story."
+        },
+        {
+          "id": "ln_2_4",
+          "text": "  `Then ${<<bk_2_5>>} more squares lit up all at once.`;",
+          "explanation": "squareCount is a number but template literals handle that automatically — it gets converted to a string when dropped into the sentence. No Number() or String() needed here."
+        },
+        {
+          "id": "ln_2_5",
+          "text": ""
+        },
+        {
+          "id": "ln_2_6",
+          "text": "// Print each sentence",
+          "explanation": "story is an array, so we loop through it and log each sentence one at a time. This way each sentence appears on its own line in the console."
+        },
+        {
+          "id": "ln_2_7",
+          "text": "story.forEach(function(sentence) {",
+          "explanation": "forEach runs a function once for each item in the array. Each time it runs, 'sentence' holds one sentence from the story."
+        },
+        {
+          "id": "ln_2_8",
+          "text": "  console.log(sentence);"
+        },
+        {
+          "id": "ln_2_9",
+          "text": "});"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_2_0",
+          "mode": "wordbank",
+          "answer": "adjective",
+          "instruction": "Drag the variable that holds the player's adjective into this gap.",
+          "explanation": "Inside ${} you write the variable name — no quotes. JavaScript looks up the value stored in that variable and drops it into the string.",
+          "lessonRefs": [
+            "s2-l4"
+          ]
+        },
+        {
+          "id": "bk_2_1",
+          "mode": "wordbank",
+          "answer": "robotName",
+          "instruction": "Drag the variable that holds the robot's name.",
+          "explanation": "robotName holds the string the player typed for the robot's name. It goes straight into the sentence here.",
+          "lessonRefs": [
+            "s2-l4"
+          ]
+        },
+        {
+          "id": "bk_2_2",
+          "mode": "wordbank",
+          "answer": "noun",
+          "instruction": "Drag the variable that holds the player's noun.",
+          "explanation": "noun holds whatever random object the player typed. Could be 'banana'. Could be 'fire extinguisher'. The template literal doesn't care — it just drops it in.",
+          "lessonRefs": [
+            "s2-l4"
+          ]
+        },
+        {
+          "id": "bk_2_3",
+          "mode": "wordbank",
+          "answer": "color",
+          "instruction": "Drag the variable that holds the player's color.",
+          "explanation": "color holds the color string. It gets dropped right into the sentence between 'lit up' and 'and the robot'.",
+          "lessonRefs": [
+            "s2-l4"
+          ]
+        },
+        {
+          "id": "bk_2_4",
+          "mode": "wordbank",
+          "answer": "exclamation",
+          "instruction": "Drag the variable that holds what the robot shouts.",
+          "explanation": "exclamation holds the player's shout. The quotes around ${exclamation} in the sentence are part of the story text — they will appear literally in the output.",
+          "lessonRefs": [
+            "s2-l4"
+          ]
+        },
+        {
+          "id": "bk_2_5",
+          "mode": "type",
+          "answer": "squareCount",
+          "instruction": "Type the variable that holds the number of squares. You've dragged the others — now type this one.",
+          "explanation": "squareCount is a number but template literals convert it to a string automatically. You don't need to wrap it in String() — ${squareCount} just works.",
+          "lessonRefs": [
+            "s2-l4"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Step 4 — The twist ending",
+      "type": "practice",
+      "duration": "4 min",
+      "format": "final-project",
+      "lessonRefs": [
+        "s2-l7",
+        "s2-l8"
+      ],
+      "tasks": [
+        "Add a twist ending that changes based on squareCount.",
+        "If the player said more than 3 squares lit up — print a dramatic ending.",
+        "Otherwise — print a calmer one.",
+        "Fill in the condition and the two log messages."
+      ],
+      "hint": "The condition goes inside the if(). Use > to check if squareCount is greater than 3.",
+      "codePrefix": "let adjective    = '';\nlet robotName    = '';\nlet noun         = '';\nlet color        = '';\nlet exclamation  = '';\nlet squareCount  = 0;\n\nadjective   = prompt('Enter an adjective (e.g. clumsy, sparkly):');\nrobotName   = prompt('Give the robot a name:');\nnoun        = prompt('Enter a random noun (e.g. banana, spatula):');\ncolor       = prompt('Enter a color:');\nexclamation = prompt('What does the robot shout? (e.g. BEEP, OH NO):');\nsquareCount = Number(prompt('How many squares lit up? Enter a number:'));\n\nlet story = [\n  `One day, a ${adjective} robot named ${robotName} decided to play Simon Says.`,\n  `The robot pressed a ${noun} to start the game.`,\n  `The first square lit up ${color} and the robot shouted '${exclamation}!'`,\n  `Then ${squareCount} more squares lit up all at once.`\n];\n\nstory.forEach(function(sentence) {\n  console.log(sentence);\n});\n",
+      "tokenBank": [
+        {
+          "id": "t1",
+          "label": "squareCount > 3"
+        },
+        {
+          "id": "t2",
+          "label": "squareCount < 3"
+        },
+        {
+          "id": "t3",
+          "label": "squareCount === 3"
+        },
+        {
+          "id": "t4",
+          "label": "robotName"
+        },
+        {
+          "id": "t5",
+          "label": "squareCount"
+        },
+        {
+          "id": "t6",
+          "label": "adjective"
+        }
+      ],
+      "checks": [
+        {
+          "type": "sourceIncludes",
+          "pattern": "if\\s*\\(",
+          "label": "an if statement is used"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "squareCount\\s*>\\s*3",
+          "label": "squareCount is compared to 3 in the condition"
+        },
+        {
+          "type": "sourceIncludes",
+          "pattern": "Not bad",
+          "label": "else branch ending is present"
+        }
+      ],
+      "lines": [
+        {
+          "id": "ln_3_0",
+          "text": "// The twist ending — changes based on squareCount",
+          "explanation": "An if/else lets the story end differently depending on what the player answered. This is how games respond to player choices — the same code runs, but a different path is taken each time."
+        },
+        {
+          "id": "ln_3_1",
+          "text": "if (<<bk_3_0>>) {",
+          "explanation": "The condition goes inside the parentheses. If squareCount is greater than 3, the dramatic ending runs. If not, the else block runs instead."
+        },
+        {
+          "id": "ln_3_2",
+          "text": "  console.log(<<bk_3_1>>);",
+          "explanation": "This line runs when squareCount is greater than 3. We use a template literal so robotName gets dropped into the dramatic ending message."
+        },
+        {
+          "id": "ln_3_3",
+          "text": "} else {",
+          "explanation": "The else block runs when the condition was false — when squareCount is 3 or fewer."
+        },
+        {
+          "id": "ln_3_4",
+          "text": "  console.log('Not bad for a first try. The robot will do better next time.');",
+          "explanation": "This is the calmer ending. It runs when the player said 3 or fewer squares lit up — a smaller challenge, a smaller reaction."
+        },
+        {
+          "id": "ln_3_5",
+          "text": "}"
+        }
+      ],
+      "blanks": [
+        {
+          "id": "bk_3_0",
+          "mode": "wordbank",
+          "answer": "squareCount > 3",
+          "instruction": "Drag the condition that checks whether squareCount is more than 3.",
+          "explanation": "squareCount > 3 is true when the player typed a number greater than 3. The > operator means 'greater than'. If the player typed 4 or more, this condition is true and the dramatic ending runs.",
+          "lessonRefs": [
+            "s2-l7"
+          ]
+        },
+        {
+          "id": "bk_3_1",
+          "mode": "freeline",
+          "answer": "`Whoa — ${squareCount} squares?! ${robotName} was completely overwhelmed. Game over!`",
+          "instruction": "Type the dramatic ending. Use a template literal that includes both robotName and squareCount in the message.",
+          "explanation": "A template literal lets you build a personalised message using the player's own inputs. The backticks wrap the whole string, and ${} slots in the variables. The message will be different every time based on what the player typed.",
+          "lessonRefs": [
+            "s2-l4"
+          ],
+          "expectedEffect": {
+            "type": "sourceIncludes",
+            "pattern": "\\$\\{robotName\\}.*\\$\\{squareCount\\}|\\$\\{squareCount\\}.*\\$\\{robotName\\}"
+          }
+        }
+      ]
+    }
+  ]
+}

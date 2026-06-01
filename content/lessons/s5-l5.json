@@ -1,0 +1,51 @@
+{
+  "id": "s5-l5",
+  "session": "Session 5",
+  "title": "Connecting to the DOM",
+  "content": [
+    {
+      "heading": "Connecting to the DOM — wiring the logic to the page",
+      "blocks": [
+        { "kind": "p", "text": "You have game logic that works in the console. You have a styled grid. Now you connect them. getElementById finds the elements. classList.add and classList.remove make squares light up. addEventListener makes them respond to clicks. These three things together are the entire bridge between your JS and your HTML." },
+        { "kind": "code", "lines": [
+          "// Find all squares once at the start",
+          "let cells = document.querySelectorAll('.cell');",
+          "",
+          "// Light up a square",
+          "function lightUp(index) {",
+          "    cells[index].classList.add('lit');",
+          "}",
+          "",
+          "// Turn it off",
+          "function turnOff(index) {",
+          "    cells[index].classList.remove('lit');",
+          "}",
+          "",
+          "// Wire up click handlers",
+          "cells.forEach(function(cell, index) {",
+          "    cell.addEventListener('click', function() {",
+          "        handleClick(index);",
+          "    });",
+          "});"
+        ]},
+        { "kind": "callout", "variant": "info", "label": "This is the full connection", "text": "Every visual thing Simon Says does comes down to these three lines: getElementById (find it), classList.add('lit') (light it up), classList.remove('lit') (turn it off). The JS logic you wrote in the console never needs to change — it just needs to call these functions." }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Light up and turn off",
+      "type": "practice",
+      "duration": "8 min",
+      "tasks": [
+        "The page has a 3x3 grid of divs with class 'cell'. Each has a data-index from 0 to 8.",
+        "Write a function called lightUp(index) that adds the class 'lit' to the cell at that index.",
+        "Write a function called turnOff(index) that removes 'lit' from that cell.",
+        "Call lightUp(0), lightUp(4), lightUp(8) — the diagonal should light up.",
+        "After 2 seconds, call turnOff on all three."
+      ],
+      "hint": "Use querySelectorAll('.cell') to get all cells. Access them by index: cells[index].classList.add('lit')",
+      "starterCode": "let cells = document.querySelectorAll('.cell');\n\nfunction lightUp(index) {\n  // add 'lit' class to cells[index]\n}\n\nfunction turnOff(index) {\n  // remove 'lit' class from cells[index]\n}\n\n// Light up the diagonal\nlightUp(0);\nlightUp(4);\nlightUp(8);\n\n// Turn them off after 2 seconds\nsetTimeout(function() {\n  // turn off all three\n}, 2000);\n"
+    }
+  ]
+}

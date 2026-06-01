@@ -1,69 +1,102 @@
 {
   "id": "s4-l2",
   "session": "Session 4",
-  "title": "Loops",
+  "title": "Array Methods",
   "content": [
     {
-      "heading": "Loops — repeat code for every item",
+      "heading": "Array methods — useful tools built into every array",
       "blocks": [
-        { "kind": "p", "text": "A for loop runs the same block of code repeatedly, counting from a start to an end. A forEach loop runs a function for each item in an array automatically — no counter variable needed." },
-        { "kind": "concept", "code": "for (let i = 0; i < 5; i++)", "desc": "Start at 0, run while i is less than 5, add 1 each time" },
-        { "kind": "concept", "code": "array.forEach(function(item))", "desc": "Run this function once for each item in the array" }
+        { "kind": "p", "text": "Arrays come with built-in methods that let you sort, copy, compare, and search them. These are used constantly in Simon Says — especially when checking if the player clicked the right squares in the right order." },
+        { "kind": "concept", "code": "array.sort()", "desc": "Sorts the items in the array in place. Numbers and strings sort differently — always check the result." },
+        { "kind": "concept", "code": "array.slice()", "desc": "Returns a copy of the array without changing the original. Use this before sorting so the original stays intact." },
+        { "kind": "concept", "code": "array.toString()", "desc": "Converts the whole array into a single string. [3,1,2].toString() gives '3,1,2'. Useful for comparing two arrays." },
+        { "kind": "concept", "code": "array.indexOf(value)", "desc": "Returns the index of the first matching value, or -1 if not found." }
       ]
     },
     {
       "blocks": [
         { "kind": "code", "lines": [
-          "// for loop",
-          "for (let i = 0; i < 3; i++) {",
-          "    console.log('Step', i);",
-          "}",
-          "// prints: Step 0, Step 1, Step 2",
+          "let litCells    = [5, 2, 8];",
+          "let playerClicks = [2, 8, 5];",
           "",
-          "// forEach",
-          "let fruits = ['apple', 'banana', 'cherry'];",
-          "fruits.forEach(function(fruit) {",
-          "    console.log('I like', fruit);",
-          "});"
+          "// Direct comparison fails — different order",
+          "console.log(litCells === playerClicks);  // false",
+          "",
+          "// Sort copies and compare as strings",
+          "let a = litCells.slice().sort().toString();",
+          "let b = playerClicks.slice().sort().toString();",
+          "console.log(a === b);  // true — same numbers, order doesn't matter",
+          "",
+          "// indexOf",
+          "console.log(litCells.indexOf(8));  // 2",
+          "console.log(litCells.indexOf(9));  // -1 — not in array"
         ]},
-        { "kind": "callout", "variant": "info", "label": "Which one to use", "text": "Use a for loop when you need the index number or want to count in a custom way. Use forEach when you just want to do something with each item." }
+        { "kind": "callout", "variant": "warn", "label": "Always .slice() before .sort()", "text": ".sort() changes the original array. If you sort litCells directly, you lose the order the game chose. Always sort a copy: array.slice().sort()" }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Count with a loop",
-      "type": "practice",
-      "duration": "5 min",
+      "title": "Compare two sequences",
+      "type": "predict",
+      "duration": "6 min",
       "tasks": [
-        "Write a for loop that logs every number from 1 to 10.",
-        "Write a for loop that logs only even numbers from 2 to 20.",
-        "Write a for loop that counts backwards from 10 to 1.",
-        "Challenge: write a loop that logs the square of each number from 1 to 5."
+        "Before running: predict whether each comparison below is true or false.",
+        "Run the code and check your predictions.",
+        "For any wrong ones — explain why."
       ],
-      "hint": "For even numbers: i = i + 2 instead of i++. For backwards: start at 10, condition i > 0, use i--.",
-      "starterCode": "// Log 1 to 10\n\n\n// Log even numbers 2 to 20\n\n\n// Count backwards 10 to 1\n\n"
+      "hint": "Remember: .slice() makes a copy, .sort() reorders, .toString() converts to a string for comparison.",
+      "starterCode": "let a = [3, 1, 4];\nlet b = [4, 3, 1];\nlet c = [3, 1, 5];\n\n// Direct comparison\nconsole.log('direct:', a === b);\n\n// Sort and compare\nlet sortedA = a.slice().sort().toString();\nlet sortedB = b.slice().sort().toString();\nlet sortedC = c.slice().sort().toString();\n\nconsole.log('a vs b:', sortedA === sortedB);\nconsole.log('a vs c:', sortedA === sortedC);\n",
+      "checks": [
+        { "type": "console", "includes": "true", "label": "correctly identifies a match" }
+      ]
     },
     {
-      "title": "Loop over an array",
+      "title": "Build the answer checker",
       "type": "practice",
-      "duration": "5 min",
+      "duration": "7 min",
       "tasks": [
-        "Create an array of five numbers.",
-        "Use forEach to log each number multiplied by itself.",
-        "Use a for loop to add all numbers together into a total variable.",
-        "Log the total after the loop finishes."
+        "Write a function called checkAnswer(lit, clicks) that returns true if the two arrays contain the same numbers (order doesn't matter), and false if they don't.",
+        "Test it with matching arrays, non-matching arrays, and arrays in different orders.",
+        "Log 'Correct!' or 'Wrong.' based on the result.",
+        "This is the exact function Simon Says uses to check the player's answer."
       ],
-      "hint": "Declare total = 0 before the loop. Inside the loop: total = total + numbers[i].",
-      "starterCode": "let numbers = [3, 7, 2, 9, 4];\n\n// forEach: log each number squared\n\n\n// for loop: sum all numbers\nlet total = 0;\n\n\nconsole.log('Total:', total);\n",
+      "hint": "Sort a copy of each array and compare as strings: lit.slice().sort().toString() === clicks.slice().sort().toString()",
+      "starterCode": "function checkAnswer(lit, clicks) {\n  // return true if both arrays contain the same numbers\n  // order does not matter\n}\n\n// Test cases\nconsole.log(checkAnswer([3, 7, 1], [7, 1, 3]));  // true\nconsole.log(checkAnswer([3, 7, 1], [3, 7, 2]));  // false\nconsole.log(checkAnswer([5], [5]));               // true\n",
       "checks": [
-        {
-          "type": "variable",
-          "name": "total",
-          "expected": 25,
-          "label": "total equals 25 (sum of [3,7,2,9,4])"
-        }
+        { "type": "call", "fn": "checkAnswer", "args": [[3,7,1],[7,1,3]], "assert": "result === true", "label": "checkAnswer returns true for matching arrays in different order" },
+        { "type": "call", "fn": "checkAnswer", "args": [[3,7,1],[3,7,2]], "assert": "result === false", "label": "checkAnswer returns false for non-matching arrays" }
       ]
+    }
+  ],
+  "challenges": [
+    {
+      "id": "c1",
+      "level": 1,
+      "difficulty": "easy",
+      "title": "The sort is changing the original",
+      "description": "This code should compare two arrays without changing them. But after comparing, litCells is in the wrong order. Find the bug and fix it.",
+      "buggyCode": "let litCells = [5, 2, 8];\nlet playerClicks = [8, 5, 2];\n\nlet result = litCells.sort().toString() === playerClicks.sort().toString();\nconsole.log('Match:', result);\nconsole.log('litCells after:', litCells);",
+      "starterCode": "let litCells = [5, 2, 8];\nlet playerClicks = [8, 5, 2];\n\nlet result = litCells.sort().toString() === playerClicks.sort().toString();\nconsole.log('Match:', result);\nconsole.log('litCells after:', litCells);",
+      "hint": "Sort should never touch the originals. What method makes a copy of an array?",
+      "checks": [
+        { "type": "console", "includes": "5, 2, 8", "label": "litCells is unchanged after comparison" }
+      ],
+      "explanation": ".sort() sorts in place — it changes the original array. Use .slice() first to make a copy: litCells.slice().sort(). Now litCells stays as [5, 2, 8] and only the copy gets sorted."
+    },
+    {
+      "id": "c2",
+      "level": 2,
+      "difficulty": "medium",
+      "title": "indexOf is returning -1 but the value is in the array",
+      "description": "The player clicked cell 3 but the game says it's not in the sequence. Why?",
+      "buggyCode": "let litCells = [1, 3, 7];\nlet playerClick = '3';\n\nif (litCells.indexOf(playerClick) === -1) {\n  console.log('That cell was not lit up.');\n} else {\n  console.log('Correct cell!');\n}",
+      "starterCode": "let litCells = [1, 3, 7];\nlet playerClick = '3';\n\nif (litCells.indexOf(playerClick) === -1) {\n  console.log('That cell was not lit up.');\n} else {\n  console.log('Correct cell!');\n}",
+      "hint": "indexOf checks type AND value. What type is playerClick? What type are the values in litCells?",
+      "checks": [
+        { "type": "console", "includes": "Correct cell!", "label": "correctly identifies cell 3 as lit" }
+      ],
+      "explanation": "litCells contains numbers [1, 3, 7] but playerClick is the string '3'. indexOf uses strict comparison — '3' !== 3 — so it returns -1. Fix: convert playerClick to a number with Number(playerClick) before the indexOf check."
     }
   ]
 }

@@ -15,8 +15,8 @@
       "duration": "4 min",
       "format": "final-project",
       "lessonRefs": [
-        "s2-l1",
-        "s2-l0"
+        "s2-l2",
+        "s2-l1"
       ],
       "tasks": [
         "This block sets up every variable and DOM reference the game needs.",
@@ -72,7 +72,7 @@
           "text": "const cells         = document.querySelectorAll('.cell');",
           "explanation": "querySelectorAll works like getElementById but returns ALL elements that match a CSS selector, not just one. A CSS class selector starts with a dot. So '.cell' finds every element with class='cell' on the page. This gives us all 16 grid squares at once as a list we can loop through.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         },
         {
@@ -88,7 +88,7 @@
           "text": "let playerClicks   = [];",
           "explanation": "playerClicks tracks which cells the player has clicked so far this round. It also starts as an empty array. startRound resets it to [] at the beginning of each round so old clicks do not carry over.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         },
         {
@@ -100,7 +100,7 @@
           "text": "let level          = 1;",
           "explanation": "level tracks which round the player is on. It starts at 1. Each time the player completes a round correctly checkResult adds 1 to level. The number also determines how many cells appear in the sequence that round.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         }
       ],
@@ -112,7 +112,7 @@
           "instruction": "This line creates a constant variable. Drag the keyword that declares a variable that will never be reassigned.",
           "explanation": "const is used when you know the variable will always point to the same thing. grid will always refer to the same HTML element so const is the right choice over let.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         },
         {
@@ -122,7 +122,7 @@
           "instruction": "This line also creates a constant. Drag the same keyword you used on line 1.",
           "explanation": "Every DOM reference in this program uses const because we grab each element once at the start and never replace it. The variable name changes but the pattern is identical.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         },
         {
@@ -132,7 +132,7 @@
           "instruction": "Drag the method that searches the page for a single element by its id string.",
           "explanation": "document.getElementById is the standard way to find one specific element. You pass in the id exactly as it appears in the HTML. It returns the element itself so you can change it later.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         },
         {
@@ -142,7 +142,7 @@
           "instruction": "Type the keyword that declares a variable that will not be reassigned.",
           "explanation": "You typed it this time instead of dragging it. The keyword is the same as lines 1 and 2. Recognizing the pattern is the point.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         },
         {
@@ -152,7 +152,7 @@
           "instruction": "Type the id string of the status message element. Open the index.html tab to find it.",
           "explanation": "The id is written directly in the HTML as id='status-message'. You pass it as a string with quotes. The string must match exactly including the hyphen.",
           "lessonRefs": [
-            "s2-l1"
+            "s2-l2"
           ]
         },
         {
@@ -162,8 +162,8 @@
           "instruction": "sequence will hold the list of cell indexes for each round. It starts empty. Drag the value that represents an empty list.",
           "explanation": "An empty array [] is the right starting value because startRound will fill it with a fresh random set of indexes at the beginning of every round. Starting empty means no leftover data from a previous round.",
           "lessonRefs": [
-            "s2-l1",
-            "s2-l0"
+            "s2-l2",
+            "s2-l1"
           ]
         },
         {
@@ -173,8 +173,8 @@
           "instruction": "isInputAllowed controls whether player clicks do anything. At the start the game is not running yet. Type the boolean that means clicking is blocked.",
           "explanation": "false means clicking is turned off. The game turns it on after the display sequence finishes by setting isInputAllowed = true. Without this gate the player could click cells before the pattern is shown.",
           "lessonRefs": [
-            "s2-l1",
-            "s2-l0"
+            "s2-l2",
+            "s2-l1"
           ]
         }
       ]
@@ -527,7 +527,7 @@
       "duration": "6 min",
       "format": "final-project",
       "lessonRefs": [
-        "s2-l7",
+        "s2-l8",
         "s3-l2",
         "s5-l1"
       ],

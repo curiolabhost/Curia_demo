@@ -1,0 +1,91 @@
+<svg width="580" height="380" viewBox="0 0 580 380" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>return stops the function — only one branch fires</title>
+<desc>A step-by-step diagram showing JavaScript reading a function top to bottom, hitting the first matching return, firing it, and skipping the rest.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#3A3852" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- Section label -->
+<text x="290" y="24" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.07em">RETURN STOPS THE FUNCTION</text>
+
+<!-- ══ LEFT: code column ══ -->
+<text x="32" y="50" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#4A5068" letter-spacing="0.06em">THE CODE</text>
+
+<!-- score input pill -->
+<rect x="32" y="58" width="220" height="28" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="142" y="72" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#3C3489">grade(<tspan font-weight="600" fill="#AFA9EC">75</tspan>)</text>
+
+<!-- down arrow -->
+<line x1="142" y1="86" x2="142" y2="100" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- function block background -->
+<rect x="32" y="102" width="220" height="236" rx="8" fill="#13122A" stroke="#2E2B4A" stroke-width="0.5"/>
+
+<!-- line: function header -->
+<text x="48" y="122" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#AFA9EC">function </text>
+<text x="120" y="122" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#85B7EB">grade</text>
+<text x="158" y="122" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#C2C0B6">(score) {</text>
+
+<!-- condition 1 — ACTIVE (score=75, 75>=90 is false) -->
+<rect x="44" y="130" width="196" height="22" rx="4" fill="#2E2B4A"/>
+<text x="52" y="141" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#C2C0B6">  if (score >= <tspan fill="#FAC775">90</tspan>) {</text>
+
+<!-- return A — skipped -->
+<text x="52" y="163" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#3A3852">    return <tspan fill="#3A3852">'A'</tspan>;</text>
+<line x1="52" y1="163" x2="190" y2="163" stroke="#3A3852" stroke-width="1"/>
+
+<text x="52" y="183" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#3A3852">  } else if (score >= <tspan fill="#3A3852">70</tspan>) {</text>
+
+<!-- condition 2 — FIRES (75 >= 70 is true) highlight -->
+<rect x="44" y="172" width="196" height="22" rx="4" fill="#0F6E5622"/>
+<text x="52" y="183" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#9FE1CB">  } else if (score >= <tspan fill="#FAC775">70</tspan>) {</text>
+
+<!-- return B — FIRES -->
+<rect x="44" y="192" width="196" height="22" rx="4" fill="#085041"/>
+<text x="52" y="203" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="12" font-weight="600" fill="#9FE1CB">    return <tspan fill="#E1F5EE">'B'</tspan>;</text>
+
+<!-- remaining lines — dimmed -->
+<text x="52" y="224" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#3A3852">  } else {</text>
+<text x="52" y="244" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#3A3852">    return <tspan>'F'</tspan>;</text>
+<line x1="52" y1="244" x2="178" y2="244" stroke="#3A3852" stroke-width="1"/>
+<text x="52" y="264" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#3A3852">  }</text>
+<text x="52" y="282" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#3A3852">  // never reached</text>
+<text x="44" y="302" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#2E2B4A">}</text>
+
+<!-- ══ RIGHT: explanation column ══ -->
+<text x="290" y="50" font-family="'DM Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#4A5068" letter-spacing="0.06em">WHAT JAVASCRIPT DOES</text>
+
+<!-- Step 1 -->
+<rect x="290" y="58" width="258" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text x="308" y="75" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#534AB7">① called with score = 75</text>
+<text x="308" y="93" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#3C3489">JavaScript enters the function</text>
+<line x1="419" y1="110" x2="419" y2="126" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- Step 2 -->
+<rect x="290" y="128" width="258" height="52" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="308" y="145" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#2C2C2A">② checks: 75 >= 90?</text>
+<text x="308" y="163" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#4A5068">No — moves to next condition</text>
+<line x1="419" y1="180" x2="419" y2="196" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- Step 3 — fires -->
+<rect x="290" y="198" width="258" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1"/>
+<text x="308" y="215" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#085041">③ checks: 75 >= 70?</text>
+<text x="308" y="233" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#1D9E75">Yes — return 'B' fires. Done.</text>
+<line x1="419" y1="250" x2="419" y2="266" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- Step 4 — result -->
+<rect x="290" y="268" width="258" height="52" rx="8" fill="#085041" stroke="#1D9E75" stroke-width="0.5"/>
+<text x="419" y="286" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="11" fill="#5DCAA5">caller receives</text>
+<text x="419" y="306" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="16" font-weight="600" fill="#E1F5EE">'B'</text>
+<line x1="419" y1="320" x2="419" y2="336" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- Step 5 — skipped -->
+<rect x="290" y="338" width="258" height="34" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+<text x="419" y="355" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#993C1D">else and remaining returns — never run</text>
+
+</svg>

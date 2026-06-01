@@ -7,6 +7,11 @@ const interactiveComponents: Record<string, React.ComponentType> = {
   LanguageToggle: dynamic(() => import('@/components/interactive/LanguageToggle')),
 }
 
+const InteractiveTableBlock = dynamic(
+  () => import('@/components/interactive/InteractiveTableBlock'),
+  { ssr: false },
+)
+
 function renderInline(text: string): ReactNode[] {
   const parts: ReactNode[] = []
   const re = /`([^`]+)`|\*\*([^*]+)\*\*/g
@@ -382,6 +387,10 @@ function Block({ block, variant = 'default' }: { block: ContentBlock; variant?: 
     const Component = interactiveComponents[block.component]
     if (!Component) return null
     return <Component />
+  }
+
+  if (block.kind === 'interactive-table') {
+    return <InteractiveTableBlock headers={block.headers} rows={block.rows} />
   }
 
   if (block.kind === 'table') {

@@ -1,0 +1,64 @@
+<svg width="580" height="332" viewBox="0 0 580 332" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Conditionals — if it rains bring umbrella, else bring sunglasses</title>
+<desc>A flowchart showing how an if/else works using a weather analogy: if it is raining bring an umbrella, otherwise bring sunglasses.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+
+<!-- Section label -->
+<text x="290" y="24" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#4A5068" letter-spacing="0.07em">CONDITIONALS — YOUR CODE MAKES A DECISION</text>
+
+<!-- ══ TRIGGER ══ -->
+<rect x="190" y="36" width="200" height="44" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="290" y="58" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="13" font-weight="600" fill="#2C2C2A">You step outside 🚪</text>
+
+<!-- arrow down to diamond -->
+<line x1="290" y1="80" x2="290" y2="104" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- ══ DIAMOND ══ -->
+<polygon points="290,108 390,148 290,188 190,148" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="290" y="140" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#2C2C2A">Is it</text>
+<text x="290" y="156" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="12" font-weight="600" fill="#2C2C2A">raining?</text>
+
+<!-- ══ LEFT: yes ══ -->
+<line x1="190" y1="148" x2="134" y2="148" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="162" y="140" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#185FA5">yes</text>
+
+<!-- umbrella box -->
+<rect x="32" y="122" width="100" height="52" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text x="82" y="140" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="22">☂️</text>
+<text x="82" y="162" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#0C447C">bring umbrella</text>
+
+<!-- code label -->
+<rect x="32" y="188" width="100" height="26" rx="6" fill="#1A1E2E"/>
+<text x="82" y="201" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#85B7EB">if (raining)</text>
+
+<!-- ══ RIGHT: no ══ -->
+<line x1="390" y1="148" x2="448" y2="148" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="419" y="140" text-anchor="middle" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#993C1D">no</text>
+
+<!-- sunglasses box -->
+<rect x="450" y="122" width="100" height="52" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text x="500" y="140" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="22">😎</text>
+<text x="500" y="162" text-anchor="middle" dominant-baseline="central" font-family="'DM Sans', system-ui, sans-serif" font-size="11" font-weight="600" fill="#633806">bring sunglasses</text>
+
+<!-- code label -->
+<rect x="450" y="188" width="100" height="26" rx="6" fill="#1A1E2E"/>
+<text x="500" y="201" text-anchor="middle" dominant-baseline="central" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#FAC775">else</text>
+
+<!-- ══ CODE BLOCK ══ -->
+<rect x="100" y="234" width="380" height="84" rx="8" fill="#13122A" stroke="#2E2B4A" stroke-width="0.5"/>
+<text x="120" y="254" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#AFA9EC">if </text>
+<text x="140" y="254" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#C2C0B6">(raining) {  </text>
+<text x="296" y="254" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#9FE1CB">// ☂️</text>
+<text x="130" y="272" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#C2C0B6">bringUmbrella();</text>
+<text x="120" y="290" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#C2C0B6">} </text>
+<text x="137" y="290" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#AFA9EC">else </text>
+<text x="177" y="290" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#C2C0B6">{  </text>
+<text x="207" y="290" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#9FE1CB">bringShades();</text>
+<text x="360" y="290" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#9FE1CB">// 😎</text>
+<text x="120" y="308" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#C2C0B6">}</text>
+
+</svg>

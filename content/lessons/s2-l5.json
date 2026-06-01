@@ -1,157 +1,537 @@
 {
   "id": "s2-l5",
   "session": "Session 2",
-  "title": "Getting Input",
+  "title": "Data Types",
   "content": [
     {
-      "heading": "Before we start coding — think about this:",
+      "heading": "Data Types — what kind of thing is this?",
       "blocks": [
-        { "kind": "image", "src": "/assets/lessons/s2-l5/hello-alex-bubble-v6.svg" },
-        { "kind": "p", "text": "You're building a game and you want to greet the player by name. But you don't know who's going to play it. You can't write `let name = 'Alex'` because it won't always be Alex." },
-        { "kind": "heading", "text": "So what do we do?" },
-        { "kind": "list", "items": [
-          "Could you just guess it?",
-          "Could the code figure it out on its own?",
-          "Could we tell the program to ask the user for their name?"
-        ]},
-        { "kind": "heading", "text": "Yes, we can!" },
-
-        {"kind": "image", "src": "/assets/lessons/s2-l5/before-we-code-v2.svg"}
+        {
+          "kind": "p",
+          "text": "Every value in JavaScript has a type. The type determines what you can do with it. You can't do math with text, and you can't use string methods on a number. "
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l5/js-types-table-v3.svg",
+          "alt": "The different JavaScript Types Table"
+        },
+        {
+          "kind": "callout",
+          "variant": "warn",
+          "label": "Remember!",
+          "text": "Knowing the types helps you avoid bugs that seem totally random but have a very simple cause."
+        }
       ]
     },
     {
-      "heading": "We can make the code interactive!",
+      "heading": "How to check types?",
       "blocks": [
-        { "kind": "p", "text": "So far your programs only work with values you wrote yourself. That's not very useful. Real programs respond to the person using them. `prompt()` pauses your program, shows a pop-up box, and waits for the user to type something. Whatever they type comes back to you as a string." },
-        { "kind": "concept", "code": "let name = prompt('What is your name?')", "desc": "Show a pop-up asking 'What is your name?' and store whatever the user types into 'name'" },
-        { "kind": "image", "src": "/assets/lessons/s2-l5/prompt-visual-v6.svg"}
-      ]
-    },
-    {
-      "heading": "What happens if you are prompting for a number?",
-      "blocks": [
-        { "kind": "p", "text": "prompt() always gives you back a string, with no exceptions. Even if the user types `42`, you get the text `'42'`, not the number `42`. That means you can't do math with it yet. `'42' + 1` gives you `'421'`, not `43`. The fix: wrap `prompt()` in `Number()` and it converts the answer the moment the user hits OK." },
-        { "kind": "concept", "code": "let age = prompt('How old are you?')", "desc": "Returns the string '13' even if the user typed 13. Looks like a number, but it's text, so math won't work." },
-        { "kind": "concept", "code": "let age = Number(prompt('How old are you?'))", "desc": "Number() converts the string '13' into the actual number 13. Now you can add, subtract, and multiply normally." },
-        { "kind": "image", "src": "/assets/lessons/s2-l5/prompt-number-visual.svg", "alt": "Visual showing prompt() returning a string vs Number(prompt()) returning a number" },
-        { "kind": "callout", "variant": "danger", "label": "Always convert if you're doing math", "text": "prompt() returns a string every single time , even if the user types a number. '13' is not the same as 13. If you skip Number(), you'll get weird results like '13' + 1 = '131' instead of 14." }
+        {
+          "kind": "p",
+          "text": "You can check the type of a value using the `typeof` operator."
+        },
+        {
+          "kind": "image",
+          "src": "/assets/lessons/s2-l5/typeof-visual.svg"
+        },
+        {
+          "kind": "concept",
+          "code": "typeof variableName",
+          "desc": "The typeof operator tells you what the type is for 'variableName'. It returns a string of the name of the type: 'number', 'string', or 'boolean'."
+        },
+        {
+          "kind": "callout",
+          "variant": "danger",
+          "label": "The most common beginner trap",
+          "text": "If a number comes from a text input, it might arrive as a 'string'. '100' + 1 is '1001', not 101!"
+        }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Your first interactive program",
+      "title": "What type is this?",
       "type": "practice",
-      "duration": "6 min",
+      "format": "multiple-choice",
+      "duration": "1 min",
       "tasks": [
-        "Use prompt() to ask the user for their name.",
-        "Store it in a variable called userName.",
-        "Use a template literal to log: 'Nice to meet you, [name]! Welcome to Curia.'",
-        "Run it and type your name in the pop-up."
+        "What is the data type of this value: '100'?"
       ],
-      "hint": "The string inside prompt() is the message the user sees. Whatever they type becomes your variable's value.",
-      "starterCode": "// Ask for the user's name\nlet userName = prompt('What is your name?');\n\n// Log a welcome message\nconsole.log(`Nice to meet you, ${userName}! Welcome to Curia.`);\n",
-      "checks": [
-        { "type": "variable", "name": "userName", "expected": null, "label": "a variable called 'userName' exists" }
-      ]
+      "hint": "Look closely. Does this value have quotes around it?",
+      "options": [
+        {
+          "id": "a",
+          "label": "number"
+        },
+        {
+          "id": "b",
+          "label": "string"
+        },
+        {
+          "id": "c",
+          "label": "boolean"
+        },
+        {
+          "id": "d",
+          "label": "undefined"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "'100' has quotes, which makes it a string—not a number. In Simon Says, if a score comes from a text input, it often arrives as a string and needs conversion.",
+      "checks": []
     },
     {
-      "title": "Age calculator",
+      "title": "What does typeof return?",
       "type": "practice",
-      "duration": "7 min",
+      "format": "multiple-choice",
+      "duration": "1 min",
       "tasks": [
-        "Ask the user how old they are using prompt().",
-        "Convert the input to a number with Number().",
-        "Calculate how old they'll be in 5 years and in 10 years.",
-        "Log both results with labels.",
-        "Bonus: log what year they were born (use 2025 as the current year)."
+        "What does this line print?"
       ],
-      "hint": "Number(prompt('...')) does both steps at once: asks the question and converts the answer.",
-      "starterCode": "// Get age from user — remember to convert!\nlet age = Number(prompt('How old are you?'));\n\n// Calculate future ages\n\n\nconsole.log(`In 5 years you will be ${age + 5} years old.`);\n// Add the 10 years one below\n\n// Bonus: birth year\n",
-      "checks": [
-        { "type": "console", "includes": "years old", "label": "logged a future age message" }
-      ]
+      "hint": "typeof always returns a string—the name of the type, in lowercase.",
+      "codeSnippet": "console.log(typeof true);",
+      "options": [
+        {
+          "id": "a",
+          "label": "true"
+        },
+        {
+          "id": "b",
+          "label": "boolean"
+        },
+        {
+          "id": "c",
+          "label": "string"
+        },
+        {
+          "id": "d",
+          "label": "1"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "The `typeof` operator always returns a string naming the type. Since `true` is a boolean, it returns 'boolean'. This helps us verify our game logic variables are valid booleans.",
+      "checks": []
     },
     {
-      "title": "The string trap with prompt()",
-      "type": "predict",
+      "title": "Sort by type",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": [
+        "Drag each value into the correct type bucket."
+      ],
+      "hint": "Quotes always make a string. true and false without quotes are booleans.",
+      "buckets": [
+        {
+          "id": "string",
+          "label": "String"
+        },
+        {
+          "id": "number",
+          "label": "Number"
+        },
+        {
+          "id": "boolean",
+          "label": "Boolean"
+        }
+      ],
+      "bucketItems": [
+        {
+          "id": "i1",
+          "label": "42",
+          "correctBucketId": "number"
+        },
+        {
+          "id": "i2",
+          "label": "'hello'",
+          "correctBucketId": "string"
+        },
+        {
+          "id": "i3",
+          "label": "true",
+          "correctBucketId": "boolean"
+        },
+        {
+          "id": "i4",
+          "label": "'false'",
+          "correctBucketId": "string"
+        },
+        {
+          "id": "i5",
+          "label": "3.14",
+          "correctBucketId": "number"
+        },
+        {
+          "id": "i6",
+          "label": "'42'",
+          "correctBucketId": "string"
+        }
+      ],
+      "explanation": "'false' in quotes is a string, not a boolean. This is a common trap when receiving data from users in game menus.",
+      "checks": []
+    },
+    {
+      "title": "Drop the typeof keyword",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": [
+        "Drop the correct keyword to check the type of each variable."
+      ],
+      "hint": "The operator that checks types is one word, all lowercase.",
+      "codeWithBlanks": [
+        "let score = 250;",
+        "let playerName = 'Jordan';",
+        "console.log(___BLANK___ score);",
+        "console.log(___BLANK___ playerName);"
+      ],
+      "tokenBank": [
+        {
+          "id": "t1",
+          "label": "typeof"
+        },
+        {
+          "id": "t2",
+          "label": "type"
+        },
+        {
+          "id": "t3",
+          "label": "typeOf"
+        },
+        {
+          "id": "t4",
+          "label": "getType"
+        }
+      ],
+      "correctOrder": [
+        "typeof",
+        "typeof"
+      ],
+      "explanation": "The operator is `typeof`. Using 'type' or 'getType' would cause a ReferenceError in your game code.",
+      "checks": []
+    },
+    {
+      "title": "Pick the right typed value",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": [
+        "Drop the correct value for each variable so it has the right type: score (number), playerName (string), isGameOver (boolean)."
+      ],
+      "hint": "Numbers have no quotes. Strings have quotes. Booleans are true or false with no quotes.",
+      "codeWithBlanks": [
+        "let score = ___BLANK___;",
+        "let playerName = ___BLANK___;",
+        "let isGameOver = ___BLANK___;"
+      ],
+      "tokenBank": [
+        {
+          "id": "t1",
+          "label": "100"
+        },
+        {
+          "id": "t2",
+          "label": "'Alex'"
+        },
+        {
+          "id": "t3",
+          "label": "false"
+        },
+        {
+          "id": "t4",
+          "label": "'100'"
+        },
+        {
+          "id": "t5",
+          "label": "'false'"
+        }
+      ],
+      "correctOrder": [
+        "100",
+        "'Alex'",
+        "false"
+      ],
+      "explanation": "If `isGameOver` was `'false'` (a string), the game logic might treat it as 'truthy' and end the game early. Always use the literal boolean values.",
+      "checks": []
+    },
+    {
+      "title": "Log the types in order",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "3 min",
+      "tasks": [
+        "Put these lines in order so variables are declared before their types are logged."
+      ],
+      "hint": "A variable must exist before you can check what it is.",
+      "codeLines": [
+        "let level = 1;",
+        "let isGameOver = false;",
+        "console.log(typeof level);",
+        "console.log(typeof isGameOver);"
+      ],
+      "explanation": "In JavaScript, order matters. We declare our Simon Says state variables first, then we can use `typeof` to inspect them.",
+      "checks": []
+    },
+    {
+      "title": "Type the typeof expressions",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": [
+        "Type the variable name inside each typeof call."
+      ],
+      "hint": "The variable name goes directly after the typeof keyword.",
+      "hintBank": [
+        {
+          "id": "h1",
+          "label": "score"
+        },
+        {
+          "id": "h2",
+          "label": "playerName"
+        }
+      ],
+      "codeWithBlanks": [
+        "let score = 250;",
+        "let playerName = 'Jordan';",
+        "console.log(typeof ___BLANK___);",
+        "console.log(typeof ___BLANK___);"
+      ],
+      "blankPlaceholders": [
+        "variable",
+        "variable"
+      ],
+      "blankWidths": [
+        10,
+        10
+      ],
+      "checks": [
+        {
+          "type": "console",
+          "includes": "number",
+          "label": "number is logged"
+        },
+        {
+          "type": "console",
+          "includes": "string",
+          "label": "string is logged"
+        }
+      ],
+      "explanation": "By typing the variable names, you're telling the program which piece of Simon Says data you want to inspect.",
+      "checks": []
+    },
+    {
+      "title": "Does 'true' equal true?",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": [
+        "What does this code print?"
+      ],
+      "hint": "=== checks both the value AND the type.",
+      "codeSnippet": "let isGameOver = 'true';\nconsole.log(isGameOver === true);",
+      "options": [
+        {
+          "id": "a",
+          "label": "true — they look the same"
+        },
+        {
+          "id": "b",
+          "label": "false — different types"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "A string `'true'` is not the same as the boolean `true`. Using the wrong type is the most common reason Simon Says levels don't end when they should.",
+      "checks": []
+    },
+    {
+      "title": "Correct the assignments",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": [
+        "Assign the correct literals so score is a number and isGameOver is a boolean."
+      ],
+      "hint": "Remove the quotes!",
+      "hintBank": [
+        {
+          "id": "h1",
+          "label": "500"
+        },
+        {
+          "id": "h2",
+          "label": "true"
+        }
+      ],
+      "codeWithBlanks": [
+        "let score = ___BLANK___;",
+        "let isGameOver = ___BLANK___;"
+      ],
+      "blankPlaceholders": [
+        "number",
+        "boolean"
+      ],
+      "blankWidths": [
+        5,
+        5
+      ],
+      "checks": [
+        {
+          "type": "variable",
+          "name": "score",
+          "expected": 500,
+          "label": "score is 500"
+        },
+        {
+          "type": "variable",
+          "name": "isGameOver",
+          "expected": true,
+          "label": "isGameOver is true"
+        }
+      ],
+      "explanation": "Writing literals without quotes ensures the computer treats them as the correct data type for game math and logic.",
+      "checks": []
+    },
+    {
+      "title": "Find the type bug",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Use the typeof output to find the variable with the wrong type.",
+        "Fix it so score is a number. Hit Run."
+      ],
+      "hint": "Look for quotes on line 2.",
+      "starterCode": "let score = '120';\nconsole.log(typeof score);",
+      "steps": [
+        {
+          "text": "Run the code to see that score is currently a string.",
+          "completesOn": "run",
+          "checks": [
+            {
+              "type": "noError",
+              "label": "code runs"
+            }
+          ]
+        },
+        {
+          "text": "Remove the quotes from '120' on line 1 so it becomes a number.",
+          "completesOn": "run",
+          "focusLine": 1,
+          "checks": [
+            {
+              "type": "variable",
+              "name": "score",
+              "expected": 120,
+              "label": "score is number"
+            },
+            {
+              "type": "console",
+              "includes": "number",
+              "label": "logs number"
+            }
+          ]
+        }
+      ],
+      "explanation": "Removing quotes is the simplest way to fix 'Type Errors' in your Simon Says score tracking.",
+      "checks": []
+    },
+    {
+      "title": "Fix the broken addition",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Convert the string input to a number so the total is 60."
+      ],
+      "hint": "Use Number(playerInput) to convert the type.",
+      "starterCode": "let playerInput = '50';\nlet bonus = 10;\nlet total = playerInput + bonus;\nconsole.log(total);",
+      "steps": [
+        {
+          "text": "Run the code. Notice it logs '5010' because it's adding a string to a number.",
+          "completesOn": "run",
+          "checks": [
+            {
+              "type": "noError",
+              "label": "code runs"
+            }
+          ]
+        },
+        {
+          "text": "Update line 3 to: let total = Number(playerInput) + bonus;",
+          "completesOn": "run",
+          "focusLine": 3,
+          "checks": [
+            {
+              "type": "variable",
+              "name": "total",
+              "expected": 60,
+              "label": "total is 60"
+            }
+          ]
+        }
+      ],
+      "explanation": "The `Number()` function is your 'escape hatch' when user input arrives as a string but needs to be added to a game score.",
+      "checks": []
+    },
+    {
+      "title": "Build the type report",
+      "type": "practice",
+      "format": "code-editor",
       "duration": "5 min",
       "tasks": [
-        "Run the starter code. When the prompt appears, type: 10",
-        "Look at the result. Is it what you expected?",
-        "Now look at the second version using Number(). Run that and type 10 again.",
-        "Explain the difference in your own words."
+        "Log the variable and its type using a template literal."
       ],
-      "hint": "prompt() returns text, not a number, even when the user types digits.",
-      "starterCode": "// Version 1 — no conversion\nlet input1 = prompt('Enter a number (version 1):');\nconsole.log('Without Number():', input1 + 5);\nconsole.log('Type:', typeof input1);\n\n// Version 2 — with conversion\nlet input2 = Number(prompt('Enter a number (version 2):'));\nconsole.log('With Number():', input2 + 5);\nconsole.log('Type:', typeof input2);\n"
-    },
-    {
-      "title": "Build a personal fact card",
-      "type": "practice",
-      "duration": "8 min",
-      "tasks": [
-        "Use prompt() to ask 3 questions: name, favorite animal, and a lucky number.",
-        "Convert the lucky number to a Number.",
-        "Build a single string using a template literal that combines all three.",
-        "Log the full sentence.",
-        "Log the lucky number doubled.",
-        "Log the length of their name."
+      "hint": "Combine ${} with typeof.",
+      "starterCode": "let playerName = 'Jordan';\nlet score = 0;",
+      "steps": [
+        {
+          "text": "Log: console.log(`playerName: ${playerName} (type: ${typeof playerName})`);",
+          "completesOn": "run",
+          "focusLine": 3,
+          "checks": [
+            {
+              "type": "console",
+              "includes": "type: string",
+              "label": "string logged"
+            }
+          ]
+        },
+        {
+          "text": "Now do the same for the score variable. Hit Run.",
+          "completesOn": "run",
+          "focusLine": 4,
+          "checks": [
+            {
+              "type": "console",
+              "includes": "type: number",
+              "label": "number logged"
+            }
+          ]
+        }
       ],
-      "hint": "Ask all three questions first, store all three, then do the math and build the sentence.",
-      "starterCode": "let name = prompt('What is your name?');\nlet animal = prompt('What is your favorite animal?');\nlet luckyNumber = Number(prompt('What is your lucky number?'));\n\n// Build your fact card\nlet factCard = ``;\n\nconsole.log(factCard);\nconsole.log('Lucky number doubled:', luckyNumber * 2);\nconsole.log('Name length:', name.length);\n",
-      "checks": [
-        { "type": "variable", "name": "luckyNumber", "expected": null, "label": "luckyNumber exists" },
-        { "type": "console", "includes": "doubled", "label": "logged the doubled lucky number" }
-      ]
+      "explanation": "This report style is a professional way to debug your Simon Says game state when things act weird.",
+      "checks": []
     }
   ],
   "challenges": [
     {
-      "id": "c1",
-      "level": 1,
-      "difficulty": "easy",
-      "title": "The personalised greeting",
-      "description": "A game wants to welcome the player by name and tell them which level they're starting on. Right now it just prints a generic message. Fix the code so it asks for the player's name using prompt(), then prints a personalised welcome using a template literal. Then extend it to ask what level they want to start on and include that too.",
-      "buggyCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\n// Template literal structure:\n// console.log(`Welcome ${name}! You are on level ${level}.`);\n\nconsole.log(name);\nconsole.log(level);",
-      "starterCode": "// Fix this: replace the hardcoded values with prompt() calls\nlet name = 'Player';\nlet level = 1;\n\n// Template literal structure:\n// console.log(`Welcome ${name}! You are on level ${level}.`);\n\nconsole.log(name);\nconsole.log(level);",
-      "hint": "Replace the hardcoded values with prompt() calls. The level prompt returns a string, so you don't need Number() here since you're just displaying it, not doing math.",
-      "checks": [
-        { "type": "console", "includes": "Welcome", "label": "prints a welcome message" },
-        { "type": "console", "includes": "! You are on level", "label": "message includes the level in the right format" }
+      "title": "Mystery Types",
+      "duration": "5 min",
+      "tasks": [
+        "Run the code to see what JavaScript thinks of these special cases.",
+        "Fix the code so isGameOver is a real boolean."
       ],
-      "explanation": "prompt() lets the user provide their own value at runtime instead of you hardcoding it. Replace let name = 'Player' with let name = prompt('What is your name?') and let level = 1 with let level = prompt('What level do you want to start on?'). The template literal then drops both values in automatically."
-    },
-    {
-      "id": "c2",
-      "level": 2,
-      "difficulty": "medium",
-      "title": "The tip calculator",
-      "description": "A restaurant bill is £45. The code asks the user for a tip percentage using prompt() and tries to calculate the tip, but the numbers come out wrong. Diagnose the type issue using typeof, fix it with Number(), then log: 'Tip: £[amount]. Total: £[total].'",
-      "buggyCode": "let bill = 45;\n// Write a line of code that prompts the user for the tip percentage they want to leave\n\n// Check the types\nconsole.log('bill type:', typeof bill);\nconsole.log('tipPercent type:', typeof tipPercent);\n\n// Calculate\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
-      "starterCode": "let bill = 45;\n// Write a line of code that prompts the user for the tip percentage they want to leave (make sure the input is the number before the % sign. ex. 10 for 10%)\n// Name the variable tipPercent\n\n// Check the types\nconsole.log('bill type:', typeof bill);\nconsole.log('tipPercent type:', typeof tipPercent);\n\n// Calculate\nlet tip = bill * tipPercent / 100;\nlet total = bill + tip;\n\nconsole.log(`Tip: £${tip}. Total: £${total}.`);",
-      "hint": "typeof tipPercent will reveal the problem. Wrap tipPercent in Number() before doing the math. Notice how * works differently than + when mixing strings and numbers.",
+      "starterCode": "let score = 120;\nlet isGameOver = 'true';\nlet playerName = 'Alex';\n\n// The game checks this condition to stop\nif (isGameOver === true) {\n  console.log('Game over! Final score:', score);\n} else {\n  console.log('Still playing...');\n}\n\n// Use typeof to inspect all four variables\nconsole.log('score:', typeof score);\nconsole.log('isGameOver:', typeof isGameOver);\nconsole.log('playerName:', typeof playerName);",
+      "hint": "=== checks both the value AND the type. 'true' and true look the same when logged, but typeof will reveal the difference.",
       "checks": [
-        { "type": "console", "includes": "tipPercent type: number", "label": "tipPercent is wrapped with Number()" },
-        { "type": "console", "includes": "Tip: £", "label": "logs the tip amount" },
-        { "type": "console", "includes": "Total: £", "label": "logs the total amount" }
+        {
+          "type": "console",
+          "includes": "Game over! Final score: 120",
+          "label": "prints the game over message"
+        }
       ],
-      "explanation": "prompt() always returns a string. When you use * with a string that looks like a number, JavaScript actually converts it silently, so the multiplication might work. But + is the dangerous one: bill + tip might join instead of add if tip is still a string. Always wrap prompt() in Number() when doing math: let tipPercent = Number(prompt(...)). Then typeof tipPercent confirms it's a number before you use it."
-    },
-    {
-      "id": "c3",
-      "level": 3,
-      "difficulty": "tricky",
-      "title": "The Simon Says intro sequence",
-      "description": "Build a mini intro sequence for the Simon Says game. Ask the player for their name, age, and how many rounds they want to play. Then log a single summary message and check whether they qualify as a junior player.",
-      "buggyCode": "// Ask for three pieces of information\nlet playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\n// Log a summary using a template literal\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\n// Log the length of their name\nconsole.log('Name length:', playerName.length);\n\n// If age is under 10, add junior label\n// This is broken — fix it\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
-      "starterCode": "// Ask for three pieces of information\nlet playerName = prompt('What is your name?');\nlet playerAge = prompt('How old are you?');\nlet rounds = prompt('How many rounds do you want to play?');\n\n// Log a summary using a template literal\nlet summary = `Player: ${playerName} | Age: ${playerAge} | Rounds: ${rounds}`;\nconsole.log(summary);\n\n// Log the length of their name\nconsole.log('Name length:', playerName.length);\n\n// If age is under 10, add junior label\n// This is broken — fix it\nif (playerAge < 10) {\n  console.log(`${playerName} is a junior player!`);\n} else {\n  console.log(`${playerName} is a regular player.`);\n}",
-      "hint": "The summary and .length will work fine without Number(). But the age comparison < 10 won't work correctly when playerAge is a string. Use typeof to confirm, then wrap it in Number() just for the comparison.",
-      "checks": [
-        { "type": "console", "includes": "Player:", "label": "logs the summary line" },
-        { "type": "console", "includes": "Name length:", "label": "logs the name length" },
-        { "type": "console", "includes": "player", "label": "logs the junior or regular player message" }
-      ],
-      "explanation": "prompt() returns strings for all three values. The summary template literal works fine with strings. .length works on strings too. But playerAge < 10 compares a string to a number, and JavaScript tries to convert it, and it mostly works, but it's unreliable and considered a bug. The fix: wrap only playerAge in Number() when comparing: if (Number(playerAge) < 10). This is the real-world lesson: you only need Number() when doing math or comparisons, not when displaying."
+      "explanation": "isGameOver is set to 'true' in quotes, making it a string, not a boolean. The condition isGameOver === true fails because 'true' (string) is not the same as true (boolean)."
     }
   ]
 }

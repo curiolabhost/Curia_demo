@@ -1,104 +1,338 @@
 {
   "id": "s2-l7",
   "session": "Session 2",
-  "title": "Conditionals",
+  "title": "Comparisons",
   "content": [
     {
-      "heading": "Conditionals — making your program decide",
+      "heading": "Comparisons: Using yes or no questions to make decisions",
       "blocks": [
-        { "kind": "p", "text": "A program that always does the same thing isn't very interesting. Conditionals let your code take different paths based on what's happening right now. This is how games respond to what you do, how apps show different things to different users, how anything interactive works." },
-        { "kind": "concept", "code": "if (score >= 100) { ... }", "desc": "If this condition is true, run the code inside the curly braces" },
-        { "kind": "concept", "code": "} else { ... }", "desc": "If the condition was false, run this instead" },
-        { "kind": "concept", "code": "} else if (score >= 50) { ... }", "desc": "Check a second condition — only runs if the first one was false" }
+        { "kind": "p", "text": "**What are comparisons?** In the world of coding, computers aren't actually that smart—they are just really good at following rules! Every time a character jumps in a game or a door opens in a story, the computer is acting like a Robot Judge asking a simple question." },
+        { "kind": "image", "src": "/assets/lessons/s2-l7/gemini-svg (1).svg", "alt": "Robot Judge with a speech bubble thinking about true/false", "caption": "The Robot Judge asks yes or no questions to determine what happens next." },
+        { "kind": "p", "text": "The Robot Judge doesn't give long, rambling answers. It only knows two words: True (Yes!) or False (No!). We call these **Boolean** answers, but you can just think of them as a light switch that is either ON or OFF." }
       ]
     },
     {
+      "heading": "The different types of comparisons",
       "blocks": [
+        { "kind": "p", "text": "Comparisons are the building blocks of decision-making in code. They allow us to check if a player has enough points to win, if their guess matches the target, or if they have any lives left. By asking these yes/no questions, we can create dynamic and interactive experiences." },
+         { "kind": "table", "headers": ["Operator", "Meaning", "Example", "Result"], "rows": [
+          ["===", "exactly equal (value AND type)", "5 === 5", "true"],
+          ["!==", "NOT equal", "5 !== 3", "true"],
+          [">", "greater than", "10 > 5", "true"],
+          ["<", "less than", "3 < 1", "false"],
+          [">=", "greater than or equal", "5 >= 5", "true"],
+          ["<=", "less than or equal", "4 <= 3", "false"]
+        ]}
+      ]
+
+    },
+    {
+      "heading": "Combining conditions",
+      "blocks": [
+        { "kind": "p", "text": "Sometimes we want to ask more complex questions that involve multiple conditions. For example, 'Is the player old enough AND do they have a ticket?' or 'Is the player a VIP OR do they have a coupon?' To do this, we can use logical operators to combine our comparisons." },
+        { "kind": "concept", "code": "age >= 13 && hasTicket === true", "desc": "AND — both conditions must be true for the whole thing to be true" },
+        { "kind": "concept", "code": "isVIP || hasCoupon", "desc": "OR — at least one condition must be true" },
+        { "kind": "concept", "code": "!isGameOver", "desc": "NOT — flips true to false and false to true" },
+        { "kind": "image", "src": "/assets/lessons/s2-l7/and-or-not-figure.svg", "alt": "Diagram showing how AND, OR, and NOT operators work.", "caption": "Logical operators let us combine multiple conditions into one question." },
         { "kind": "code", "lines": [
-          "let score = 75;",
+          "let score = 85;",
+          "let lives = 3;",
           "",
-          "if (score >= 90) {",
-          "    console.log('Amazing! You got an A.');",
-          "} else if (score >= 70) {",
-          "    console.log('Good job! You got a B.');",
-          "} else if (score >= 50) {",
-          "    console.log('You passed. Keep practicing.');",
-          "} else {",
-          "    console.log('Not quite. Try again!');",
-          "}",
+          "console.log(score > 80);          // true",
+          "console.log(score === 100);        // false",
+          "console.log(lives !== 0);          // true",
           "",
-          "// score is 75, so the second condition is true",
-          "// JavaScript checks top to bottom and stops at the first true one"
+          "// AND — both must be true",
+          "console.log(score > 80 && lives > 0);  // true",
+          "",
+          "// OR — at least one must be true",
+          "console.log(score > 90 || lives > 0);  // true",
+          "",
+          "// NOT — flips it",
+          "let gameOver = false;",
+          "console.log(!gameOver);  // true"
         ]},
-        { "kind": "callout", "variant": "warn", "label": "Top to bottom — first match wins", "text": "JavaScript checks each condition in order. The moment it finds a true one, it runs that block and skips the rest. If you put a less specific condition first, a more specific one below it might never run." }
+        { "kind": "callout", "variant": "danger", "label": "=== not ==", "text": "Always use === (three equals signs) to check if things are equal. Using == (two equals signs) lets JavaScript change types before comparing, which causes bugs. Stick to === and you'll avoid a whole class of problems." }
       ]
     }
   ],
   "exercises": [
     {
-      "title": "Trace the path",
-      "type": "predict",
-      "duration": "6 min",
-      "tasks": [
-        "Look at the starter code. There are 4 different values for score.",
-        "For each one, predict which message will print before you run it.",
-        "Run the code and check. Where were you wrong?",
-        "Change the score to exactly 70. Which branch runs? Why?"
+      "title": "The Robot Judge's Answer",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What is the result of the expression: 10 > 5?"],
+      "hint": "Is 10 a bigger number than 5?",
+      "options": [
+        { "id": "a", "label": "true" },
+        { "id": "b", "label": "false" },
+        { "id": "c", "label": "10" },
+        { "id": "d", "label": "5" }
       ],
-      "hint": "Go through the conditions top to bottom. The first one that's true wins.",
-      "starterCode": "// Test each score value — change it to see different outputs\nlet score = 95;\n\nif (score >= 90) {\n    console.log('Grade: A');\n} else if (score >= 80) {\n    console.log('Grade: B');\n} else if (score >= 70) {\n    console.log('Grade: C');\n} else {\n    console.log('Grade: F');\n}\n\n// Try these values: 95, 82, 71, 45\n"
+      "correctOptionId": "a",
+      "explanation": "Since 10 is indeed greater than 5, the comparison evaluates to true. In Simon Says, we might use this to check if a player's score has passed the high score.",
+      "checks": []
     },
     {
-      "title": "Weather advisor",
+      "title": "Checking for Equality",
       "type": "practice",
-      "duration": "7 min",
-      "tasks": [
-        "Declare a variable called temperature and set it to 22.",
-        "Write an if / else if / else that logs:",
-        "  - 'Bundle up!' if below 5",
-        "  - 'Wear a jacket' if below 15",
-        "  - 'Nice weather!' if below 25",
-        "  - 'It's hot!' otherwise",
-        "Test with temperatures: 2, 10, 22, 35"
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What does 5 === '5' evaluate to?"],
+      "hint": "Remember that === checks both the value and the data type.",
+      "options": [
+        { "id": "a", "label": "true" },
+        { "id": "b", "label": "false" }
       ],
-      "hint": "Order matters! Put the most specific (lowest) condition first.",
-      "starterCode": "let temperature = 22;\n\n// Your conditions here\n",
-      "checks": [
-        { "type": "variable", "name": "temperature", "expected": null, "label": "a variable called 'temperature' exists" },
-        { "type": "console", "includes": "Nice weather!", "label": "logged the correct message for 22 degrees" }
-      ]
+      "correctOptionId": "b",
+      "explanation": "Even though they look like the same number, one is a 'number' and one is a 'string'. The strict equality operator (===) sees them as different.",
+      "checks": []
     },
     {
-      "title": "Build a quiz",
+      "title": "The Not-Equal Operator",
       "type": "practice",
-      "duration": "8 min",
-      "tasks": [
-        "Use prompt() to ask: 'What is 8 times 7?'",
-        "Convert the answer to a Number.",
-        "Use an if/else to check if the answer is 56.",
-        "If correct: log 'Correct! 8 x 7 = 56'",
-        "If wrong: log 'Not quite. The answer was 56. You said: ' + their answer",
-        "Test it with a right answer and a wrong answer."
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["Which operator means 'is NOT equal to'?"],
+      "hint": "Look for the exclamation mark, which often means 'not' in coding.",
+      "options": [
+        { "id": "a", "label": "===" },
+        { "id": "b", "label": "!==" },
+        { "id": "c", "label": ">=" },
+        { "id": "d", "label": "<=" }
       ],
-      "hint": "Number(prompt(...)) gets the input and converts it. Then compare with ===.",
-      "starterCode": "let answer = Number(prompt('What is 8 times 7?'));\n\n// Check the answer\n",
-      "checks": [
-        { "type": "console", "includes": "56", "label": "mentions 56 in the output" }
-      ]
+      "correctOptionId": "b",
+      "explanation": "!== is the 'strict inequality' operator. It's true if the values or types are different.",
+      "checks": []
     },
     {
-      "title": "Multiple conditions with &&",
+      "title": "The Score Threshold",
       "type": "practice",
-      "duration": "7 min",
-      "tasks": [
-        "Declare: playerLevel = 5, hasKey = true, bossDefeated = false",
-        "Write an if that logs 'You can enter the castle!' only when: level is 5 or higher AND hasKey is true.",
-        "Write a second if that logs 'Game over. Please restart.' when bossDefeated is false AND playerLevel is below 3.",
-        "Change the values and confirm the messages only appear under the right conditions.",
-        "Challenge: add an else to each if with an appropriate message."
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Complete the code to check if the score is 100 or more."],
+      "hint": "You want the 'greater than or equal to' operator.",
+      "codeWithBlanks": ["let score = 105;", "let reachedGoal = score ___BLANK___ 100;"],
+      "tokenBank": [
+        { "id": "t1", "label": ">=" },
+        { "id": "t2", "label": ">" },
+        { "id": "t3", "label": "===" },
+        { "id": "t4", "label": "<=" }
       ],
-      "hint": "Combine conditions with &&: if (playerLevel >= 5 && hasKey === true)",
-      "starterCode": "let playerLevel = 5;\nlet hasKey = true;\nlet bossDefeated = false;\n\n// Castle entry check\n\n\n// Game over check\n\n"
+      "correctOrder": [">="],
+      "explanation": "The >= operator checks if a value is greater than or exactly equal to the target. This is perfect for win conditions.",
+      "checks": []
+    },
+    {
+      "title": "Match the Result",
+      "type": "practice",
+      "format": "sort-buckets",
+      "duration": "3 min",
+      "tasks": ["Sort these comparisons into the 'True' or 'False' buckets."],
+      "hint": "Be careful with strings vs numbers and 'greater than' symbols.",
+      "buckets": [
+        { "id": "b-true", "label": "True" },
+        { "id": "b-false", "label": "False" }
+      ],
+      "bucketItems": [
+        { "id": "i1", "label": "10 === 10", "correctBucketId": "b-true" },
+        { "id": "i2", "label": "5 > 10", "correctBucketId": "b-false" },
+        { "id": "i3", "label": "'apple' === 'apple'", "correctBucketId": "b-true" },
+        { "id": "i4", "label": "8 !== 8", "correctBucketId": "b-false" },
+        { "id": "i5", "label": "10 >= 10", "correctBucketId": "b-true" },
+        { "id": "i6", "label": "3 < 2", "correctBucketId": "b-false" }
+      ],
+      "explanation": "Comparisons are like questions. 'Is 10 equal to 10?' Yes (true). 'Is 5 greater than 10?' No (false).",
+      "checks": []
+    },
+    {
+      "title": "Simon Says: Color Match",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Use the strict equality operator to check if the player's guess matches the target color."],
+      "hint": "The operator is three equals signs in a row.",
+      "hintBank": [
+        { "id": "h1", "label": "===" }
+      ],
+      "codeWithBlanks": [
+        "let targetColor = 'red';",
+        "let playerGuess = 'red';",
+        "let isCorrect = targetColor ___BLANK___ playerGuess;"
+      ],
+      "blankPlaceholders": ["operator"],
+      "blankWidths": [5],
+      "explanation": "In Simon Says, we use === to confirm the user clicked the exact color the computer showed.",
+      "checks": []
+    },
+    {
+      "title": "Order the logic",
+      "type": "practice",
+      "format": "drag-reorder",
+      "duration": "2 min",
+      "tasks": ["Order the lines to calculate if a player has run out of lives."],
+      "hint": "First define the lives, then compare them to zero.",
+      "codeLines": [
+        "let livesRemaining = 0;",
+        "let isGameOver = livesRemaining <= 0;",
+        "console.log(`Is the game over? ${isGameOver}`);"
+      ],
+      "explanation": "We check if lives are less than or equal to 0. If it's true, the game state changes to 'over'.",
+      "checks": []
+    },
+    {
+      "title": "Strict vs Loose",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["Predict the result of: 10 !== '10'"],
+      "hint": "The '!==' operator checks if the value OR the type are different.",
+      "options": [
+        { "id": "a", "label": "true" },
+        { "id": "b", "label": "false" }
+      ],
+      "correctOptionId": "a",
+      "explanation": "It is true that they are NOT strictly equal because a number is not the same type as a string.",
+      "checks": []
+    },
+    {
+      "title": "Verify User Age",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Create a variable called 'canPlay'.",
+        "Set it to check if age is 13 or older.",
+        "Run the code."
+      ],
+      "hint": "Use the >= operator.",
+      "starterCode": "let age = 15;\n// Your code below\n",
+      "steps": [
+        {
+          "text": "Write: let canPlay = age >= 13;",
+          "completesOn": "run",
+          "checks": [
+            { "type": "variable", "name": "canPlay", "expected": true, "label": "canPlay is true" }
+          ]
+        }
+      ],
+      "explanation": "Comparison operators allow our games to gate certain features or levels based on player data.",
+      "checks": []
+    },
+    {
+      "title": "Is the String Empty?",
+      "type": "practice",
+      "format": "fill-blank-typed",
+      "duration": "2 min",
+      "tasks": ["Check if the player input is NOT an empty string."],
+      "hint": "An empty string is written as ''. Use the not-equal operator.",
+      "codeWithBlanks": [
+        "let input = 'Red';",
+        "let hasInput = input ___BLANK___ '';"
+      ],
+      "blankPlaceholders": ["operator"],
+      "blankWidths": [5],
+      "explanation": "Checking if input !== '' is a common way to make sure a player actually typed something in a prompt.",
+      "checks": []
+    },
+    {
+      "title": "Level Up Logic",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "5 min",
+      "tasks": [
+        "Check if the player's score is enough to reach Level 2 (200 points).",
+        "Store the result in 'isLevel2'."
+      ],
+      "hint": "Compare 'score' to 200.",
+      "starterCode": "let score = 250;\nlet isLevel2 = \n\nconsole.log('Reach Level 2?', isLevel2);",
+      "steps": [
+        {
+          "text": "Complete the assignment using the >= operator.",
+          "completesOn": "run",
+          "focusLine": 2,
+          "checks": [
+            { "type": "variable", "name": "isLevel2", "expected": true, "label": "isLevel2 is calculated correctly" }
+          ]
+        }
+      ],
+      "explanation": "By comparing variables to thresholds, we can trigger level transitions in Simon Says.",
+      "checks": []
+    },
+    {
+      "title": "The Boolean Switch",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "1 min",
+      "tasks": ["What is the value of 'isGreater'?"],
+      "codeSnippet": "let x = 10;\nlet y = 20;\nlet isGreater = x > y;",
+      "options": [
+        { "id": "a", "label": "true" },
+        { "id": "b", "label": "false" },
+        { "id": "c", "label": "undefined" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "10 is not greater than 20, so the 'Robot Judge' returns false.",
+      "checks": []
+    },
+    {
+      "title": "Multi-type Comparison",
+      "type": "practice",
+      "format": "code-editor",
+      "duration": "4 min",
+      "tasks": [
+        "Fix the comparison so it accurately checks if the number 5 is equal to the variable 'val'."
+      ],
+      "hint": "val is a number, so use the strict equality operator.",
+      "starterCode": "let val = 5;\n// Change the operator below\nlet result = val < 5;\nconsole.log(result);",
+      "steps": [
+        {
+          "text": "Change '<' to '===' on line 3.",
+          "completesOn": "run",
+          "checks": [
+            { "type": "variable", "name": "result", "expected": true, "label": "result is true" }
+          ]
+        }
+      ],
+      "explanation": "When we want to check if two things are exactly the same, === is the standard tool.",
+      "checks": []
+    },
+    {
+      "title": "Comparing Prompt Results",
+      "type": "practice",
+      "format": "multiple-choice",
+      "duration": "2 min",
+      "tasks": ["A user types '10' into a prompt. What is the result of (userInput === 10)?"],
+      "hint": "Think about the data type that prompt() returns.",
+      "options": [
+        { "id": "a", "label": "true" },
+        { "id": "b", "label": "false" }
+      ],
+      "correctOptionId": "b",
+      "explanation": "prompt() returns a string ('10'), but we are comparing it to a number (10). Because they are different types, strict equality says false.",
+      "checks": []
+    },
+    {
+      "title": "Final Truth Check",
+      "type": "practice",
+      "format": "fill-blank",
+      "duration": "2 min",
+      "tasks": ["Fill in the blanks to verify if the player's name is NOT 'Guest'."],
+      "hint": "Use the strict inequality operator.",
+      "codeWithBlanks": [
+        "let name = 'Alex';",
+        "let isRealPlayer = name ___BLANK___ ___BLANK___;"
+      ],
+      "tokenBank": [
+        { "id": "t1", "label": "!==" },
+        { "id": "t2", "label": "'Guest'" },
+        { "id": "t3", "label": "===" },
+        { "id": "t4", "label": "Guest" }
+      ],
+      "correctOrder": ["!==", "'Guest'"],
+      "explanation": "Using !== allows us to identify when a variable has changed from its default 'Guest' state.",
+      "checks": []
     }
   ],
   "challenges": [
@@ -106,43 +340,15 @@
       "id": "c1",
       "level": 1,
       "difficulty": "easy",
-      "title": "The else block never runs",
-      "description": "No matter what score is set to, only the first message prints. Why?",
-      "buggyCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
-      "starterCode": "let score = 40;\n\nif (score >= 0) {\n    console.log('You scored:', score);\n} else if (score >= 50) {\n    console.log('You passed!');\n} else {\n    console.log('You failed.');\n}",
-      "hint": "Think about the first condition. Is score >= 0 true for any score?",
+      "title": "Pass the Test",
+      "description": "Simon is checking your score. You need exactly 50 points to pass this specific check. Fix the operator so the console logs 'true'.",
+      "buggyCode": "let score = 50;\nconsole.log(score > 50);",
+      "starterCode": "let score = 50;\nconsole.log(score > 50);",
+      "hint": "50 is not GREATER than 50. Use an operator that checks if they are equal.",
       "checks": [
-        { "type": "console", "includes": "You failed.", "label": "logs 'You failed.' for score = 40" }
+        { "type": "console", "includes": "true", "label": "logs true" }
       ],
-      "explanation": "score >= 0 is true for every possible score (including 40), so the very first branch always wins. The else if and else never get a chance to run. Fix: reorder so the most specific conditions come first — check >= 50 before >= 0."
-    },
-    {
-      "id": "c2",
-      "level": 2,
-      "difficulty": "medium",
-      "title": "The discount code only works sometimes",
-      "description": "The store should give a discount when the customer has a coupon OR has spent more than $100. But it's only giving the discount when BOTH are true.",
-      "buggyCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
-      "starterCode": "let hasCoupon = true;\nlet amountSpent = 50;\nlet getsDiscount = hasCoupon && amountSpent > 100;\nconsole.log('Discount:', getsDiscount);",
-      "hint": "Should both conditions need to be true, or just one?",
-      "checks": [
-        { "type": "variable", "name": "getsDiscount", "expected": true, "label": "getsDiscount is true when hasCoupon is true" }
-      ],
-      "explanation": "&& requires both conditions. The customer has a coupon but only spent $50. Since amountSpent > 100 is false, the whole && expression is false. Change && to || so having either condition is enough."
-    },
-    {
-      "id": "c3",
-      "level": 3,
-      "difficulty": "tricky",
-      "title": "The game never ends",
-      "description": "The game should end when lives reach 0 OR score hits 100. Find the three bugs.",
-      "buggyCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
-      "starterCode": "let lives = 0;\nlet score = 100;\n\nif (lives = 0 || score = 100) {\n    console.log('Game over!');\n} else {\n    console.log('Keep playing.');\n}",
-      "hint": "Count the equals signs in the condition. What do single, double, and triple equals each do?",
-      "checks": [
-        { "type": "console", "includes": "Game over!", "label": "logs 'Game over!'" }
-      ],
-      "explanation": "There are three = signs where there should be === (comparison, not assignment). lives = 0 SETS lives to 0 inside the condition — it doesn't check if lives IS 0. Fix all three: lives === 0 || score === 100."
+      "explanation": "To check for an exact match, we use ===. Alternatively, >= would also work here, but === is more precise for an 'exactly 50' requirement."
     }
   ]
 }

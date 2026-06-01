@@ -232,7 +232,7 @@ export default function InvitePage() {
                 </div>
                 <div className="card-sub">
                   {invite.firstName ? `Hi ${invite.firstName}! ` : ''}
-                  You've been invited to join <strong>{invite.classroomName}</strong> as a{' '}
+                  You&apos;ve been invited to join <strong>{invite.classroomName}</strong> as a{' '}
                   {roleLabel}.
                 </div>
 

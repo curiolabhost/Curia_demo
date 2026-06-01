@@ -30,7 +30,15 @@ function getFrom(): string {
 }
 
 export function getAppUrl(): string {
-  return (process.env.APP_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+  // Explicit override wins (set APP_URL locally or to force a specific domain).
+  const explicit = process.env.APP_URL
+  if (explicit) return explicit.replace(/\/$/, '')
+  // On Vercel these are injected automatically; prefer the stable production
+  // domain (e.g. curia-demo.vercel.app) over the per-deployment URL.
+  const vercelHost =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL
+  if (vercelHost) return `https://${vercelHost.replace(/\/$/, '')}`
+  return 'http://localhost:3000'
 }
 
 export function buildInviteUrl(token: string): string {

@@ -1669,12 +1669,14 @@ export function FinalProjectPanel({
               code={editedHtml}
               language="html"
               onChange={(val) => setEditedHtml(val)}
+              readOnly={false}
             />
           ) : (
             <PrismEditor
               code={editedCss}
               language="css"
               onChange={(val) => setEditedCss(val)}
+              readOnly={false}
             />
           )}
         </div>
@@ -2209,12 +2211,14 @@ export function FinalProjectTablet({
               code={editedHtml}
               language="html"
               onChange={(val) => setEditedHtml(val)}
+              readOnly={false}
             />
           ) : (
             <PrismEditor
               code={editedCss}
               language="css"
               onChange={(val) => setEditedCss(val)}
+              readOnly={false}
             />
           )}
         </div>

@@ -81,7 +81,7 @@ export default function Home() {
         <p className="hero-sub">
           Luminent reads your textbooks, syllabi, and lab manuals — then builds a fully
           structured classroom from them. Every lesson, assessment, and study guide
-          traces back to what you actually teach. Students learn. You see exactly why they do or don't.
+          traces back to what you actually teach. Students learn. You see exactly why they do or don&apos;t.
         </p>
 
         <div className="hero-btns">

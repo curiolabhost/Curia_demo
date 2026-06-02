@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyPassword } from '@/lib/password'
 import { setSessionCookie, type SessionData } from '@/lib/session'
+import { logServerError } from '@/lib/logError'
 
 export const runtime = 'nodejs'
 
@@ -41,10 +42,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       where: { username },
       select: { id: true, firstName: true, lastName: true, role: true, passwordHash: true },
     })
-    if (!user) return jsonError(401, 'invalid_credentials')
+    if (!user) return jsonError(401, 'user_not_found')
 
     const ok = await verifyPassword(password, user.passwordHash)
-    if (!ok) return jsonError(401, 'invalid_credentials')
+    if (!ok) return jsonError(401, 'invalid_password')
 
     const sessionData: SessionData = { userId: user.id, role: user.role }
 
@@ -70,7 +71,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 200 }
     )
     return await setSessionCookie(response, sessionData)
-  } catch {
+  } catch (error) {
+    logServerError('API login', error)
     return jsonError(500, 'server_error')
   }
 }

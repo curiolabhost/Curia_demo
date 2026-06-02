@@ -17,7 +17,7 @@ const REGISTER_ERROR_MESSAGES: Record<string, string> = {
   invalid_username: 'Username must be 3-20 characters: letters, numbers, or underscores.',
   invalid_password: 'Password must be at least 8 characters.',
   username_taken: 'That username is already taken.',
-  server_error: 'Something went wrong. Please try again.',
+  server_error: 'Server network issue. Please try again later.',
   register_failed: 'Could not create account. Please try again.',
   network_error: 'Network error. Please check your connection.',
 }
@@ -25,6 +25,20 @@ const REGISTER_ERROR_MESSAGES: Record<string, string> = {
 function registerErrorMessage(code: string | null | undefined): string {
   if (!code) return REGISTER_ERROR_MESSAGES.register_failed
   return REGISTER_ERROR_MESSAGES[code] ?? REGISTER_ERROR_MESSAGES.register_failed
+}
+
+const SIGNIN_ERROR_MESSAGES: Record<string, string> = {
+  missing_fields: 'Please enter your username and password.',
+  user_not_found: 'No account found with that username.',
+  invalid_password: 'Incorrect password. Please try again.',
+  server_error: 'Server network issue. Please try again later.',
+  sign_in_failed: 'Could not sign in. Please try again.',
+  network_error: 'Network error. Please check your connection.',
+}
+
+function signinErrorMessage(code: string | null | undefined): string {
+  if (!code) return SIGNIN_ERROR_MESSAGES.sign_in_failed
+  return SIGNIN_ERROR_MESSAGES[code] ?? SIGNIN_ERROR_MESSAGES.sign_in_failed
 }
 
 function LoginInner() {
@@ -82,10 +96,10 @@ function LoginInner() {
       }
 
       console.log('[login] error', data.error)
-      setErrorMsg(data.error ?? 'sign_in_failed')
+      setErrorMsg(signinErrorMessage(data.error))
     } catch (err) {
       console.log('[login] error', err)
-      setErrorMsg('network_error')
+      setErrorMsg(signinErrorMessage('network_error'))
     } finally {
       setSubmitting(false)
     }

@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import { hashPassword } from '@/lib/password'
 import { setSessionCookie } from '@/lib/session'
+import { logServerError } from '@/lib/logError'
 
 export const runtime = 'nodejs'
 
@@ -104,7 +105,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     )
     return await setSessionCookie(response, { userId: user.id, role: user.role })
   } catch (error) {
-    console.log('[API register] error', error)
+    logServerError('API register', error)
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return jsonError(409, 'username_taken')
     }

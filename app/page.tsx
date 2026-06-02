@@ -2,42 +2,43 @@ import './landing.css'
 
 export default function Home() {
   const skills = [
-    { label: 'Cell structure', pct: 91, level: 's' },
-    { label: 'Membranes',      pct: 83, level: 's' },
-    { label: 'Photosynthesis', pct: 57, level: 'm' },
-    { label: 'Respiration',    pct: 39, level: 'm' },
-    { label: 'Mitosis',        pct: 14, level: 'w' },
+    { label: 'Cell structure',  pct: 91, level: 's' },
+    { label: 'Membranes',       pct: 83, level: 's' },
+    { label: 'Photosynthesis',  pct: 57, level: 'm' },
+    { label: 'Respiration',     pct: 39, level: 'm' },
+    { label: 'Mitosis',         pct: 14, level: 'w' },
   ]
 
   const lessons = [
-    { title: 'Intro to cells',       meta: '4 exercises • 1 challenge',  tag: 'ready',  tagClass: 'tag-grn' },
-    { title: 'Cell membrane',        meta: '5 exercises • 1 challenge',  tag: 'ready',  tagClass: 'tag-grn' },
-    { title: 'Photosynthesis',       meta: '6 exercises • 2 challenges', tag: 'active', tagClass: 'tag-acc' },
-    { title: 'Cellular respiration', meta: '5 exercises • 1 challenge',  tag: 'queued', tagClass: 'tag-pur' },
+    { title: 'Intro to cells',        meta: '4 exercises • 1 challenge',  tag: 'ready',  tagClass: 'tag-grn' },
+    { title: 'Cell membrane',         meta: '5 exercises • 1 challenge',  tag: 'ready',  tagClass: 'tag-grn' },
+    { title: 'Photosynthesis',        meta: '6 exercises • 2 challenges', tag: 'active', tagClass: 'tag-acc' },
+    { title: 'Cellular respiration',  meta: '5 exercises • 1 challenge',  tag: 'queued', tagClass: 'tag-pur' },
   ]
 
   const exerciseChips = ['fill-blank', 'multiple-choice', 'drag-reorder', 'sort-buckets']
 
   const instructorList = [
-    'Import any subject content and generate lessons automatically',
-    'Full control over layout, design, and exercise structure',
-    'Per-student competency maps updated continuously',
+    'Upload any materials — textbook, syllabus, slides, lab manual',
+    'AI reads your content and builds a structured curriculum plan',
+    'Every generated lesson traces back to your exact source material',
+    'Per-student competency maps updated continuously in real time',
     'AI flags misconceptions before they become failing grades',
-    'Classroom analytics across the whole semester',
+    'Materials auto-update when standards or rubrics change',
   ]
 
   const studentList = [
     'Immediate feedback on every attempt',
-    'AI hints that guide without giving it away',
+    'AI hints that guide without giving the answer away',
     'Watch your competency map grow concept by concept',
     'Your progress follows you across semesters',
-    'Join any classroom with a single key, zero setup',
+    'Join any classroom with a single key — zero setup',
   ]
 
   const importFiles = [
-    { name: 'biology-syllabus.pdf',  color: 'var(--accent)' },
-    { name: 'week3-slides.pptx',     color: 'var(--green)' },
-    { name: 'chapter4-outline.docx', color: 'var(--purple)' },
+    { name: 'biology-syllabus.pdf',   color: 'var(--accent)' },
+    { name: 'week3-slides.pptx',      color: 'var(--green)' },
+    { name: 'chapter4-outline.docx',  color: 'var(--purple)' },
   ]
 
   return (
@@ -45,7 +46,10 @@ export default function Home() {
 
       {/* NAV */}
       <nav className="lnav">
-        <span className="logo">Cu<em>r</em>ia</span>
+        <span className="logo">
+          <img src="/brand/luminent-logo-mark-only.svg" alt="" className="logo-mark" />
+          luminent
+        </span>
         <div className="nav-links">
           <a href="#" className="nav-link">Platform</a>
           <a href="#" className="nav-link">For educators</a>
@@ -69,18 +73,19 @@ export default function Home() {
 
         <div className="hero-badge">
           <span className="badge-dot" />
-          now in summer 2025 &nbsp;/&nbsp; generative classrooms
+          now in summer 2025 &nbsp;/&nbsp; AI-native classrooms built from your materials
         </div>
 
-        <h1 className="hero-title">The classroom that<br />builds <em>itself.</em> And teaches.</h1>
+        <h1 className="hero-title">Your materials.<br />A living classroom.</h1>
 
         <p className="hero-sub">
-          Curia turns your static content into dynamic, interactive learning environments.
-          Teachers create. AI guides. Students grow. Progress means something.
+          Luminent reads your textbooks, syllabi, and lab manuals — then builds a fully
+          structured classroom from them. Every lesson, assessment, and study guide
+          traces back to what you actually teach. Students learn. You see exactly why they do or don't.
         </p>
 
         <div className="hero-btns">
-          <a href="/auth/login?role=instructor" className="btn-dark">Create a classroom</a>
+          <a href="/auth/login?role=instructor" className="btn-dark">Build your classroom</a>
           <a href="/auth/login?role=student" className="btn-outline">I am a student</a>
         </div>
 
@@ -92,15 +97,15 @@ export default function Home() {
               <div className="hs-dot" style={{ background: '#febc2e' }} />
               <div className="hs-dot" style={{ background: '#28c840' }} />
             </div>
-            <div className="hs-url">curia.app</div>
+            <div className="hs-url">luminent.app</div>
           </div>
           <div className="hs-body">
             <div className="hs-left">
               <div className="hs-left-tag">instructor / import content</div>
-              <div className="hs-left-title">Turn your materials into lessons</div>
+              <div className="hs-left-title">Upload your materials. We do the rest.</div>
               <div className="import-box">
                 <div className="import-icon">{'⬆'}</div>
-                <div className="import-label">drop syllabus, slides, or outline</div>
+                <div className="import-label">drop textbook, syllabus, lab manual, or slides</div>
               </div>
               <div className="import-files">
                 {importFiles.map(f => (
@@ -111,7 +116,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <div className="gen-badge">&#x2713; &nbsp;6 interactive lessons generated</div>
+              <div className="gen-badge">&#x2713; &nbsp;6 grounded lessons generated from your content</div>
             </div>
             <div className="hs-right">
               <div className="hs-right-tag">student / lesson 2 of 6</div>
@@ -140,13 +145,14 @@ export default function Home() {
 
       <div className="dash-div"><div className="dash-line" /></div>
 
-      {/* WHAT CURIA IS */}
+      {/* WHAT LUMINENT IS */}
       <div className="section">
-        <p className="kicker">What Curia is</p>
-        <h2 className="sec-h">Not a gradebook.<br />Not a video platform.</h2>
+        <p className="kicker">What Luminent is</p>
+        <h2 className="sec-h">Not a template engine.<br />Not a quiz generator.</h2>
         <p className="sec-p">
-          A generative classroom environment that converts your content into active learning,
-          then tracks whether students actually understand it.
+          A structured classroom environment that reads your actual materials, builds
+          curriculum grounded in them, and tracks whether students genuinely understand
+          what you taught — concept by concept, not score by score.
         </p>
         <div className="big-three">
           <div className="bt-card">
@@ -159,8 +165,8 @@ export default function Home() {
                 <rect x="3" y="15" width="7" height="4" rx="1.5" />
               </svg>
             </div>
-            <h3>A generative lesson engine</h3>
-            <p>Teachers import any static content &mdash; syllabi, slides, outlines &mdash; and Curia generates a full set of interactive lessons. Any subject. Any level. Ready to deploy or customize.</p>
+            <h3>A curriculum engine grounded in your materials</h3>
+            <p>Upload your textbook, syllabus, or lab manual. Luminent reads them, structures their content, and builds every lesson and assessment from what&apos;s actually inside — not from the internet, not from generic templates.</p>
           </div>
           <div className="bt-card">
             <div className="bt-n">02</div>
@@ -170,8 +176,8 @@ export default function Home() {
                 <path d="M11 7v4.5l3 3" />
               </svg>
             </div>
-            <h3>A dynamic classroom</h3>
-            <p>Students do not read and watch. They interact, make decisions, and get guided feedback. The classroom adapts to where each student is, not where the syllabus says they should be.</p>
+            <h3>A dynamic classroom that adapts as students learn</h3>
+            <p>Students don&apos;t just read. They interact, make decisions, and get guided feedback. The classroom routes each student based on their demonstrated understanding — not where the syllabus says they should be.</p>
           </div>
           <div className="bt-card">
             <div className="bt-n">03</div>
@@ -184,8 +190,8 @@ export default function Home() {
                 <circle cx="18" cy="8"  r="1.5" />
               </svg>
             </div>
-            <h3>A competency map, not a gradebook</h3>
-            <p>Every interaction feeds a living map of what each student knows. Not a score. Not a letter grade. A real picture of understanding that grows across lessons, semesters, and years.</p>
+            <h3>A living competency map, not a gradebook</h3>
+            <p>Every student interaction feeds a real-time picture of what each student knows at the concept level. When standards change or assessment data reveals a gap, the system proposes what to update — and you approve it.</p>
           </div>
         </div>
       </div>
@@ -196,50 +202,54 @@ export default function Home() {
       <div className="gen-section">
         <div className="gen-inner">
           <div className="gen-copy">
-            <p className="kicker" style={{ textAlign: 'left' }}>The generative engine</p>
-            <h2>Your content, transformed into an interactive classroom</h2>
-            <p>Teachers are not lesson designers. They are subject experts. Curia handles the translation from static material to living, interactive lesson environments &mdash; then gets out of the way.</p>
+            <p className="kicker" style={{ textAlign: 'left' }}>The curriculum engine</p>
+            <h2>From your materials to a structured classroom — in one conversation</h2>
+            <p>
+              Other tools generate content from the internet. Luminent generates from what you gave it.
+              Every lesson, every assessment item, every study guide traces back to a specific
+              block in your uploaded documents. The teacher remains in control at every step.
+            </p>
             <div className="gen-steps">
               <div className="gen-step">
                 <div className="gs-num">1</div>
                 <div>
-                  <h4>Import what you already have</h4>
-                  <p>Upload a syllabus, paste your outline, or drop in slides. Any subject, any format.</p>
+                  <h4>Upload what you already have</h4>
+                  <p>Textbook, syllabus, lab manual, slides. Any format. Luminent reads them all and builds a unified, queryable corpus across every document.</p>
                 </div>
               </div>
               <div className="gen-step">
                 <div className="gs-num teal">2</div>
                 <div>
-                  <h4>Curia generates the lesson set</h4>
-                  <p>The platform structures your content into scaffolded, interactive lessons with exercises, checks, and feedback built in.</p>
+                  <h4>Build a curriculum plan through conversation</h4>
+                  <p>Tell the AI what to cover and in what order. It cross-references your materials, proposes a structured plan, and refines it until you approve it.</p>
                 </div>
               </div>
               <div className="gen-step">
                 <div className="gs-num">3</div>
                 <div>
-                  <h4>Customize or ship immediately</h4>
-                  <p>Choose your layout. Edit what the AI got wrong. Or deploy as-is. The draft is good enough to use and built to be improved.</p>
+                  <h4>Generate lessons, assessments, and study guides</h4>
+                  <p>Every piece of content is built from your approved plan and sourced from your materials. Review, edit, or ship as-is. Every output shows you exactly where it came from.</p>
                 </div>
               </div>
               <div className="gen-step">
                 <div className="gs-num teal">4</div>
                 <div>
-                  <h4>Students join with a single key</h4>
-                  <p>No accounts, no installs. Students open Curia, enter their classroom key, and they are inside the lesson in seconds.</p>
+                  <h4>Materials update as your classroom evolves</h4>
+                  <p>When state standards change, when a rubric gets revised, or when assessment data reveals a concept wasn&apos;t landing — Luminent identifies what needs updating and drafts the fix for your review.</p>
                 </div>
               </div>
             </div>
           </div>
           <div className="gen-visual">
             <div className="gv-top">
-              <span>curia / classroom generator</span>
+              <span>luminent / classroom builder</span>
               <span className="gv-live">generating</span>
             </div>
             <div className="gv-body">
               <div className="gv-import-row">
                 <div className="gv-file">biology-unit2.pdf</div>
                 <span className="gv-arrow">&#x2192;</span>
-                <div className="gv-gen">&#x2713; generated</div>
+                <div className="gv-gen">&#x2713; structured</div>
               </div>
               <div className="gv-lessons">
                 {lessons.map(l => (
@@ -267,8 +277,13 @@ export default function Home() {
         <div className="map-inner">
           <div className="map-copy">
             <p className="kicker" style={{ textAlign: 'left' }}>The competency map</p>
-            <h2>Progress that means something beyond a grade</h2>
-            <p className="lead">Every attempt, every mistake, and every breakthrough feeds a living map of student understanding. Teachers see trajectories, not snapshots. The map travels with students across semesters.</p>
+            <h2>Know exactly where each student is — and why</h2>
+            <p className="lead">
+              Every attempt, every mistake, and every breakthrough feeds a real-time map of
+              student understanding at the concept level. Not a score — a signal. Teachers see
+              which concepts are weak, which materials they trace to, and what to do about it.
+              The map travels with students across semesters.
+            </p>
             <div className="map-feat">
               <div className="mf-ico">
                 <svg viewBox="0 0 16 16">
@@ -278,7 +293,7 @@ export default function Home() {
               </div>
               <div>
                 <h4>Growth velocity</h4>
-                <p>Not just where a student is, but how fast they are moving and whether they are accelerating or stalling.</p>
+                <p>Not just where a student is, but how fast they are moving and whether they are accelerating or stalling on specific concepts.</p>
               </div>
             </div>
             <div className="map-feat">
@@ -289,8 +304,8 @@ export default function Home() {
                 </svg>
               </div>
               <div>
-                <h4>Error taxonomy</h4>
-                <p>Not just wrong, but how. The same mistake from two students can signal completely different gaps.</p>
+                <h4>Concept-level error taxonomy</h4>
+                <p>Not just wrong — but which concept broke down and where in your source material it was taught. The same wrong answer from two students can signal entirely different gaps.</p>
               </div>
             </div>
             <div className="map-feat">
@@ -302,7 +317,7 @@ export default function Home() {
               </div>
               <div>
                 <h4>Longitudinal memory</h4>
-                <p>Maps persist across years. The next teacher inherits full context, not a transcript number.</p>
+                <p>Maps persist across years. The next teacher inherits full context — which concepts a student has mastered, where gaps remain, and what interventions have already been tried.</p>
               </div>
             </div>
           </div>
@@ -331,7 +346,9 @@ export default function Home() {
               <div className="mc-flag">
                 <div className="mc-fdot" />
                 <div className="mc-ftxt">
-                  Recurring confusion on light-dependent vs light-independent reactions. 5 of 22 students share this pattern &mdash; consider revisiting before unit 3.
+                  Recurring confusion on light-dependent vs light-independent reactions.
+                  5 of 22 students share this pattern — source traced to pp. 84–87 of your textbook.
+                  Consider revisiting before unit 3.
                 </div>
               </div>
             </div>
@@ -347,9 +364,11 @@ export default function Home() {
         <div className="ai-sq sq sq-teal sq-sm"   style={{ bottom: 100, left: '20%' }} />
         <div className="ai-inner">
           <p className="kicker">AI that knows its role</p>
-          <h2 className="sec-h" style={{ color: '#fff' }}>Education-aware AI.<br />Controlled by design.</h2>
+          <h2 className="sec-h" style={{ color: '#fff' }}>Grounded in your content.<br />Controlled by design.</h2>
           <p className="sec-p" style={{ color: 'rgba(255,255,255,.4)', marginBottom: 56 }}>
-            Not a chatbot. Not a search engine. Agents embedded directly in the learning environment that guide without replacing the thinking.
+            Not a chatbot pointed at the internet. Agents embedded directly in the learning
+            environment, with access only to your materials and your students&apos; actual
+            performance data — nothing else.
           </p>
           <div className="ai-grid">
             <div className="ai-card">
@@ -360,7 +379,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3>Socratic by design</h3>
-              <p>The AI never gives the answer. It asks one guiding question per intervention. If the student is still stuck after three hints, the teacher is notified &mdash; not more AI.</p>
+              <p>The AI never gives the answer. It asks one guiding question per intervention, drawn from the relevant section of your source material. After three hints, the teacher is notified — not more AI.</p>
             </div>
             <div className="ai-card">
               <div className="ai-card-ico aic-blue">
@@ -369,8 +388,8 @@ export default function Home() {
                   <circle cx="4" cy="16" r="1.5" />
                 </svg>
               </div>
-              <h3>Misconception tracking</h3>
-              <p>Agents do not just detect struggle. They identify which specific concept is breaking down and log it to the competency map so both teacher and student can see the pattern.</p>
+              <h3>Traceable generation</h3>
+              <p>Every lesson explanation, assessment question, and study guide links back to a specific page and block in your uploaded documents. You can always see where the content came from.</p>
             </div>
             <div className="ai-card">
               <div className="ai-card-ico aic-purple">
@@ -379,12 +398,12 @@ export default function Home() {
                   <path d="M10 8v2.5l2 2" />
                 </svg>
               </div>
-              <h3>Curriculum-aware context</h3>
-              <p>Every agent call includes the lesson, the exercise, the student&apos;s attempt, and which checks failed. The AI does not guess at context &mdash; it is given the full picture.</p>
+              <h3>Standards-aware updates</h3>
+              <p>When rubrics are revised or state criteria change, the system identifies which lessons and assessments are affected and drafts revisions for teacher review — it never updates content autonomously.</p>
             </div>
           </div>
           <div className="ai-quote">
-            &ldquo;The teacher is the second tier, not more AI. Agents handle small nudges. Teachers handle what matters.&rdquo;
+            &ldquo;The teacher stays in control at every step. AI handles the structural work. Teachers handle what matters.&rdquo;
           </div>
         </div>
       </div>
@@ -392,17 +411,22 @@ export default function Home() {
       {/* FOR WHO */}
       <div className="for-section">
         <div className="for-inner">
-          <p className="kicker">Who Curia is for</p>
+          <p className="kicker">Who Luminent is for</p>
           <h2 className="sec-h">Built for both sides<br />of the classroom</h2>
           <p className="sec-p">
-            Whether you are teaching biology or JavaScript, running a summer program or a semester course,
-            Curia meets you where you are.
+            Whether you teach AP Biology or Introduction to JavaScript, run a semester course
+            or a summer program — if you have materials, Luminent can build a classroom from them.
           </p>
           <div className="for-grid">
             <div className="for-card">
               <p className="for-tag">For instructors</p>
-              <h3>Your classroom, generative and managed</h3>
-              <p>Import your materials, choose a layout, and let Curia convert them into an interactive environment. Watch your students in real time. Get flagged when someone falls behind before they know it themselves.</p>
+              <h3>Your materials. A structured classroom. Full control.</h3>
+              <p>
+                Upload what you already have. Luminent reads it, structures it, and builds a full
+                curriculum grounded in your content. Every lesson is yours — generated from your
+                textbook, not someone else&apos;s. Watch students in real time and get flagged when
+                someone falls behind before they know it themselves.
+              </p>
               <div className="for-list">
                 {instructorList.map(item => (
                   <div className="for-item" key={item}>
@@ -411,12 +435,17 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-              <a href="/auth/login?role=instructor" className="for-cta">Set up a classroom &#x2192;</a>
+              <a href="/auth/login?role=instructor" className="for-cta">Build your classroom &#x2192;</a>
             </div>
             <div className="for-card">
               <p className="for-tag">For students</p>
-              <h3>Learn by doing. Track how far you have come.</h3>
-              <p>No lectures to sit through. You work through exercises that require real thinking. When you are stuck, a Socratic agent asks you the right question, not gives you the answer. Your growth is visible and yours.</p>
+              <h3>Learn by doing. Track exactly how far you have come.</h3>
+              <p>
+                No lectures to sit through. No generic content pulled from the internet.
+                Everything you learn is built from what your teacher actually assigned —
+                structured into exercises that require real thinking. When you&apos;re stuck,
+                a Socratic agent asks the right question. Your growth is visible, yours, and it follows you.
+              </p>
               <div className="for-list">
                 {studentList.map(item => (
                   <div className="for-item" key={item}>
@@ -439,8 +468,11 @@ export default function Home() {
         <div className="fc-sq sq sq-teal-dk sq-sm" style={{ bottom: 90, right: '18%' }} />
         <div className="fc-inner">
           <p className="kicker" style={{ color: 'rgba(255,255,255,.3)', marginBottom: 24 }}>Get started today</p>
-          <div className="fc-title">A classroom that<br /><em>builds itself.</em></div>
-          <p className="fc-sub">Any subject. Any content. Set up in minutes. Students need nothing installed. Learning starts on day one.</p>
+          <div className="fc-title">Your materials.<br /><em>A living classroom.</em></div>
+          <p className="fc-sub">
+            Any subject. Any content format. Upload what you have — Luminent handles the rest.
+            Students need nothing installed. Learning grounded in your materials starts on day one.
+          </p>
           <div className="fc-btns">
             <a href="/auth/login?role=instructor" className="fc-p">I am an instructor</a>
             <a href="/auth/login?role=student" className="fc-s">Join as a student</a>
@@ -450,8 +482,11 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="lfoot">
-        <span className="lfoot-logo">Cu<em>r</em>ia</span>
-        <span className="lfoot-r">2025 Curia. Built for learners.</span>
+        <span className="lfoot-logo">
+          <img src="/brand/luminent-logo-mark-only.svg" alt="" className="lfoot-logo-mark" />
+          luminent
+        </span>
+        <span className="lfoot-r">2025 Luminent. Built under Curio Lab.</span>
       </footer>
 
     </div>

@@ -1,0 +1,20 @@
+<svg width="260" height="52" viewBox="0 0 260 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300&display=swap');
+      .wordmark { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 300; font-size: 28px; letter-spacing: -0.5px; fill: #FFFFFF; }
+    </style>
+  </defs>
+  <!-- L mark: vertical stem -->
+  <rect x="0" y="6" width="5" height="40" rx="2.5" fill="#1D9E75"/>
+  <!-- L mark: top bar -->
+  <rect x="0" y="6" width="22" height="5" rx="2.5" fill="#1D9E75"/>
+  <!-- L mark: bottom bar -->
+  <rect x="0" y="41" width="22" height="5" rx="2.5" fill="#1D9E75"/>
+  <!-- light beam 1 -->
+  <rect x="9" y="14" width="3" height="22" rx="1.5" fill="#5DCAA5" opacity="0.8"/>
+  <!-- light beam 2 -->
+  <rect x="14" y="18" width="2" height="14" rx="1" fill="#5DCAA5" opacity="0.5"/>
+  <!-- wordmark -->
+  <text x="38" y="36" class="wordmark">luminent</text>
+</svg>

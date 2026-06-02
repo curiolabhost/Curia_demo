@@ -308,7 +308,7 @@ function LoginInner() {
         </div>
       </div>
 
-      <footer className="login-footer">2025 Curia. Built for learners.</footer>
+      <footer className="login-footer">2025 Luminent. Built for learners.</footer>
     </div>
   )
 }

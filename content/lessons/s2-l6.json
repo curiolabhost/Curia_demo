@@ -221,7 +221,7 @@
       "tasks": [
         "Use prompt() to ask the user for their name.",
         "Store it in a variable called userName.",
-        "Use a template literal to log: 'Nice to meet you, [name]! Welcome to Curia.'",
+        "Use a template literal to log: 'Nice to meet you, [name]! Welcome to Luminent.'",
         "Run it and type your name in the pop-up."
       ],
       "hint": "The string inside prompt() is the message the user sees.[cite: 3] Whatever they type becomes your variable's value.[cite: 3]",

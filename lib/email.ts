@@ -26,7 +26,7 @@ function getResend(): Resend {
 }
 
 function getFrom(): string {
-  return process.env.EMAIL_FROM ?? 'Curia <onboarding@resend.dev>'
+  return process.env.EMAIL_FROM ?? 'Luminent <onboarding@resend.dev>'
 }
 
 export function getAppUrl(): string {
@@ -77,12 +77,12 @@ export function renderInvite(args: InviteEmailArgs): {
   const safeClassroom = escapeHtml(classroomName)
   const safeKey = escapeHtml(key)
 
-  const subject = `You're invited to join ${classroomName} on Curia`
+  const subject = `You're invited to join ${classroomName} on Luminent`
 
   const text = [
     greeting,
     '',
-    `You've been invited to join "${classroomName}" as a ${roleLabel} on Curia.`,
+    `You've been invited to join "${classroomName}" as a ${roleLabel} on Luminent.`,
     '',
     `1. Open this link: ${url}`,
     `2. Sign in or create your account.`,
@@ -97,7 +97,7 @@ export function renderInvite(args: InviteEmailArgs): {
   <div style="font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #1a1a2e;">
     <h2 style="margin: 0 0 16px;">${greeting}</h2>
     <p style="font-size: 15px; line-height: 1.5;">
-      You've been invited to join <strong>${safeClassroom}</strong> as a ${roleLabel} on Curia.
+      You've been invited to join <strong>${safeClassroom}</strong> as a ${roleLabel} on Luminent.
     </p>
     <ol style="font-size: 15px; line-height: 1.7; padding-left: 20px;">
       <li>Open your invite using the button below.</li>

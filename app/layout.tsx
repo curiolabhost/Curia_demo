@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { DM_Sans, IBM_Plex_Mono, DM_Serif_Display } from 'next/font/google'
+import { DM_Sans, IBM_Plex_Mono, DM_Serif_Display, Plus_Jakarta_Sans } from 'next/font/google'
 import { DeviceProvider } from '@/context/DeviceContext'
 import './globals.css'
 
@@ -24,6 +24,13 @@ const dmSerifDisplay = DM_Serif_Display({
   display: 'swap',
 })
 
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['300'],
+  variable: '--font-plus-jakarta-sans',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
   title: 'codelab',
   description: 'Interactive coding lessons',
@@ -35,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} ${ibmPlexMono.variable} ${dmSerifDisplay.variable}`}
+        className={`${dmSans.variable} ${ibmPlexMono.variable} ${dmSerifDisplay.variable} ${plusJakartaSans.variable}`}
       >
         <DeviceProvider>
           {children}

@@ -26,6 +26,7 @@ body:has(.landing-page) {
   --dark: #0D1333;
   --sans: 'DM Sans', sans-serif;
   --mono: 'IBM Plex Mono', monospace;
+  --display: var(--font-plus-jakarta-sans), 'Plus Jakarta Sans', sans-serif;
 
   background: var(--bg);
   color: var(--text);
@@ -65,13 +66,22 @@ body:has(.landing-page) {
 }
 
 .logo {
-  font-size: 22px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--display);
+  font-size: 21px;
+  font-weight: 300;
+  line-height: 1;
   letter-spacing: -0.5px;
   color: var(--text);
 }
 
-.logo em { font-style: normal; color: var(--accent); }
+.logo-mark {
+  height: 24px;
+  width: auto;
+  display: block;
+}
 
 .nav-links {
   display: flex;
@@ -89,9 +99,9 @@ body:has(.landing-page) {
 .nav-cta {
   font-size: 13px;
   font-weight: 600;
-  background: var(--text);
+  background: #1D9E75;
   color: #fff;
-  padding: 10px 22px;
+  padding: 7px 22px;
   border-radius: 6px;
 }
 
@@ -1162,13 +1172,21 @@ body:has(.landing-page) {
 }
 
 .lfoot-logo {
-  font-size: 17px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 300;
   color: var(--text);
-  letter-spacing: -.3px;
+  letter-spacing: -.4px;
 }
 
-.lfoot-logo em { font-style: normal; color: var(--accent); }
+.lfoot-logo-mark {
+  height: 20px;
+  width: auto;
+  display: block;
+}
 
 .lfoot-r {
   font-size: 13px;

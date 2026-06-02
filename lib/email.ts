@@ -26,7 +26,9 @@ function getResend(): Resend {
 }
 
 function getFrom(): string {
-  return process.env.EMAIL_FROM ?? 'Luminent <onboarding@resend.dev>'
+  // Must be an address on a domain verified in Resend. curio.courses is our
+  // verified domain; resend.dev only works for sending to your own account email.
+  return process.env.EMAIL_FROM ?? 'Curia <noreply@curio.courses>'
 }
 
 export function getAppUrl(): string {

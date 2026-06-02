@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDevice } from '@/context/DeviceContext'
 import type { EditActions } from '@/lib/admin/useLessonDraft'
@@ -59,7 +59,7 @@ export function LearnPageClient({
   const [navOpen, setNavOpen] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
   const [slideshowPageIndex, setSlideshowPageIndex] = useState(0)
-  const { mode, setMode, splitAllowed, resetLayout } = useLayoutMode()
+  const { mode, setMode, splitAllowed, resetLayout, focusExercisePanel } = useLayoutMode()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [viewMode, setViewMode] = useState<'normal' | 'slideshow'>(() =>
@@ -320,6 +320,20 @@ export function LearnPageClient({
     !!activeLesson &&
     activeLesson.exercises.length > 0 &&
     activeLesson.exercises[0].format === 'final-project'
+
+  // When the page is opened via an exercise deep-link (e.g. the live Pulse
+  // "tap to go" bar links to /learn/{id}?ex={n}), make sure the exercise panel
+  // is visible. On narrow student devices the layout otherwise defaults to the
+  // reading sidebar, so the student would land on the lesson text instead of
+  // the exercise. Final-project lessons keep their work in the left sidebar, so
+  // they're left on the default layout.
+  const didFocusDeepLinkRef = useRef(false)
+  useEffect(() => {
+    if (didFocusDeepLinkRef.current) return
+    if (urlInitialExerciseIndex === undefined || isFinalProject) return
+    didFocusDeepLinkRef.current = true
+    focusExercisePanel()
+  }, [urlInitialExerciseIndex, isFinalProject, focusExercisePanel])
 
   useEffect(() => {
     if (navOpen) {

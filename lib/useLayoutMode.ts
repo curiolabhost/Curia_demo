@@ -35,6 +35,12 @@ export function useLayoutMode() {
   const resetLayout = useCallback(() => {
     setMode(window.innerWidth >= SPLIT_THRESHOLD ? 'split' : 'expanded-left')
   }, [])
+  // Show the exercise/editor panel. On wide screens 'split' already shows it
+  // alongside the reading sidebar; on narrow screens we must expand the right
+  // panel, since the default 'expanded-left' hides it entirely.
+  const focusExercisePanel = useCallback(() => {
+    setMode(window.innerWidth >= SPLIT_THRESHOLD ? 'split' : 'expanded-right')
+  }, [])
 
-  return { mode, setMode, splitAllowed, expandLeft, expandRight, resetLayout }
+  return { mode, setMode, splitAllowed, expandLeft, expandRight, resetLayout, focusExercisePanel }
 }
